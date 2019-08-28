@@ -1,0 +1,40 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Disable Two-Factor Authentication"></app-popup-header>
+  <div class="modal-body">
+    <div class="row my-2 d-flex align-items-center justify-content-center">
+      <div class="col">
+          <form [formGroup]="disableForm">
+          <app-error></app-error>
+          <div class="form-group">            
+            <!-- <small class="text-light" *ngIf="(account_password.dirty || account_password.touched) && account_password.invalid && account_password.errors.required">
+              Please enter valid account password.
+            </small> -->
+            <label class="text-purple" for="account_password"><strong>Account Password</strong></label>
+            <input type="password" class="form-control" formControlName="account_password" placeholder="Your GRAYLL account password">
+          </div>
+          <div class="form-group">            
+            <!-- <small class="text-light" *ngIf="(code.dirty || code.touched) && code.invalid && code.errors.required">
+              Please enter valid one time code.
+            </small> -->
+            <!-- <label class="text-purple" for="code"><strong>One-Time Password (OTP)</strong></label> -->
+            <input type="password" class="form-control" formControlName="code" placeholder="OTP from the Google Authenticator">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col">
+        <a href="javascript:void(0)" class="btn btn-outline-secondary" (click)="popupService.close()">
+          Cancel
+        </a>
+      </div>
+      <div class="col">
+        <a (click)="disable2FA()" href="javascript:void(0)" class="btn btn-purple">
+          Disable
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>

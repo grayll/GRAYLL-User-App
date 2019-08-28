@@ -1,0 +1,217 @@
+.bg-gradient {
+  background-image: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  color: white;
+  border-radius: 4px!important;
+}
+
+.e-campaign {
+  .css-bar {
+    .data-text {
+      margin: 0 auto;
+      position: absolute;
+      left: 0;
+      z-index: 200;
+      right: 0;
+      top: 70px;
+      text-align: center;
+      color: #40278C;
+      .success-rate {
+        font-size: 60px;
+      }
+      .rate-label {
+        margin-top: -20px;
+      }
+    }
+  }
+  .c-cost {
+    padding: 20px 20px;
+    border: 1px solid #CFA256 !important;
+    border-radius: 5px;
+    i {
+      font-size: 48px;
+    }
+  }
+}
+
+.css-bar {
+  position: relative;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 50%;
+  background-color: transparent;
+  margin-bottom: 20px;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  width: 80px;
+  height: 80px;
+}
+
+.css-bar:after,
+.css-bar>img {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: lighter;
+  color: #a1a2a3;
+}
+
+.css-bar:after {
+  content: attr(data-label);
+  background-color: #CFA256;
+  z-index: 1;
+}
+
+.css-bar>img {
+  z-index: 2;
+}
+
+.css-bar:after,
+.css-bar>img {
+  width: 70px;
+  height: 70px;
+  margin-left: 5px;
+  margin-top: 5px;
+  line-height: 70px;
+}
+
+.css-bar-purple, .css-bar-25 {
+  background-image: linear-gradient(90deg, #CEDCFE 50%, transparent 50%, transparent),
+  linear-gradient(180deg, #40278C 50%, #CEDCFE 50%, #CEDCFE);
+}
+
+.css-bar-xlg {
+  width: 223px;
+  height: 223px;
+  font-size: 20px;
+}
+
+.css-bar-xlg:after,
+.css-bar-xlg>img {
+  width: 213px;
+  height: 213px;
+  margin-left: 5px;
+  margin-top: 5px;
+  line-height: 30px;
+}
+
+.css-bar-lg {
+  width: 100px;
+  height: 100px;
+  font-size: 20px;
+  position: relative;
+}
+
+.css-bar-lg:after,
+.css-bar-lg>img {
+  width: 90px;
+  height: 90px;
+  margin-left: 5px;
+  margin-top: 5px;
+  line-height: 90px;
+}
+
+.css-bar-lg>img {
+  width: 70px;
+  height: 70px;
+  margin-left: 15px;
+  margin-top: 15px;
+  line-height: 70px;
+}
+
+.css-bar>i {
+  width: 70px;
+  height: 70px;
+  background: #fff;
+  line-height: 70px;
+  position: absolute;
+  border-radius: 100%;
+  text-align: center;
+  margin-left: 5px;
+  margin-top: 5px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  font-size: 27px;
+  color: #a6b7bf;
+}
+
+.css-bar-sm {
+  width: 50px;
+  height: 50px;
+  font-size: 12px;
+}
+
+.css-bar-sm:after,
+.css-bar-sm>img {
+  width: 40px;
+  height: 40px;
+  margin-left: 5px;
+  margin-top: 5px;
+  line-height: 40px;
+}
+
+.css-bar-xs {
+  width: 30px;
+  height: 30px;
+  font-size: 8px;
+}
+
+.css-bar-xs:after,
+.css-bar-xs>img {
+  width: 24px;
+  height: 24px;
+  margin-left: 3px;
+  margin-top: 3px;
+  line-height: 21px;
+}
+
+.css-bar {
+  background-clip: content-box;
+}
+
+.css-bar-xlg {
+  width: 223px;
+  height: 223px;
+  font-size: 20px;
+}
+
+.css-bar-xlg:after,
+.css-bar-xlg > img {
+  width: 213px;
+  height: 213px;
+  margin-left: 5px;
+  margin-top: 5px;
+  line-height: 30px;
+}
+
+ul {
+  list-style-type: none;
+  margin-top: 30px;
+}
+
+.wallet-box {
+  margin-left: 10px;
+}
+
+.card {
+  background-color: #636fa4 !important;
+}
+
+@media (max-width: 991px) {
+  .e-campaign {
+    .c-cost {
+      margin: 0 auto;
+      width: 100%;
+    }
+    .stats {
+      text-align: center;
+    }
+  }
+  .card {
+    height: auto!important;
+  }
+}

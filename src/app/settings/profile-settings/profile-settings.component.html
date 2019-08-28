@@ -1,0 +1,110 @@
+<div class="row">
+  <div class="col-md-6 col-xs-12">
+    <div class="card border-0">
+      <div class="card-body bg-gradient text-light">
+        <div class="row">
+          <div class="col">
+            <p class="lead font-weight-bolder">General GRAYLL Profile</p>
+            <p class="lead mb-0"><strong>Federation</strong> Address (Payment Alias)</p>
+            <p>Your federation address is your payment alias so people can send you assets more easily.</p>
+
+            <div class="row">
+              <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="federationAddress" triggers="click:blur">
+                <input disabled [value]="federationAddress" type="text" class="form-control bg-transparent text-light">
+              </div>
+              <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
+                <button (click)="copyFederationAddress()" class="btn btn-block btn-yellow">Copy Address</button>
+              </div>
+            </div>
+
+            <button [routerLink]="[{outlets: {popup: 'edit-federation-address'}}]"
+                    class="btn btn-purple mt-3 mb-2">Edit Federation Address</button>
+            <p>Changing your GRAYLL alias also changes your network payment alias (aka your federation address).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 public-key-card">
+      <div class="card-body bg-gradient text-light">
+        <div class="row">
+          <div class="col">
+            <p class="lead mb-0"><strong>Stellar Address</strong> (Public Key)</p>
+            <p>The Stellar wallet address is the public key associated with this account.</p>
+
+            <div class="row">
+              <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="stellarAddress" triggers="click:blur">
+                <input disabled [value]="stellarAddress" type="text" class="form-control bg-transparent text-light">
+              </div>
+              <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
+                <button (click)="copyStellarAddress()" class="btn btn-block btn-yellow">Copy Address</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 col-xs-12">
+    <div class="card border-0 mb-0 h-100">
+      <div class="card-body bg-gradient text-light">
+        <div class="row">
+          <div class="col">
+            <form [formGroup]="profileForm">
+              <app-error></app-error>
+              <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" class="form-control" formControlName="first_name" placeholder="{{userData.Name}}">
+              </div>
+              <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" class="form-control" formControlName="last_name" placeholder="{{userData.Lname}}">
+              </div>
+              <div class="form-group">
+                <label for="email">Account Email</label>
+                <a [routerLink]="[{outlets: {popup: 'change-email-address'}}]"
+                  href="javascript:void(0)" class="float-right text-purple">Change Email</a>
+                <span class="badge float-right text-light bg-yellow mr-1" style="line-height: normal">
+                  <fa-icon [icon]="faCheck"></fa-icon>
+                  Verified
+                </span>
+                <!-- <span class="badge float-right bg-danger mr-1" style="line-height: normal">
+                  <fa-icon [icon]="faExclamation"></fa-icon>
+                  Unverified
+                </span> -->
+                <input type="email" class="form-control" formControlName="email" disable placeholder="{{userData.Email}}">
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <!-- <a [routerLink]="[{outlets: {popup: 'change-password'}}]"
+                  href="javascript:void(0)" class="float-right text-purple">Change Password</a> -->
+                <input type="password" class="form-control" id="password" placeholder="********">
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <a [routerLink]="[{outlets: {popup: 'change-phone-number'}}]"
+                  href="javascript:void(0)" class="float-right text-purple">Phone Number</a>
+
+                <!-- Phone number not set -->
+                <input type="text" class="form-control" formControlName="phone" placeholder="Not set">
+
+                <!-- Phone number set -->
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">
+                      <flag-icon [country]="'ba'"></flag-icon>
+                    </div>
+                  </div>
+                  <input type="text" class="form-control" formControlName="inlineFormInputGroup" disabled value="+387 63 763 354">
+                </div>
+                <!-- End Phone number set -->
+              </div>
+              <button (click)="save()" class="btn btn-purple">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="card border-0">
+  <div class="card-body bg-gradient text-light">
+    <div class="row">
+      <div class="col-md-9">
+        <p class="lead">Two-Factor Authentication - 2FA</p>
+        <p>Enable to protect your account with 2FA. Strongly recommended.</p>
+        <a href="javascript:void(0)" class="d-none d-md-block text-pink">
+          Read more about 2FA
+        </a>
+      </div>
+      <div class="col-12 d-flex justify-content-center align-items-center d-md-none mb-2">
+        <a href="javascript:void(0)" class="text-pink text-center">
+          Read more about 2FA
+        </a>
+      </div>
+      <div *ngIf="!is2FAEnabled" class="col d-flex justify-content-center align-items-center">
+        <button [routerLink]="[{outlets: {popup: 'google-authenticator'}}]" class="btn btn-purple text-center">Enable</button>
+      </div>
+      <div *ngIf="is2FAEnabled" class="col d-flex justify-content-center align-items-center">
+        <button [routerLink]="[{outlets: {popup: 'disable-two-fa'}}]" class="btn btn-yellow text-center">Disable</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0">
+  <div class="card-body bg-gradient text-light">
+    <div class="row">
+      <div class="col-md-9">
+        <p class="lead">IP Address Confirmation</p>
+        <p>If enabled, logins from new IP addresses will require email confirmation.</p>
+      </div>
+      <div *ngIf="!isIPConfirmEnabled" class="col d-flex justify-content-center align-items-center">
+        <button (click)="toggleIPConfirm()" class="btn btn-purple text-center">Enable</button>
+      </div>
+      <div *ngIf="isIPConfirmEnabled" class="col d-flex justify-content-center align-items-center">
+        <button (click)="toggleIPConfirm()" class="btn btn-yellow text-center">Disable</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 mb-0">
+  <div class="card-body bg-gradient text-light">
+    <div class="row">
+      <div class="col-md-9">
+        <p class="lead">Multisignature Transactions</p>
+        <p>Multisignature improves your wallet security by requiring additional approvals for each
+          transaction. <br>Two-factor authentication (2FA) needs to be enabled to enable the multisignature
+          option.
+        </p>
+      </div>
+      <div *ngIf="!isMultisignatureEnabled" class="col d-flex justify-content-center align-items-center">
+        <button [routerLink]="[{outlets: {popup: 'enable-multisignature'}}]" class="btn btn-purple text-center">Enable</button>
+      </div>
+      <div *ngIf="isMultisignatureEnabled" class="col d-flex justify-content-center align-items-center">
+        <button [routerLink]="[{outlets: {popup: 'disable-multisignature'}}]" class="btn btn-yellow text-center">Disable</button>
+      </div>
+    </div>
+  </div>
+</div>

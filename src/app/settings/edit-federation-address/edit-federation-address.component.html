@@ -1,0 +1,31 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Edit Federation Address"></app-popup-header>
+  <div class="modal-body">
+    <div class="row my-2 d-flex align-items-center justify-content-center">
+      <div class="col">
+        <form>
+          <div class="form-group">
+            <label class="text-purple" for="alias">
+              Choose a short alias for your Stellar Network Address
+            </label>
+            <input type="text" class="form-control" id="alias" placeholder="">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col">
+        <a href="javascript:void(0)" class="btn btn-outline-secondary" (click)="popupService.close()">
+          Cancel
+        </a>
+      </div>
+      <div class="col">
+        <a (click)="save()" href="javascript:void(0)" class="btn btn-purple">
+          Save
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>

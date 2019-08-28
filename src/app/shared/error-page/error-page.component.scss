@@ -1,0 +1,15 @@
+.error-box {
+  height: 100%;
+  position: fixed;
+  width: 100%;
+
+  .error-body {
+    padding-top: 5%;
+  }
+
+  .error-title {
+    font-size: 9em;
+    font-weight: bolder!important;
+    line-height: 1em;
+  }
+}

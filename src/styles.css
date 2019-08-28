@@ -1,0 +1,134 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~ng-snotify/styles/material.css";
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(to right,#636fa4,#e8cbc0);
+  font-family: 'Nunito', sans-serif !important;
+  font-size: 0.875rem!important;
+}
+
+h5 {
+  font-size: 16px!important;
+}
+
+h6 {
+  font-size: 14px!important;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: #000;
+  opacity: 0.8!important;
+  width: 100%;
+}
+
+.font-14 {
+  font-size: 14px!important;
+}
+
+.font-16 {
+  font-size: 16px!important;
+}
+
+.bg-purple {
+  background-color: #40278C!important;
+}
+
+.bg-pink {
+  background-color: #e8cbc0 !important;
+}
+
+.bg-yellow {
+  background-color: #CFA256!important;
+}
+
+.bg-gradient {
+  background-image: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+}
+
+.text-pink {
+  color: #e8cbc0 !important;
+}
+
+.text-yellow {
+  color: #CFA256!important;
+}
+
+.text-purple {
+  color: #40278C;
+}
+
+.text-sky {
+  color: #CEDEFE;
+}
+
+.btn-purple {
+  color: white!important;
+  background-color: #40278C!important;
+}
+
+.btn-purple:hover {
+  background-color: #2E1870!important;
+}
+
+.btn-yellow {
+  background-color: #CFA256!important;
+  color: #40278C!important;
+}
+
+.btn-yellow:hover {
+  background-color: #AC7F31!important;
+}
+
+/* Overriding default settings to satisfy client's requests */
+.row {
+  margin-left: -10px!important;
+  margin-right: -10px!important;
+}
+
+.col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col, .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm, .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md, .col-md-auto, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg, .col-lg-auto, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl, .col-xl-auto {
+  padding-left: 10px!important;
+  padding-right: 10px!important;
+}
+
+.card {
+  margin-bottom: 1.2rem!important;
+}
+
+.btn {
+  min-width: 140px!important;
+}
+
+.modal-backdrop.show {
+  opacity: 0.8!important;
+}
+
+.snotify-simple {
+  background-color: #e8cbc0!important;
+}
+
+.snotify-simple .snotifyToast__body {
+  color: #40278C!important;
+}
+
+.snotify-simple .snotifyToast__inner {
+  padding-right: 15px!important;
+  text-align: center;
+  align-items: center;
+}
+
+.snotify-icon--simple {
+  display: none;
+}
+
+.snotify-icon--success {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20version=%221.1%22%20x=%220px%22%20y=%220px%22%20viewBox=%220%200%20512%20512%22%20fill=%22%23c8e6c9%22%3E%3Cg%3E%3Cpath%20d=%22M256,0C114.85,0,0,114.84,0,256S114.85,512,256,512,512,397.16,512,256,397.15,0,256,0Zm0,492.31c-130.29,0-236.31-106-236.31-236.31S125.71,19.69,256,19.69,492.31,125.71,492.31,256,386.29,492.31,256,492.31Z%22/%3E%3Cpath%20class=%22cls-1%22%20d=%22M376.64,151,225.31,321.24l-91.17-72.93a9.85,9.85,0,0,0-12.3,15.38l98.46,78.77a9.86,9.86,0,0,0,13.52-1.15L391.36,164.08A9.85,9.85,0,0,0,376.64,151Z%22/%3E%3C/g%3E%3C/svg%3E")!important;
+}

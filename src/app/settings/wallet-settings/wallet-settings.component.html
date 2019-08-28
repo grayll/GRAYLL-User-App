@@ -1,0 +1,84 @@
+<div class="card border-0">
+  <div class="card-body bg-gradient text-light">
+    <div class="row">
+      <div class="col">
+        <p class="lead mb-0">GRAYLL | Stellar Network Account</p>
+        <p>Your GRAYLL account holds all your GRX and XLM (Lumens) on the Stellar Network.</p>
+
+        <p class="lead mb-0"><strong>Federation</strong> Address (Payment Alias)</p>
+        <p>Your federation address is your payment alias so people can send you assets more easily.</p>
+
+        <div class="row">
+          <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="federationAddress" triggers="click:blur">
+            <input disabled [value]="federationAddress" type="text" class="form-control bg-transparent text-light">
+          </div>
+          <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
+            <button (click)="copyFederationAddress()" class="btn btn-block btn-yellow">Copy Address</button>
+          </div>
+        </div>
+
+        <button [routerLink]="[{outlets: {popup: 'edit-federation-address'}}]"
+                class="btn btn-purple mt-3 mb-2">Edit Federation Address</button>
+        <p>Changing your GRAYLL alias also changes your network <strong>payment alias</strong>
+          (aka your federation address).
+          <br>
+          You can use this alias, including the <strong>*grayll.io</strong>, instead of your public key
+          <strong>(Stellar Network Wallet Address)</strong> to receive GRX and XLM payments on the Stellar Network
+          to your GRAYLL account wallet.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 col-xs-12">
+    <div class="card border-0 mb-0">
+      <div class="card-body bg-gradient text-light">
+        <div class="row">
+          <div class="col">
+            <p class="lead mb-0"><strong>Stellar Address</strong> (Public Key)</p>
+            <p>The Stellar wallet address is the public key associated with this account.</p>
+
+            <div class="row">
+              <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="stellarAddress" triggers="click:blur">
+                <input disabled [value]="stellarAddress" type="text" class="form-control">
+              </div>
+              <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
+                <button (click)="copyStellarAddress()" class="btn btn-block btn-yellow">Copy Address</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 col-xs-12">
+    <div class="card border-0 mb-0">
+      <div class="card-body bg-gradient text-light">
+        <div class="row">
+          <div class="col">
+            <p class="lead mb-0">Secret Key</p>
+            <p><span class="font-weight-bolder">Your secret key is hidden and must not be shared. </span>
+              Anyone that has your secret key has access to your wallet and the assets.
+            </p>
+
+            <div class="row" *ngIf="!isSecretKeyRevealed">
+              <button (click)="toggleRevealSecretKey()" class="btn btn-block btn-yellow w-auto mx-auto">Reveal Secret Key</button>
+            </div>
+
+            <div class="row" *ngIf="isSecretKeyRevealed">
+              <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="secretKey" triggers="click:blur">
+                <input disabled [value]="secretKey" type="text" class="form-control">
+              </div>
+              <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
+                <button (click)="toggleRevealSecretKey()" class="btn btn-block btn-yellow">Hide Secret Key</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

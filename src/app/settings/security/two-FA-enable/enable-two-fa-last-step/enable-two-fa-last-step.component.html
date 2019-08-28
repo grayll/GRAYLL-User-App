@@ -1,0 +1,51 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Enable Two-Factor Authentication"></app-popup-header>
+  <div class="modal-body">
+    <p class="text-purple">Fill in all fields to verify you have all the information to enable 2FA.</p>
+    <div class="row my-2 d-flex align-items-center justify-content-center">
+      <div class="col">
+        <form [formGroup]="enableTwoFAForm">
+          <div class="form-group">
+            <app-error></app-error>
+            <small class="text-light" *ngIf="submitted && formErrors.password">
+              {{ formErrors.password }}
+            </small>            
+            <label class="text-purple" for="password"><strong>Account Password</strong></label>
+            <input type="password" formControlName="password"  class="form-control" placeholder="Your GRAYLL account password">
+           
+          </div>
+          <div class="form-group">
+            <small class="text-light" *ngIf="submitted && formErrors.backupKey">
+              {{ formErrors.backupKey }}
+            </small>           
+            <label class="text-purple" for="backupKey"><strong>2FA Backup Key</strong></label>
+            <input type="text" formControlName="backupKey" class="form-control" placeholder="Your 2FA backup key">
+           
+          </div>
+          <div class="form-group">
+            <label class="text-purple" for="oneTimePassword"><strong>One-Time Password</strong></label>
+            <small class="text-light" *ngIf="submitted && formErrors.oneTimePassword">
+                {{ formErrors.oneTimePassword }}
+            </small>
+            <input type="password" formControlName="oneTimePassword" class="form-control" placeholder="OTP from the Google Authenticator">
+            
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col">
+        <a href="javascript:void(0)" class="btn btn-outline-secondary" (click)="back()">
+          Back
+        </a>
+      </div>
+      <div class="col">
+        <a (click)="enable2FA()" href="javascript:void(0)" class="btn btn-purple">
+          Enable 2FA
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,47 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Add Phone Number"></app-popup-header>
+  <div class="modal-body">
+    <div class="row my-2 d-flex align-items-center justify-content-center">
+      <div class="col">
+        <app-error></app-error>
+        <div class="form-group">
+          <label class="text-purple" for="phoneNumber">You need to verify your phone number first.</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text fixed-input-height">
+                <ng-select [items]="countryCodes" [(ngModel)]="selectedCountryCode" [clearable]="false">
+                  <ng-template ng-label-tmp let-item="item">
+                    <span>
+                      <flag-icon [country]="item"></flag-icon>
+                    </span>
+                  </ng-template>
+                  <ng-template ng-option-tmp let-item="item" let-search="searchTerm" let-index="index">
+                    <span>
+                      <flag-icon [country]="item"></flag-icon>
+                    </span>
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+            <input [(ngModel)]="phoneNumber" type="text" class="form-control fixed-input-height" id="phoneNumber">
+          </div>
+        </div>
+        <p>We will send a SMS to the phone number to verify it.</p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col-md-4">
+        <a href="javascript:void(0)" class="btn btn-outline-secondary" (click)="popupService.close()">
+          Cancel
+        </a>
+      </div>
+      <div class="col-md-8">
+        <a (click)="verify()" href="javascript:void(0)" class="btn btn-purple float-right">
+          Verify Phone Number
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,22 @@
+.first-box {
+  background-color: #636fa4 !important;
+  color: white!important;
+}
+
+.second-box {
+  background: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  color: white!important;
+}
+
+.third-box {
+  background-color: #e8cbc0;
+  color: white!important;
+}
+
+.card {
+  background-color: #636fa4 !important;
+}
+
+.card-body {
+  border-radius: 4px !important;
+}

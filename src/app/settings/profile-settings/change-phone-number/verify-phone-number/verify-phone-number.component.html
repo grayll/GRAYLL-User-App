@@ -1,0 +1,36 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Confirm Your Number"></app-popup-header>
+  <div class="modal-body">
+    <div class="row my-2 d-flex align-items-center justify-content-center">
+      <div class="col">
+        <app-error></app-error>
+        <div class="form-group">
+          <p class="text-purple">
+            We sent a SMS with confirmation code to {{phoneNumber}}.<br>
+            Please enter the confirmation code  the field below.
+          </p>
+          <input type="text" id="code" [(ngModel)]="code" class="form-control">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col">
+        <a href="javascript:void(0)" class="btn btn-outline-secondary" (click)="popupService.close()">
+          Cancel
+        </a>
+      </div>
+      <div class="col">
+        <a (click)="sendAgain()" href="javascript:void(0)" class="disabled btn btn-purple float-right">
+          Send Again
+        </a>
+      </div>
+      <div class="col">
+        <a (click)="confirm()" href="javascript:void(0)" class="btn btn-purple float-right">
+          Confirm
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>

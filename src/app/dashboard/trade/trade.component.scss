@@ -1,0 +1,61 @@
+.bg-pink {
+  border-radius: 4px!important;
+}
+
+.small-grayll-icon {
+  width: 18px;
+  height: 18px;
+}
+
+::ng-deep .nav-pills {
+  .nav-link {
+    border-radius: 0;
+    opacity: 0.7;
+    font-size: 0.9rem;
+    color: #40278C!important;
+
+    &.active {
+      opacity: 1;
+      background-color: transparent;
+      border-bottom: 2px solid #40278C!important;
+    }
+  }
+}
+
+input {
+  border-left: 1px solid #CFA256;
+  height: calc(1.5em + 1rem + 2px)!important;
+  line-height: calc(1.5em + 1rem + 2px)!important;
+}
+
+input[type=text]:focus {
+  color: black!important;
+  background-color: #fff!important;
+}
+
+input,
+input::-webkit-input-placeholder {
+  font-size: 0.9rem;
+}
+
+::placeholder {
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
+}
+
+.dollar-padding {
+  padding-left: 19px!important;
+  padding-right: 19px!important;
+}
+
+.card {
+  background-color: #636fa4 !important;
+}

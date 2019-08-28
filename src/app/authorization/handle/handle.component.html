@@ -1,0 +1,69 @@
+<div class="container h-100">
+  <div class="row align-items-center justify-content-center h-100">
+    <div class="card" style="margin: 0 auto">
+      <div *ngIf="(mode && mode ==='resetPassword')">
+        <div class="card-header text-center">
+          <img class="img img-fluid logo" src="assets/images/logo.png" alt="Logo">
+          <h4 class="text-light">Set a new Password</h4>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="handleForm">
+            <app-error></app-error>
+            <!-- <small class="text-light" *ngIf="(password.dirty || password.touched)
+            && password.invalid && password.errors.required">
+              Please enter your new password.
+            </small> -->
+            <small class="text-light" *ngIf="submitted && formErrors.password">
+              {{formErrors.password}}
+            </small>
+            <div class="input-group form-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <fa-icon [icon]="keyIcon"></fa-icon>
+                </span>
+              </div>
+              <input formControlName="password" type="password" class="form-control" placeholder="Password">
+            </div>
+            <!-- <small class="text-light" *ngIf="(confirm.dirty || confirm.touched)
+              && (confirm.value !== password.value)">
+              Passwords do not match.
+            </small> -->
+            <small class="text-light" *ngIf="submitted && formErrors.confirm">
+              {{formErrors.confirm}}
+            </small>
+            <div class="input-group form-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <fa-icon [icon]="keyIcon"></fa-icon>
+                </span>
+              </div>
+              <input formControlName="confirm" type="password" class="form-control" placeholder="Confirm Password">
+            </div>
+            <div class="form-group mb-0">
+              <button (click)="submitClicked()" class="btn btn-block login_btn">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div *ngIf="(mode && mode ==='verifyEmail')">
+        <div class="card-header text-center">
+          <img class="img img-fluid logo" src="assets/images/logo.png" alt="Logo">
+          <h4 class="text-light">Email Verification</h4>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="handleForm">
+              <p class="text-purple text-center">Your email is verified.</p>
+            <!-- <span class="badge float-center text-light mr-1" style="line-height: normal">                  
+              Your email is verified.
+            </span>                   -->
+          </form>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex justify-content-center">
+          <a class="blue-link" routerLink="/login">Return to login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

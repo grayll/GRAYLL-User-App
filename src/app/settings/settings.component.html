@@ -1,0 +1,53 @@
+<router-outlet name="popup"></router-outlet>
+<app-navbar></app-navbar>
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="container-fluid pt-0">
+
+      <h4 class="text-light pt-3 pb-1">
+        {{activeTabId}}
+      </h4>
+
+      <div class="row d-flex justify-content-center align-items-center d-md-none mb-3">
+        <div class="col mx-auto">
+          <ngb-tabset [activeId]="activeTabId" (tabChange)="tabChanged($event['nextId'])">
+
+            <ngb-tab *ngFor="let page of navigationSettingPages" [id]="page.name">
+              <ng-template ngbTabTitle>
+                <fa-icon [icon]="page.icon"></fa-icon>
+              </ng-template>
+            </ngb-tab>
+
+          </ngb-tabset>
+        </div>
+      </div>
+
+      <div class="row">
+
+        <div class="col-md-10">
+          <ng-container [ngSwitch]="activeTabId">
+            <app-profile-settings *ngSwitchCase="'Profile'"></app-profile-settings>
+            <app-notifications-settings *ngSwitchCase="'Notifications'"></app-notifications-settings>
+            <app-messages-settings *ngSwitchCase="'Messages'"></app-messages-settings>
+            <app-data-settings *ngSwitchCase="'Data'"></app-data-settings>
+            <app-wallet-settings *ngSwitchCase="'Wallet'"></app-wallet-settings>
+            <app-security *ngSwitchDefault></app-security>
+          </ng-container>
+        </div>
+
+        <div class="col-md-2 bg-pink settings-menu text-center d-none d-md-block">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-transparent font-16 list-group-item-action"
+                (click)="tabChanged(page.name)"
+                [ngClass]="page.name === activeTabId ? 'active' : ''"
+                *ngFor="let page of navigationSettingPages">
+              {{page.name}}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

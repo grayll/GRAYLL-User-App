@@ -1,0 +1,100 @@
+<div class="card border-0">
+  <div class="card-body bg-gradient text-light">
+    <div class="row">
+      <div class="col-md-12">
+        <p class="lead">Report Frequency</p>
+        <p class="mb-0">Send selected report(s):</p>
+        <div class="form-check form-check-inline">
+          <label class="cont">Daily
+            <input type="radio" name="frequency">
+            <span class="radio"></span>
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <label class="cont">Weekly
+            <input type="radio" name="frequency">
+            <span class="radio"></span>
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <label class="cont">Monthly
+            <input type="radio" name="frequency">
+            <span class="radio"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0">
+  <div class="card-body bg-gradient text-light">
+    <div class="row">
+      <div class="col-md-12">
+        <p class="lead">Report Type</p>
+        <p class="mb-1">Select the reports you would like to receive to stay up to date on the performance of your GRAYLL account: </p>
+        <div class="form-check form-check-inline">
+          <label class="checkbox">
+            <input type="checkbox" id="walletBalance"/>
+            <span class="default"></span>
+          </label>
+          <label for="walletBalance" class="form-check-label">Wallet Balance</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <label class="checkbox">
+            <input type="checkbox" id="accountValue"/>
+            <span class="default"></span>
+          </label>
+          <label for="accountValue" class="form-check-label">Account Value</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <label class="checkbox">
+            <input type="checkbox" id="accountProfit" />
+            <span class="default"></span>
+          </label>
+          <label for="accountProfit" class="form-check-label">Account Profit</label>
+        </div>
+        <div class="form-check form-check-inline ml-1">
+          <label class="checkbox">
+            <input type="checkbox" id="openPosition" />
+            <span class="default"></span>
+          </label>
+          <label for="openPosition" class="form-check-label">Open Position</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 mb-0">
+  <div class="card-body bg-gradient text-light">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-5">
+            <p class="lead report-time">Report Time</p>
+            <div class="form-group row">
+              <label class="col-sm-12 col-form-label">Select Region Time</label>
+              <div class="col-sm-12">
+                <ng-select [items]="countries"
+                           [searchable]="false"
+                           [clearable]="false">
+                </ng-select>
+              </div>
+            </div>
+            <p class="text-center region-time">UTC 00:00</p>
+          </div>
+          <div class="col-md-7 text-center">
+            <div class="form-group mb-0 row">
+              <label class="col-sm-12 col-form-label">Select Report Time</label>
+              <div class="row mx-auto">
+                <ngb-timepicker [(ngModel)]="reportTime"></ngb-timepicker>
+              </div>
+            </div>
+            <p>UTC Report Time 00:00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
