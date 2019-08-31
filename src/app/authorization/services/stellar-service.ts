@@ -32,16 +32,12 @@ export class StellarService {
 
     generateKeyPair(): any {
         const pair = StellarSdk.Keypair.random();
-        console.log('key pair:', pair.secret())
-        console.log('key pair:', pair.publicKey())   
-        // let pair = nacl.box.keyPair()    
-        // console.log('key secret:', naclutil.encodeBase64(pair.secretKey))
-        // console.log('key public:', naclutil.encodeBase64(pair.publicKey))
+        console.log('sec key:', pair.secret())
+        console.log('pub key:', pair.publicKey())         
         return pair
     }
 
-    generateKeyPairNacl(): any {
-       
+    generateKeyPairNacl(): any {       
         let pair = nacl.box.keyPair()    
          console.log('key secret:', naclutil.encodeBase64(pair.secretKey))
          console.log('key public:', naclutil.encodeBase64(pair.publicKey))
@@ -53,6 +49,7 @@ export class StellarService {
         const nonce = new Uint8Array(24);
         const logN = 16;
         const blockSize = 8;
+        
         scrypt(password, salt, logN, blockSize, this.dkLen, this.interruptStep, (derivedKey) => {
             const encryptedSecretKey = naclutil.encodeBase64(
                 nacl.secretbox(secretKey, nonce, naclutil.decodeBase64(derivedKey))
@@ -108,8 +105,17 @@ export class StellarService {
            
         }, "base64")
     }
-
+    ToString = function (u8) { 
+        return StellarSdk.StrKey.encodeEd25519SecretSeed(Buffer.from(u8))       
+    }
+    ToBase64 = function (u8) {
+        return btoa(String.fromCharCode.apply(null, u8));
+    }
     
+    FromBase64 = function (str) {
+        return atob(str).split('').map(function (c) { return c.charCodeAt(0); });
+    }
+
 
    
 }

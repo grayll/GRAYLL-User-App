@@ -1,12 +1,13 @@
 import { User } from "../services/user";
 import { auth } from 'firebase/app';
-import { AngularFireAuth } from "@angular/fire/auth";
+//import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Router } from "@angular/router";
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from "rxjs";
 //import { AngularFireDatabase, } from 'angularfire2/database';
+import { AngularFireAuth } from "angularfire2/auth";
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class AuthService {
 
   constructor(
     public afs: AngularFirestore,   // Inject Firestore service
-    public afAuth: AngularFireAuth, // Inject Firebase auth service
+    public firebaseAuth: AngularFireAuth, // Inject Firebase auth service
     public router: Router,  
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     public http: HttpClient,
@@ -81,7 +82,7 @@ export class AuthService {
 
   
   SignIn(email, password) {
-    return this.afAuth.auth.signInWithEmailAndPassword(email, password)
+    return this.firebaseAuth.auth.signInWithEmailAndPassword(email, password)
       // .then((result) => {
       //   this.ngZone.run(() => {
       //     this.router.navigate(['dashboard']);
@@ -93,16 +94,16 @@ export class AuthService {
   }
   
   SignUp(email, password) {    
-    return this.afAuth.auth.createUserWithEmailAndPassword(email, password)
+    return this.firebaseAuth.auth.createUserWithEmailAndPassword(email, password)
   }
   
   SendVerificationMail() {
-    return this.afAuth.auth.currentUser.sendEmailVerification()    
+    return this.firebaseAuth.auth.currentUser.sendEmailVerification()    
   }
 
   // Reset Forggot password
   ForgotPassword(passwordResetEmail) {
-    return this.afAuth.auth.sendPasswordResetEmail(passwordResetEmail)
+    return this.firebaseAuth.auth.sendPasswordResetEmail(passwordResetEmail)
     .then(() => {
       //window.alert('Password reset email sent, check your inbox.');
     }).catch((error) => {
@@ -115,7 +116,10 @@ export class AuthService {
     //console.log('localStorage.getItem()-', localStorage.getItem('user'))     
     const user = this.GetLocalUserData();
     console.log('isLoggedIn:', user)
-    return (user !== null) ? true : false;
+    if (user && user !== undefined && user !== null){
+      return true
+    }
+    return false;
   }
 
   // Sign in with Google
@@ -125,7 +129,7 @@ export class AuthService {
 
   // Auth logic to run auth providers
   AuthLogin(provider) {
-    return this.afAuth.auth.signInWithPopup(provider)
+    return this.firebaseAuth.auth.signInWithPopup(provider)
     .then((result) => {
        this.ngZone.run(() => {
           this.router.navigate(['dashboard']);
@@ -139,9 +143,12 @@ export class AuthService {
   GetLocalUserData(){
     if (!this.userData){
       let data = localStorage.getItem('user');
-      this.userData = JSON.parse(data);    
+      this.userData = JSON.parse(data);  
+      console.log('get from localstorage')  
+    } else {
+      console.log('get from userData')  
+      return this.userData
     }
-    return this.userData
     //return null
   }
   SetLocalUserData(){
@@ -149,6 +156,7 @@ export class AuthService {
       localStorage.setItem('user', JSON.stringify(this.userData));       
     }    
   }
+  
   SetLocalTfa(tfa){
     if (tfa){
       localStorage.setItem('tfa', JSON.stringify(tfa));       
@@ -166,6 +174,7 @@ export class AuthService {
   sign up with username/password and sign in with social auth  
   provider in Firestore database using AngularFirestore + AngularFirestoreDocument service */
   SetUserData(user) {
+    console.log('SetUserData ')
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);        
     return userRef.set(user, {
       merge: true
@@ -190,12 +199,17 @@ export class AuthService {
   }
   // Sign out 
   SignOut() {
-    return this.afAuth.auth.signOut().then(() => {
-      console.log('SignOut')
-      localStorage.removeItem('user');    
-      this.userData = null  
-    }).catch(err =>{
-      console.log('Err:', err)
+    
+    localStorage.removeItem('user');    
+    this.userData = null  
+    this.ngZone.run(()=> {
+      return this.firebaseAuth.auth.signOut().then(() => {
+        console.log('SignOut')
+        localStorage.removeItem('user');    
+        this.userData = null  
+      }).catch(err =>{
+        console.log('Err:', err)
+      })
     })
   }
 

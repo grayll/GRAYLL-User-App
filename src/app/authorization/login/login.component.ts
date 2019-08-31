@@ -46,6 +46,7 @@ export class LoginComponent {
 
   ngOnInit(): void {
     this.buildForm();    
+    console.log('Init of login: ', this.authService.GetLocalUserData())
   }
 
   buildForm(): void {
@@ -114,6 +115,8 @@ loginClicked() {
   this.errorService.clearError()
   this.onValueChanged() 
 
+  
+
   // let pair = this.stellarService.generateKeyPairNacl()
   // //console.log('secret: ', pair.secretKey)
   // this.stellarService.encryptSecretKey('some password', pair.secretKey, (encryptedSecretKeyBundle) => {
@@ -135,18 +138,21 @@ loginClicked() {
   //     })
   //   })
 
-  // pair = this.stellarService.generateKeyPair()
+  // let pair = this.stellarService.generateKeyPair()
   // //let rawpk = pair.rawPublicKey()
   // var pk = Uint8Array.from(pair.rawPublicKey())
   // var sec = Uint8Array.from(pair.rawSecretKey())
   // console.log('bytes sec:', sec)
   // console.log('sec:', naclutil.encodeBase64(sec))
+  // console.log('PublicKey:', pair.publicKey)
 
-  // this.stellarService.encryptSecretKey(this.loginForm.value['password'], sec, (encryptedBundle) =>{
+  // this.stellarService.encryptSecretKey(this.loginForm.value['password'], pair.rawSecretKey(), (encryptedBundle) =>{
   //   console.log('encrypted sec:', encryptedBundle)
 
   //   this.stellarService.decryptSecretKey(this.loginForm.value['password'], encryptedBundle, rawSec => {
-  //     console.log('decrypted sec:', rawSec)
+  //     console.log('decrypted sec bytes:', rawSec)
+  //     console.log('decrypted sec:', this.stellarService.ToBase64(rawSec))
+  //     console.log('decrypted sec string:', this.stellarService.ToString(rawSec))
   //   })
   // })
 
@@ -160,7 +166,7 @@ loginClicked() {
   this.recaptchaV3Service.execute('login')
   .subscribe((token) => {
     // Verify token
-    console.log('token: ', token) 
+    //console.log('token: ', token) 
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
@@ -222,7 +228,10 @@ loginClicked() {
             //console.log('error', err)
             this.errorService.handleError(null, 'Invalid user name or password')            
           }
-        )        
+        ).catch(err => {
+          console.log(err)
+          this.errorService.handleError(null, 'Can not login, please try again later!');
+        })        
     //   } else {
     //     this.errorService.handleError(null, 'Can not login, please try again later!');
     //   }

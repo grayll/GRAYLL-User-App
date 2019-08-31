@@ -151,10 +151,7 @@ registerClicked() {
           } else {
             this.errorService.handleError(null, 'Can not register now. Please try again later!')  
           }
-        })
-       
-        //this.openModal()  
-         
+        })               
       })
     }).catch(err => {
       console.log('err verify mail: ', err)

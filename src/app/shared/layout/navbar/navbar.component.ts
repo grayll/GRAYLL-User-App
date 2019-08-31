@@ -26,11 +26,12 @@ export class NavbarComponent {
   ) { }
 
   signOut(){
+    
     this.authService.SignOut();
-    console.log('GetLocalUserData:', this.authService.GetLocalUserData())
-    this.ngZone.run(()=>{
-      //this.router.navigate(['/login'])
-    })
+    // console.log('GetLocalUserData:', this.authService.GetLocalUserData())
+    // this.ngZone.run(()=>{
+    //   //this.router.navigate(['/login'])
+    // })
   }
 
 }
