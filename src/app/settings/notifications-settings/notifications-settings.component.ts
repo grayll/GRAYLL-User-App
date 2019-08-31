@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {SnotifyService} from 'ng-snotify';
 import {SettingsService} from '../settings.service';
 import {SubSink} from 'subsink';
@@ -8,7 +8,7 @@ import {SubSink} from 'subsink';
   templateUrl: './notifications-settings.component.html',
   styleUrls: ['./notifications-settings.component.css']
 })
-export class NotificationsSettingsComponent {
+export class NotificationsSettingsComponent implements OnDestroy {
 
   // RxJS graceful unsubscribe
   private subscriptions = new SubSink();
@@ -60,5 +60,9 @@ export class NotificationsSettingsComponent {
 
   private displaySettingsSavedToast() {
     this.snotifyService.simple('Your settings are saved.');
+  }
+  
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

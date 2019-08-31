@@ -30,6 +30,22 @@ h6 {
   width: 100%;
 }
 
+.fixed-input-height {
+  height: 50px!important;
+}
+
+.font-8 {
+  font-size: 8px!important;
+}
+
+.font-10 {
+  font-size: 10px!important;
+}
+
+.font-12 {
+  font-size: 12px!important;
+}
+
 .font-14 {
   font-size: 14px!important;
 }
@@ -131,4 +147,8 @@ h6 {
 
 .snotify-icon--success {
   background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20version=%221.1%22%20x=%220px%22%20y=%220px%22%20viewBox=%220%200%20512%20512%22%20fill=%22%23c8e6c9%22%3E%3Cg%3E%3Cpath%20d=%22M256,0C114.85,0,0,114.84,0,256S114.85,512,256,512,512,397.16,512,256,397.15,0,256,0Zm0,492.31c-130.29,0-236.31-106-236.31-236.31S125.71,19.69,256,19.69,492.31,125.71,492.31,256,386.29,492.31,256,492.31Z%22/%3E%3Cpath%20class=%22cls-1%22%20d=%22M376.64,151,225.31,321.24l-91.17-72.93a9.85,9.85,0,0,0-12.3,15.38l98.46,78.77a9.86,9.86,0,0,0,13.52-1.15L391.36,164.08A9.85,9.85,0,0,0,376.64,151Z%22/%3E%3C/g%3E%3C/svg%3E")!important;
+}
+
+.input-group-lg > .form-control {
+  font-size: 1rem!important;
 }

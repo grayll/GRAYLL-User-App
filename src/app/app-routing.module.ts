@@ -46,6 +46,42 @@ const routes: Routes = [
 // const routes: Routes = [
 //   {
 //     path: 'login',
+//     loadChildren: './authorization/authorization.module#AuthorizationModule'
+//   },
+//   {
+//     path: 'dashboard',
+//     loadChildren: './dashboard/dashboard.module#DashboardModule'
+//   },
+//   {
+//     path: 'wallet',
+//     loadChildren: './wallet/wallet.module#WalletModule'
+//   },
+//   {
+//     path: 'settings',
+//     loadChildren: './settings/settings.module#SettingsModule'
+//   },
+//   {
+//     path: '',
+//     redirectTo: '/wallet/overview',
+//     pathMatch: 'full'
+//   },
+//   {
+//     path: '404',
+//     component: NotFoundComponent
+//   },
+//   {
+//     path: 'error',
+//     component: ErrorPageComponent
+//   },
+//   {
+//     path: '**',
+//     redirectTo: '/404'
+//   }
+// ];
+
+// const routes: Routes = [
+//   {
+//     path: 'login',
 //     loadChildren: './authorization/authorization.module#AuthorizationModule'    
 //   },  
 //   {
