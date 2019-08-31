@@ -1,0 +1,48 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Payment Sent"></app-popup-header>
+  <div class="modal-body">
+    <div class="success-checkmark">
+      <div class="check-icon">
+        <span class="icon-line line-tip"></span>
+        <span class="icon-line line-long"></span>
+        <div class="icon-circle"></div>
+        <div class="icon-fix"></div>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col">
+        <p class="text-purple font-16">Payment Sent</p>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col">
+        <p class="text-purple lead mb-2">
+          <span *ngIf="withdrawModel.xlmAmount">
+            {{withdrawModel.xlmAmount}} XLM
+          </span>
+          <span *ngIf="withdrawModel.grxAmount">
+            {{withdrawModel.grxAmount}} GRX
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col">
+        <p class="text-purple" *ngIf="withdrawModel.address">{{withdrawModel.address}}</p>
+        <p class="text-purple" *ngIf="withdrawModel.emailAddress">{{withdrawModel.emailAddress}}</p>
+        <p class="text-purple" *ngIf="withdrawModel.phoneNumber">{{withdrawModel.phoneNumber}}</p>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col">
+        <button class="btn btn-purple" (click)="popupService.close()">Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>

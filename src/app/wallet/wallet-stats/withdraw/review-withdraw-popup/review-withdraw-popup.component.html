@@ -1,0 +1,68 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Review Withdrawal"></app-popup-header>
+  <div class="modal-body" *ngIf="withdrawModel">
+    <div class="row">
+      <div class="col-md-12">
+        <p class="text-purple">
+          Please review and confirm this withdrawal transaction.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <p class="mb-0 text-purple">
+          <span class="font-weight-bolder">
+            Send to Address
+          </span>
+          <br>
+          <span *ngIf="withdrawModel.address">{{withdrawModel.address}}</span>
+          <span *ngIf="withdrawModel.emailAddress">{{withdrawModel.emailAddress}}</span>
+          <span *ngIf="withdrawModel.phoneNumber">{{withdrawModel.phoneNumber}}</span>
+        </p>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-12">
+        <p class="mb-0 text-purple">
+          <span class="font-weight-bolder">
+            Amount
+          </span>
+          <br>
+          <span *ngIf="withdrawModel.xlmAmount">
+            {{withdrawModel.xlmAmount}} XLM
+          </span>
+          <span *ngIf="withdrawModel.grxAmount">
+            {{withdrawModel.grxAmount}} GRX
+          </span>
+        </p>
+      </div>
+    </div>
+    <br>
+    <div class="row" *ngIf="withdrawModel.memoMessage">
+      <div class="col-md-12">
+        <p class="mb-0 text-purple">
+          <span class="font-weight-bolder">
+            Memo Message
+          </span>
+          <br>
+          {{withdrawModel.memoMessage}}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col">
+        <a href="javascript:void(0)" class="btn btn-outline-secondary" (click)="back()">
+          Back
+        </a>
+      </div>
+      <div class="col">
+        <a href="javascript:void(0)" class="btn btn-purple" (click)="next()">
+          Send
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>

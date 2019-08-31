@@ -1,0 +1,26 @@
+.main-wrapper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.page-wrapper {
+  margin: 50px auto 0 auto;
+  background-color: #414755;
+}
+
+.page-wrapper > .container-fluid {
+  padding: 20px;
+  min-height: calc(100vh - 100px);
+}
+
+@media (min-width: 760px) {
+  .page-wrapper {
+    margin: 64px auto 0 auto;
+    max-width: 1200px;
+    position: relative;
+  }
+
+  .main-wrapper {
+    background-color: #414755;
+  }
+}

@@ -1,0 +1,472 @@
+<div class="bg-gradient text-light">
+  <div class="row align-items-center justify-content-center p-2">
+    <div class="col">
+      <span class="lead align-middle">Activity</span>
+    </div>
+    <div class="col-xs-12 col-md-5 justify-content-center align-items-center">
+      <ngb-tabset type="pills" class="custom-pills" (tabChange)="onTabChange($event.nextId)">
+        <ng-container *ngFor="let tab of activityTabs">
+          <ngb-tab [id]="tab.id" [title]="tab.name"></ngb-tab>
+        </ng-container>
+      </ngb-tabset>
+    </div>
+    <div class="col text-center">
+      <hr class="mt-0 d-sm-none">
+      <a class="purple-link" href="javascript:void(0)">
+        <fa-icon [icon]="faDownload" [fixedWidth]="true"></fa-icon>
+        Download Activity History
+      </a>
+    </div>
+  </div>
+
+  <hr class="mt-0 mb-0">
+
+  <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'allOrders'">
+    <div class="col-md-2 col-xs">
+      <span class="align-middle font-weight-bolder font-14">Open Orders (1)</span>
+    </div>
+    <div class="col">
+      <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+      <span class="ml-1 cancel text-danger">Cancel All Active Orders</span>
+    </div>
+  </div>
+
+  <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'transfers'">
+    <div class="col-md-12">
+      <span class="align-middle font-weight-bolder font-14">Transfers (11)</span>
+    </div>
+  </div>
+
+  <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'networkHistory'">
+    <div class="col-md-12">
+      <span class="align-middle font-weight-bolder font-14">Network History (6)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ALL ORDERS -->
+<div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'allOrders'">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th>Date</th>
+      <th>Type</th>
+      <th>Asset</th>
+      <th>Issuer</th>
+      <th>Amount</th>
+      <th>Filled</th>
+      <th>Price (XLM)</th>
+      <th>Price (USD)</th>
+      <th>Total Price (XLM)</th>
+      <th>Total Price (USD)</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light">
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>
+        <a href="javascript:void(0)" class="purple-link">
+          <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+          <span class="ml-1 cancel text-danger">Cancel</span>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- TRANSFERS -->
+<div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'transfers'">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th>Date</th>
+      <th>Counterparty</th>
+      <th>Asset</th>
+      <th>Issuer</th>
+      <th>Amount</th>
+      <th class="text-center">Info</th>
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light">
+    <tr>
+      <td>05/08/2019 18:29</td>
+      <td class="purple-link">GBMF3W...JGX4OG</td>
+      <td class="">XLM</td>
+      <td class="">Stellar</td>
+      <td class="purple-link">
+        -29,999,999,999,999.22222
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>23/08/2019 05:27</td>
+      <td class="purple-link">GBMF3W...JGX4OG</td>
+      <td class="">GRAYLL</td>
+      <td class="">grayll.io</td>
+      <td class="purple-link">
+        +29,999,999,999,999.22222
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>05/08/2019 18:29</td>
+      <td class="purple-link">GBMF3W...JGX4OG</td>
+      <td class="">XLM</td>
+      <td class="">Stellar</td>
+      <td class="purple-link">
+        -29,999,999,999,999.22222
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>23/08/2019 05:27</td>
+      <td class="purple-link">GBMF3W...JGX4OG</td>
+      <td class="">GRAYLL</td>
+      <td class="">grayll.io</td>
+      <td class="purple-link">
+        +29,999,999,999,999.22222
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>05/08/2019 18:29</td>
+      <td class="purple-link">GBMF3W...JGX4OG</td>
+      <td class="">XLM</td>
+      <td class="">Stellar</td>
+      <td class="purple-link">
+        -29,999,999,999,999.22222
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>23/08/2019 05:27</td>
+      <td class="purple-link">GBMF3W...JGX4OG</td>
+      <td class="">GRAYLL</td>
+      <td class="">grayll.io</td>
+      <td class="purple-link">
+        +29,999,999,999,999.22222
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- NETWORK HITORY -->
+<div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'networkHistory'">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th>Date</th>
+      <th>Operation</th>
+      <th>ID</th>
+      <th>Amount</th>
+      <th>Asset</th>
+      <th>Account</th>
+      <th class="text-center">Info</th>
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light">
+    <tr>
+      <td>05/08/2019 20:01</td>
+      <td>Credited</td>
+      <td>0108181408618385411</td>
+      <td class="text-purple">+15.6850428</td>
+      <td class="">XLM</td>
+      <td class="">...</td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>25/07/2019 13:29</td>
+      <td>Trustline Created</td>
+      <td>0107404015242878977</td>
+      <td class="">...</td>
+      <td class="">GRX</td>
+      <td class="">
+        GAQQZM...ODH333
+        <fa-icon (click)="copySuccess('GAQQZM...ODH333')" [icon]="faCopy"></fa-icon>
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>05/08/2019 20:01</td>
+      <td>Credited</td>
+      <td>0108181408618385411</td>
+      <td class="text-purple">+15.6850428</td>
+      <td class="">XLM</td>
+      <td class="">...</td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>25/07/2019 13:29</td>
+      <td>Trustline Created</td>
+      <td>0107404015242878977</td>
+      <td class="">...</td>
+      <td class="">GRX</td>
+      <td class="">
+        GAQQZM...ODH333
+        <fa-icon (click)="copySuccess('GAQQZM...ODH333')" [icon]="faCopy"></fa-icon>
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>05/08/2019 20:01</td>
+      <td>Credited</td>
+      <td>0108181408618385411</td>
+      <td class="text-purple">+15.6850428</td>
+      <td class="">XLM</td>
+      <td class="">...</td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>25/07/2019 13:29</td>
+      <td>Trustline Created</td>
+      <td>0107404015242878977</td>
+      <td class="">...</td>
+      <td class="">GRX</td>
+      <td class="">
+        GAQQZM...ODH333
+        <fa-icon (click)="copySuccess('GAQQZMODH333')" [icon]="faCopy"></fa-icon>
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="row m-0 justify-content-center align-items-center p-2 bg-gradient text-light" *ngIf="selectedTab.id === 'allOrders'">
+  <div class="col-md-2 col-xs pl-0">
+    <span class="align-middle font-14 font-weight-bolder">Completed Orders (10)</span><br>
+    <span class="text-light font-10 font-weight-bolder">Most Recent Completed Orders</span>
+  </div>
+  <div class="col">
+    <a href="javascript:void(0)" class="purple-link font-14">
+      All Completed Orders
+    </a>
+  </div>
+</div>
+
+<div class="table-responsive bg-gradient text-light" *ngIf="selectedTab.id === 'allOrders'">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder text-light font-10">
+      <th>Date</th>
+      <th>Type</th>
+      <th>Asset</th>
+      <th>Issuer</th>
+      <th>Amount</th>
+      <th>Filled</th>
+      <th>Price (XLM)</th>
+      <th>Price (USD)</th>
+      <th>Total Price (XLM)</th>
+      <th>Total Price (USD)</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light">
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>29,999,999,999,999.22222</td>
+      <td>100%</td>
+      <td>9999.44444</td>
+      <td>9999.44444</td>
+      <td>29,999,999,999,999.22222</td>
+      <td>29,999,999,999,999.22222</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>BUY</td>
+      <td>GRAYLL</td>
+      <td>grayll.io</td>
+      <td>1.00000</td>
+      <td>0%</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
+    </tr>
+    </tbody>
+  </table>
+</div>

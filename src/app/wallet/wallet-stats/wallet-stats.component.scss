@@ -1,0 +1,112 @@
+.card-body {
+  border-radius: 4px !important;
+}
+
+.wallet-box {
+  margin-left: 10px;
+}
+
+.c-cost {
+  padding: 20px 20px;
+  border: 1px solid #CFA256 !important;
+  border-radius: 5px;
+}
+
+ul {
+  list-style-type: none;
+  margin-top: 30px;
+}
+
+::ng-deep .tooltip-inner {
+  background-color: #40278C!important;
+}
+
+::ng-deep .bs-tooltip-auto[x-placement^=bottom] ::ng-deep .arrow::before,
+::ng-deep .bs-tooltip-bottom ::ng-deep .arrow::before {
+  border-bottom-color: #40278C!important;
+}
+
+.small-grayll-icon {
+  width: 18px;
+}
+
+::ng-deep .nav-pills {
+  .nav-link {
+    border-radius: 0;
+    opacity: 0.7;
+    font-size: 0.9rem;
+    color: #40278C!important;
+
+    &.active {
+      opacity: 1;
+      background-color: transparent;
+      border-bottom: 2px solid #40278C!important;
+    }
+  }
+}
+
+input {
+  border-left: 1px solid #CFA256;
+  line-height: calc(1.5em + 1rem + 2px)!important;
+}
+
+::placeholder {
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
+}
+
+.dollar-padding {
+  padding-left: 19px!important;
+  padding-right: 19px!important;
+}
+
+.xlm-padding {
+  padding-left: 25px!important;
+  padding-right: 25px!important;
+}
+
+.first-box {
+  background-color: #636fa4 !important;
+  color: white!important;
+}
+
+.second-box {
+  background: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  color: white!important;
+}
+
+.third-box {
+  background-color: #e8cbc0;
+  color: white!important;
+}
+
+.card {
+  background-color: #636fa4 !important;
+}
+
+.purple-link {
+  color: #40278C!important;
+}
+
+.purple-link:hover {
+  color: #CFA256!important;
+}
+
+@media (min-width: 992px) {
+  .card {
+    margin-bottom: 0!important;
+    height: 100%!important;
+  }
+
+  .card-body {
+    padding-bottom: 0!important;
+  }
+}
