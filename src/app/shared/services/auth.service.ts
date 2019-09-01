@@ -192,11 +192,12 @@ export class AuthService {
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${uid}`);        
     return userRef.update({Email: email})
   }
-  GetUserData(uid) {    
+  GetUserData1(uid) {    
     const document: AngularFirestoreDocument<User> = this.afs.doc(`users/${uid}`)
     const document$: Observable<User> = document.valueChanges()
     return document$
   }
+  
   // Sign out 
   SignOut() {
     

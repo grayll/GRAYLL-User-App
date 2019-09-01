@@ -11,7 +11,7 @@ import {NgbAlertModule} from '@ng-bootstrap/ng-bootstrap';
 import {SharedModule} from '../shared/shared.module';
 import { NgxPasswordToggleModule } from 'ngx-password-toggle';
 import { HandleComponent } from './handle/handle.component';
-//import {NewPasswordComponent} from './new-password/new-password.component'
+import { NgxUiLoaderModule } from  'ngx-ui-loader';
 
 @NgModule({
   declarations: [
@@ -29,7 +29,9 @@ import { HandleComponent } from './handle/handle.component';
     FontAwesomeModule,
     NgbAlertModule,
     SharedModule,
-    NgxPasswordToggleModule
+    NgxPasswordToggleModule,
+    NgxUiLoaderModule,
+
   ]
 })
 export class AuthorizationModule { }

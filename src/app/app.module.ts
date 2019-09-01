@@ -28,6 +28,7 @@ import { environment } from 'src/environments/environment';
 import { FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import { StellarService } from './authorization/services/stellar-service';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { NgxUiLoaderModule } from  'ngx-ui-loader';
 //import { environment } from '../environments/environment';
 //import { NewPasswordComponent } from './authorization/new-password/new-password.component';
 // import { TwoFactorComponent } from './authorization/two-factor/two-factor.component';
@@ -60,6 +61,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     HttpClientModule,
     RecaptchaV3Module,
     NgxPasswordToggleModule,
+    NgxUiLoaderModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
 
    

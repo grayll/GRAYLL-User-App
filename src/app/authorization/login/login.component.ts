@@ -10,10 +10,12 @@ import { AuthService } from "../../shared/services/auth.service"
 import { OnExecuteData, ReCaptchaV3Service } from 'ng-recaptcha';
 import { Subscription } from 'rxjs';
 import { HttpClient, HttpHeaders } from  "@angular/common/http";
-import * as StellarSdk from 'stellar-sdk/dist/stellar-sdk.min.js';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { StellarService } from '../services/stellar-service';
-//import * as argon2 from "argon2";
+import axios from 'axios';
+import { NgxUiLoaderModule } from  'ngx-ui-loader';
 var naclutil = require('tweetnacl-util');
+
 
 @Component({
   selector: 'app-login',
@@ -40,9 +42,8 @@ export class LoginComponent {
     public authService: AuthService, private recaptchaV3Service: ReCaptchaV3Service,
     public http: HttpClient,
     private stellarService: StellarService,
-    private ngZone:NgZone) {
-      
-    }
+    private spinnerService: NgxUiLoaderModule,
+    private ngZone:NgZone) {}
 
   ngOnInit(): void {
     this.buildForm();    
@@ -115,7 +116,7 @@ loginClicked() {
   this.errorService.clearError()
   this.onValueChanged() 
 
-  
+  //this.spinnerService.start();
 
   // let pair = this.stellarService.generateKeyPairNacl()
   // //console.log('secret: ', pair.secretKey)
@@ -138,23 +139,23 @@ loginClicked() {
   //     })
   //   })
 
-  // let pair = this.stellarService.generateKeyPair()
-  // //let rawpk = pair.rawPublicKey()
-  // var pk = Uint8Array.from(pair.rawPublicKey())
-  // var sec = Uint8Array.from(pair.rawSecretKey())
-  // console.log('bytes sec:', sec)
-  // console.log('sec:', naclutil.encodeBase64(sec))
-  // console.log('PublicKey:', pair.publicKey)
+  let pair = this.stellarService.generateKeyPair()
+  //let rawpk = pair.rawPublicKey()
+  var pk = Uint8Array.from(pair.rawPublicKey())
+  var sec = Uint8Array.from(pair.rawSecretKey())
+  console.log('bytes sec:', sec)
+  console.log('sec:', naclutil.encodeBase64(sec))
+  console.log('PublicKey:', pair.publicKey)
 
-  // this.stellarService.encryptSecretKey(this.loginForm.value['password'], pair.rawSecretKey(), (encryptedBundle) =>{
-  //   console.log('encrypted sec:', encryptedBundle)
+  this.stellarService.encryptSecretKey(this.loginForm.value['password'], pair.rawSecretKey(), (encryptedBundle) =>{
+    console.log('encrypted sec:', encryptedBundle)
 
-  //   this.stellarService.decryptSecretKey(this.loginForm.value['password'], encryptedBundle, rawSec => {
-  //     console.log('decrypted sec bytes:', rawSec)
-  //     console.log('decrypted sec:', this.stellarService.ToBase64(rawSec))
-  //     console.log('decrypted sec string:', this.stellarService.ToString(rawSec))
-  //   })
-  // })
+    this.stellarService.decryptSecretKey(this.loginForm.value['password'], encryptedBundle, rawSec => {
+      console.log('decrypted sec bytes:', rawSec)
+      console.log('decrypted sec:', this.stellarService.ToBase64(rawSec))
+      console.log('decrypted sec string:', this.stellarService.SecretBytesToString(rawSec))
+    })
+  })
 
   //this.stellarService.server.
   // stop here if form is invalid
@@ -174,80 +175,74 @@ loginClicked() {
       })
     };
 
-    //console.log('success', currentUser)
-    
-    
-    //this.http.get("https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken?token=" + token).subscribe(data => {
-    // this.http.get("http://localhost:5555/verifyRecapchaToken?token=" + token).subscribe(data => {
-    //   console.log('verify data:', data) 
-    //   if (data['status'] === 'success'){
-        
-        this.authService.SignIn(this.loginForm.value['email'], this.loginForm.value['password']).then(
-          currentUser => {            
-            if (currentUser.user && !currentUser.user.emailVerified){
-              this.errorService.handleError(null, 'Please verify email before login')
-              return
-            }
-            console.log('verify data:', currentUser)
-            currentUser.user.getIdToken(true).then(token => {
-              this.ngZone.run(() => {
-                //this.authService.userData = res.user
-                 this.authService.GetUserData(currentUser.user.uid).subscribe(user =>{
-                   console.log('authService.GetUserData:', user)
-                  this.authService.userData = user
-                  this.authService.userData.token = token
-                 
-                  //console.log("Synchronous result: "+hash);
-                  this.authService.userData.hash = this.loginForm.value['password'];
-                  this.authService.SetLocalUserData()
-                  //store on local storage
-                  if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 
-                    && this.authService.userData.Tfa.Enable === true){
-                      let d = new Date();
-                      let t = d.getTime();
-                      let tfaData = this.authService.GetLocalTfa()
-                      if (this.authService.userData.Tfa.Exp && t <= this.authService.userData.Tfa.Exp && 
-                          tfaData && tfaData.expire && 
-                          tfaData.expire === this.authService.userData.Tfa.Exp){
-                        this.router.navigate(['/settings/profile'])
-                      } else {
-                        this.router.navigate(['/login/two-factor'])
-                      }
-                  } else {
-                    this.router.navigate(['/settings/profile'])
-                  }            
-                },
-                err => {
-                  this.errorService.handleError(null, 'Can not login, please try again later!')
-                })
-              });  
-            })
-                  
-          },
-          err => {
-            //console.log('error', err)
-            this.errorService.handleError(null, 'Invalid user name or password')            
+    axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
+      headers: { Authorization: "Bearer " + token }
+    })
+    .then(response => {
+      console.log(response)
+      if (response.data.status === 'success'){
+        this.authService.SignIn(this.loginForm.value['email'], this.loginForm.value['password'])
+        .then(currentUser => {            
+          if (currentUser.user && !currentUser.user.emailVerified){
+            this.errorService.handleError(null, 'Please verify email before login')
+            return
           }
-        ).catch(err => {
-          console.log(err)
-          this.errorService.handleError(null, 'Can not login, please try again later!');
-        })        
-    //   } else {
-    //     this.errorService.handleError(null, 'Can not login, please try again later!');
-    //   }
-             
-    // },
-    // err => {
-    //   this.errorService.handleError(null, 'Can not login, please try again later!');
-    //   console.log(err)        
-    // })
+          console.log('verify data:', currentUser)
+          currentUser.user.getIdToken(true).then(token => {
+            this.ngZone.run(() => {
+              //this.authService.userData = res.user
+              axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/GetUserData', {}, {
+                headers: { Authorization: "Bearer " + token }
+              })
+              .then(response => {
+                
+                this.authService.userData = response.data.User
+                this.authService.userData.token = token
+                                
+                this.authService.userData.hash = this.loginForm.value['password'];
+                this.authService.SetLocalUserData()
+                //this.spinnerService.stop()
+                //store on local storage
+                if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 
+                  && this.authService.userData.Tfa.Enable === true){
+                    //let d = new Date();
+                    let t = new Date().getTime();
+                    let tfaData = this.authService.GetLocalTfa()
+                    if (this.authService.userData.Tfa.Exp && t <= this.authService.userData.Tfa.Exp && 
+                        tfaData && tfaData.expire && 
+                        tfaData.expire === this.authService.userData.Tfa.Exp){
+                      this.router.navigate(['/settings/profile'])
+                    } else {
+                      this.router.navigate(['/login/two-factor'])
+                    }
+                } else {
+                  this.router.navigate(['/settings/profile'])
+                } 
+              })
+              .catch(error => {
+                //this.spinnerService.stop()
+                console.log(error)                  
+                this.errorService.handleError(null, 'Can not register now. Please try again later!')    
+              });                 
+            });  
+          })                    
+        },
+        err => {
+          //this.spinnerService.stop()
+          this.errorService.handleError(null, 'Invalid user name or password')            
+        })     
+      } else {
+        //this.spinnerService.stop()
+        this.errorService.handleError(null, 'Can not login, please try again later!');
+      }
+    })
+    .catch(err => {
+      //this.spinnerService.stop()
+      this.errorService.handleError(null, 'Can not login, please try again later!');
+    })
+   
   });
-
-    
 }
-  
-
-
 
   private clientValidation() {
     if (!this.email || (this.email && !this.email.value)) {

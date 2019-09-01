@@ -105,8 +105,11 @@ export class StellarService {
            
         }, "base64")
     }
-    ToString = function (u8) { 
+    SecretBytesToString = function (u8) { 
         return StellarSdk.StrKey.encodeEd25519SecretSeed(Buffer.from(u8))       
+    }
+    StringToSecretBytes = function (secretKey) { 
+        return StellarSdk.StrKey.decodeEd25519SecretSeed(secretKey)       
     }
     ToBase64 = function (u8) {
         return btoa(String.fromCharCode.apply(null, u8));

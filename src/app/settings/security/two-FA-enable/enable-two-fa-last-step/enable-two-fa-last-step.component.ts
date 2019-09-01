@@ -8,7 +8,6 @@ import {SharedService} from '../../../../shared/shared.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import {ErrorService} from '../../../../shared/error/error.service';
-import * as argon2 from "argon2";
 
 @Component({
   selector: 'app-enable-two-fa-last-step',
