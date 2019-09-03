@@ -7,27 +7,16 @@ const scrypt = require('scrypt-async');
 var naclutil = require('tweetnacl-util');
 
 @Injectable()
-export class StellarService {
-
-    private stellarServer: any;
+export class StellarService {   
     public wallet: any;
     public input: any;
     public output: string;
     dkLen = 32;
     interruptStep = 0;
 
-    public constructor() {
+    public constructor() { 
         
-        this.stellarServer = new StellarSdk.Server("https://horizon.stellar.org");
-        // this.wallet = {
-        //     xlmValue: 0,
-        //     usdValue: 0
-        // };
-        // this.input = {
-        //     secretKey: "",
-        //     recipient: "GDY755UX53Z67465WLKDIWESIF3CI62AKL2DE7WDOEA5AHJF72NMSGXU",
-        //     amount: "10.1234567"
-        // };
+      
     }
 
     generateKeyPair(): any {
@@ -55,7 +44,7 @@ export class StellarService {
                 nacl.secretbox(secretKey, nonce, naclutil.decodeBase64(derivedKey))
             );
             callback({ salt, logN, blockSize, encryptedSecretKey });
-            }, 'base64');
+        }, 'base64');
     }
 
     decryptSecretKey(password, encryptedSecretKeyBundle, callback) {

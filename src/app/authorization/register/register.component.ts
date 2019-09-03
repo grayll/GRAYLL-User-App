@@ -6,7 +6,11 @@ import {ErrorService} from '../../shared/error/error.service';
 import { Router } from '@angular/router';
 import { AuthService } from "../../shared/services/auth.service"
 import { User, Setting } from "../../shared/services/user";
+import { StellarService } from '../services/stellar-service';
 import axios from 'axios';
+import { NgxUiLoaderModule } from  'ngx-ui-loader';
+//var naclutil = require('tweetnacl-util');
+import * as naclutil from 'tweetnacl-util'
 
 @Component({
   selector: 'app-register',
@@ -29,7 +33,8 @@ export class RegisterComponent implements OnInit {
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
     private router: Router, public authService: AuthService,
-    private ngZone:NgZone
+    private stellarService: StellarService,
+    private ngZone:NgZone,
   ) {
    
   }
@@ -125,32 +130,42 @@ registerClicked() {
         // set user data
         
         res.user.getIdToken(true).then( token => {
-          // Need to call clound function to udpate and set ip
-          const userSetting: Setting = {IpConfirm:true}
-          const user: User = {
-            Uid: res.user.uid,
-            Email: this.registerForm.value['email'],
-            Name: this.registerForm.value['name'],  
-            Setting: userSetting,
-            Token: token,
-          }
-         // this.authService.SetUserData(user)
-          let isSuccess = true
-          axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/AddUserData', user)
-          .then(function (response) {
-            console.log(response)
+          // Generate key/pair
+          let pair = this.stellarService.generateKeyPair();
+          this.stellarService.encryptSecretKey(this.registerForm.value['password'], pair.rawSecretKey(), (encryptedSecret) => {
+            const userSetting: Setting = {IpConfirm:true}
+            let userData = {
+              Uid: res.user.uid,
+              Email: this.registerForm.value['email'],
+              Name: this.registerForm.value['name'],  
+              Setting: userSetting,
+              Address: pair.publicKey(),
+              Federation: this.registerForm.value['email']+'*grayll.io',
+              SecretKey: encryptedSecret,
+            }
+                       
+            axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/AddUserData', userData)
+            .then(response => {
+              console.log(response)
+              this.errorService.handleError(null, 'Register successfully. Please check your email to verify!') 
+            })
+            .catch( error => {
+              console.log(error)              
+              this.errorService.handleError(null, 'Can not register now. Please try again later!')     
+            }); 
+          
           })
-          .catch(function (error) {
-            console.log(error)
-            isSuccess = false
-            //this.errorService.handleError(null, 'Can not register now. Please try again later!')    
-          });
 
-          if (isSuccess){
-            this.errorService.handleError(null, 'Register successfully. Please check your email to verify!') 
-          } else {
-            this.errorService.handleError(null, 'Can not register now. Please try again later!')  
-          }
+          // Need to call clound function to udpate and set ip
+          
+          // const user: User = {
+          //   Uid: res.user.uid,
+          //   Email: this.registerForm.value['email'],
+          //   Name: this.registerForm.value['name'],
+          //   Setting: userSetting,
+          //   Token: token,
+          // }
+          
         })               
       })
     }).catch(err => {

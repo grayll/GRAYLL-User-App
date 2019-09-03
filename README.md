@@ -19,7 +19,8 @@ in `node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/webp
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## b
+## Build option to fix error
+When build with command `ng build --prod`, there is an unspecific error.
 `ng build --prod --aot=false --build-optimizer=false`
 
 ## Running unit tests

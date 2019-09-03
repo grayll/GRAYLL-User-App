@@ -139,23 +139,23 @@ loginClicked() {
   //     })
   //   })
 
-  let pair = this.stellarService.generateKeyPair()
-  //let rawpk = pair.rawPublicKey()
-  var pk = Uint8Array.from(pair.rawPublicKey())
-  var sec = Uint8Array.from(pair.rawSecretKey())
-  console.log('bytes sec:', sec)
-  console.log('sec:', naclutil.encodeBase64(sec))
-  console.log('PublicKey:', pair.publicKey)
+  // let pair = this.stellarService.generateKeyPair()
+  // //let rawpk = pair.rawPublicKey()
+  // var pk = Uint8Array.from(pair.rawPublicKey())
+  // var sec = Uint8Array.from(pair.rawSecretKey())
+  // console.log('bytes sec:', sec)
+  // console.log('sec:', naclutil.encodeBase64(sec))
+  // console.log('PublicKey:', pair.publicKey)
 
-  this.stellarService.encryptSecretKey(this.loginForm.value['password'], pair.rawSecretKey(), (encryptedBundle) =>{
-    console.log('encrypted sec:', encryptedBundle)
+  // this.stellarService.encryptSecretKey(this.loginForm.value['password'], pair.rawSecretKey(), (encryptedBundle) =>{
+  //   console.log('encrypted sec:', encryptedBundle)
 
-    this.stellarService.decryptSecretKey(this.loginForm.value['password'], encryptedBundle, rawSec => {
-      console.log('decrypted sec bytes:', rawSec)
-      console.log('decrypted sec:', this.stellarService.ToBase64(rawSec))
-      console.log('decrypted sec string:', this.stellarService.SecretBytesToString(rawSec))
-    })
-  })
+  //   this.stellarService.decryptSecretKey(this.loginForm.value['password'], encryptedBundle, rawSec => {
+  //     console.log('decrypted sec bytes:', rawSec)
+  //     console.log('decrypted sec:', this.stellarService.ToBase64(rawSec))
+  //     console.log('decrypted sec string:', this.stellarService.SecretBytesToString(rawSec))
+  //   })
+  // })
 
   //this.stellarService.server.
   // stop here if form is invalid
@@ -197,8 +197,8 @@ loginClicked() {
               .then(response => {
                 
                 this.authService.userData = response.data.User
-                this.authService.userData.token = token
-                                
+                this.authService.userData.token = token                
+               
                 this.authService.userData.hash = this.loginForm.value['password'];
                 this.authService.SetLocalUserData()
                 //this.spinnerService.stop()
