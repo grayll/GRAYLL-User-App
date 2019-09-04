@@ -134,16 +134,17 @@ registerClicked() {
           let pair = this.stellarService.generateKeyPair();
           this.stellarService.encryptSecretKey(this.registerForm.value['password'], pair.rawSecretKey(), (encryptedSecret) => {
             const userSetting: Setting = {IpConfirm:true}
+            
             let userData = {
               Uid: res.user.uid,
               Email: this.registerForm.value['email'],
               Name: this.registerForm.value['name'],  
-              Setting: userSetting,
+              UserSetting: userSetting,
               PublicKey: pair.publicKey(),              
               EncryptedSecretKey: encryptedSecret.EncryptedSecretKey,
               SecretKeySalt: encryptedSecret.Salt,
             }
-                       
+            console.log(userData)      
             axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/AddUserData', userData)
             //axios.post('http:127.0.0.1:5555/addUserData', userData)
             .then(response => {

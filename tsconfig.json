@@ -20,7 +20,8 @@
       "dom"
     ],
     "types": [
-      "node"      
+      "jasmine",
+      "node"     
     ]
   }
 }
