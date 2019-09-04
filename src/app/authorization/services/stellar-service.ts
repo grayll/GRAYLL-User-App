@@ -11,8 +11,10 @@ export class StellarService {
     public wallet: any;
     public input: any;
     public output: string;
-    dkLen = 32;
     interruptStep = 0;
+    dkLen = 32;    
+    logN = 16;
+    blockSize = 8;
 
     public constructor() { 
         
@@ -34,16 +36,15 @@ export class StellarService {
     }
 
     encryptSecretKey(password, secretKey, callback) {
-        const salt = naclutil.encodeBase64(nacl.randomBytes(32));
+        const Salt = naclutil.encodeBase64(nacl.randomBytes(32));
         const nonce = new Uint8Array(24);
-        const logN = 16;
-        const blockSize = 8;
         
-        scrypt(password, salt, logN, blockSize, this.dkLen, this.interruptStep, (derivedKey) => {
-            const encryptedSecretKey = naclutil.encodeBase64(
+        
+        scrypt(password, Salt, this.logN, this.blockSize, this.dkLen, this.interruptStep, (derivedKey) => {
+            const EncryptedSecretKey = naclutil.encodeBase64(
                 nacl.secretbox(secretKey, nonce, naclutil.decodeBase64(derivedKey))
             );
-            callback({ salt, logN, blockSize, encryptedSecretKey });
+            callback({ Salt, EncryptedSecretKey });
         }, 'base64');
     }
 
@@ -51,14 +52,14 @@ export class StellarService {
         const nonce = new Uint8Array(24);
         scrypt(
             password,
-            encryptedSecretKeyBundle.salt,
-            encryptedSecretKeyBundle.logN,
-            encryptedSecretKeyBundle.blockSize,
+            encryptedSecretKeyBundle.Salt,
+            this.logN,
+            this.blockSize,
             this.dkLen,
             this.interruptStep,
             (derivedKey) => {
             const secretKey = nacl.secretbox.open(naclutil.decodeBase64(
-                encryptedSecretKeyBundle.encryptedSecretKey), nonce, naclutil.decodeBase64(derivedKey)
+                encryptedSecretKeyBundle.EncryptedSecretKey), nonce, naclutil.decodeBase64(derivedKey)
             );
             secretKey ? callback(secretKey) : callback('Decryption failed!');
         }, 'base64');

@@ -139,12 +139,13 @@ registerClicked() {
               Email: this.registerForm.value['email'],
               Name: this.registerForm.value['name'],  
               Setting: userSetting,
-              Address: pair.publicKey(),
-              Federation: this.registerForm.value['email']+'*grayll.io',
-              SecretKey: encryptedSecret,
+              PublicKey: pair.publicKey(),              
+              EncryptedSecretKey: encryptedSecret.EncryptedSecretKey,
+              SecretKeySalt: encryptedSecret.Salt,
             }
                        
             axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/AddUserData', userData)
+            //axios.post('http:127.0.0.1:5555/addUserData', userData)
             .then(response => {
               console.log(response)
               this.errorService.handleError(null, 'Register successfully. Please check your email to verify!') 
