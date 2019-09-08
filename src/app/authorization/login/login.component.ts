@@ -59,9 +59,9 @@ export class LoginComponent {
         ]
       ],
       'password': ['', [
-        Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-        Validators.minLength(6),
-        Validators.maxLength(25)
+        Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[$@$!%*#?&])([0-9A-Za-z$@$!%*#?&]+)$'),
+        Validators.minLength(8),
+        Validators.maxLength(36)
       ]
     ],
     });
@@ -103,9 +103,9 @@ export class LoginComponent {
     },
     'password': {
       'required':      'Password is required.',
-      'pattern':       'Password must include at one letter and one number.',
-      'minlength':     'Password must be at least 4 characters long.',
-      'maxlength':     'Password cannot be more than 25 characters long.',
+      'pattern':       'Password must include at least one letter, one number, one capital and one special character.',
+      'minlength':     'Password must be at least 8 characters long.',
+      'maxlength':     'Password cannot be more than 36 characters long.'
     }
   };
 
@@ -116,48 +116,7 @@ loginClicked() {
   this.errorService.clearError()
   this.onValueChanged() 
 
-  //this.spinnerService.start();
-
-  // let pair = this.stellarService.generateKeyPairNacl()
-  // //console.log('secret: ', pair.secretKey)
-  // this.stellarService.encryptSecretKey('some password', pair.secretKey, (encryptedSecretKeyBundle) => {
-  //     console.log('TODO: save the following JSON object');
-  //     console.log(JSON.stringify(encryptedSecretKeyBundle));
-  //     //endStage();
-  //     const stage1 = 'Decrypting the encrypted key';
-  //     //printStage(stage1);
-  //     this.stellarService.decryptSecretKey('some password', encryptedSecretKeyBundle, (secretKey) => {
-  //       console.log(secretKey);
-  //     });
-  //   });
   
-  //   this.stellarService.hashPassword(this.loginForm.value['password'], hash =>{
-  //     console.log('hashpass: ', hash)
-
-  //     this.stellarService.verifyPassword(hash+'gh', this.loginForm.value['password'], (isvalid) =>{
-  //       console.log('isvalid:', isvalid)
-  //     })
-  //   })
-
-  // let pair = this.stellarService.generateKeyPair()
-  // //let rawpk = pair.rawPublicKey()
-  // var pk = Uint8Array.from(pair.rawPublicKey())
-  // var sec = Uint8Array.from(pair.rawSecretKey())
-  // console.log('bytes sec:', sec)
-  // console.log('sec:', naclutil.encodeBase64(sec))
-  // console.log('PublicKey:', pair.publicKey)
-
-  // this.stellarService.encryptSecretKey(this.loginForm.value['password'], pair.rawSecretKey(), (encryptedBundle) =>{
-  //   console.log('encrypted sec:', encryptedBundle)
-
-  //   this.stellarService.decryptSecretKey(this.loginForm.value['password'], encryptedBundle, rawSec => {
-  //     console.log('decrypted sec bytes:', rawSec)
-  //     console.log('decrypted sec:', this.stellarService.ToBase64(rawSec))
-  //     console.log('decrypted sec string:', this.stellarService.SecretBytesToString(rawSec))
-  //   })
-  // })
-
-  //this.stellarService.server.
   // stop here if form is invalid
   if (this.loginForm.invalid) {
     return;
@@ -181,66 +140,76 @@ loginClicked() {
     .then(response => {
       console.log(response)
       if (response.data.status === 'success'){
-        this.authService.SignIn(this.loginForm.value['email'], this.loginForm.value['password'])
-        .then(currentUser => {            
-          if (currentUser.user && !currentUser.user.emailVerified){
-            this.errorService.handleError(null, 'Please verify email before login')
-            return
-          }
-          console.log('verify data:', currentUser)
-          currentUser.user.getIdToken(true).then(token => {
+        // this.authService.SignIn(this.loginForm.value['email'], this.loginForm.value['password'])
+        // .then(currentUser => {            
+        //   if (currentUser.user && !currentUser.user.emailVerified){
+        //     this.errorService.handleError(null, 'Please verify email before login')
+        //     return
+        //   }xcwLy8blSsMhyuzc8Aoz+vvc+dezqX+gbqssgCP0eiM=qYMG0HhOTuHOm1PFU6KZYevYz1pb0G0CitGJCpORQuI=
+          // console.log('verify data:', currentUser)
+          // currentUser.user.getIdToken(true).then(token => {
             this.ngZone.run(() => {
               //this.authService.userData = res.user
-              axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/GetUserData', {}, {
-                headers: { Authorization: "Bearer " + token }
-              })
-              .then(response => {
+              //axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/GetUserData', {}, {
+                axios.post('http://127.0.0.1:8888/api/v1/users/login', {email:this.loginForm.value['email'], password: this.loginForm.value['password']})
+              .then(response => {    
+                if (response.data.errCode &&  response.data.errCode == 9){
+                  this.errorService.handleError(null, 'Invalid user name or password.') 
+                  this.loginForm.reset()
+                }  else if(response.data.errCode &&  response.data.errCode == 10)  {    
+                  this.errorService.handleError(null, 'Please verify your email before login.') 
+                  this.loginForm.reset()
+                }  else if(response.data.errCode &&  response.data.errCode == 11)  {    
+                  this.errorService.handleError(null, 'Please confirm your ip before login.') 
+                  this.loginForm.reset()
+                } else {    
+                  this.authService.userData = response.data.user
+                  this.authService.userData.token = response.data.token                
                 
-                this.authService.userData = response.data.User
-                this.authService.userData.token = token                
-               
-                this.authService.userData.hash = this.loginForm.value['password'];
-                this.authService.SetLocalUserData()
-                //this.spinnerService.stop()
-                //store on local storage
-                if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 
-                  && this.authService.userData.Tfa.Enable === true){
-                    //let d = new Date();
-                    let t = new Date().getTime();
-                    let tfaData = this.authService.GetLocalTfa()
-                    if (this.authService.userData.Tfa.Exp && t <= this.authService.userData.Tfa.Exp && 
-                        tfaData && tfaData.expire && 
-                        tfaData.expire === this.authService.userData.Tfa.Exp){
-                      this.router.navigate(['/settings/profile'])
-                    } else {
-                      this.router.navigate(['/login/two-factor'])
-                    }
-                } else {
-                  this.router.navigate(['/settings/profile'])
-                } 
+                  this.authService.userData.hash = this.loginForm.value['password'];
+                  this.authService.SetLocalUserData()
+                  //this.spinnerService.stop()
+                  //store on local storage
+                  if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 
+                    && this.authService.userData.Tfa.Enable === true){
+                      //let d = new Date();
+                      let t = new Date().getTime();
+                      let tfaData = this.authService.GetLocalTfa()
+                      if (this.authService.userData.Tfa.Exp && t <= this.authService.userData.Tfa.Exp && 
+                          tfaData && tfaData.expire && 
+                          tfaData.expire === this.authService.userData.Tfa.Exp){
+                        this.router.navigate(['/settings/profile'])
+                      } else {
+                        this.router.navigate(['/login/two-factor'])
+                      }
+                  } else {
+                    this.router.navigate(['/settings/profile'])
+                  } 
+                }
               })
               .catch(error => {
                 //this.spinnerService.stop()
                 console.log(error)                  
-                this.errorService.handleError(null, 'Can not register now. Please try again later!')    
+                this.errorService.handleError(null, 'Can not login now. Please try again later!')
+                this.loginForm.reset()    
               });                 
             });  
-          })                    
-        },
-        err => {
-          //this.spinnerService.stop()
-          this.errorService.handleError(null, 'Invalid user name or password')            
-        })     
+          //})                    
+        // },
+        // err => {
+        //   //this.spinnerService.stop()
+        //   this.errorService.handleError(null, 'Invalid user name or password')            
+        // })     
       } else {
         //this.spinnerService.stop()
         this.errorService.handleError(null, 'Can not login, please try again later!');
+        this.loginForm.reset()  
       }
     })
     .catch(err => {
       //this.spinnerService.stop()
       this.errorService.handleError(null, 'Can not login, please try again later!');
-    })
-   
+    })   
   });
 }
 
@@ -267,51 +236,3 @@ loginClicked() {
   }
 
 }
-
-// export class LoginComponent {
-
-//   userIcon = faUser;
-//   keyIcon  = faKey;
-//   loginForm: FormGroup;
-
-//   get email() { return this.loginForm.get('email'); }
-//   get password() { return this.loginForm.get('password'); }
-
-//   constructor(
-//     private formBuilder: FormBuilder,
-//     private errorService: ErrorService,
-//     private router: Router
-//   ) {
-//     this.initForm();
-//   }
-
-//   private initForm() {
-//     this.loginForm = this.formBuilder.group({
-//       email: [null, [Validators.required, Validators.email]],
-//       password: [null, Validators.required]
-//     });
-//   }
-
-//   private clientValidation() {
-//     if (!this.email || (this.email && !this.email.value)) {
-//       this.errorService.handleError(null, 'Please enter your email address.');
-//       return false;
-//     }
-//     if (!this.password || (this.password && !this.password.value)) {
-//       this.errorService.handleError(null, 'Please enter your password.');
-//       return false;
-//     }
-//     if (!this.errorService.isEmailAddressValid(this.email.value)) {
-//       this.errorService.handleError(null, 'Please enter a valid email address.');
-//       return false;
-//     }
-//     return true;
-//   }
-
-//   loginClicked() {
-//     if (!this.clientValidation()) { return; }
-//     this.errorService.clearError();
-//     this.router.navigate(['/login/two-factor']);
-//   }
-
-// }

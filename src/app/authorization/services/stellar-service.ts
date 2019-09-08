@@ -68,32 +68,38 @@ export class StellarService {
     hashPassword(password, callback){
         const salt = naclutil.encodeBase64(nacl.randomBytes(32));
         console.log('salt.len: ', salt)
-        const nonce = new Uint8Array(24);
-        const logN = 16;
-        const blockSize = 8;
-        scrypt(password, salt, logN, blockSize, this.dkLen, this.interruptStep, (derivedKey) => {
+        //const nonce = new Uint8Array(24);
+        
+        scrypt(password, salt,  {
+            N: 16384,
+            r: 8,
+            p: 1,
+            dkLen: 16,
+            encoding: 'hex'
+        }, (derivedKey) => {
             console.log('derivedKey.len: ', derivedKey)
             callback(salt+derivedKey)
-        }, "base64")
+        })
     }
 
     verifyPassword(hashPass, password, callback){
         const salt = hashPass.substring(0, 44);
         const hash = hashPass.substr(-44);
         console.log('salt: ', salt)
-        const nonce = new Uint8Array(24);
-        const logN = 16;
-        const blockSize = 8;
-        scrypt(password, salt, logN, blockSize, this.dkLen, this.interruptStep, (derivedKey) => {
-            console.log('derivedKey: ', derivedKey)
-            console.log('hash: ', hash)
+       
+        scrypt(password, salt,  {
+            N: 16384,
+            r: 8,
+            p: 1,
+            dkLen: 16,
+            encoding: 'hex'
+        }, (derivedKey) => {
             if (derivedKey == hash){
                 callback(true)
             } else {
                 callback(false)
             }
-           
-        }, "base64")
+        })        
     }
     SecretBytesToString = function (u8) { 
         return StellarSdk.StrKey.encodeEd25519SecretSeed(Buffer.from(u8))       

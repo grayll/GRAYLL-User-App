@@ -9,6 +9,7 @@ import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firest
 //import { ForgetpsdComponent } from '../forgetpsd/forgetpsd.component';
 //import { EmailVerifyComponent } from '../email-verify/emailverify.component';
 import { MustMatch } from '../services/helper/helper.service';
+import axios from 'axios';
 import * as tweetnacl from 'tweetnacl'
 
 
@@ -58,16 +59,17 @@ export class HandleComponent implements OnInit {
         case 'resetPassword':
           // Display reset password handler and UI.
           
-          this.handleResetPassword(this.afAuth.auth, this.actionCode, this.continueUrl, 'lang');
+          this.handleResetPassword(this.afAuth.auth, this.actionCode, this.mode);
           break;
         case 'recoverEmail':
           // Display email recovery handler and UI.
-          this.handleRecoverEmail(this.afAuth.auth, this.actionCode, 'lang');
+          this.handleRecoverEmail(this.afAuth.auth, this.actionCode, this.mode);
           break;
         case 'verifyEmail':
+        case 'confirmIp':
           // Display email verification handler and UI.
           this.title = 'Email verification'
-          this.handleVerifyEmail(this.afAuth.auth, this.actionCode, this.continueUrl, 'lang');
+          this.handleVerifyEmail(this.afAuth.auth, this.actionCode, this.mode);
           break;
         default:
           // Error: invalid mode.
@@ -103,7 +105,7 @@ export class HandleComponent implements OnInit {
     
   }
   
-  handleResetPassword(auth, actionCode, continueUrl, lang) {
+  handleResetPassword(auth, actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     var accountEmail;
@@ -125,37 +127,70 @@ export class HandleComponent implements OnInit {
     });
   }
   
-  handleVerifyEmail(auth, actionCode, continueUrl, lang) {
+  // handleVerifyEmail(auth, actionCode, continueUrl, lang) {
+  //   // Localize the UI to the selected language as determined by the lang
+  //   // parameter.
+  //   // Try to apply the email verification code.
+  //   this.ngZone.run(() => {
+  //     auth.applyActionCode(actionCode).then(resp => {
+  //       // Email address has been verified.
+    
+  //       // TODO: Display a confirmation message to the user.
+  //       // You could also provide the user with a link back to the app.
+  //       //this.openEmailVerifyModal('Email Verification', 'Account was verified. Please login!', 'home/login')
+  //       this.content = 'Your account is verified. Now you can login!'
+  //       this.errorService.handleError(null, this.content)
+        
+  //       console.log('Your account is verified. Now you can login!')
+
+  //       // Gennerate 
+       
+  //       //this.buildForm()
+  //       // TODO: If a continue URL is available, display a button which on
+  //       // click redirects the user back to the app via continueUrl with
+  //       // additional state determined from that URL's parameters.
+  //     }).catch(err => {
+  //       // Code is invalid or expired. Ask the user to verify their email address
+  //       // again.
+  //       this.content = 'Link may be expired. Please verify again!'
+  //       this.errorService.handleError(null, this.content)
+  //       console.log(err)
+  //     });
+  //   })    
+  // }
+  handleVerifyEmail(auth, actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     // Try to apply the email verification code.
-    this.ngZone.run(() => {
-      auth.applyActionCode(actionCode).then(resp => {
-        // Email address has been verified.
-    
-        // TODO: Display a confirmation message to the user.
-        // You could also provide the user with a link back to the app.
-        //this.openEmailVerifyModal('Email Verification', 'Account was verified. Please login!', 'home/login')
-        this.content = 'Your account is verified. Now you can login!'
-        this.errorService.handleError(null, this.content)
-        
-        console.log('Your account is verified. Now you can login!')
-
-        // Gennerate 
-       
-        //this.buildForm()
-        // TODO: If a continue URL is available, display a button which on
-        // click redirects the user back to the app via continueUrl with
-        // additional state determined from that URL's parameters.
-      }).catch(err => {
-        // Code is invalid or expired. Ask the user to verify their email address
-        // again.
-        this.content = 'Link may be expired. Please verify again!'
-        this.errorService.handleError(null, this.content)
-        console.log(err)
-      });
-    })    
+    axios.get(`http://127.0.0.1:8888/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    .then(response => {              
+      //this.registerForm.reset() 
+      this.content = 'Your account is verified. Now you can login!'
+      //this.errorService.handleError(null, this.content) 
+    })
+    .catch( error => {
+      console.log(error) 
+      this.content = 'Link may be expired. Please verify again!'
+      //this.errorService.handleError(null, this.content)    
+    });         
   }
+  handleConfirmIp(auth, actionCode, mode) {
+    // Localize the UI to the selected language as determined by the lang
+    // parameter.
+    // Try to apply the email verification code.
+    axios.get(`http://127.0.0.1:8888/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    .then(response => {              
+      //this.registerForm.reset() 
+      this.content = 'Your account is verified. Now you can login!'
+      //this.errorService.handleError(null, this.content) 
+    })
+    .catch( error => {
+      console.log(error) 
+      this.content = 'Link may be expired. Please verify again!'
+      //this.errorService.handleError(null, this.content)    
+    });         
+  }
+
   handleRecoverEmail(auth, actionCode, lang) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
@@ -262,48 +297,3 @@ export class HandleComponent implements OnInit {
   };  
 
 }
-// export class NewPasswordComponent {
-
-//   keyIcon  = faKey;
-//   newPasswordForm: FormGroup;
-
-//   get password() { return this.newPasswordForm.get('password'); }
-//   get confirm() { return this.newPasswordForm.get('confirm'); }
-
-//   constructor(
-//     private formBuilder: FormBuilder,
-//     private errorService: ErrorService
-//   ) {
-//     this.initForm();
-//   }
-
-//   private initForm() {
-//     this.newPasswordForm = this.formBuilder.group({
-//       password: [null, Validators.required],
-//       confirm: [null, Validators.required]
-//     });
-//   }
-
-//   private clientValidation(): boolean {
-//     if (!this.password || (this.password && !this.password.value)) {
-//       this.errorService.handleError(null, 'Please enter a new password.');
-//       return false;
-//     }
-//     if (!this.confirm || (this.confirm && !this.confirm.value)) {
-//       this.errorService.handleError(null, 'Please confirm you new password.');
-//       return false;
-//     }
-//     if (this.confirm.value !== this.password.value) {
-//       this.errorService.handleError(null, 'Passwords do not match.');
-//       return false;
-//     }
-//     return true;
-//   }
-
-//   submitClicked() {
-//     if (!this.clientValidation()) { return; }
-//     this.errorService.clearError();
-//     alert('Frontend validation passed.');
-//   }
-
-// }

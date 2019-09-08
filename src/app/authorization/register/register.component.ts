@@ -45,8 +45,9 @@ export class RegisterComponent implements OnInit {
 
   buildForm(): void {    
     this.registerForm = this.formBuilder.group({
-     // 'agree': ['', [Validators.required]],
       'name': ['', [Validators.required, Validators.minLength(3),
+        Validators.maxLength(50)]],   
+      'lname': ['', [Validators.required, Validators.minLength(3),
         Validators.maxLength(50)]],      
       'email': ['', [
           Validators.required,
@@ -54,9 +55,10 @@ export class RegisterComponent implements OnInit {
         ]
       ],
       'password': ['', [
-          Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-          Validators.minLength(6),
-          Validators.maxLength(25)
+          //Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
+          Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[$@$!%*#?&])([0-9A-Za-z$@$!%*#?&]+)$'),
+          Validators.minLength(8),
+          Validators.maxLength(36)
        ]
       ],  
       });
@@ -84,19 +86,22 @@ export class RegisterComponent implements OnInit {
   }
 
   formErrors = {
-   
     'name':'',
+    'lname':'',
     'email': '',
-    'password': '',
-    //'confirmPassword': ''
+    'password': '',    
   };
 
-  validationMessages = {
-        
+  validationMessages = {  
     'name':{
-      'required':      'Name is required.',
-      'minlength':      'Name must be at least 3 characters long.',
-      'maxlength':      'Name cannot be more than 25 characters long.'
+      'required':      'First Name is required.',
+      'minlength':      'First Name must be at least 3 characters long.',
+      'maxlength':      'First Name cannot be more than 25 characters long.'
+    },      
+    'lname':{
+      'required':      'Last Name is required.',
+      'minlength':      'Last Name must be at least 3 characters long.',
+      'maxlength':      'Last Name cannot be more than 25 characters long.'
     },
     'email': {
       'required':      'Email is required.',
@@ -104,9 +109,9 @@ export class RegisterComponent implements OnInit {
     },
     'password': {
       'required':      'Password is required.',
-      'pattern':       'Password must be include at one letter and one number.',
-      'minlength':     'Password must be at least 4 characters long.',
-      'maxlength':     'Password cannot be more than 25 characters long.'
+      'pattern':       'Password must include at least one letter, one number, one capital and one special character.',
+      'minlength':     'Password must be at least 8 characters long.',
+      'maxlength':     'Password cannot be more than 36 characters long.'
     },    
   };
 
@@ -122,40 +127,56 @@ registerClicked() {
       return;
   }
 
-  this.authService.SignUp(this.registerForm.value['email'], this.registerForm.value['password']).then( res =>{
-    console.log(res)
-    // Send email to usesr for verification.
-    this.authService.SendVerificationMail().then(()=> {
-      this.ngZone.run(() => {
-        // set user data
-        
-        res.user.getIdToken(true).then( token => {
+  // this.authService.SignUp(this.registerForm.value['email'], this.registerForm.value['password']).then( res =>{
+  //   console.log(res)
+  //   // Send email to usesr for verification.
+  //   this.authService.SendVerificationMail().then(()=> {
+  //     this.ngZone.run(() => {
+  //       // set user data        
+  //       res.user.getIdToken(true).then( token => {
           // Generate key/pair
           let pair = this.stellarService.generateKeyPair();
           this.stellarService.encryptSecretKey(this.registerForm.value['password'], pair.rawSecretKey(), (encryptedSecret) => {
-            const userSetting: Setting = {IpConfirm:true}
             
-            let userData = {
-              Uid: res.user.uid,
-              Email: this.registerForm.value['email'],
-              Name: this.registerForm.value['name'],  
-              UserSetting: userSetting,
-              PublicKey: pair.publicKey(),              
-              EncryptedSecretKey: encryptedSecret.EncryptedSecretKey,
-              SecretKeySalt: encryptedSecret.Salt,
-            }
-            console.log(userData)      
-            axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/AddUserData', userData)
-            //axios.post('http:127.0.0.1:5555/addUserData', userData)
-            .then(response => {
-              console.log(response)
-              this.errorService.handleError(null, 'Register successfully. Please check your email to verify!') 
-            })
-            .catch( error => {
-              console.log(error)              
-              this.errorService.handleError(null, 'Can not register now. Please try again later!')     
-            }); 
-          
+            this.stellarService.hashPassword(this.registerForm.value['password'], hash => {
+              const userSetting: Setting = {IpConfirm:true}
+              let userData = {
+                //Token:token,
+                //Uid: res.user.uid,
+                Email: this.registerForm.value['email'],
+                HashPassword: this.registerForm.value['password'],
+                Name: this.registerForm.value['name'],  
+                LName: this.registerForm.value['lname'],  
+                UserSetting: userSetting,
+                PublicKey: pair.publicKey(),              
+                EncryptedSecretKey: encryptedSecret.EncryptedSecretKey,
+                SecretKeySalt: encryptedSecret.Salt,
+              }
+              console.log(userData)      
+              //axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/AddUserData', userData, {
+              axios.post('http://127.0.0.1:8888/api/v1/users/register', userData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+              })             
+              .then(response => {  
+                if (response.data.errCode == 8)  {
+                  let content = "Email address already in used"
+                  this.errorService.handleError(null, content)
+                  this.registerForm.reset() 
+                } else {          
+               
+                this.errorService.handleError(null, 
+                  'Registration is almost completed! We have sent an email to ' + this.registerForm.value['email'] + ' to verify your account.') 
+                }
+                this.registerForm.reset() 
+              })
+              .catch( error => {
+                console.log(error) 
+                this.registerForm.reset()              
+                this.errorService.handleError(null, 'Can not register now. Please try again later!')     
+              }); 
+            })    
           })
 
           // Need to call clound function to udpate and set ip
@@ -168,19 +189,21 @@ registerClicked() {
           //   Token: token,
           // }
           
-        })               
-      })
-    }).catch(err => {
-      console.log('err verify mail: ', err)
-      this.errorService.handleError(null, err.message)
-    })
-  }).catch(err => {
-    console.log('error register:', err)
-    //this.formErrors.password = err.message
-    if (err.code === 'auth/email-already-in-use'){
-      this.errorService.handleError(null, err.message)
-    }
-  }) 
+  //      })               
+  //    })
+  //   }).catch(err => {
+  //     this.registerForm.reset() 
+  //     console.log('err verify mail: ', err)
+  //     this.errorService.handleError(null, err.message)
+  //   })
+  // }).catch(err => {
+  //   this.registerForm.reset() 
+  //   console.log('error register:', err)
+  //   //this.formErrors.password = err.message
+  //   if (err.code === 'auth/email-already-in-use'){
+  //     this.errorService.handleError(null, err.message)
+  //   }
+  // }) 
 }
 }
 

@@ -52,7 +52,21 @@
         </div>
         <div class="card-body">
           <form [formGroup]="handleForm">
-              <p class="text-purple text-center">Your email is verified.</p>
+              <p class="text-purple text-center">{{content}}</p>
+            <!-- <span class="badge float-center text-light mr-1" style="line-height: normal">                  
+              Your email is verified.
+            </span>                   -->
+          </form>
+        </div>
+      </div>
+      <div *ngIf="(mode && mode ==='confirmIp')">
+        <div class="card-header text-center">
+          <img class="img img-fluid logo" src="assets/images/logo.png" alt="Logo">
+          <h4 class="text-light">IP Confirmation</h4>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="handleForm">
+              <p class="text-purple text-center">{{content}}</p>
             <!-- <span class="badge float-center text-light mr-1" style="line-height: normal">                  
               Your email is verified.
             </span>                   -->
