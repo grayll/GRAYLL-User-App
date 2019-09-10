@@ -9,7 +9,6 @@ import { User, Setting } from "../../shared/services/user";
 import { StellarService } from '../services/stellar-service';
 import axios from 'axios';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
-//var naclutil = require('tweetnacl-util');
 import * as naclutil from 'tweetnacl-util'
 
 @Component({
@@ -72,11 +71,9 @@ export class RegisterComponent implements OnInit {
       // clear previous error message (if any)
       this.formErrors[field] = '';
       const control = form.get(field);    
-      console.log('control:', control)  
-      if (control && control.invalid) {
-        
-        const messages = this.validationMessages[field];
-        console.log('control invalid:', control, messages)  
+      
+      if (control && control.invalid) {        
+        const messages = this.validationMessages[field];       
         
         for (const key in control.errors) {
           this.formErrors[field] += messages[key] + ' ';
@@ -154,7 +151,7 @@ registerClicked() {
               }
               console.log(userData)      
               //axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/AddUserData', userData, {
-              axios.post('http://127.0.0.1:8888/api/v1/users/register', userData, {
+              axios.post('https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/register', userData, {
                 headers: {
                     'Content-Type': 'application/json',
                 }
@@ -164,12 +161,17 @@ registerClicked() {
                   let content = "Email address already in used"
                   this.errorService.handleError(null, content)
                   this.registerForm.reset() 
-                } else {          
-               
-                this.errorService.handleError(null, 
-                  'Registration is almost completed! We have sent an email to ' + this.registerForm.value['email'] + ' to verify your account.') 
+                } else {    
+                  this.ngZone.run(() => {                    
+                    this.router.navigate(['/login/confirm-email'], { state: { email: this.registerForm.value['password'],
+                      name: this.registerForm.value['name']}})
+                  })      
+                  
+                // this.errorService.handleError(null, 
+                //   'Registration is almost completed! We have sent an email to ' + this.registerForm.value['email'] + ' to verify your account.') 
+                // }
+                // this.registerForm.reset() 
                 }
-                this.registerForm.reset() 
               })
               .catch( error => {
                 console.log(error) 

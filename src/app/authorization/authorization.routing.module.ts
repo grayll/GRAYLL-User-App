@@ -5,6 +5,7 @@ import {TwoFactorComponent} from './two-factor/two-factor.component';
 import {RegisterComponent} from './register/register.component';
 import {NewPasswordComponent} from './new-password/new-password.component';
 import { HandleComponent } from './handle/handle.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component'
 
 const routes: Routes = [
   {
@@ -26,6 +27,10 @@ const routes: Routes = [
   {
     path: 'handle',
     component: HandleComponent
+  },
+  {
+    path: 'confirm-email',
+    component: ConfirmEmailComponent
   },
 ];
 

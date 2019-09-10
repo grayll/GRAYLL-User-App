@@ -12,6 +12,7 @@ import {SharedModule} from '../shared/shared.module';
 import { NgxPasswordToggleModule } from 'ngx-password-toggle';
 import { HandleComponent } from './handle/handle.component';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { NgxUiLoaderModule } from  'ngx-ui-loader';
     TwoFactorComponent,
     RegisterComponent,
     HandleComponent,
+    ConfirmEmailComponent,
   ],
   imports: [
     CommonModule,

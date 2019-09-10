@@ -1,0 +1,28 @@
+<div class="h-100 container-fluid">
+  <div class="row justify-content-center align-items-center h-100">
+    <div class="card" style="margin: 0 auto">
+      <div class="card-header text-center">
+        <img class="img img-fluid logo" src="assets/images/logo.png" alt="Logo">
+        <h4 class="text-light">Confirm Your Email</h4>
+      </div>
+      <div class="card-body">
+        <app-error></app-error>   
+        <div class="alert alert-success" *ngIf="didResent">
+          A confirmation email has been resent.
+        </div>
+        <p class="mb-0 text-light">Registration almost completed! We have sent an email to <strong>{{email}}</strong>
+          to verify your registration.</p>
+      </div>
+      <div class="card-footer">
+        <div class="row d-flex justify-content-center align-items-center">
+          <div class="col text-right">
+            <button (click)="resendEmail()" class="btn btn-yellow">Resend Email</button>
+          </div>
+          <div class="col text-left">
+            <button routerLink="/login" class="btn btn-purple">Sign In</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

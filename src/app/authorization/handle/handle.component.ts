@@ -162,7 +162,7 @@ export class HandleComponent implements OnInit {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     // Try to apply the email verification code.
-    axios.get(`http://127.0.0.1:8888/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    axios.get(`https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
     .then(response => {              
       //this.registerForm.reset() 
       this.content = 'Your account is verified. Now you can login!'
@@ -178,7 +178,7 @@ export class HandleComponent implements OnInit {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     // Try to apply the email verification code.
-    axios.get(`http://127.0.0.1:8888/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    axios.get(`https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
     .then(response => {              
       //this.registerForm.reset() 
       this.content = 'Your account is verified. Now you can login!'
