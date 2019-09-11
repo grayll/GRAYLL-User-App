@@ -27,7 +27,10 @@ export class ConfirmEmailComponent implements OnInit {
 
   resendEmail() {
     this.didResent = true;
-    axios.post('https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/resendemail', {email: this.email, name:this.name}, {
+    console.log(this.email)
+    console.log(this.name)
+    //axios.post('https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/resendemail', {email: this.email, name:this.name}, {
+    axios.post('http://127.0.0.1:8080/api/v1/users/resendemail', {email: this.email, name:this.name}, {
       headers: {
           'Content-Type': 'application/json',
       }

@@ -35,23 +35,17 @@ export class ProfileSettingsComponent {
     if (!this.userData.Lname){
       this.userData.Lname = ''
     }
-    if (!this.userData.federationAddress){
-      this.federationAddress = this.userData.Email + '*grayll.io';
-    } else {
-      this.federationAddress = this.userData.federationAddress;
-    }
-    this.stellarAddress = 'DKJNSFUIHLJ238OHUIDLFJN23023OHUIFSDKJNS032P3DSKJAFNLSD';
-
-     
+    this.federationAddress = this.userData.Federation;
+    this.stellarAddress = this.userData.PublicKey;     
   }
  
   buildForm(): void {    
     this.profileForm = this.formBuilder.group({
      
       'first_name': ['', [Validators.required, Validators.minLength(3),
-        Validators.maxLength(25)]],  
+        Validators.maxLength(50)]],  
       'last_name': ['', [Validators.minLength(3),
-          Validators.maxLength(25)]],      
+          Validators.maxLength(50)]],      
       'email': ['', [
           Validators.required,
           Validators.email

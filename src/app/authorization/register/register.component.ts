@@ -54,8 +54,8 @@ export class RegisterComponent implements OnInit {
         ]
       ],
       'password': ['', [
-          //Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-          Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[$@$!%*#?&])([0-9A-Za-z$@$!%*#?&]+)$'),
+          //Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[$@$!%*#?&])([0-9A-Za-z$@$!%*#?&]+)$'),
+          Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?]+)$/),          
           Validators.minLength(8),
           Validators.maxLength(36)
        ]
