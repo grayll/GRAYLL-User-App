@@ -106,26 +106,39 @@ export class HandleComponent implements OnInit {
   }
   
   handleResetPassword(auth, actionCode, mode) {
-    // Localize the UI to the selected language as determined by the lang
-    // parameter.
-    var accountEmail;
-    // Verify the password reset code is valid.
-    auth.verifyPasswordResetCode(actionCode).then(email => {
-      var accountEmail = email;
-  
-      // TODO: Show the reset screen with the user's email and ask the user for
-      // the new password.
-  
-      // Save the new password.      
-      //this.buildForm();
-      //this.content = 'Your new password is set'
-      this.errorService.handleError(null, this.content)
-      
-    }).catch(err =>  {
-      // Invalid or expired action code. Ask user to try to reset the password
-      // again.
-    });
+    axios.get(`https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    .then(response => {              
+      //this.registerForm.reset() 
+      //this.content = 'Your account is verified. Now you can login!'
+      //this.errorService.handleError(null, this.content) 
+    })
+    .catch( error => {
+      console.log(error) 
+      this.content = 'Link may be expired. Please try again!'
+      //this.errorService.handleError(null, this.content)    
+    });  
   }
+  // handleResetPassword(auth, actionCode, mode) {
+  //   // Localize the UI to the selected language as determined by the lang
+  //   // parameter.
+  //   var accountEmail;
+  //   // Verify the password reset code is valid.
+  //   auth.verifyPasswordResetCode(actionCode).then(email => {
+  //     var accountEmail = email;
+  
+  //     // TODO: Show the reset screen with the user's email and ask the user for
+  //     // the new password.
+  
+  //     // Save the new password.      
+  //     //this.buildForm();
+  //     //this.content = 'Your new password is set'
+  //     this.errorService.handleError(null, this.content)
+      
+  //   }).catch(err =>  {
+  //     // Invalid or expired action code. Ask user to try to reset the password
+  //     // again.
+  //   });
+  // }
   
   // handleVerifyEmail(auth, actionCode, continueUrl, lang) {
   //   // Localize the UI to the selected language as determined by the lang
@@ -174,6 +187,7 @@ export class HandleComponent implements OnInit {
       //this.errorService.handleError(null, this.content)    
     });         
   }
+
   handleConfirmIp(auth, actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.

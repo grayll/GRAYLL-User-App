@@ -12,15 +12,16 @@ export class ConfirmEmailComponent implements OnInit {
   private email:string = "hello@grayll.io"
   private name:string = ''
   constructor(private router: Router, private errorService: ErrorService) {
-    this.email = this.router.getCurrentNavigation().extras.state.email
-    if (!this.email || this.email && this.email == ''){
+    if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state 
+      && this.router.getCurrentNavigation().extras.state.email && this.router.getCurrentNavigation().extras.state.email != ''){
+      this.email = this.router.getCurrentNavigation().extras.state.email      
+      this.name = this.router.getCurrentNavigation().extras.state.name
+    } else {
       this.router.navigateByUrl('/login/register')
     }
-    this.name = this.router.getCurrentNavigation().extras.state.name
   }
 
-  didResent: boolean;
-  
+  didResent: boolean; 
 
   ngOnInit() {
   }
@@ -42,9 +43,11 @@ export class ConfirmEmailComponent implements OnInit {
             content = "The email is not registered yet"           
             break
         case 13:
-            content = "The email is verified"            
+            content = "The email is verified"    
+            break        
         default:
             content = `The confirm email is sent to email ${this.email}`
+            break
       }
       this.errorService.handleError(null, content)
     })

@@ -154,7 +154,9 @@ loginClicked() {
               //axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/GetUserData', {}, {
 
                 
-                axios.post('https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/login', {email:this.loginForm.value['email'], password: this.loginForm.value['password']})
+                //axios.post('https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/login', {email:this.loginForm.value['email'], password: this.loginForm.value['password']})
+                axios.post('http://127.0.0.1:8080/api/v1/users/login', {email:this.loginForm.value['email'], password: this.loginForm.value['password']})
+                
               .then(response => {    
                 if (response.data.errCode &&  response.data.errCode == 9){
                   this.errorService.handleError(null, 'Invalid user name or password.') 
