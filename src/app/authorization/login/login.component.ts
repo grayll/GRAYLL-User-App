@@ -14,6 +14,7 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { StellarService } from '../services/stellar-service';
 import axios from 'axios';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
+import { environment } from 'src/environments/environment.prod';
 var naclutil = require('tweetnacl-util');
 
 
@@ -157,17 +158,8 @@ loginClicked() {
                 //axios.post('https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/login', {email:this.loginForm.value['email'], password: this.loginForm.value['password']})
                 axios.post('http://127.0.0.1:8080/api/v1/users/login', {email:this.loginForm.value['email'], password: this.loginForm.value['password']})
                 
-              .then(response => {    
-                if (response.data.errCode &&  response.data.errCode == 9){
-                  this.errorService.handleError(null, 'Invalid user name or password.') 
-                  this.loginForm.reset()
-                }  else if(response.data.errCode &&  response.data.errCode == 10)  {    
-                  this.errorService.handleError(null, 'Please verify your email before login.') 
-                  this.loginForm.reset()
-                }  else if(response.data.errCode &&  response.data.errCode == 11)  {    
-                  this.errorService.handleError(null, 'Please confirm your ip before login.') 
-                  this.loginForm.reset()
-                } else {    
+              .then(response => {                
+                if (response.data.errCode && response.data.errCode === environment.SUCCESS) {
                   this.authService.userData = response.data.user
                   this.authService.userData.token = response.data.token                
                 
@@ -190,7 +182,16 @@ loginClicked() {
                   } else {
                     this.router.navigate(['/settings/profile'])
                   } 
-                }
+                } else if (response.data.errCode && response.data.errCode === environment.INVALID_UNAME_PASSWORD){
+                  this.errorService.handleError(null, 'Invalid user name or password.') 
+                  this.loginForm.reset()
+                }  else if(response.data.errCode && response.data.errCode === environment.UNVERIFIED)  {    
+                  this.errorService.handleError(null, 'Please verify your email before login.') 
+                  this.loginForm.reset()
+                }  else if(response.data.errCode && response.data.errCode === environment.IP_CONFIRM) {    
+                  this.errorService.handleError(null, 'Please confirm your ip before login.') 
+                  this.loginForm.reset()
+                } 
               })
               .catch(error => {
                 //this.spinnerService.stop()

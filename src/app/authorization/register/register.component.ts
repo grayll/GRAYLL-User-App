@@ -10,6 +10,7 @@ import { StellarService } from '../services/stellar-service';
 import axios from 'axios';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
 import * as naclutil from 'tweetnacl-util'
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-register',

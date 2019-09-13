@@ -11,6 +11,7 @@ import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firest
 import { MustMatch } from '../services/helper/helper.service';
 import axios from 'axios';
 import * as tweetnacl from 'tweetnacl'
+import {environment} from '../../../environments/environment';
 
 
 @Component({
@@ -94,9 +95,9 @@ export class HandleComponent implements OnInit {
   }
   buildForm(): void {
     this.handleForm = this.formBuilder.group({      
-      password: ['', [ Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-        Validators.minLength(6),
-        Validators.maxLength(25)]],      
+      password: ['', [ Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?]+)$/),          
+      Validators.minLength(8),
+      Validators.maxLength(36)]],      
       confirm: ['', Validators.required]
       },{
         validator: MustMatch('password', 'confirm')
@@ -106,17 +107,17 @@ export class HandleComponent implements OnInit {
   }
   
   handleResetPassword(auth, actionCode, mode) {
-    axios.get(`https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
-    .then(response => {              
-      //this.registerForm.reset() 
-      //this.content = 'Your account is verified. Now you can login!'
-      //this.errorService.handleError(null, this.content) 
-    })
-    .catch( error => {
-      console.log(error) 
-      this.content = 'Link may be expired. Please try again!'
-      //this.errorService.handleError(null, this.content)    
-    });  
+    // axios.get(`https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    // .then(response => {              
+    //   //this.registerForm.reset() 
+    //   //this.content = 'Your account is verified. Now you can login!'
+    //   //this.errorService.handleError(null, this.content) 
+    // })
+    // .catch( error => {
+    //   console.log(error) 
+    //   this.content = 'Link may be expired. Please try again!'
+    //   //this.errorService.handleError(null, this.content)    
+    // });  
   }
   // handleResetPassword(auth, actionCode, mode) {
   //   // Localize the UI to the selected language as determined by the lang
@@ -242,30 +243,57 @@ export class HandleComponent implements OnInit {
     }
     this.onValueChanged()
     // stop here if form is invalid
-    console.log('form invalid')
+    
     if (this.handleForm.invalid) {        
         return;
     }
     this.ngZone.run(() => {
-      this.afAuth.auth.confirmPasswordReset(this.actionCode, this.handleForm.value['password']).then(resp => {
-        // Password reset has been confirmed and new password updated.
-        this.message = 'New password is updated'
-        console.log('message:', this.message)
-        this.isUpdated = true
-
-        // TODO: Display a link back to the app, or sign-in the user directly
-        // if the page belongs to the same domain as the app:
-        // auth.signInWithEmailAndPassword(accountEmail, newPassword);
-
-        // TODO: If a continue URL is available, display a button which on
-        // click redirects the user back to the app via continueUrl with
-        // additional state determined from that URL's parameters.
-      }).catch(err =>  {
-        // Error occurred during confirmation. The code might have expired or the
-        // password is too weak.
-        this.message = 'Can not reset password. Please try again later!'
+      axios.post(`${environment.api_url}/api/v1/users/resetpassword`, 
+      { oobCode: this.actionCode, newPassword:this.handleForm.value['password']}, {
+      headers: {
+          'Content-Type': 'application/json',
+      }
+    })             
+    .then(response => {  
+      if (response.data.errCode == environment.SUCCESS)  {
+        this.message = "Your password is reset."
         this.errorService.handleError(null, this.message)
-      });
+        this.handleForm.reset() 
+      } else if(response.data.errCode == environment.EMAIL_NOT_EXIST ){
+        this.message = "The email does not exist."
+        this.errorService.handleError(null, this.message)
+        this.handleForm.reset() 
+      } else {   
+        this.handleForm.reset()  
+        this.message = 'Can not reset password right now. Please try again later.'
+        this.errorService.handleError(null, this.message);
+      }
+    })
+    .catch( error => {
+      console.log(error) 
+      //this.newPasswordForm.reset()              
+      this.message = 'Can not reset password right now. Please try again later.'
+      this.errorService.handleError(null, this.message);
+    }); 
+      // this.afAuth.auth.confirmPasswordReset(this.actionCode, this.handleForm.value['password']).then(resp => {
+      //   // Password reset has been confirmed and new password updated.
+      //   this.message = 'New password is updated'
+      //   console.log('message:', this.message)
+      //   this.isUpdated = true
+
+      //   // TODO: Display a link back to the app, or sign-in the user directly
+      //   // if the page belongs to the same domain as the app:
+      //   // auth.signInWithEmailAndPassword(accountEmail, newPassword);
+
+      //   // TODO: If a continue URL is available, display a button which on
+      //   // click redirects the user back to the app via continueUrl with
+      //   // additional state determined from that URL's parameters.
+      // }).catch(err =>  {
+      //   // Error occurred during confirmation. The code might have expired or the
+      //   // password is too weak.
+      //   this.message = 'Can not reset password. Please try again later!'
+      //   this.errorService.handleError(null, this.message)
+      // });
     })
     
   }
@@ -300,9 +328,9 @@ export class HandleComponent implements OnInit {
   validationMessages = {    
     'password': {
       'required':      'Password is required.',
-      'pattern':       'Password must be include at one letter and one number.',
-      'minlength':     'Password must be at least 4 characters long.',
-      'maxlength':     'Password cannot be more than 25 characters long.'
+      'pattern':       'Password must include at least one letter, one number, one capital and one special character.',
+      'minlength':     'Password must be at least 8 characters long.',
+      'maxlength':     'Password cannot be more than 36 characters long.'
     },
     'confirm': {
       'required':      'Password is required.',

@@ -4,6 +4,8 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ErrorService} from '../../shared/error/error.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
+import axios from 'axios';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-new-password',
@@ -18,7 +20,7 @@ export class NewPasswordComponent {
   submitted = false;
   message: string;
 
-  get email() { return this.newPasswordForm.get('email'); }
+  //get email() { return this.newPasswordForm.get('email'); }
   
   constructor(
     private formBuilder: FormBuilder,
@@ -82,31 +84,41 @@ export class NewPasswordComponent {
     }
   };
 
-get f() { return this.newPasswordForm.controls; }
 
-submitClicked() {
-  this.submitted = true;
-  this.onValueChanged()
 
-  // stop here if form is invalid
-  if (this.newPasswordForm.invalid) {
-      return;
-  }
+  submitClicked() {
+    this.submitted = true;
+    this.onValueChanged()
 
-  this.authService.ForgotPassword(this.newPasswordForm.value['email']).then(
-    data => {
-      this.message = 'We have sent password reset to your email!'
-      this.errorService.handleError(null, this.message);
-    }, err => {
-      this.message = 'Can not sent mail for password reset!'
-      this.errorService.handleError(null, this.message);
+    // stop here if form is invalid
+    if (this.newPasswordForm.invalid) {
+        return;
     }
 
-    
-
-  )
-    
-} 
+    axios.post(`${environment.api_url}/api/v1/users/mailresetpassword`, 
+      { email: this.newPasswordForm.value['email']})             
+    .then(response => {  
+      if (response.data.errCode == environment.INVALID_PARAMS)  {
+        this.message = "Can not send reset password now. Please try again later."
+        this.errorService.handleError(null, this.message)
+        this.newPasswordForm.reset() 
+      } else if(response.data.errCode == environment.EMAIL_NOT_EXIST ){
+        this.message = "The email does not exist."
+        this.errorService.handleError(null, this.message)
+        this.newPasswordForm.reset() 
+      } else {   
+        this.newPasswordForm.reset()  
+        this.message = 'We have sent password reset to your email!'
+        this.errorService.handleError(null, this.message);
+      }
+    })
+    .catch( error => {
+      console.log(error) 
+      this.newPasswordForm.reset()              
+      this.message = 'Can not sent mail for password reset!'
+      this.errorService.handleError(null, this.message);     
+    });     
+  } 
 
 }
 
