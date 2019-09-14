@@ -8,6 +8,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from "rxjs";
 //import { AngularFireDatabase, } from 'angularfire2/database';
 import { AngularFireAuth } from "angularfire2/auth";
+import { environment } from '../../../environments/environment';
+import axios from 'axios';
+import { createHash } from 'crypto';
 
 @Injectable({
   providedIn: 'root'
@@ -62,24 +65,53 @@ export class AuthService {
   //   return this.http.get("http://127.0.0.1:5555/tfa/setup", { observe: 'response' });
   // }
   setupTfa(account:string) {
-    return this.http.get("https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/TfaSetup?account=" + account, { observe: 'response' });
+    //return this.http.get("https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/TfaSetup?account=" + account, { observe: 'response' });
+    //let url = `${environment.api_url}verifytoken?token=${token}&secret=${secret}`
+    console.log(this.userData.token)
+    return axios.post(`${environment.api_url}api/v1/users/setuptfa`, { account: account},
+    {
+      headers: {
+        'Authorization': 'Bearer ' + this.userData.token,        
+      }
+    })             
   }
 
   // deleteTfa() {
   //   return this.http.delete("http://127.0.0.1:5555/tfa/disable", { observe: 'response' });
   // }
 
-  verifyTfaAuth(token: any, secret: any) {
-    // const httpOptions = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type':  'application/json',
-    //     'Access-Control-Allow-Origin': '*'
-    //   })
-    // };
-    let url = `https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyToken?token=${token}&secret=${secret}`
-    return this.http.get(url, { observe: 'response' });
+  verifyTfaAuth(token: any, secret: any, exp: Number) {       
+    return axios.post(`${environment.api_url}api/v1/users/verifytoken`,  { token: token, secret:secret, expire:exp},
+    {
+      headers: {
+        'Authorization': 'Bearer ' + this.userData.token,        
+      }
+    })         
   }
-
+  UpdateSetting(field, status) {
+    return axios.post(`${environment.api_url}api/v1/users/updatesetting`,  { field: field, status:status},
+    {
+      headers: {
+        'Authorization': 'Bearer ' + this.userData.token,        
+      }
+    }) 
+  }
+  UpdateEmail(email, password) {
+    return axios.post(`${environment.api_url}api/v1/users/updatesetting`,  {email: email, password: password},
+    {
+      headers: {
+        'Authorization': 'Bearer ' + this.userData.token,        
+      }
+    }) 
+  }
+  updateTfaData(tfa) {   
+    return axios.post(`${environment.api_url}api/v1/users/updatetfa`, tfa,
+    {
+      headers: {
+        'Authorization': 'Bearer ' + this.userData.token,        
+      }
+    }) 
+  }
   
   SignIn(email, password) {
     return this.firebaseAuth.auth.signInWithEmailAndPassword(email, password)
@@ -140,7 +172,8 @@ export class AuthService {
     })
   }
 
-  GetLocalUserData(){
+  GetLocalUserData():any{
+    
     if (!this.userData){
       let data = localStorage.getItem('user');
       this.userData = JSON.parse(data);  
@@ -149,7 +182,8 @@ export class AuthService {
       console.log('get from userData')  
       return this.userData
     }
-    //return null
+   
+    return this.userData
   }
   SetLocalUserData(){
     if (this.userData){
@@ -157,13 +191,15 @@ export class AuthService {
     }    
   }
   
-  SetLocalTfa(tfa){
+  SetLocalTfa(uid, tfa){
     if (tfa){
-      localStorage.setItem('tfa', JSON.stringify(tfa));       
+      let hash = createHash('sha256').update(uid).digest('hex')
+      localStorage.setItem(hash, JSON.stringify(tfa));       
     }    
   }
-  GetLocalTfa(){
-    let data = localStorage.getItem('tfa');
+  GetLocalTfa(uid:string){
+    let hash = createHash('sha256').update(uid).digest('hex')
+    let data = localStorage.getItem(hash);
     if (data){
       return JSON.parse(data);      
     }
@@ -180,18 +216,8 @@ export class AuthService {
       merge: true
     })
   }
-  UpdateTfaData(data) {
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${data.Uid}`);        
-    return userRef.update({Tfa: data.Tfa})
-  }
-  UpdateSetting(uid, data) {
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${uid}`);        
-    return userRef.update({UserSetting: data})
-  }
-  UpdateEmail(uid, email) {
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${uid}`);        
-    return userRef.update({Email: email})
-  }
+  
+  
   GetUserData1(uid) {    
     const document: AngularFirestoreDocument<User> = this.afs.doc(`users/${uid}`)
     const document$: Observable<User> = document.valueChanges()

@@ -5,6 +5,7 @@ import {SettingsService} from '../../../settings.service';
 import { AuthService } from "../../../../shared/services/auth.service"
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {ErrorService} from '../../../../shared/error/error.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-disable-multisignature',
@@ -41,9 +42,9 @@ export class DisableMultisignatureComponent implements OnInit {
         Validators.maxLength(6),
         Validators.pattern('^[0-9]+$')]],
       'password': ['', [
-          Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-          Validators.minLength(6),
-          Validators.maxLength(25)
+        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?]+)$/),          
+        Validators.minLength(8),
+        Validators.maxLength(36)
        ]],  
       });
 
@@ -85,9 +86,9 @@ export class DisableMultisignatureComponent implements OnInit {
     },
     'password': {
       'required':      'Password is required.',
-      'pattern':       'Password must be include at one letter and one number.',
-      'minlength':     'Password must be at least 6 characters long.',
-      'maxlength':     'Password cannot be more than 25 characters long.'
+      'pattern':       'Password must include at least one letter, one number, one capital and one special character.',
+      'minlength':     'Password must be at least 8 characters long.',
+      'maxlength':     'Password cannot be more than 36 characters long.'
     },   
   };
 
@@ -108,29 +109,35 @@ export class DisableMultisignatureComponent implements OnInit {
     }
 
     this.authService.verifyTfaAuth(this.disableMulSigForm.value['oneTimePassword'],  
-        this.authService.userData.Tfa.TempSecret).subscribe(data => {           
-      if (data.body['valid'] === true ){
-        console.log('Verification succesully ') 
-        this.authService.userData.UserSetting.MulSignature = false
-        this.authService.UpdateSetting(this.authService.userData.Uid, this.authService.userData.UserSetting)
-        console.log('userData: verifyTfaAuth: ', this.authService.userData)
-       // this.settingsService.sendTwoFAEnabledToObserver(true);
-
-       this.popupService.close()
-       .then(() => {
-         setTimeout(() => {
-           this.snotifyService.simple('Multisignature transactions enabled.');
-           this.settingsService.sendMultisignatureEnabledToObserver(true);
-         }, 50);
-       })
-       .catch((error) => console.log(error));
-       
+      this.disableMulSigForm.value['password'], 0).then(res => {           
+      if (res.data.valid === true ){       
+        this.authService.userData.Setting.MulSignature = true
+        this.authService.UpdateSetting("MulSignature", true).then(res =>{
+          this.popupService.close()
+          .then(() => {
+            setTimeout(() => {
+              this.snotifyService.simple('Multisignature transactions enabled.');
+              this.settingsService.sendMultisignatureEnabledToObserver(true);
+            }, 50);
+          })
+        }).catch(err =>{
+          this.errorService.handleError(null, 'Can not enable Multisigature. Please try again later!')
+        })
+                    
       } else {        
-        //this.authService.userData.Tfa = null    
-       // this.errorMessage = "Can not enable TFA"
-       this.errorService.handleError(null, 'Can not disable Multisigature. Please try again later!')
+       switch (res.data.errCode){
+        case environment.TOKEN_INVALID:
+          this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
+          break;
+        case environment.INVALID_UNAME_PASSWORD:
+          this.errorService.handleError(null, 'Your password is invalid. Please try again!')
+          break;
+        default:
+          this.errorService.handleError(null, 'Can not enable Multisigature. Please try again later!')
+          break;
+       }       
       }     
-    }, err => {
+    }).catch(err => {
       this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
     })
   }   

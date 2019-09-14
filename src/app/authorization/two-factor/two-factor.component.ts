@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ErrorService} from '../../shared/error/error.service';
 import {Router} from '@angular/router';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import axios from 'axios';
 
 @Component({
   selector: 'app-two-factor',
@@ -61,8 +62,7 @@ export class TwoFactorComponent {
     if (control && control.invalid) {
       
       const messages = this.validationMessages[field];
-      console.log('control invalid:', control, messages)  
-      
+            
       for (const key in control.errors) {
         this.formErrors[field] += messages[key] + ' ';
       }
@@ -81,28 +81,34 @@ export class TwoFactorComponent {
     this.onValueChanged()
     if (!this.clientValidation()) { return; }
     this.errorService.clearError();
+    let exp = 0
+    if (this.dontAskForNext30Days){
+      console.log('Do not ask for 30 days')          
+      let t = new Date().getTime();
+      exp = t + 1000 * 60 * 60 * 24 * 30
+    }
 
-    let userData = this.authService.GetLocalUserData()
-    this.authService.verifyTfaAuth(this.code, userData.Tfa.TempSecret).subscribe(data => {
-      console.log('verifyTfaAuth-data: ', data)     
-      if (data.body["valid"] === true ){
+    let userData = this.authService.userData
+    this.authService.verifyTfaAuth(this.code, userData.Tfa.Secret, exp)
+    .then(res => {
+      console.log('verifyTfaAuth-data: ', res)     
+      if (res.data.valid === true ){
         this.router.navigate(['/settings/profile'])
         if (this.dontAskForNext30Days){
-          console.log('Do not ask for 30 days')
-          let d = new Date();
-          let t = d.getTime();
-          let exp = t + 1000 * 60 * 60 * 24 * 30
-          userData.Tfa.Exp = exp
+          console.log('Do not ask for 30 days')          
+          userData.Tfa.Expire = exp
           this.authService.userData = userData
           this.authService.SetLocalUserData()
-          this.authService.SetLocalTfa({expire:exp})
-
-          this.authService.UpdateTfaData(userData)
+          this.authService.SetLocalTfa(this.authService.userData.Uid, {Expire:exp})
+          //this.authService.updateTfaData(userData)
           console.log('set 30day tfa')
         }
       } else {
-        this.errorService.handleError(null, 'Your code is invalid.');
+        this.errorService.handleError(null, 'Your onetime password is invalid.');
       }
+    })
+    .catch(err => {
+      this.errorService.handleError(null, 'Your onetime password is invalid.');
     })
     
   }

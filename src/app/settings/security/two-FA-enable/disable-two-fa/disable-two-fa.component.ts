@@ -5,6 +5,7 @@ import {SettingsService} from '../../../settings.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import {ErrorService} from '../../../../shared/error/error.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-disable-two-fa',
@@ -55,14 +56,14 @@ export class DisableTwoFaComponent implements OnInit {
     if (!this.clientValidation()) { return; }
     this.errorService.clearError();
 
-    let userData = this.authService.GetLocalUserData()
-    this.authService.verifyTfaAuth(this.code.value, userData.Tfa.TempSecret).subscribe(data => {
-      console.log('verifyTfaAuth-data: ', data)     
-      if (data.body['valid'] === true ){       
+   // let userData = this.authService.GetLocalUserData()
+    this.authService.verifyTfaAuth(this.code.value, this.password.value, -1).then(res => {
+      console.log('verifyTfaAuth-data: ', res)     
+      if (res.data.valid === true ){       
         //userData.Tfa = {}
         this.authService.userData.Tfa = {}
         this.authService.SetLocalUserData()
-        this.authService.UpdateTfaData(userData)        
+        //this.authService.updateTfaData(userData.Tfa)     
         this.popupService.close()
         .then(() => {
           setTimeout(() => {
@@ -73,7 +74,17 @@ export class DisableTwoFaComponent implements OnInit {
         .catch((error) => console.log(error));  
 
       } else {
-        this.errorService.handleError(null, 'Your code is invalid.');
+        switch (res.data.errCode) {
+          case environment.INVALID_UNAME_PASSWORD:
+            this.errorService.handleError(null, 'The password is invalid.');
+            break;
+          case environment.TOKEN_INVALID:
+              this.errorService.handleError(null, 'The onetime password is invalid.');
+              break;
+          default:
+              this.errorService.handleError(null, 'Can not disable TFA right now. Please try again later.');
+              break;
+        }        
       }
     })
 

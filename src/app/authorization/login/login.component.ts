@@ -14,7 +14,7 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { StellarService } from '../services/stellar-service';
 import axios from 'axios';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from '../../../environments/environment';
 var naclutil = require('tweetnacl-util');
 
 
@@ -61,7 +61,7 @@ export class LoginComponent {
       ],
       'password': ['', [
         //Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[$@$!%*#?&])([0-9A-Za-z$@$!%*#?&]+)$'),
-        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?]+)$/),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
         Validators.minLength(8),
         Validators.maxLength(36)
       ]
@@ -71,6 +71,23 @@ export class LoginComponent {
     //this.loginForm.valueChanges.subscribe(data => this.onValueChanged(data));
     this.onValueChanged(); // reset validation messages
   }
+  formErrors = {
+    'email': '',
+    'password': ''
+  };
+
+  validationMessages = {
+    'email': {
+      'required':      'Email is required.',
+      'pattern':         'Email must be a valid email'
+    },
+    'password': {
+      'required':      'Password is required.',
+      'pattern':       'Password must include at least one letter, one number, one capital and one special character.',
+      'minlength':     'Password must be at least 8 characters long.',
+      'maxlength':     'Password cannot be more than 36 characters long.'
+    }
+  };
 
   // Updates validation state on form changes.
   onValueChanged(data?: any) {
@@ -93,23 +110,7 @@ export class LoginComponent {
     console.log('this.handleToken(token)', data)
   }
 
- formErrors = {
-    'email': '',
-    'password': ''
-  };
-
-  validationMessages = {
-    'email': {
-      'required':      'Email is required.',
-      'pattern':         'Email must be a valid email'
-    },
-    'password': {
-      'required':      'Password is required.',
-      'pattern':       'Password must include at least one letter, one number, one capital and one special character.',
-      'minlength':     'Password must be at least 8 characters long.',
-      'maxlength':     'Password cannot be more than 36 characters long.'
-    }
-  };
+ 
 
 get f() { return this.loginForm.controls; }
 
@@ -141,71 +142,55 @@ loginClicked() {
     })
     .then(response => {
       console.log(response)
-      if (response.data.status === 'success'){
-        // this.authService.SignIn(this.loginForm.value['email'], this.loginForm.value['password'])
-        // .then(currentUser => {            
-        //   if (currentUser.user && !currentUser.user.emailVerified){
-        //     this.errorService.handleError(null, 'Please verify email before login')
-        //     return
-        //   }xcwLy8blSsMhyuzc8Aoz+vvc+dezqX+gbqssgCP0eiM=qYMG0HhOTuHOm1PFU6KZYevYz1pb0G0CitGJCpORQuI=
-          // console.log('verify data:', currentUser)
-          // currentUser.user.getIdToken(true).then(token => {
-            this.ngZone.run(() => {
-              //this.authService.userData = res.user
-              //axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/GetUserData', {}, {
-
-                
-                //axios.post('https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/login', {email:this.loginForm.value['email'], password: this.loginForm.value['password']})
-                axios.post('http://127.0.0.1:8080/api/v1/users/login', {email:this.loginForm.value['email'], password: this.loginForm.value['password']})
-                
-              .then(response => {                
-                if (response.data.errCode && response.data.errCode === environment.SUCCESS) {
-                  this.authService.userData = response.data.user
-                  this.authService.userData.token = response.data.token                
-                
-                  this.authService.userData.hash = this.loginForm.value['password'];
-                  this.authService.SetLocalUserData()
-                  //this.spinnerService.stop()
-                  //store on local storage
-                  if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 
-                    && this.authService.userData.Tfa.Enable === true){
-                      //let d = new Date();
-                      let t = new Date().getTime();
-                      let tfaData = this.authService.GetLocalTfa()
-                      if (this.authService.userData.Tfa.Exp && t <= this.authService.userData.Tfa.Exp && 
-                          tfaData && tfaData.expire && 
-                          tfaData.expire === this.authService.userData.Tfa.Exp){
-                        this.router.navigate(['/settings/profile'])
-                      } else {
-                        this.router.navigate(['/login/two-factor'])
-                      }
-                  } else {
+      if (response.data.status === 'success'){       
+        this.ngZone.run(() => {          
+          axios.post(`${environment.api_url}api/v1/users/login`, 
+            {email:this.loginForm.value['email'], password: this.loginForm.value['password']})                
+          .then(response => {                
+            if (response.data.errCode === environment.SUCCESS) {
+              this.authService.userData = response.data.user
+              this.authService.userData.token = response.data.token                
+            
+              this.authService.userData.hash = this.loginForm.value['password'];
+              this.authService.SetLocalUserData()
+              //this.spinnerService.stop()
+              //store on local storage
+              if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 
+                && this.authService.userData.Tfa.Enable === true){
+                  //let d = new Date();
+                  let t = new Date().getTime();
+                  let tfaData = this.authService.GetLocalTfa(this.authService.userData.Uid)
+                  console.log('Expire:', tfaData)
+                  console.log('userData tfa:', this.authService.userData.Tfa)
+                  if (this.authService.userData.Tfa.Expire && t <= this.authService.userData.Tfa.Expire && 
+                      tfaData && tfaData.Expire && 
+                      tfaData.Expire === this.authService.userData.Tfa.Expire){
                     this.router.navigate(['/settings/profile'])
-                  } 
-                } else if (response.data.errCode && response.data.errCode === environment.INVALID_UNAME_PASSWORD){
-                  this.errorService.handleError(null, 'Invalid user name or password.') 
-                  this.loginForm.reset()
-                }  else if(response.data.errCode && response.data.errCode === environment.UNVERIFIED)  {    
-                  this.errorService.handleError(null, 'Please verify your email before login.') 
-                  this.loginForm.reset()
-                }  else if(response.data.errCode && response.data.errCode === environment.IP_CONFIRM) {    
-                  this.errorService.handleError(null, 'Please confirm your ip before login.') 
-                  this.loginForm.reset()
-                } 
-              })
-              .catch(error => {
-                //this.spinnerService.stop()
-                console.log(error)                  
-                this.errorService.handleError(null, 'Can not login now. Please try again later!')
-                this.loginForm.reset()    
-              });                 
-            });  
-          //})                    
-        // },
-        // err => {
-        //   //this.spinnerService.stop()
-        //   this.errorService.handleError(null, 'Invalid user name or password')            
-        // })     
+                  } else {
+                    this.router.navigate(['/login/two-factor'])
+                  }
+              } else {
+                this.router.navigate(['/settings/profile'])
+              } 
+            } else if (response.data.errCode === environment.INVALID_UNAME_PASSWORD){
+              this.errorService.handleError(null, 'Invalid user name or password.') 
+              this.loginForm.reset()
+            }  else if(response.data.errCode === environment.UNVERIFIED)  {    
+              this.errorService.handleError(null, 'Please verify your email before login.') 
+              this.loginForm.reset()
+            }  else if(response.data.errCode === environment.IP_CONFIRM) {    
+              this.errorService.handleError(null, 'Please confirm your ip before login.') 
+              this.loginForm.reset()
+            } 
+          })
+          .catch(error => {
+            //this.spinnerService.stop()
+            console.log(error)                  
+            this.errorService.handleError(null, 'Can not login now. Please try again later!')
+            this.loginForm.reset()    
+          });                 
+        });  
+         
       } else {
         //this.spinnerService.stop()
         this.errorService.handleError(null, 'Can not login, please try again later!');

@@ -8,6 +8,7 @@ import {SharedService} from '../../../../shared/shared.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import {ErrorService} from '../../../../shared/error/error.service';
+import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-enable-two-fa-last-step',
@@ -44,9 +45,9 @@ export class EnableTwoFaLastStepComponent implements OnInit {
         Validators.maxLength(6),
         Validators.pattern('^[0-9]+$')]],
       'password': ['', [
-          Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-          Validators.minLength(6),
-          Validators.maxLength(25)
+        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+        Validators.minLength(8),
+        Validators.maxLength(36)
        ]],  
       });
 
@@ -95,10 +96,10 @@ export class EnableTwoFaLastStepComponent implements OnInit {
     },
     'password': {
       'required':      'Password is required.',
-      'pattern':       'Password must be include at one letter and one number.',
-      'minlength':     'Password must be at least 4 characters long.',
-      'maxlength':     'Password cannot be more than 25 characters long.'
-    },   
+      'pattern':       'Password must include at least one letter, one number, one capital and one special character.',
+      'minlength':     'Password must be at least 8 characters long.',
+      'maxlength':     'Password cannot be more than 36 characters long.'
+    },  
   };
 
   back() {
@@ -124,15 +125,6 @@ export class EnableTwoFaLastStepComponent implements OnInit {
     console.log('userData:', userData)
     console.log('bk key:', this.enableTwoFAForm.value['backupKey'])
     
-    //Synchronous    
-    //const isEqual = await argon2.verify(userData.hash, this.enableTwoFA.value['password']); // returns true
-
-    if (userData.hash != this.enableTwoFAForm.value['password']) {
-      console.log('password not matched', userData.hash)
-      console.log('PASSWORD ', this.enableTwoFAForm.value['password'])
-      this.errorService.handleError(null, 'Password not match')
-      return;
-    }
     let bkKey: string = this.enableTwoFAForm.value['backupKey']
     if (userData.Tfa.BackupCode != bkKey) {
       this.errorService.handleError(null, 'Backup TwoFA key not match')
@@ -142,17 +134,19 @@ export class EnableTwoFaLastStepComponent implements OnInit {
 
     // Verify one-time password
     console.log('this.authService.userData.Tfa-data: ', this.authService.userData.Tfa)
-    this.authService.verifyTfaAuth(this.enableTwoFAForm.value['oneTimePassword'],  
-        this.authService.userData.Tfa.TempSecret).subscribe(data => {
-      console.log('EnableTFA-data: ', data)
-     
-      if (data.body['valid'] === true ){
+    let tmpUserData = this.authService.userData.Tfa
+    tmpUserData.OneTimePassword = this.enableTwoFAForm.value['oneTimePassword']
+    console.log('tmpUserData: ', tmpUserData)
+    this.authService.updateTfaData(tmpUserData)
+    .then(res => {
+      console.log('EnableTFA-data: ', res)     
+      if (res.data.errCode === environment.SUCCESS){
         console.log('Verification succesully ') 
         this.authService.userData = userData
         this.authService.SetLocalUserData()
         this.authService.setTfa(true)
         this.authService.userData.Tfa.Enable = true
-        this.authService.UpdateTfaData(this.authService.userData)
+        
         console.log('userData: verifyTfaAuth: ', this.authService.userData)
         this.settingsService.sendTwoFAEnabledToObserver(true);
 
@@ -164,12 +158,24 @@ export class EnableTwoFaLastStepComponent implements OnInit {
         })
         .catch((error) => console.log(error));
       } else {
-        this.authService.setTfa(false)
-        //this.authService.userData.Tfa = null    
-       // this.errorMessage = "Can not enable TFA"
-       this.errorService.handleError(null, 'Can not enable TFA. Please try again later!')
+        switch (res.data.errCode){
+          case environment.TOKEN_INVALID:
+            this.errorService.handleError(null, 'Onetime password is invalid.')
+            break;
+          case environment.INTERNAL_ERROR:
+              this.errorService.handleError(null, 'Can not enable TFA. Please try again later.')
+              break;
+          case environment.INVALID_UNAME_PASSWORD:
+              this.errorService.handleError(null, 'Your password is invalid.')
+              break;
+          default:
+              this.errorService.handleError(null, 'Can not enable TFA. Please try again later!')
+              break;
+
+        }
+        this.authService.setTfa(false)        
       }     
-    }, err => {
+    }).catch(err => {
       this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
     })
   }

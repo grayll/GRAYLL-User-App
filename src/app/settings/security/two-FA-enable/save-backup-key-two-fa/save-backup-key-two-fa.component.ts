@@ -62,7 +62,6 @@ export class SaveBackupKeyTwoFaComponent implements OnInit {
 
   randomString(strLength, charSet) {
     var result = [];
-
     strLength = strLength || 5;
     charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 

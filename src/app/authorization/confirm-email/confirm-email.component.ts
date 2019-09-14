@@ -9,7 +9,7 @@ import axios from 'axios';
   styleUrls: ['./confirm-email.component.css']
 })
 export class ConfirmEmailComponent implements OnInit {
-  private email:string = "hello@grayll.io"
+  public email:string = "hello@grayll.io"
   private name:string = ''
   constructor(private router: Router, private errorService: ErrorService) {
     if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state 

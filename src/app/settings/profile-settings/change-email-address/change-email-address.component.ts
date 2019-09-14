@@ -69,33 +69,35 @@ export class ChangeEmailAddressComponent implements OnInit {
   save() {
     this.errorService.clearError();
     if (this.clientValidation()) {
-      this.authService.SignIn(this.currentEmail.value, this.password.value).
-      //this.afsAuth.auth.signInWithEmailAndPassword(this.currentEmail.value, this.password.value).
-      then(userCredential =>
-      {
-        userCredential.user.updateEmail(this.newEmail.value).then(()=>{    
-            this.authService.userData.Email = this.newEmail.value
+      
+
+      // this.authService.SignIn(this.currentEmail.value, this.password.value).
+      // //this.afsAuth.auth.signInWithEmailAndPassword(this.currentEmail.value, this.password.value).
+      // then(userCredential =>
+      // {
+      //   userCredential.user.updateEmail(this.newEmail.value).then(()=>{    
+      //       this.authService.userData.Email = this.newEmail.value
             
-            this.authService.UpdateEmail(userCredential.user.uid, this.newEmail.value).then(()=>{
-              //this.onSaveSuccess();
-              this.authService.SetLocalUserData()
-              this.authService.SendVerificationMail().then(()=> {
-                this.errorService.handleError(null, 'New email is udpated. Please verify new email address before login!');
-                this.authService.SignOut()
-              }).catch (err => {
-                this.errorService.handleError(null, 'Can not send verification to new email address!');
-              })
-            }).catch(err=> {
-              this.errorService.handleError(null, 'Can not update new email address. Please try again later!');
-            })            
-          }
-        ).catch(err => {
-          this.errorService.handleError(null, err.message);
-        })        
-      })
-      .catch (err => {
-        this.errorService.handleError(null, 'Can not update new email address. Please try again later!');
-      })     
+      //       this.authService.UpdateEmail(userCredential.user.uid, this.newEmail.value).then(()=>{
+      //         //this.onSaveSuccess();
+      //         this.authService.SetLocalUserData()
+      //         this.authService.SendVerificationMail().then(()=> {
+      //           this.errorService.handleError(null, 'New email is udpated. Please verify new email address before login!');
+      //           this.authService.SignOut()
+      //         }).catch (err => {
+      //           this.errorService.handleError(null, 'Can not send verification to new email address!');
+      //         })
+      //       }).catch(err=> {
+      //         this.errorService.handleError(null, 'Can not update new email address. Please try again later!');
+      //       })            
+      //     }
+      //   ).catch(err => {
+      //     this.errorService.handleError(null, err.message);
+      //   })        
+      // })
+      // .catch (err => {
+      //   this.errorService.handleError(null, 'Can not update new email address. Please try again later!');
+      // })     
     }
   }
 

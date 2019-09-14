@@ -28,13 +28,13 @@ export class SecurityComponent implements OnDestroy, OnInit {
       this.is2FAEnabled = false;
     }
 
-    if (userData.UserSetting && userData.UserSetting.IpConfirm && userData.UserSetting.IpConfirm == true){
+    if (userData.Setting && userData.Setting.IpConfirm && userData.Setting.IpConfirm == true){
       this.isIPConfirmEnabled = true;
     } else {
       this.isIPConfirmEnabled = false;
     }
 
-    if (userData.UserSetting && userData.UserSetting.MulSignature && userData.UserSetting.MulSignature == true){
+    if (userData.Setting && userData.Setting.MulSignature && userData.Setting.MulSignature == true){
       this.isMultisignatureEnabled = true;
     } else {
       this.isMultisignatureEnabled = false;
@@ -65,20 +65,41 @@ export class SecurityComponent implements OnDestroy, OnInit {
 
   toggleIPConfirm() {    
     this.isIPConfirmEnabled = !this.isIPConfirmEnabled;
-    this.authService.userData.UserSetting.IpConfirm = this.isIPConfirmEnabled
-    this.authService.UpdateSetting(this.authService.userData.Uid, this.authService.userData.UserSetting)
-    this.saveSettings();
+    this.authService.userData.Setting.IpConfirm = this.isIPConfirmEnabled
+    this.authService.UpdateSetting("IpConfirm", this.isIPConfirmEnabled).then(res =>{
+      if (res.data.valid === true ){
+        this.saveSettings('Your settings are saved.');
+      } else {
+        this.saveSettings('Can not save the settings now. Please try again later.');
+      }      
+    }).catch(err =>{
+      this.saveSettings('Can not save the settings now. Please try again later.');
+    })    
   }
 
-  toggleMulSignature() {    
+  toggleMulSignature() {  
+    if (!(this.authService.userData.Tfa && this.authService.userData.Tfa.Enable && 
+      this.authService.userData.Tfa.Enable == true)){
+        this.saveSettings('Multisignature needs 2FA enable')
+      return        
+    } else {
+      console.log('this.authService.userData:', this.authService.userData)
+    } 
     this.isMultisignatureEnabled = !this.isMultisignatureEnabled;
-    this.authService.userData.UserSetting.MulSignature = this.isMultisignatureEnabled
-    this.authService.UpdateSetting(this.authService.userData.Uid, this.authService.userData.UserSetting)
-    this.saveSettings();
+    this.authService.userData.Setting.MulSignature = this.isMultisignatureEnabled
+    this.authService.UpdateSetting("MulSignature", this.isMultisignatureEnabled).then(res =>{
+      if (res.data.valid === true ){
+        this.saveSettings('Your settings are saved.');
+      } else {
+        this.saveSettings('Can not save the settings now. Please try again later.');
+      }      
+    }).catch(err =>{
+      this.saveSettings('Can not save the settings now. Please try again later.');
+    })    
   }
 
-  private saveSettings() {
-    this.displaySettingsSavedToast();
+  private saveSettings(msg) {
+    this.snotifyService.simple(msg);
   }
 
   private displaySettingsSavedToast() {

@@ -249,11 +249,7 @@ export class HandleComponent implements OnInit {
     }
     this.ngZone.run(() => {
       axios.post(`${environment.api_url}/api/v1/users/resetpassword`, 
-      { oobCode: this.actionCode, newPassword:this.handleForm.value['password']}, {
-      headers: {
-          'Content-Type': 'application/json',
-      }
-    })             
+        { oobCode: this.actionCode, newPassword:this.handleForm.value['password']})             
     .then(response => {  
       if (response.data.errCode == environment.SUCCESS)  {
         this.message = "Your password is reset."

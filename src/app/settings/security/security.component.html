@@ -51,10 +51,10 @@
         </p>
       </div>
       <div *ngIf="!isMultisignatureEnabled" class="col d-flex justify-content-center align-items-center">
-        <button [routerLink]="[{outlets: {popup: 'enable-multisignature'}}]" class="btn btn-purple text-center">Enable</button>
+        <button disabled="!is2FAEnabled" [routerLink]="[{outlets: {popup: 'enable-multisignature'}}]" class="btn btn-purple text-center">Enable</button>
       </div>
       <div *ngIf="isMultisignatureEnabled" class="col d-flex justify-content-center align-items-center">
-        <button [routerLink]="[{outlets: {popup: 'disable-multisignature'}}]" class="btn btn-yellow text-center">Disable</button>
+        <button disabled="!is2FAEnabled" [routerLink]="[{outlets: {popup: 'disable-multisignature'}}]" class="btn btn-yellow text-center">Disable</button>
       </div>
     </div>
   </div>
