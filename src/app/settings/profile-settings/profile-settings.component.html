@@ -10,7 +10,7 @@
 
             <div class="row">
               <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="federationAddress" triggers="click:blur">
-                <input disabled [value]="federationAddress" type="text" class="form-control bg-transparent text-light">
+                <input disabled [value]="federationAddress" type="text" class="form-control form-control-no-border bg-transparent text-light">
               </div>
               <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
                 <button (click)="copyFederationAddress()" class="btn btn-block btn-yellow">Copy Address</button>
@@ -34,7 +34,7 @@
 
             <div class="row">
               <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="stellarAddress" triggers="click:blur">
-                <input disabled [value]="userData.PublicKey" type="text" class="form-control bg-transparent text-light">
+                <input disabled [value]="userData.PublicKey" type="text" class="form-control form-control-no-border bg-transparent text-light">
               </div>
               <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
                 <button (click)="copyStellarAddress()" class="btn btn-block btn-yellow">Copy Address</button>
@@ -55,11 +55,11 @@
               <app-error></app-error>
               <div class="form-group">
                 <label for="first_name">First Name</label>
-                <input type="text" class="form-control" formControlName="first_name" placeholder="{{userData.Name}}">
+                <input type="text" class="form-control form-control-no-border bg-transparent text-light" formControlName="first_name" placeholder="{{userData.Name}}">
               </div>
               <div class="form-group">
                 <label for="last_name">Last Name</label>
-                <input type="text" class="form-control" formControlName="last_name" placeholder="{{userData.LName}}">
+                <input type="text" class="form-control form-control-no-border bg-transparent text-light" formControlName="last_name" placeholder="{{userData.LName}}">
               </div>
               <div class="form-group">
                 <label for="email">Account Email</label>
@@ -79,7 +79,7 @@
                 <label for="password">Password</label>
                 <!-- <a [routerLink]="[{outlets: {popup: 'change-password'}}]"
                   href="javascript:void(0)" class="float-right text-purple">Change Password</a> -->
-                <input type="password" class="form-control" id="password" placeholder="********">
+                <input type="password" class="form-control form-control-no-border bg-transparent text-light" id="password" placeholder="********">
               </div>
               <div class="form-group">
                 <label for="phone">Phone Number</label>
@@ -87,7 +87,7 @@
                   href="javascript:void(0)" class="float-right text-purple">Phone Number</a>
 
                 <!-- Phone number not set -->
-                <input type="text" class="form-control" formControlName="phone" placeholder="Not set">
+                <input type="text" class="form-control form-control-no-border bg-transparent text-light" formControlName="phone" placeholder="Not set">
 
                 <!-- Phone number set -->
                 <div class="input-group">
@@ -96,7 +96,7 @@
                       <flag-icon [country]="'ba'"></flag-icon>
                     </div>
                   </div>
-                  <input type="text" class="form-control" formControlName="inlineFormInputGroup" disabled value="+387 63 763 354">
+                  <input type="text" class="form-control form-control-no-border bg-transparent text-light" formControlName="inlineFormInputGroup" disabled value="+387 63 763 354">
                 </div>
                 <!-- End Phone number set -->
               </div>

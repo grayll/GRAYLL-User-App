@@ -225,14 +225,13 @@ export class AuthService {
   }
   
   // Sign out 
-  SignOut() {
-    
+  SignOut() {    
     localStorage.removeItem('user');    
     this.userData = null  
     this.ngZone.run(()=> {
       return this.firebaseAuth.auth.signOut().then(() => {
         console.log('SignOut')
-        localStorage.removeItem('user');    
+        localStorage.removeItem('user');
         this.userData = null  
       }).catch(err =>{
         console.log('Err:', err)

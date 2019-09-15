@@ -92,7 +92,7 @@ export class DisableMultisignatureComponent implements OnInit {
     },   
   };
 
-  enable() {
+  disable() {
     if (!(this.authService.userData.Tfa && this.authService.userData.Tfa.Enable && 
         this.authService.userData.Tfa.Enable == true)){
       this.errorService.handleError(null, 'Disable multi-signature needs 2FA enable')

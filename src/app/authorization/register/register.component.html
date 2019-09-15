@@ -17,7 +17,7 @@
                   <fa-icon [icon]="userIcon"></fa-icon>
               </span>
             </div>
-            <input formControlName="name" type="text" class="form-control" placeholder="First Name">
+            <input formControlName="name" type="text" class="form-control form-control-no-border" placeholder="First Name">
           </div>
           <small class="text-light" *ngIf="submitted && formErrors.lname">
             {{ formErrors.lname }}
@@ -28,7 +28,7 @@
                   <fa-icon [icon]="userIcon"></fa-icon>
               </span>
             </div>
-            <input formControlName="lname" type="text" class="form-control" placeholder="Last Name">
+            <input formControlName="lname" type="text" class="form-control form-control-no-border" placeholder="Last Name">
           </div>          
           <small class="text-light" *ngIf="submitted && formErrors.email" >
             {{ formErrors.email }}
@@ -39,7 +39,7 @@
                   <fa-icon [icon]="emailIcon"></fa-icon>
               </span>
             </div>
-            <input formControlName="email" type="email" class="form-control" placeholder="Email">
+            <input formControlName="email" type="email" class="form-control form-control-no-border" placeholder="Email">
           </div>
           <!-- <small class="text-light" *ngIf="(password.dirty || password.touched) && password.invalid && password.errors.required">
             Please enter your password.
