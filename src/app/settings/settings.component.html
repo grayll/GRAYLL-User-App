@@ -29,7 +29,6 @@
           <ng-container [ngSwitch]="activeTabId">
             <app-profile-settings *ngSwitchCase="'Profile'"></app-profile-settings>
             <app-notifications-settings *ngSwitchCase="'Notifications'"></app-notifications-settings>
-            <app-messages-settings *ngSwitchCase="'Messages'"></app-messages-settings>
             <app-data-settings *ngSwitchCase="'Data'"></app-data-settings>
             <app-wallet-settings *ngSwitchCase="'Wallet'"></app-wallet-settings>
             <app-security *ngSwitchDefault></app-security>

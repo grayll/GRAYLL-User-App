@@ -1,17 +1,22 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
 import {faCheck, faExclamation} from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from "../../shared/services/auth.service"
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {ErrorService} from '../../shared/error/error.service';
+import axios from 'axios'
+import { environment } from 'src/environments/environment';
+import {SubSink} from 'subsink';
+import {SettingsService} from '../settings.service';
 
 @Component({
   selector: 'app-profile-settings',
   templateUrl: './profile-settings.component.html',
   styleUrls: ['./profile-settings.component.css']
 })
-export class ProfileSettingsComponent {
+export class ProfileSettingsComponent implements OnDestroy {
+  private subscriptions = new SubSink();
 
   federationAddress: string;
   stellarAddress: string;
@@ -28,6 +33,7 @@ export class ProfileSettingsComponent {
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
+    private settingsService: SettingsService,
   ) {
     this.buildForm()     
 
@@ -36,7 +42,14 @@ export class ProfileSettingsComponent {
       this.userData.Lname = ''
     }
     this.federationAddress = this.userData.Federation;
-    this.stellarAddress = this.userData.PublicKey;     
+    this.stellarAddress = this.userData.PublicKey;  
+    
+    this.subscriptions.sink = this.settingsService.observeFederationAddress().subscribe(
+      fed => {
+        this.authService.userData.Federation = fed
+        this.federationAddress = fed
+      }
+    )
   }
  
   buildForm(): void {    
@@ -125,24 +138,64 @@ export class ProfileSettingsComponent {
   }
 
   save() {
-    this.errorService.clearError();
-    console.log('userData:', this.userData)
+    this.errorService.clearError();   
     if (!this.onValueChanged()) {
       return;
     }
-    if (this.profileForm.value['first_name'] && this.profileForm.value['first_name'] != ''){
-      this.authService.userData.name = this.profileForm.value['first_name']
+    let hasChange = false
+    let tmp: any = {}
+    if (this.profileForm.value['first_name'] && this.profileForm.value['first_name'] != ''){      
+      hasChange = true
     }
-    if (this.profileForm.value['last_name'] && this.profileForm.value['last_name'] != ''){
-      this.authService.userData.lname = this.profileForm.value['last_name']
+    if (this.profileForm.value['last_name'] && this.profileForm.value['last_name'] != ''){      
+      hasChange = true
     }
-    if (this.profileForm.value['phone'] && this.profileForm.value['phone'] != ''){
-      this.authService.userData.phone = this.profileForm.value['phone']
+    if (this.profileForm.value['phone'] && this.profileForm.value['phone'] != ''){      
+      hasChange = true
     }
+    tmp.name = this.profileForm.value['first_name']
+    tmp.lname = this.profileForm.value['last_name']
+    tmp.phone = this.profileForm.value['phone']
+    if (!hasChange){
+      return
+    }
+
+    axios.post(`${environment.api_url}api/v1/users/updateprofile`, tmp,
+      { headers: { Authorization: 'Bearer ' + this.authService.userData.token}})
+      .then(res => {
+        console.log(res)
+        if (res.data.valid === true ) {
+          if (tmp.name) {
+            this.authService.userData.name = tmp.name
+          }
+          if (tmp.lname) {
+            this.authService.userData.lname = tmp.lname
+          }
+          if (tmp.phone) {
+            this.authService.userData.phone = tmp.phone
+          }          
+          this.authService.SetLocalUserData()     
+          this.profileForm.reset()   
+          this.snotifyService.simple('Your changes are saved.');
+        } else {
+          switch (res.data.errCode){
+            case environment.INVALID_PARAMS:
+              this.snotifyService.simple('Please check you information.');
+              break
+            case environment.INTERNAL_ERROR:
+              this.snotifyService.simple('Can not update profile right now. Please try again later.');
+              break
+          }
+        }
+      }).catch( err => {
+        this.snotifyService.simple('Can not update profile right now. Please try again later.');
+      })
+        
     
-    this.authService.SetLocalUserData()
-    this.authService.SetUserData(this.authService.userData)
-    this.snotifyService.simple('Your changes are saved.');
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
 }

@@ -218,24 +218,22 @@ export class AuthService {
   }
   
   
-  GetUserData1(uid) {    
-    const document: AngularFirestoreDocument<User> = this.afs.doc(`users/${uid}`)
-    const document$: Observable<User> = document.valueChanges()
-    return document$
-  }
+ 
   
   // Sign out 
-  SignOut() {    
+  SignOut() {
+    
     localStorage.removeItem('user');    
     this.userData = null  
     this.ngZone.run(()=> {
-      return this.firebaseAuth.auth.signOut().then(() => {
-        console.log('SignOut')
-        localStorage.removeItem('user');
-        this.userData = null  
-      }).catch(err =>{
-        console.log('Err:', err)
-      })
+      this.router.navigateByUrl('/login')
+      // return this.firebaseAuth.auth.signOut().then(() => {
+      //   console.log('SignOut')
+      //   localStorage.removeItem('user');
+      //   this.userData = null  
+      // }).catch(err =>{
+      //   console.log('Err:', err)
+      // })
     })
   }
 

@@ -1,0 +1,760 @@
+<!-- Display ONLY on Desktop -->
+<div class="row d-none d-lg-flex">
+  <div class="col-md-12 col-lg-4">
+    <div class="card border-0 no-margin" style="min-height: 562px!important;">
+      <div class="card-body gradient-box">
+        <div class="row">
+          <div class="col">
+            <p class="text-light font-14 mt-2 font-weight-bolder">Open Algorithmic Position</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <app-error></app-error>
+          </div>
+          <div class="col-12">
+            <ngb-tabset type="pills" (tabChange)="didChangeTab($event.nextId)">
+              <ng-container *ngFor="let item of algoItems">
+                <ngb-tab [id]="item.id">
+                  <ng-template ngbTabTitle>
+                    {{item.name}} {{item.tabName}}
+                  </ng-template>
+                  <ng-template ngbTabContent></ng-template>
+                </ngb-tab>
+              </ng-container>
+            </ngb-tabset>
+          </div>
+          <div class="col-md-12" id="open-form">
+            <div class="form-group mb-0 mt-3">
+              <div class="input-group input-group-lg fixed-input-height">
+                <div class="input-group-prepend">
+                  <span class="text-light input-group-text bg-purple dollar-padding">$</span>
+                </div>
+                <input type="text" [(ngModel)]="algoPosition.usdValue"
+                       class="fixed-input-height text-light form-control form-control-no-border bg-purple border-0" placeholder="USD Value (Minimum $10.00)">
+              </div>
+            </div>
+            <div class="form-group mt-3 mb-0">
+              <div class="input-group input-group-lg fixed-input-height">
+                <div class="input-group-prepend">
+                          <span class="input-group-text bg-purple">
+                            <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
+                          </span>
+                </div>
+                <input type="text" class="fixed-input-height text-light form-control form-control-no-border border-0 bg-purple"
+                       [placeholder]="selectedTab.id + ' | ' + selectedTab.value + ' Amount'" [(ngModel)]="algoPosition.itemAmount">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 text-center mt-3">
+            <div class="border-navy">
+              <p class="font-weight-bolder">
+                Current Value GRY/USD | $0.09042
+              </p>
+              <div class="d-flex align-items-center px-1">
+                <div>
+                  <h6 class="font-weight-lighter text-white">% 24h</h6>
+                  <h6 class="text-white font-weight-lighter">11.12</h6>
+                </div>
+                <div class="ml-auto  text-right">
+                  <h6 class="font-weight-lighter text-white">% 7d</h6>
+                  <h6 class="text-white font-weight-lighter">-0.12</h6>
+                </div>
+                <div class="ml-auto  text-right">
+                  <h6 class="font-weight-lighter text-white">% ROI</h6>
+                  <h6 class="text-white font-weight-lighter">1,009.45</h6>
+                </div>
+              </div>
+              <p class="mb-0">
+                Approximately
+                <countdown [config]="countdownConfig"></countdown>
+                Seconds Until <br> GRY/USD Value Update
+              </p>
+            </div>
+          </div>
+          <div class="col-md-12" id="amount-form">
+            <div class="form-group mt-3">
+              <div class="input-group input-group-lg fixed-input-height">
+                <div class="input-group-prepend">
+                          <span class="input-group-text bg-purple">
+                            <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
+                          </span>
+                </div>
+                <input type="text" class="fixed-input-height text-light
+                    form-control form-control-no-border bg-purple border-0"
+                       placeholder="GRX Amount" [(ngModel)]="GRXValue">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group row mb-0">
+              <div class="col">
+                <button type="button" class="text-light btn bg-purple" (click)="openAlgoPosition()">
+                  Open {{selectedTab.name}}
+                </button>
+              </div>
+              <div class="col">
+                <a class="navy-link-white" href="javascript:void(0)" (click)="populateMaxGRX()">
+                  Max Available GRX: {{totalGRX}}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12 col-lg-8">
+    <div class="row">
+      <div class="col-md-12 col-lg-6">
+        <div class="card border-0" style="height: 271px!important;">
+          <div class="card-body gradient-box">
+            <div class="row px-1 mb-3">
+              <div class="col">
+                <h6 class="text-white font-weight-bolder">
+                  GRY 1 | Balthazar
+                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                </h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRY | $0.08000</h6>
+              </div>
+              <div class="col text-right" style="margin-top: -4px;">
+                <div class="border-navy-hover" style="outline:0!important"
+                     (click)="openModal('unread-gry1-notifications')">
+                  <span class="font-weight-bolder">Unread Notifications</span>
+                  <br>
+                  <a href="javascript:void(0)" class="navy-link mt-1">
+                    <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                    <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.numberOfGRY1Notifications}}
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center px-1">
+              <div>
+                <h6 class="font-weight-bolder text-white">% 24h</h6>
+                <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+              </div>
+              <div class="ml-auto  text-right">
+                <h6 class="font-weight-bolder text-white">% 7d</h6>
+                <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+              </div>
+              <div class="ml-auto  text-right">
+                <h6 class="font-weight-bolder text-white">% ROI</h6>
+                <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+              </div>
+            </div>
+            <div class="row mt-3 px-1">
+              <div class="col">
+                <div class="border-navy-hover" (click)="scrollToSystemActivity()">
+                  <h6 class="text-white font-weight-bolder">
+                    GRY 1 | Positions
+                  </h6>
+                  <h6 class="text-white mb-0">121</h6>
+                </div>
+              </div>
+              <div class="col text-right">
+                <h6 class="text-white font-weight-bolder">Current GRY 1 | Profits</h6>
+                <h6 class="text-white mb-0">$7,000.00</h6>
+              </div>
+            </div>
+
+            <div class="row mt-3 px-1">
+              <div class="col">
+                <button class="btn btn-purple" (click)="scrollToSystemActivity()">Close GRY | 1</button>
+              </div>
+              <div class="col text-right">
+                <h6 class="text-white font-weight-bolder">Current Total Value</h6>
+                <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="card border-0 no-margin" style="height: 271px!important;">
+          <div class="card-body gradient-box">
+            <div class="row px-1 mb-3">
+              <div class="col">
+                <h6 class="text-white font-weight-bolder">
+                  GRY 2 | Kaspar
+                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                </h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRY | $0.08000</h6>
+              </div>
+              <div class="col text-right" style="margin-top: -4px;">
+                <div class="border-navy-hover" (click)="openModal('unread-gry2-notifications')"
+                     style="outline:0!important">
+                  <span class="font-weight-bolder">Unread Notifications</span>
+                  <br>
+                  <a href="javascript:void(0)" class="navy-link mt-1">
+                    <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                    <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.numberOfGRY2Notifications}}
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center px-1">
+              <div>
+                <h6 class="font-weight-bolder text-white">% 24h</h6>
+                <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+              </div>
+              <div class="ml-auto  text-right">
+                <h6 class="font-weight-bolder text-white">% 7d</h6>
+                <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+              </div>
+              <div class="ml-auto  text-right">
+                <h6 class="font-weight-bolder text-white">% ROI</h6>
+                <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+              </div>
+            </div>
+            <div class="row mt-3 px-1">
+              <div class="col">
+                <div class="border-navy-hover" (click)="scrollToSystemActivity()">
+                  <h6 class="text-white font-weight-bolder">
+                    GRY 2 | Positions
+                  </h6>
+                  <h6 class="text-white mb-0">121</h6>
+                </div>
+              </div>
+              <div class="col text-right">
+                <h6 class="text-white font-weight-bolder">Current GRY 2 | Profits</h6>
+                <h6 class="text-white mb-0">$7,000.00</h6>
+              </div>
+            </div>
+
+            <div class="row mt-3 px-1">
+              <div class="col">
+                <button class="btn btn-purple" (click)="scrollToSystemActivity()">Close GRY | 2</button>
+              </div>
+              <div class="col text-right">
+                <h6 class="text-white font-weight-bolder">Current Total Value</h6>
+                <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+      <div class="col-md-12 col-lg-6">
+        <div class="card border-0" style="height: 272px!important;">
+          <div class="card-body gradient-box">
+            <div class="row px-1 mb-3">
+              <div class="col">
+                <h6 class="text-white font-weight-bolder">
+                  GRY 3 | Melkior
+                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                </h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRY | $0.08000</h6>
+              </div>
+              <div class="col text-right" style="margin-top: -4px;">
+                <div class="border-navy-hover" (click)="openModal('unread-gry3-notifications')"
+                     style="outline:0!important">
+                  <span class="font-weight-bolder">Unread Notifications</span>
+                  <br>
+                  <a href="javascript:void(0)" class="navy-link mt-1">
+                    <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                    <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.numberOfGRY3Notifications}}
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center px-1">
+              <div>
+                <h6 class="font-weight-bolder text-white">% 24h</h6>
+                <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+              </div>
+              <div class="ml-auto  text-right">
+                <h6 class="font-weight-bolder text-white">% 7d</h6>
+                <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+              </div>
+              <div class="ml-auto  text-right">
+                <h6 class="font-weight-bolder text-white">% ROI</h6>
+                <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+              </div>
+            </div>
+            <div class="row mt-3 px-1">
+              <div class="col">
+                <div class="border-navy-hover" (click)="scrollToSystemActivity()">
+                  <h6 class="text-white font-weight-bolder">
+                    GRY 3 | Positions
+                  </h6>
+                  <h6 class="text-white mb-0">121</h6>
+                </div>
+              </div>
+              <div class="col text-right">
+                <h6 class="text-white font-weight-bolder">Current GRY 3 | Profits</h6>
+                <h6 class="text-white mb-0">$7,000.00</h6>
+              </div>
+            </div>
+
+            <div class="row mt-3 px-1">
+              <div class="col">
+                <button class="btn btn-purple" (click)="scrollToSystemActivity()">Close GRY | 3</button>
+              </div>
+              <div class="col text-right">
+                <h6 class="text-white font-weight-bolder">Current Total Value</h6>
+                <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="card border-0 no-margin" style="height: 272px!important;">
+          <div class="card-body gradient-box">
+            <div class="row px-1 mb-3">
+              <div class="col">
+                <h6 class="text-white font-weight-bolder">
+                  GRZ | Arkady
+                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                </h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRZ | $0.08000</h6>
+              </div>
+              <div class="col text-right" style="margin-top: -4px;">
+                <div class="border-navy-hover" (click)="openModal('unread-grz-notifications')"
+                     style="outline:0!important">
+                  <span class="font-weight-bolder">Unread Notifications</span>
+                  <br>
+                  <a href="javascript:void(0)" class="navy-link mt-1">
+                    <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                    <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.numberOfGRZNotifications}}
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center px-1">
+              <div>
+                <h6 class="font-weight-bolder text-white">% 24h</h6>
+                <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+              </div>
+              <div class="ml-auto  text-right">
+                <h6 class="font-weight-bolder text-white">% 7d</h6>
+                <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+              </div>
+              <div class="ml-auto  text-right">
+                <h6 class="font-weight-bolder text-white">% ROI</h6>
+                <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+              </div>
+            </div>
+            <div class="row mt-3 px-1">
+              <div class="col">
+                <div class="border-navy-hover" (click)="scrollToSystemActivity()">
+                  <h6 class="text-white font-weight-bolder">
+                    GRZ | Positions
+                  </h6>
+                  <h6 class="text-white mb-0">121</h6>
+                </div>
+              </div>
+              <div class="col text-right">
+                <h6 class="text-white font-weight-bolder">Current GRZ | Profits</h6>
+                <h6 class="text-white mb-0">$7,000.00</h6>
+              </div>
+            </div>
+
+            <div class="row mt-3 px-1">
+              <div class="col">
+                <button class="btn btn-purple" (click)="scrollToSystemActivity()">Close GRZ</button>
+              </div>
+              <div class="col text-right">
+                <h6 class="text-white font-weight-bolder">Current Total Value</h6>
+                <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Display ONLY on mobile -->
+<div class="d-lg-none">
+  <ngb-carousel id="carouselSystem" [interval]="0" [showNavigationIndicators]="false">
+    <ng-template ngbSlide>
+      <div class="card border-0">
+        <div class="card-body gradient-box" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+
+          <div class="row">
+            <div class="col">
+              <p class="text-light font-14 mt-2 font-weight-bolder">Open Algorithmic Position</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <app-error></app-error>
+            </div>
+            <div class="col-12">
+              <ngb-tabset type="pills" (tabChange)="didChangeTab($event.nextId)">
+                <ng-container *ngFor="let item of algoItems">
+                  <ngb-tab [id]="item.id">
+                    <ng-template ngbTabTitle>
+                      {{item.name}} {{item.tabName}}
+                    </ng-template>
+                    <ng-template ngbTabContent></ng-template>
+                  </ngb-tab>
+                </ng-container>
+              </ngb-tabset>
+            </div>
+            <div class="col-md-12" id="open-form-mobile">
+              <div class="form-group mb-0 mt-3">
+                <div class="input-group input-group-lg fixed-input-height">
+                  <div class="input-group-prepend">
+                    <span class="text-light input-group-text bg-purple dollar-padding">$</span>
+                  </div>
+                  <input type="text" [(ngModel)]="algoPosition.usdValue"
+                         class="fixed-input-height text-light form-control form-control-no-border bg-purple border-0" placeholder="USD Value (Minimum $10.00)">
+                </div>
+              </div>
+              <div class="form-group mt-3 mb-0">
+                <div class="input-group input-group-lg fixed-input-height">
+                  <div class="input-group-prepend">
+                          <span class="input-group-text bg-purple">
+                            <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
+                          </span>
+                  </div>
+                  <input type="text" class="fixed-input-height text-light form-control form-control-no-border border-0 bg-purple"
+                         [placeholder]="selectedTab.id + ' | ' + selectedTab.value + ' Amount'" [(ngModel)]="algoPosition.itemAmount">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 text-center mt-3">
+              <div class="border-navy">
+                <p class="font-weight-bolder">
+                  Current Value GRY/USD | $0.09042
+                </p>
+                <div class="d-flex align-items-center px-1">
+                  <div>
+                    <h6 class="font-weight-lighter text-white">% 24h</h6>
+                    <h6 class="text-white font-weight-lighter">11.12</h6>
+                  </div>
+                  <div class="ml-auto  text-right">
+                    <h6 class="font-weight-lighter text-white">% 7d</h6>
+                    <h6 class="text-white font-weight-lighter">-0.12</h6>
+                  </div>
+                  <div class="ml-auto  text-right">
+                    <h6 class="font-weight-lighter text-white">% ROI</h6>
+                    <h6 class="text-white font-weight-lighter">1,009.45</h6>
+                  </div>
+                </div>
+                <p class="mb-0">
+                  Approximately
+                  <countdown [config]="countdownConfig"></countdown>
+                  Seconds Until <br> GRY/USD Value Update
+                </p>
+              </div>
+            </div>
+            <div class="col-md-12" id="amount-form-mobile">
+              <div class="form-group mt-3">
+                <div class="input-group input-group-lg fixed-input-height">
+                  <div class="input-group-prepend">
+                          <span class="input-group-text bg-purple">
+                            <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
+                          </span>
+                  </div>
+                  <input type="text" class="fixed-input-height text-light
+                    form-control form-control-no-border bg-purple border-0"
+                         placeholder="GRX Amount" [(ngModel)]="GRXValue">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group row mb-0">
+                <div class="col">
+                  <button type="button" class="text-light btn bg-purple" (click)="openAlgoPosition()">
+                    Open {{selectedTab.name}}
+                  </button>
+                </div>
+                <div class="col">
+                  <a class="navy-link-white" href="javascript:void(0)" (click)="populateMaxGRX()">
+                    Max Available GRX: {{totalGRX}}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </ng-template>
+    <ng-template ngbSlide>
+      <div class="card border-0">
+        <div class="card-body gradient-box" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+          <div class="row px-1 mb-3">
+            <div class="col">
+              <h6 class="text-white font-weight-bolder">
+                GRY 1 | Balthazar
+                <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+              </h6>
+              <h6 class="text-white font-weight-bolder m-b-0">GRY | $0.08000</h6>
+            </div>
+            <div class="col text-right" style="margin-top: -4px;">
+              <div class="mobile-bottom-border" style="outline:0!important"
+                   (click)="openModal('unread-gry1-notifications')">
+                <span class="font-weight-bolder">Unread Notifications</span>
+                <br>
+                <a href="javascript:void(0)" class="navy-link mt-1">
+                  <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                  <span class="badge bg-yellow text-light badge-number">
+                    {{notificationsService.numberOfGRY1Notifications}}
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center px-1">
+            <div>
+              <h6 class="font-weight-bolder text-white">% 24h</h6>
+              <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+            </div>
+            <div class="ml-auto  text-right">
+              <h6 class="font-weight-bolder text-white">% 7d</h6>
+              <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+            </div>
+            <div class="ml-auto  text-right">
+              <h6 class="font-weight-bolder text-white">% ROI</h6>
+              <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+            </div>
+          </div>
+          <div class="row mt-3 px-1">
+            <div class="col">
+              <div class="mobile-bottom-border" (click)="scrollToSystemActivity()">
+                <h6 class="text-white font-weight-bolder">
+                  GRY 1 | Positions
+                </h6>
+                <h6 class="text-white mb-0">121</h6>
+              </div>
+            </div>
+            <div class="col text-right">
+              <h6 class="text-white font-weight-bolder">Current GRY 1 | Profits</h6>
+              <h6 class="text-white mb-0">$7,000.00</h6>
+            </div>
+          </div>
+
+          <div class="row mt-3 px-1">
+            <div class="col">
+              <button class="btn btn-purple" (click)="scrollToSystemActivity()">Close GRY | 1</button>
+            </div>
+            <div class="col text-right">
+              <h6 class="text-white font-weight-bolder">Current Total Value</h6>
+              <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0">
+        <div class="card-body gradient-box" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+          <div class="row px-1 mb-3">
+            <div class="col">
+              <h6 class="text-white font-weight-bolder">
+                GRY 2 | Kaspar
+                <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+              </h6>
+              <h6 class="text-white font-weight-bolder m-b-0">GRY | $0.08000</h6>
+            </div>
+            <div class="col text-right" style="margin-top: -4px;">
+              <div class="mobile-bottom-border" (click)="openModal('unread-gry2-notifications')"
+                   style="outline:0!important">
+                <span class="font-weight-bolder">Unread Notifications</span>
+                <br>
+                <a href="javascript:void(0)" class="navy-link mt-1">
+                  <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                  <span class="badge bg-yellow text-light badge-number">
+                    {{notificationsService.numberOfGRY2Notifications}}
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center px-1">
+            <div>
+              <h6 class="font-weight-bolder text-white">% 24h</h6>
+              <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+            </div>
+            <div class="ml-auto  text-right">
+              <h6 class="font-weight-bolder text-white">% 7d</h6>
+              <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+            </div>
+            <div class="ml-auto  text-right">
+              <h6 class="font-weight-bolder text-white">% ROI</h6>
+              <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+            </div>
+          </div>
+          <div class="row mt-3 px-1">
+            <div class="col">
+              <div class="mobile-bottom-border" (click)="scrollToSystemActivity()">
+                <h6 class="text-white font-weight-bolder">
+                  GRY 2 | Positions
+                </h6>
+                <h6 class="text-white mb-0">121</h6>
+              </div>
+            </div>
+            <div class="col text-right">
+              <h6 class="text-white font-weight-bolder">Current GRY 2 | Profits</h6>
+              <h6 class="text-white mb-0">$7,000.00</h6>
+            </div>
+          </div>
+
+          <div class="row mt-3 px-1">
+            <div class="col">
+              <button class="btn btn-purple" (click)="scrollToSystemActivity()">Close GRY | 2</button>
+            </div>
+            <div class="col text-right">
+              <h6 class="text-white font-weight-bolder">Current Total Value</h6>
+              <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template ngbSlide>
+      <div class="card border-0">
+        <div class="card-body gradient-box" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+          <div class="row px-1 mb-3">
+            <div class="col">
+              <h6 class="text-white font-weight-bolder">
+                GRY 3 | Melkior
+                <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+              </h6>
+              <h6 class="text-white font-weight-bolder m-b-0">GRY | $0.08000</h6>
+            </div>
+            <div class="col text-right" style="margin-top: -4px;">
+              <div class="mobile-bottom-border" (click)="openModal('unread-gry3-notifications')"
+                   style="outline:0!important">
+                <span class="font-weight-bolder">Unread Notifications</span>
+                <br>
+                <a href="javascript:void(0)" class="navy-link mt-1">
+                  <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                  <span class="badge bg-yellow text-light badge-number">
+                    {{notificationsService.numberOfGRY3Notifications}}
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center px-1">
+            <div>
+              <h6 class="font-weight-bolder text-white">% 24h</h6>
+              <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+            </div>
+            <div class="ml-auto  text-right">
+              <h6 class="font-weight-bolder text-white">% 7d</h6>
+              <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+            </div>
+            <div class="ml-auto  text-right">
+              <h6 class="font-weight-bolder text-white">% ROI</h6>
+              <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+            </div>
+          </div>
+          <div class="row mt-3 px-1">
+            <div class="col">
+              <div class="mobile-bottom-border" (click)="scrollToSystemActivity()">
+                <h6 class="text-white font-weight-bolder">
+                  GRY 3 | Positions
+                </h6>
+                <h6 class="text-white mb-0">121</h6>
+              </div>
+            </div>
+            <div class="col text-right">
+              <h6 class="text-white font-weight-bolder">Current GRY 3 | Profits</h6>
+              <h6 class="text-white mb-0">$7,000.00</h6>
+            </div>
+          </div>
+
+          <div class="row mt-3 px-1">
+            <div class="col">
+              <button class="btn btn-purple" (click)="scrollToSystemActivity()">Close GRY | 3</button>
+            </div>
+            <div class="col text-right">
+              <h6 class="text-white font-weight-bolder">Current Total Value</h6>
+              <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0">
+        <div class="card-body gradient-box" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+          <div class="row px-1 mb-3">
+            <div class="col">
+              <h6 class="text-white font-weight-bolder">
+                GRZ | Arkady
+                <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+              </h6>
+              <h6 class="text-white font-weight-bolder m-b-0">GRZ | $0.08000</h6>
+            </div>
+            <div class="col text-right" style="margin-top: -4px;">
+              <div class="mobile-bottom-border" (click)="openModal('unread-grz-notifications')"
+                   style="outline:0!important">
+                <span class="font-weight-bolder">Unread Notifications</span>
+                <br>
+                <a href="javascript:void(0)" class="navy-link mt-1">
+                  <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                  <span class="badge bg-yellow text-light badge-number">
+                    {{notificationsService.numberOfGRZNotifications}}
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center px-1">
+            <div>
+              <h6 class="font-weight-bolder text-white">% 24h</h6>
+              <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+            </div>
+            <div class="ml-auto  text-right">
+              <h6 class="font-weight-bolder text-white">% 7d</h6>
+              <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+            </div>
+            <div class="ml-auto  text-right">
+              <h6 class="font-weight-bolder text-white">% ROI</h6>
+              <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+            </div>
+          </div>
+          <div class="row mt-3 px-1">
+            <div class="col">
+              <div class="mobile-bottom-border" (click)="scrollToSystemActivity()">
+                <h6 class="text-white font-weight-bolder">
+                  GRZ | Positions
+                </h6>
+                <h6 class="text-white mb-0">121</h6>
+              </div>
+            </div>
+            <div class="col text-right">
+              <h6 class="text-white font-weight-bolder">Current GRZ | Profits</h6>
+              <h6 class="text-white mb-0">$7,000.00</h6>
+            </div>
+          </div>
+
+          <div class="row mt-3 px-1">
+            <div class="col">
+              <button class="btn btn-purple" (click)="scrollToSystemActivity()">Close GRZ</button>
+            </div>
+            <div class="col text-right">
+              <h6 class="text-white font-weight-bolder">Current Total Value</h6>
+              <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </ngb-carousel>
+</div>
+
+<app-unread-notifications></app-unread-notifications>

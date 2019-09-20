@@ -1,6 +1,5 @@
 <div class="card e-campaign border-0 h-100">
-  <div class="card-body bg-gradient">
-    <h5 class="card-title">GRAYLL Wallet</h5>
+  <div class="card-body bg-gradient pb-0">
     <div class="row">
       <div class="col-sm-12 col-md-6 text-center">
         <div class="css-bar css-bar-25 css-bar-xlg css-bar-purple">
@@ -12,62 +11,50 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-12 col-md-6">
-        <!-- Shown only on mobile -->
-        <ul class="list-style-none stats p-0 d-md-none">
-          <li>
-            <i class="text-purple font-16">
-              <fa-icon [icon]="faCircle"></fa-icon>
-            </i>
-            <span class="font-16"> 25% GRX</span>
-            <br>
-            <h5 class="font-weight-bolder">
-              $335.68
-            </h5>
-          </li>
-          <li>
-            <i class="text-sky font-16">
-              <fa-icon [icon]="faCircle"></fa-icon>
-            </i>
-            <span class="font-16"> 75% XLM</span>
-            <br>
-            <h5 class="font-weight-bolder">
-              $335.68
-            </h5>
-          </li>
-        </ul>
-        <div class="w-auto c-cost">
-          <div class="d-inline-block align-middle text-yellow">
-            <fa-icon [icon]="faWallet" size="3x" fixedWidth></fa-icon>
+      <div class="col-sm-12 col-md-6 wallet">
+        <div class="row">
+          <div class="bottom-border-navy-animated col-12" routerLink="/wallet/overview" style="outline: none!important">
+            <div class="w-auto c-cost">
+              <div class="d-inline-block align-middle text-yellow">
+                <fa-icon [icon]="faWallet" size="3x" fixedWidth></fa-icon>
+              </div>
+              <div class="d-inline-block text-white align-middle wallet-box">
+                <span class="text-light font-16">Wallet Balance</span>
+                <h5 class="text-light font-weight-bolder">$435,320.68</h5>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-6 mt-3">
+                <i class="text-purple font-16">
+                  <fa-icon [icon]="faCircle"></fa-icon>
+                </i>
+                <span class="font-16"> 25% GRX</span>
+                <br>
+                <p class="font-weight-bolder p-font">
+                  $1,000,000,000.00
+                </p>
+              </div>
+              <div class="col-6 text-right mt-3">
+                <i class="m-r-5 text-sky font-16">
+                  <fa-icon [icon]="faCircle"></fa-icon>
+                </i>
+                <span class="font-16"> 75% XLM</span>
+                <br>
+                <p class="m-b-0 font-weight-bolder p-font">
+                  $1,000,000,000.00
+                </p>
+              </div>
+            </div>
           </div>
-          <div class="d-inline-block text-white align-middle wallet-box">
-            <span class="text-light font-16">Wallet balance</span>
-            <h5 class="text-light font-weight-bolder">$435,320.68</h5>
+          <div class="col-6 mt-2">
+            <button [routerLink]="['/wallet/overview', {outlets: {popup: 'deposit'}}]" type="button"
+                    class="text-light btn bg-purple mt-2">Deposit</button>
+          </div>
+          <div class="col-6 mt-2 text-right">
+            <button [routerLink]="['/wallet/overview', {outlets: {popup: 'withdraw'}}]" type="button"
+                    class="text-light btn bg-purple mt-2">Withdraw</button>
           </div>
         </div>
-        <!-- Same code - shown only on larger devices -->
-        <ul class="list-style-none stats p-0 d-none d-none d-md-block">
-          <li>
-            <i class="text-purple font-16">
-              <fa-icon [icon]="faCircle"></fa-icon>
-            </i>
-            <span class="font-16"> 25% GRX</span>
-            <br>
-            <h5 class="font-weight-bolder">
-              $335.68
-            </h5>
-          </li>
-          <li class="m-t-10">
-            <i class="m-r-5 text-sky font-16">
-              <fa-icon [icon]="faCircle"></fa-icon>
-            </i>
-            <span class="font-16"> 75% XLM</span>
-            <br>
-            <h5 class="m-b-0 font-weight-bolder">
-              $335.68
-            </h5>
-          </li>
-        </ul>
       </div>
     </div>
   </div>

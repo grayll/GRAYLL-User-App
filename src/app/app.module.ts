@@ -1,4 +1,4 @@
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, HAMMER_GESTURE_CONFIG, HammerGestureConfig} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -29,24 +29,23 @@ import { FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import { StellarService } from './authorization/services/stellar-service';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
-//import { environment } from '../environments/environment';
-//import { NewPasswordComponent } from './authorization/new-password/new-password.component';
-// import { TwoFactorComponent } from './authorization/two-factor/two-factor.component';
-// import { RegisterComponent } from './authorization/register/register.component';
-// import { HandleComponent } from './authorization/handle/handle.component'
+
+declare var Hammer: any;
+
+export class MyHammerConfig extends HammerGestureConfig  {
+  buildHammer(element: HTMLElement) {
+    const mc = new Hammer(element, {
+      touchAction: 'pan-y'
+    });
+    return mc;
+  }
+}
 
 @NgModule({
   declarations: [
     AppComponent,
     NotFoundComponent,
-    ErrorPageComponent,
-   // LoginComponent,
-    //NewPasswordComponent,
-    // TwoFactorComponent,
-    // RegisterComponent,
-    //ErrorComponent,
-    //RecoverPwdComponent,
-    //HandleComponent,
+    ErrorPageComponent
   ],
   imports: [
     BrowserModule,

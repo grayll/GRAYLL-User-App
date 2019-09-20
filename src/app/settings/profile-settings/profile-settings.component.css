@@ -24,6 +24,23 @@
   border-bottom-color: #40278C!important;
 }
 
+.input-group-text {
+  background-color: #40278C!important;
+}
+
+::placeholder {
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
+}
+
 @media (max-width: 768px) {
   .card {
     margin-bottom: 1.2rem!important;

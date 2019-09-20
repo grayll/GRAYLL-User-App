@@ -1,66 +1,45 @@
 <div class="card border-0 h-100">
-  <div class="card-body bg-pink">
-    <div class="d-md-flex align-items-center m-b-20">
-      <div class="text-light">
-        <h5 class="card-title">Trade GRX</h5>
-        <h6 class="font-16">Buy &amp; Sell GRAYLL GRX</h6>
+  <div class="card-body bg-pink pb-0">
+    <div class="row">
+      <div class="bottom-border-navy-animated col-12" routerLink="/system/overview" style="outline: none!important">
+        <div class="w-auto c-cost text-left">
+          <div class="d-inline-block align-middle mr-2 text-purple">
+            <fa-icon [icon]="faChartLine" size="3x" fixedWidth></fa-icon>
+          </div>
+          <div class="d-inline-block text-white align-middle">
+            <span class="text-light font-16">Algo System Balance</span>
+            <h5 class="text-light font-weight-bolder">$1,000,000,000,00</h5>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-6 mt-4">
+            <i class="text-yellow font-16">
+              <fa-icon [icon]="faCircle"></fa-icon>
+            </i>
+            <span class="font-16 text-white"> 25% GRX</span>
+            <br>
+            <p class="font-weight-bolder p-font text-white">
+              $1,000,000,000.00
+            </p>
+          </div>
+          <div class="col-6 mt-4 text-right">
+            <i class="m-r-5 text-white font-16">
+              <fa-icon [icon]="faCircle"></fa-icon>
+            </i>
+            <span class="font-16 text-white"> 75% XLM</span>
+            <br>
+            <p class="m-b-0 font-weight-bolder p-font text-white">
+              $1,000,000,000.00
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 mt-2">
+        <button type="button" routerLink="/system/overview" class="text-light btn bg-purple mt-2">Open</button>
+      </div>
+      <div class="col-6 mt-2 text-right">
+        <button type="button" routerLink="/system/overview" class="text-light btn bg-purple mt-2">Close</button>
       </div>
     </div>
-    <ngb-tabset type="pills" class="custom-pills">
-      <ngb-tab title="Buy">
-        <ng-template ngbTabContent>
-          <form class="mt-2">
-            <div class="form-group">
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="input-group-text bg-purple">
-                    <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
-                  </span>
-                </div>
-                <input type="text" class="text-light form-control bg-purple" placeholder="GRX Amount">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="text-yellow input-group-text bg-purple dollar-padding">$</span>
-                </div>
-                <input type="text" class="text-light form-control bg-purple" placeholder="USD Value">
-              </div>
-            </div>
-            <div class="form-group">
-              <button type="button" class="text-light btn bg-purple">Buy GRX</button>
-            </div>
-          </form>
-        </ng-template>
-      </ngb-tab>
-      <ngb-tab title="Sell">
-        <ng-template ngbTabContent>
-          <form class="mt-2">
-            <div class="form-group">
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="input-group-text bg-purple">
-                    <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
-                  </span>
-                </div>
-                <input type="text" class="text-light form-control bg-purple" placeholder="GRX Amount">
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="text-yellow input-group-text bg-purple dollar-padding">$</span>
-                </div>
-                <input type="text" class="text-light form-control bg-purple" placeholder="USD Value">
-              </div>
-            </div>
-            <div class="form-group">
-              <button type="button" class="text-light btn bg-purple">Sell GRX</button>
-            </div>
-          </form>
-        </ng-template>
-      </ngb-tab>
-    </ngb-tabset>
   </div>
 </div>

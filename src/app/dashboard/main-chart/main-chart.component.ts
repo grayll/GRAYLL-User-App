@@ -1,5 +1,6 @@
 import {AfterViewInit, Component} from '@angular/core';
 import * as c3 from 'c3';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-main-chart',
@@ -28,7 +29,9 @@ export class MainChartComponent implements AfterViewInit {
 
   selectedTimespan: {id: number, name: string} = this.timespanFilter[0];
 
-  constructor() { }
+  constructor(
+    private router: Router
+  ) { }
 
   ngAfterViewInit() {
     const chart = c3.generate({
@@ -70,6 +73,16 @@ export class MainChartComponent implements AfterViewInit {
         pattern: ['#ff821c', '#40c4ff', '#1240c2']
       }
     });
+  }
+
+
+  scrollToOpenAlgoPositionForm() {
+    const el = document.getElementById('algoPositionForm');
+    if (el) {
+      el.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+    } else {
+      this.router.navigate(['/system/overview']);
+    }
   }
 
 }

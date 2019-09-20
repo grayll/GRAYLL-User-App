@@ -10,7 +10,7 @@
 
         <div class="row">
           <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="federationAddress" triggers="click:blur">
-            <input disabled [value]="federationAddress" type="text" class="form-control bg-transparent text-light">
+            <input disabled [value]="federationAddress" type="text" class="form-control form-control-no-border bg-transparent text-light">
           </div>
           <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
             <button (click)="copyFederationAddress()" class="btn btn-block btn-yellow">Copy Address</button>
@@ -33,7 +33,7 @@
 
 <div class="row">
   <div class="col-md-6 col-xs-12">
-    <div class="card border-0 mb-0">
+    <div class="card border-0 mb-0 card-with-margin">
       <div class="card-body bg-gradient text-light">
         <div class="row">
           <div class="col">
@@ -42,7 +42,7 @@
 
             <div class="row">
               <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="stellarAddress" triggers="click:blur">
-                <input disabled [value]="stellarAddress" type="text" class="form-control">
+                <input disabled [value]="stellarAddress" type="text" class="form-control form-control-no-border bg-transparent text-light">
               </div>
               <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
                 <button (click)="copyStellarAddress()" class="btn btn-block btn-yellow">Copy Address</button>
@@ -70,7 +70,7 @@
 
             <div class="row" *ngIf="isSecretKeyRevealed">
               <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="secretKey" triggers="click:blur">
-                <input disabled [value]="secretKey" type="text" class="form-control">
+                <input disabled [value]="secretKey" type="text" class="form-control form-control-no-border">
               </div>
               <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
                 <button (click)="toggleRevealSecretKey()" class="btn btn-block btn-yellow">Hide Secret Key</button>

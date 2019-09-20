@@ -44,14 +44,15 @@
   color: #40278C!important;
 }
 
-.form-control {
-  background: transparent!important;
-  color: #fff!important;
-}
-
 select:focus::-ms-value {
   color: white!important;
-  background-image: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+}
+
+::ng-deep .form-control:focus {
+  border-color: #ced4da!important;
+  outline: 0!important;
+  -webkit-box-shadow: none!important;
+  box-shadow: none!important;
 }
 
 .report-time {
@@ -117,27 +118,27 @@ select:focus::-ms-value {
   background: #40278C;
 }
 
-::ng-deep .ng-option {
+::ng-deep #country .ng-option {
   color: white!important;
   background-image: linear-gradient(to right, #636fa4, #e8cbc0) !important;
   height: 36px!important;
   width: 300px!important;
 }
 
-::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
+::ng-deep #country .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
   background-color: #e8cbc0!important;
   color: #40278C!important;
   height: 36px!important;
   width: 300px!important;
 }
 
-::ng-deep .ng-select {
+::ng-deep #country .ng-select {
   color: white!important;
   height: 36px!important;
   width: 300px!important;
 }
 
-::ng-deep .ng-select-container {
+::ng-deep #country .ng-select-container {
   background-image: linear-gradient(to right, #636fa4, #e8cbc0) !important;
   color: white!important;
   height: 36px!important;

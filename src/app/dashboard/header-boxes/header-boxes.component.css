@@ -20,3 +20,13 @@
 .card-body {
   border-radius: 4px !important;
 }
+
+@media (max-width: 991px) {
+  .first-box {
+    background: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  }
+
+  .third-box {
+    background: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  }
+}

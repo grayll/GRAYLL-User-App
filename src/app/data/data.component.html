@@ -1,0 +1,34 @@
+<app-navbar></app-navbar>
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="container-fluid pt-0">
+
+      <h4 class="text-light pt-3 pb-1">
+        Data
+      </h4>
+
+      <!-- Top 3 boxes -->
+      <app-data-header-boxes></app-data-header-boxes>
+      <br class="d-none d-lg-block">
+      <!-- Large chart -->
+      <app-main-chart></app-main-chart>
+
+      <div class="justify-content-center align-items-center">
+        <ngb-tabset>
+          <ngb-tab title="GRAYLL System Activity">
+            <ng-template ngbTabContent>
+              <app-activity></app-activity>
+            </ng-template>
+          </ngb-tab>
+
+          <ngb-tab title="GRAYLL Wallet Activity">
+            <ng-template ngbTabContent>
+              <app-account-activity></app-account-activity>
+            </ng-template>
+          </ngb-tab>
+        </ngb-tabset>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {faChartLine, faCircle, faWallet} from '@fortawesome/free-solid-svg-icons';
 import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
+import {NgbCarousel} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-wallet-stats',
@@ -9,6 +10,8 @@ import {SnotifyService} from 'ng-snotify';
   styleUrls: ['./wallet-stats.component.scss']
 })
 export class WalletStatsComponent implements OnInit {
+
+  @ViewChild(NgbCarousel) carouselWallet;
 
   faWallet = faWallet;
   faCircle = faCircle;
@@ -64,6 +67,14 @@ export class WalletStatsComponent implements OnInit {
 
   goToTop() {
     window.scroll(0, 0);
+  }
+
+  swipeLeft() {
+    this.carouselWallet.next();
+  }
+
+  swipeRight() {
+    this.carouselWallet.prev();
   }
 
 }

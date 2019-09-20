@@ -7,6 +7,20 @@
   height: 18px;
 }
 
+::ng-deep ul.nav-tabs {
+  justify-content: center!important;
+  border: 0;
+}
+
+.c-cost {
+  padding: 20px 20px;
+  border: 1px solid #40278C !important;
+  border-radius: 5px;
+  i {
+    font-size: 48px;
+  }
+}
+
 ::ng-deep .nav-pills {
   .nav-link {
     border-radius: 0;
@@ -24,18 +38,7 @@
 
 input {
   border-left: 1px solid #CFA256;
-  height: calc(1.5em + 1rem + 2px)!important;
   line-height: calc(1.5em + 1rem + 2px)!important;
-}
-
-input[type=text]:focus {
-  color: black!important;
-  background-color: #fff!important;
-}
-
-input,
-input::-webkit-input-placeholder {
-  font-size: 0.9rem;
 }
 
 ::placeholder {
@@ -58,4 +61,16 @@ input::-webkit-input-placeholder {
 
 .card {
   background-color: #636fa4 !important;
+}
+
+@media (max-width: 480px) {
+  .p-font {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 481px) {
+  .p-font {
+    font-size: 16px;
+  }
 }

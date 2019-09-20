@@ -8,11 +8,7 @@
         </div>
         <div class="card-body">
           <form [formGroup]="handleForm">
-            <app-error></app-error>
-            <!-- <small class="text-light" *ngIf="(password.dirty || password.touched)
-            && password.invalid && password.errors.required">
-              Please enter your new password.
-            </small> -->
+            <app-error></app-error>            
             <small class="text-light" *ngIf="submitted && formErrors.password">
               {{formErrors.password}}
             </small>
@@ -23,11 +19,7 @@
                 </span>
               </div>
               <input formControlName="password" type="password" class="form-control" placeholder="Password">
-            </div>
-            <!-- <small class="text-light" *ngIf="(confirm.dirty || confirm.touched)
-              && (confirm.value !== password.value)">
-              Passwords do not match.
-            </small> -->
+            </div>            
             <small class="text-light" *ngIf="submitted && formErrors.confirm">
               {{formErrors.confirm}}
             </small>
@@ -52,7 +44,7 @@
         </div>
         <div class="card-body">
           <form [formGroup]="handleForm">
-              <p class="text-purple text-center">{{content}}</p>
+              <p class="text-purple text-center">Your account is verifed. You can now login to GrayLL</p>
             <!-- <span class="badge float-center text-light mr-1" style="line-height: normal">                  
               Your email is verified.
             </span>                   -->
@@ -62,11 +54,31 @@
       <div *ngIf="(mode && mode ==='confirmIp')">
         <div class="card-header text-center">
           <img class="img img-fluid logo" src="assets/images/logo.png" alt="Logo">
-          <h4 class="text-light">IP Confirmation</h4>
+          <h4 class="text-light">IP Address Confirmation</h4>
         </div>
         <div class="card-body">
           <form [formGroup]="handleForm">
-              <p class="text-purple text-center">{{content}}</p>
+            <span class="text-purple text-center">
+              Your IP address is confirmed.
+            </span>
+            <a href="javascript:void(0)" routerLink="/login" class="blue-link">You can now login.</a>
+            <!-- <span class="badge float-center text-light mr-1" style="line-height: normal">                  
+              Your email is verified.
+            </span>                   -->
+          </form>
+        </div>
+      </div>
+      <div *ngIf="(mode && mode ==='changeEmail')">
+        <div class="card-header text-center">
+          <img class="img img-fluid logo" src="assets/images/logo.png" alt="Logo">
+          <h4 class="text-light">Change email request</h4>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="handleForm">
+            <span class="text-purple text-center">
+              Your new email is updated. Please login to new email to verify!
+            </span>
+            <a href="javascript:void(0)" routerLink="/login" class="blue-link">You can now login.</a>
             <!-- <span class="badge float-center text-light mr-1" style="line-height: normal">                  
               Your email is verified.
             </span>                   -->
@@ -75,7 +87,7 @@
       </div>
       <div class="card-footer">
         <div class="d-flex justify-content-center">
-          <a class="blue-link" routerLink="/login">Return to login</a>
+          <button class="btn btn-purple">Return to Login</button>
         </div>
       </div>
     </div>

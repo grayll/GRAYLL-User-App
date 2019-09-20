@@ -17,7 +17,27 @@ const routes: Routes = [
     path: 'dashboard',
     loadChildren: './dashboard/dashboard.module#DashboardModule',
     canActivate: [AuthGuard],
-  },  
+  },
+  {
+    path: 'system',
+    loadChildren: './system/system.module#SystemModule',
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'wallet',
+    loadChildren: './wallet/wallet.module#WalletModule',
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'data',
+    loadChildren: './data/data.module#DataModule',
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'notifications',
+    loadChildren: './notifications/notifications.module#NotificationsModule',
+    canActivate: [AuthGuard],
+  },
   {
     path: 'settings',
     loadChildren: './settings/settings.module#SettingsModule',
@@ -26,6 +46,12 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: '/login',
+    pathMatch: 'full',
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'dashboard',
+    redirectTo: '/dashboard/overview',
     pathMatch: 'full',
     canActivate: [AuthGuard],
   },
@@ -42,76 +68,6 @@ const routes: Routes = [
     redirectTo: '/404'
   }
 ];
-
-// const routes: Routes = [
-//   {
-//     path: 'login',
-//     loadChildren: './authorization/authorization.module#AuthorizationModule'
-//   },
-//   {
-//     path: 'dashboard',
-//     loadChildren: './dashboard/dashboard.module#DashboardModule'
-//   },
-//   {
-//     path: 'wallet',
-//     loadChildren: './wallet/wallet.module#WalletModule'
-//   },
-//   {
-//     path: 'settings',
-//     loadChildren: './settings/settings.module#SettingsModule'
-//   },
-//   {
-//     path: '',
-//     redirectTo: '/wallet/overview',
-//     pathMatch: 'full'
-//   },
-//   {
-//     path: '404',
-//     component: NotFoundComponent
-//   },
-//   {
-//     path: 'error',
-//     component: ErrorPageComponent
-//   },
-//   {
-//     path: '**',
-//     redirectTo: '/404'
-//   }
-// ];
-
-// const routes: Routes = [
-//   {
-//     path: 'login',
-//     loadChildren: './authorization/authorization.module#AuthorizationModule'    
-//   },  
-//   {
-//     path: 'dashboard',
-//     loadChildren: './dashboard/dashboard.module#DashboardModule',
-//     canActivate: [AuthGuard],
-//   },
-//   {
-//     path: 'settings',
-//     loadChildren: './settings/settings.module#SettingsModule',
-//     canActivate: [AuthGuard],
-//   },
-//   {
-//     path: '',
-//     redirectTo: '/login',
-//     pathMatch: 'full'
-//   },  
-//   {
-//     path: '404',
-//     component: NotFoundComponent
-//   },
-//   {
-//     path: 'error',
-//     component: ErrorPageComponent
-//   },
-//   {
-//     path: '**',
-//     redirectTo: '/404'
-//   }
-// ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

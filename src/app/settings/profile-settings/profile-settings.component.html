@@ -34,7 +34,7 @@
 
             <div class="row">
               <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="stellarAddress" triggers="click:blur">
-                <input disabled [value]="userData.PublicKey" type="text" class="form-control form-control-no-border bg-transparent text-light">
+                <input disabled [value]="stellarAddress" type="text" class="form-control form-control-no-border bg-transparent text-light">
               </div>
               <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
                 <button (click)="copyStellarAddress()" class="btn btn-block btn-yellow">Copy Address</button>
@@ -73,7 +73,7 @@
                   <fa-icon [icon]="faExclamation"></fa-icon>
                   Unverified
                 </span> -->
-                <input type="email" class="form-control" formControlName="email" disable placeholder="{{userData.Email}}">
+                <input type="email" class="form-control form-control-no-border bg-transparent text-light" formControlName="email" disable placeholder="{{userData.Email}}">
               </div>
               <div class="form-group">
                 <label for="password">Password</label>

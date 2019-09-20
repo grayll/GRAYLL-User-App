@@ -1,0 +1,20 @@
+.small-grayll-icon {
+  width: 18px;
+}
+
+.white-link {
+  color: #fff!important;
+}
+
+.white-link:hover {
+  color: #cfa256!important;
+  cursor: pointer!important;
+}
+
+.hover {
+  outline: none!important;
+}
+
+.hover:hover {
+  cursor: pointer!important;
+}

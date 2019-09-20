@@ -24,6 +24,16 @@
   padding-right: 19px!important;
 }
 
+.input-grout-text {
+  background-color: transparent!important;
+  border: 0!important;
+}
+
+::ng-deep .ng-select .ng-select-container {
+  background-color: #40278C!important;
+  border: 0!important;
+}
+
 .purple-link {
   color: #40278C!important;
 }

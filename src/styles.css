@@ -104,6 +104,43 @@ h6 {
   background-color: #AC7F31!important;
 }
 
+.dark-navy-bg {
+  background-color: #414755!important;
+}
+
+/* Global animations */
+.bottom-border-navy-animated:hover {
+  cursor: pointer;
+}
+
+/* Animate bottom border on hover */
+.bottom-border-navy-animated:after {
+  padding-bottom: 0.5rem;
+  content: ""; /* This is necessary for the pseudo element to work. */
+  display: block; /* This will put the pseudo element on its own line. */
+  width: 0%; /* Change this to whatever width you want to have before hover. */
+  border-bottom: 2px solid #40278C!important; /* This creates the border. Replace black with whatever color you want. */
+  transition: .5s; /* This establishes the amount of time in seconds the animation should take from start to finish */
+}
+
+.bottom-border-navy-animated:hover:after {
+  width: 100%; /* This will be the new width of your border when on hover */
+}
+
+.mobile-bottom-border:hover {
+  padding-bottom: 0.1rem;
+  border-bottom: 2px solid #40278C!important; /* This creates the border. Replace black with whatever color you want. */
+}
+
+
+/* Removing blue glow border from all form-control form-control-no-border inputs */
+.form-control-no-border:focus {
+  border-color: #ced4da!important;
+  outline: 0!important;
+  -webkit-box-shadow: none!important;
+  box-shadow: none!important;
+}
+
 /* Overriding default settings to satisfy client's requests */
 .row {
   margin-left: -10px!important;

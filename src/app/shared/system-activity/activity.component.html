@@ -1,0 +1,252 @@
+<router-outlet name="popup"></router-outlet>
+<div class="bg-gradient text-light" id="systemActivityTable">
+  <div class="row align-items-center justify-content-center p-2">
+    <div class="col">
+      <span class="lead align-middle">Activity</span>
+    </div>
+    <div class="col-xs-12 col-md-6 justify-content-center align-items-center" *ngIf="selectedTab">
+      <ngb-tabset type="pills" class="custom-pills" (tabChange)="onTabChange($event.nextId)" [activeId]="selectedTab.id">
+        <ng-container *ngFor="let tab of activityTabs">
+          <ngb-tab [id]="tab.id" [title]="tab.name"></ngb-tab>
+        </ng-container>
+      </ngb-tabset>
+    </div>
+    <div class="col text-center">
+      <hr class="mt-0 d-sm-none">
+      <a class="purple-link" href="javascript:void(0)">
+        <fa-icon [icon]="faDownload" [fixedWidth]="true"></fa-icon>
+        Download Activity History
+      </a>
+    </div>
+  </div>
+
+  <hr class="mt-0 mb-0">
+</div>
+
+<div class="bg-gradient text-light"
+     *ngIf="selectedTab && (selectedTab.id === 'openAlgoPositions' || selectedTab.id === 'allAlgoPositions')">
+  <div class="row justify-content-center align-items-center mb-1 p-2">
+    <div class="col-md-2 col-xs">
+      <span class="align-middle font-weight-bolder font-14">Open Algo Positions (1)</span>
+    </div>
+    <div class="col" [routerLink]="['/system/overview', {outlets: {popup: 'cancel-algo-positions'}}]" style="outline: none;">
+      <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+      <span class="ml-1 cancel text-danger">Close All Algo Positions</span>
+    </div>
+    <div class="col">
+      <div class="row">
+        <div class="col search">
+          <div class="input-group">
+            <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                   type="search" style="border-color: #40278C!important">
+            <span class="input-group-append">
+              <div class="input-group-text bg-transparent">
+                <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+              </div>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col d-none d-md-block"></div>
+  </div>
+</div>
+
+<div class="table-responsive bg-gradient text-light pull-top"
+     *ngIf="selectedTab && (selectedTab.id === 'openAlgoPositions' || selectedTab.id === 'allAlgoPositions')">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th>Open Date</th>
+      <th>Status</th>
+      <th>Duration</th>
+      <th>Algorithm</th>
+      <th>Price (GRX)</th>
+      <th>Price (USD)</th>
+      <th (click)="sortByPositionValue()" class="cancel">
+        Position Value (USD)
+        <fa-icon [icon]="faSortByPositionValue" style="color: #40278C;"></fa-icon>
+      </th>
+      <th (click)="sortByPositionProfit()" class="cancel">
+        Position Profit (USD)
+        <fa-icon [icon]="faSortByPositionProfit" style="color: #40278C;"></fa-icon>
+      </th>
+      <th (click)="sortByROI()" class="cancel">
+        ROI
+        <fa-icon [icon]="faSortByROI" style="color: #40278C;"></fa-icon>
+      </th>
+      <th>GRAYLL Transaction ID</th>
+      <th>Stellar Transaction ID</th>
+      <th>Info</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light">
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>OPEN</td>
+      <td>
+        <countdown [config]="countdownConfig"></countdown>
+      </td>
+      <td>GRY 1</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>2,110,000,000.55555</td>
+      <td>1,000,000,000.55555</td>
+      <td>110.22%</td>
+      <td>0108181408618385411</td>
+      <td>0108181408618385411</td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+      <td>
+        <a href="javascript:void(0)" class="purple-link">
+          <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+          <span class="ml-1 cancel text-danger">Close</span>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="bg-gradient text-light" *ngIf="selectedTab">
+  <div class="row justify-content-center align-items-center mb-1 p-2"
+       *ngIf="selectedTab.id === 'closedAlgoPositions' || selectedTab.id === 'allAlgoPositions'">
+    <div class="col-md-2 col-xs">
+      <span class="align-middle font-14 font-weight-bolder">Closed Algo Positions (10)</span><br>
+      <span class="text-light font-10 font-weight-bolder">Most Recent Closed Positions</span>
+    </div>
+    <div class="col">
+      <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
+        All Closed Algo Positions
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="table-responsive bg-gradient text-light pull-top"
+     *ngIf="selectedTab && (selectedTab.id === 'closedAlgoPositions' || selectedTab.id === 'allAlgoPositions')">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th>Open Date</th>
+      <th>Status</th>
+      <th>Duration</th>
+      <th>Algorithm</th>
+      <th>Price (GRX)</th>
+      <th>Price (USD)</th>
+      <th (click)="sortByPositionValue()" class="cancel">
+        Position Value (USD)
+        <fa-icon [icon]="faSortByPositionValue" style="color: #40278C;"></fa-icon>
+      </th>
+      <th (click)="sortByPositionProfit()" class="cancel">
+        Position Profit (USD)
+        <fa-icon [icon]="faSortByPositionProfit" style="color: #40278C;"></fa-icon>
+      </th>
+      <th (click)="sortByROI()" class="cancel">
+        ROI
+        <fa-icon [icon]="faSortByROI" style="color: #40278C;"></fa-icon>
+      </th>
+      <th>GRAYLL Transaction ID</th>
+      <th>Stellar Transaction ID</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light">
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>CLOSED</td>
+      <td>23:59 | 12</td>
+      <td>GRY 1</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>2,110,000,000.55555</td>
+      <td>1,000,000,000.55555</td>
+      <td>110.22%</td>
+      <td>0108181408618385411</td>
+      <td>0108181408618385411</td>
+      <td><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>CLOSED</td>
+      <td>23:59 | 12</td>
+      <td>GRY 1</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>2,110,000,000.55555</td>
+      <td>1,000,000,000.55555</td>
+      <td>110.22%</td>
+      <td>0108181408618385411</td>
+      <td>0108181408618385411</td>
+      <td><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>CLOSED</td>
+      <td>23:59 | 12</td>
+      <td>GRY 1</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>2,110,000,000.55555</td>
+      <td>1,000,000,000.55555</td>
+      <td>110.22%</td>
+      <td>0108181408618385411</td>
+      <td>0108181408618385411</td>
+      <td><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>CLOSED</td>
+      <td>23:59 | 12</td>
+      <td>GRY 1</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>2,110,000,000.55555</td>
+      <td>1,000,000,000.55555</td>
+      <td>110.22%</td>
+      <td>0108181408618385411</td>
+      <td>0108181408618385411</td>
+      <td><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>CLOSED</td>
+      <td>23:59 | 12</td>
+      <td>GRY 1</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>2,110,000,000.55555</td>
+      <td>1,000,000,000.55555</td>
+      <td>110.22%</td>
+      <td>0108181408618385411</td>
+      <td>0108181408618385411</td>
+      <td><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
+    </tr>
+
+    <tr>
+      <td>18/08/2019 04:14</td>
+      <td>CLOSED</td>
+      <td>23:59 | 12</td>
+      <td>GRY 1</td>
+      <td>0.14500</td>
+      <td>0.14500</td>
+      <td>2,110,000,000.55555</td>
+      <td>1,000,000,000.55555</td>
+      <td>110.22%</td>
+      <td>0108181408618385411</td>
+      <td>0108181408618385411</td>
+      <td><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
+    </tr>
+    </tbody>
+  </table>
+</div>

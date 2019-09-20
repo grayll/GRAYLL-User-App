@@ -17,14 +17,9 @@
 }
 
 @media (max-width: 768px) {
-  .card {
+  .card-with-margin {
     margin-bottom: 1.2rem!important;
   }
-}
-
-::ng-deep .form-control {
-  background: transparent!important;
-  color: #fff!important;
 }
 
 ::ng-deep .bs-tooltip-auto[x-placement^=bottom] ::ng-deep .arrow::before,

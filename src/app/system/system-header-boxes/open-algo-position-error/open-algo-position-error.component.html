@@ -1,0 +1,31 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Payment Failed"></app-popup-header>
+  <div class="modal-body">
+    <div class="swal2-icon swal2-error swal2-animate-error-icon" style="display: flex;">
+      <span class="swal2-x-mark">
+        <span class="swal2-x-mark-line-left"></span>
+        <span class="swal2-x-mark-line-right"></span>
+      </span>
+    </div>
+
+    <div class="row text-center">
+      <div class="col">
+        <p class="text-purple font-16 mb-0">Something Went Wrong</p>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col">
+        <p class="text-purple">{{algoPosition.token}} | Algo Position Did Not Open</p>
+      </div>
+    </div>
+
+    <div class="row text-center mt-3">
+      <div class="col">
+        <button class="btn btn-purple" (click)="popupService.close()">Retry</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>

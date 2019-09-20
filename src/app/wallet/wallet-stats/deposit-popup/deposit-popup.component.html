@@ -17,7 +17,7 @@
             <p class="text-purple font-weight-bolder mb-0">Federation Address (Payment Alias)</p>
           </div>
           <div class="col-md-8 col-sm-12 text-center" placement="bottom" [ngbTooltip]="federationAddress" triggers="click:blur">
-            <input disabled [value]="federationAddress" type="text" class="form-control bg-gradient text-light">
+            <input disabled [value]="federationAddress" type="text" class="form-control form-control-no-border bg-gradient text-light">
           </div>
           <div class="col-md-4 col-sm-12">
             <button (click)="copyFederationAddress()" class="btn btn-block btn-yellow">Copy Address</button>
@@ -37,7 +37,7 @@
             <p class="text-purple font-weight-bolder mb-0">Stellar Address (Public Key)</p>
           </div>
           <div class="col-md-8 col-sm-12 text-center" placement="bottom" [ngbTooltip]="stellarAddress" triggers="click:blur">
-            <input disabled [value]="stellarAddress" type="text" class="form-control bg-gradient text-light">
+            <input disabled [value]="stellarAddress" type="text" class="form-control form-control-no-border bg-gradient text-light">
           </div>
           <div class="col-md-4 col-sm-12">
             <button (click)="copyStellarAddress()" class="btn btn-block btn-yellow">Copy Address</button>

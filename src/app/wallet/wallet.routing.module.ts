@@ -6,6 +6,7 @@ import {WithdrawPopupComponent} from './wallet-stats/withdraw/withdraw-popup/wit
 import {ReviewWithdrawPopupComponent} from './wallet-stats/withdraw/review-withdraw-popup/review-withdraw-popup.component';
 import {WithdrawSuccessPopupComponent} from './wallet-stats/withdraw/withdraw-success-popup/withdraw-success-popup.component';
 import {WithdrawErrorPopupComponent} from './wallet-stats/withdraw/withdraw-error-popup/withdraw-error-popup.component';
+import {CancelActiveOrdersPopupComponent} from '../shared/account-activity/cancel-active-orders-popup/cancel-active-orders-popup.component';
 
 const popupRoutes: Routes = [
   {
@@ -32,7 +33,12 @@ const popupRoutes: Routes = [
     path: 'withdraw-error',
     component: WithdrawErrorPopupComponent,
     outlet: 'popup'
-  }
+  },
+  {
+    path: 'cancel-active-orders',
+    component: CancelActiveOrdersPopupComponent,
+    outlet: 'popup'
+  },
 ];
 
 const routes: Routes = [

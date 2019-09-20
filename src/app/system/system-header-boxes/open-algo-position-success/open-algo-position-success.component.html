@@ -1,0 +1,44 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Open Algo Position"></app-popup-header>
+  <div class="modal-body">
+    <div class="success-checkmark">
+      <div class="check-icon">
+        <span class="icon-line line-tip"></span>
+        <span class="icon-line line-long"></span>
+        <div class="icon-circle"></div>
+        <div class="icon-fix"></div>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-12">
+        <p class="text-purple font-14">{{algoPosition.token}} | Algo Position Opened</p>
+      </div>
+      <div class="col-12">
+        <p class="text-purple font-16 mb-0">${{algoPosition.usdValue}}</p>
+      </div>
+    </div>
+
+    <hr class="w-50 text-center purple-line">
+
+    <div class="row text-center">
+      <div class="col-12 text-purple">
+        <p class="mb-0">{{algoPosition.token}} | $0.09121</p>
+        <p class="mb-0">{{algoPosition.item}} Algo Fee @ 1.8%</p>
+        <p class="mb-0">$81,999,99198</p>
+        <p class="mb-0">{{algoPosition.itemAmount}} GRX</p>
+        <p class="mb-0">GRX | {{algoPosition.grxAmount}}</p>
+        <a href="javascript:void(0)" (click)="goToOverview()" class="mb-0 navy-link">Stellar Transaction ID | 0108181408618385411</a><br>
+        <a href="javascript:void(0)" (click)="goToOverview()" class="mb-0 navy-link">GRAYLL Transaction ID | 0108181408618385411</a>
+      </div>
+    </div>
+
+    <div class="row text-center mt-3">
+      <div class="col">
+        <button class="btn btn-purple" (click)="goToError()">Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>

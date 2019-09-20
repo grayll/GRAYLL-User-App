@@ -120,7 +120,7 @@ export class WithdrawPopupComponent implements OnInit {
       return false;
     }
     if (this.selectedTabId === 'phone' && !this.phoneNumber || (this.phoneNumber && !this.isValidPhoneNumber(this.phoneNumber))) {
-      this.errorService.handleError(null, 'Please a valid phone number.');
+      this.errorService.handleError(null, 'Please enter a valid phone number.');
       return false;
     }
     if (this.selectedTabId === 'email' && !this.emailAddress) {

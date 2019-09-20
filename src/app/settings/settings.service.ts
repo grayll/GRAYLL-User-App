@@ -11,14 +11,29 @@ export class SettingsService {
   private multisignatureEnabled: Subject<boolean>;
 
   // Notifications
-  private walletNotificationsDisabled: Subject<void>;
-  private algoNotificationsDisabled: Subject<void>;
+  private walletEmailNotificationsDisabled: Subject<void>;
+  private walletAppNotificationsDisabled: Subject<void>;
+  private algoEmailNotificationsDisabled: Subject<void>;
+  private algoAppNotificationsDisabled: Subject<void>;
 
-  // Messages
-  private walletMessagesDisabled: Subject<void>;
-  private algoMessagesDisabled: Subject<void>;
+  // Federation address
+  private federationAddress: Subject<string>;
 
   constructor() { }
+
+  public observeFederationAddress(): Observable<string> {
+    if (!this.federationAddress){
+      this.federationAddress = new Subject<string>()
+    }
+    return this.federationAddress.asObservable()
+  }
+
+  public sendFederationAddressObserver(fed: string): void{
+    if (!this.federationAddress){
+      this.federationAddress = new Subject<string>()
+    }
+    this.federationAddress.next(fed)
+  }
 
   public observeTwoFAEnabled(): Observable<boolean> {
     if (!this.twoFAEnabled) {
@@ -48,60 +63,60 @@ export class SettingsService {
     this.multisignatureEnabled.next(enable);
   }
 
-  public observeWalletNotificationsDisabled(): Observable<void> {
-    if (!this.walletNotificationsDisabled) {
-      this.walletNotificationsDisabled = new Subject<void>();
+  public observeWalletEmailNotificationsDisabled(): Observable<void> {
+    if (!this.walletEmailNotificationsDisabled) {
+      this.walletEmailNotificationsDisabled = new Subject<void>();
     }
-    return this.walletNotificationsDisabled.asObservable();
+    return this.walletEmailNotificationsDisabled.asObservable();
   }
 
-  public sendWalletNotificationsDisabled(): void {
-    if (!this.walletNotificationsDisabled) {
-      this.walletNotificationsDisabled = new Subject<void>();
+  public sendWalletEmailNotificationsDisabled(): void {
+    if (!this.walletEmailNotificationsDisabled) {
+      this.walletEmailNotificationsDisabled = new Subject<void>();
     }
-    this.walletNotificationsDisabled.next();
+    this.walletEmailNotificationsDisabled.next();
   }
 
-  public observeAlgoNotificationsDisabled(): Observable<void> {
-    if (!this.algoNotificationsDisabled) {
-      this.algoNotificationsDisabled = new Subject<void>();
+  public observeWalletAppNotificationsDisabled(): Observable<void> {
+    if (!this.walletAppNotificationsDisabled) {
+      this.walletAppNotificationsDisabled = new Subject<void>();
     }
-    return this.algoNotificationsDisabled.asObservable();
+    return this.walletAppNotificationsDisabled.asObservable();
   }
 
-  public sendAlgoNotificationsDisabled(): void {
-    if (!this.algoNotificationsDisabled) {
-      this.algoNotificationsDisabled = new Subject<void>();
+  public sendWalletAppNotificationsDisabled(): void {
+    if (!this.walletAppNotificationsDisabled) {
+      this.walletAppNotificationsDisabled = new Subject<void>();
     }
-    this.algoNotificationsDisabled.next();
+    this.walletAppNotificationsDisabled.next();
   }
 
-  public observeWalletMessagesDisabled(): Observable<void> {
-    if (!this.walletMessagesDisabled) {
-      this.walletMessagesDisabled = new Subject<void>();
+  public observeAlgoEmailNotificationsDisabled(): Observable<void> {
+    if (!this.algoEmailNotificationsDisabled) {
+      this.algoEmailNotificationsDisabled = new Subject<void>();
     }
-    return this.walletMessagesDisabled.asObservable();
+    return this.algoEmailNotificationsDisabled.asObservable();
   }
 
-  public sendWalletMessagesDisabled(): void {
-    if (!this.walletMessagesDisabled) {
-      this.walletMessagesDisabled = new Subject<void>();
+  public sendAlgoEmailNotificationsDisabled(): void {
+    if (!this.algoEmailNotificationsDisabled) {
+      this.algoEmailNotificationsDisabled = new Subject<void>();
     }
-    this.walletMessagesDisabled.next();
+    this.algoEmailNotificationsDisabled.next();
   }
 
-  public observeAlgoMessagesDisabled(): Observable<void> {
-    if (!this.algoMessagesDisabled) {
-      this.algoMessagesDisabled = new Subject<void>();
+  public observeAlgoAppNotificationsDisabled(): Observable<void> {
+    if (!this.algoAppNotificationsDisabled) {
+      this.algoAppNotificationsDisabled = new Subject<void>();
     }
-    return this.algoMessagesDisabled.asObservable();
+    return this.algoAppNotificationsDisabled.asObservable();
   }
 
-  public sendAlgoMessagesDisabled(): void {
-    if (!this.algoMessagesDisabled) {
-      this.algoMessagesDisabled = new Subject<void>();
+  public sendAlgoAppNotificationsDisabled(): void {
+    if (!this.algoAppNotificationsDisabled) {
+      this.algoAppNotificationsDisabled = new Subject<void>();
     }
-    this.algoMessagesDisabled.next();
+    this.algoAppNotificationsDisabled.next();
   }
 
 }

@@ -3,10 +3,10 @@
     <div class="col">
       <span class="lead align-middle">Activity</span>
     </div>
-    <div class="col-xs-12 col-md-5 justify-content-center align-items-center">
-      <ngb-tabset type="pills" class="custom-pills" (tabChange)="onTabChange($event.nextId)">
+    <div class="col-xs-12 col-md-5">
+      <ngb-tabset type="pills" class="custom-pills" justify="center" (tabChange)="onTabChange($event.nextId)">
         <ng-container *ngFor="let tab of activityTabs">
-          <ngb-tab [id]="tab.id" [title]="tab.name"></ngb-tab>
+            <ngb-tab [id]="tab.id" [title]="tab.name"></ngb-tab>
         </ng-container>
       </ngb-tabset>
     </div>
@@ -25,21 +25,39 @@
     <div class="col-md-2 col-xs">
       <span class="align-middle font-weight-bolder font-14">Open Orders (1)</span>
     </div>
-    <div class="col">
+    <div class="col" [routerLink]="['/wallet/overview', {outlets: {popup: 'cancel-active-orders'}}]" style="outline: none;">
       <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
       <span class="ml-1 cancel text-danger">Cancel All Active Orders</span>
     </div>
   </div>
 
   <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'transfers'">
-    <div class="col-md-12">
+    <div class="col" *ngIf="!showMoreDetails">
       <span class="align-middle font-weight-bolder font-14">Transfers (11)</span>
+    </div>
+    <div class="col-md-2 col-xs" *ngIf="showMoreDetails">
+      <span class="align-middle font-weight-bolder font-14">Transfers (11)</span><br>
+      <span class="text-light font-10 font-weight-bolder">Most Recent Transfers</span>
+    </div>
+    <div class="col" *ngIf="showMoreDetails">
+      <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
+        All Completed Transfers
+      </a>
     </div>
   </div>
 
   <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'networkHistory'">
-    <div class="col-md-12">
+    <div class="col" *ngIf="!showMoreDetails">
       <span class="align-middle font-weight-bolder font-14">Network History (6)</span>
+    </div>
+    <div class="col-md-2 col-xs" *ngIf="showMoreDetails">
+      <span class="align-middle font-weight-bolder font-14">Network History (6)</span><br>
+      <span class="text-light font-10 font-weight-bolder">Most Recent Network History</span>
+    </div>
+    <div class="col" *ngIf="showMoreDetails">
+      <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
+        Full Network History
+      </a>
     </div>
   </div>
 </div>

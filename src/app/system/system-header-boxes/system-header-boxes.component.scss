@@ -1,0 +1,220 @@
+.gradient-box {
+  background: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  color: white!important;
+}
+
+.card {
+  background-color: #636fa4 !important;
+}
+
+.card-body {
+  border-radius: 4px !important;
+}
+
+.border-navy {
+  border-radius: 0.3rem;
+  border: 1px solid #40278C!important;
+}
+
+.purple-link {
+  color: #cfa256!important;
+}
+
+.purple-link:hover {
+  color: #40278C!important;
+  cursor: pointer!important;
+}
+
+.cancel:hover {
+  cursor: pointer;
+}
+
+:host ::ng-deep .nav-pills {
+  .nav-link {
+    border-radius: 0;
+    opacity: 0.7;
+    font-size: 0.9rem;
+    color: #fff!important;
+    text-align: center;
+    max-width: 82px;
+
+    &.active {
+      opacity: 1;
+      background-color: transparent;
+      border-bottom: 2px solid #fff!important;
+    }
+  }
+}
+
+::ng-deep ul.nav-pills {
+  justify-content: center!important;
+}
+
+::placeholder {
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
+}
+
+:host ::ng-deep .carousel-inner {
+  outline: 0!important;
+}
+
+:host ::ng-deep .carousel-item.active {
+  outline: 0!important;
+}
+
+:host ::ng-deep .carousel {
+  outline: 0!important;
+}
+
+:host ::ng-deep .carousel-control-prev {
+  display: block;
+  position: absolute;
+  top: 100px;
+  left: -15px;
+}
+
+:host ::ng-deep .carousel-control-next {
+  display: block;
+  position: absolute;
+  top: 100px;
+  right: -15px;
+}
+
+:host ::ng-deep .carousel-control-prev-icon {
+  background-image: url('../../../assets/images/left-chevron.png');
+  width: 15px;
+  height: 24px;
+}
+
+:host ::ng-deep .carousel-control-next-icon {
+  background-image: url('../../../assets/images/right-chevron.png');
+  width: 15px;
+  height: 24px;
+}
+
+.small-grayll-icon {
+  width: 18px;
+}
+
+.dollar-padding {
+  padding-left: 19px!important;
+  padding-right: 19px!important;
+}
+
+.navy-link {
+  color: #40278C!important;
+}
+
+.navy-span {
+  color: #40278C!important;
+}
+
+a.navy-span:hover {
+  cursor: default;
+}
+
+.navy-link:hover {
+  color: #cfa256!important;
+  cursor: pointer!important;
+}
+
+.navy-link-white {
+  color: #40278C!important;
+}
+
+.navy-link-white:hover {
+  color: white!important;
+}
+
+.border-navy {
+  padding: 0.5rem;
+}
+
+.border-navy-hover:hover {
+  cursor: pointer;
+}
+
+/* Animate bottom border on hover */
+.border-navy-hover:after {
+  padding-bottom: 0.5rem;
+  content: ""; /* This is necessary for the pseudo element to work. */
+  display: block; /* This will put the pseudo element on its own line. */
+  width: 0%; /* Change this to whatever width you want to have before hover. */
+  border-bottom: 2px solid #40278C!important; /* This creates the border. Replace black with whatever color you want. */
+  transition: .5s; /* This establishes the amount of time in seconds the animation should take from start to finish */
+}
+
+.border-navy-hover:hover:after {
+  width: 100%; /* This will be the new width of your border when on hover */
+}
+
+#open-form .input-group-text {
+  border: 0!important;
+  border-right: 2px solid #cfa256!important;
+}
+
+#open-form-mobile .input-group-text {
+  border: 0!important;
+  border-right: 2px solid #cfa256!important;
+}
+
+#amount-form .input-group-text {
+  border: 0!important;
+  border-right: 2px solid #cfa256!important;
+}
+
+#amount-form-mobile .input-group-text {
+  border: 0!important;
+  border-right: 2px solid #cfa256!important;
+}
+
+.badge-number {
+  position: relative;
+  top: -6px;
+}
+
+.purple-line {
+  margin: 0!important;
+  border-color: #40278c!important;
+}
+
+.search .input-group-text {
+  border-color: #40278C;
+  border-left: 0;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@media (min-width: 992px) {
+  .no-margin {
+    margin-bottom: 0!important;
+  }
+}

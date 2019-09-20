@@ -22,7 +22,7 @@
                 Transfers only take a few seconds to confirm.
               </p>
               <p class="font-16 text-purple mt-2 mb-0 font-weight-bolder">Recipient</p>
-              <input type="text" class="form-control bg-gradient text-light" style="height: 46px"
+              <input type="text" class="form-control form-control-no-border bg-gradient text-light" style="height: 46px"
                      placeholder="Stellar Wallet or Federation Address" [(ngModel)]="recipient">
 
               <ngb-tabset type="pills">
@@ -36,7 +36,7 @@
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="GRXValue" class="fixed-input-height text-light form-control bg-purple" placeholder="GRX Amount">
+                        <input type="text" [(ngModel)]="GRXValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                       </div>
                       <span class="text-purple">*0 GRX are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -49,7 +49,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" class="fixed-input-height text-light form-control bg-purple" placeholder="USD Value">
+                        <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -64,7 +64,7 @@
                             <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="XLM Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="XLMValue" class="fixed-input-height text-light form-control bg-purple" placeholder="XLM Amount">
+                        <input type="text" [(ngModel)]="XLMValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Amount">
                       </div>
                       <span class="text-purple">*1.5 XLM are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -77,7 +77,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" class="fixed-input-height text-light form-control bg-purple" placeholder="USD Value">
+                        <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -85,7 +85,7 @@
               </ngb-tabset>
               <div class="form-group" *ngIf="!noMemoMessageSelected">
                 <p class="font-16 text-purple mt-2 mb-0 font-weight-bolder">Memo Message</p>
-                <input type="text" class="form-control bg-gradient text-light" style="height: 46px"
+                <input type="text" class="form-control form-control-no-border bg-gradient text-light" style="height: 46px"
                        placeholder="Memo Message" [(ngModel)]="memoMessage">
                 <span class="text-purple">28 bytes left</span>
               </div>
@@ -126,9 +126,9 @@
               </div>
               <div class="form-group">
                 <label class="text-purple" for="phoneNumber">Phone number</label>
-                <div class="input-group">
+                <div class="input-group bg-gradient" style="border-radius: 0.3rem!important">
                   <div class="input-group-prepend">
-                    <div class="input-group-text fixed-input-height">
+                    <div class="input-group-text fixed-input-height bg-transparent border-0">
                       <ng-select [searchable]="true"
                                  [items]="countryCodes"
                                  [(ngModel)]="selectedCountryCode"
@@ -146,7 +146,8 @@
                       </ng-select>
                     </div>
                   </div>
-                  <input [(ngModel)]="phoneNumber" type="text" class="form-control fixed-input-height" id="phoneNumber">
+                  <input [(ngModel)]="phoneNumber"
+                         class="form-control form-control-no-border fixed-input-height bg-transparent text-light border-0" id="phoneNumber">
                 </div>
               </div>
               <p class="mt-1 text-purple">Sending to the following address: {{phoneNumber}}*grayll.io</p>
@@ -161,7 +162,7 @@
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="GRXValue" class="fixed-input-height text-light form-control bg-purple" placeholder="GRX Amount">
+                        <input type="text" [(ngModel)]="GRXValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                       </div>
                       <span class="text-purple">*0 GRX are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -174,7 +175,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" class="fixed-input-height text-light form-control bg-purple" placeholder="USD Value">
+                        <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -189,7 +190,7 @@
                             <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="XLM Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="XLMValue" class="text-light form-control bg-purple" placeholder="XLM Amount">
+                        <input type="text" [(ngModel)]="XLMValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Amount">
                       </div>
                       <span class="text-purple">*1.5 XLM are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -202,7 +203,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" class="fixed-input-height text-light form-control bg-purple" placeholder="USD Value">
+                        <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -210,7 +211,7 @@
               </ngb-tabset>
               <div class="form-group" *ngIf="!noMemoMessageSelected">
                 <p class="font-16 text-purple mt-2 mb-0 font-weight-bolder">Memo Message</p>
-                <input type="text" class="form-control bg-gradient text-light" style="height: 46px"
+                <input type="text" class="form-control form-control-no-border bg-gradient text-light" style="height: 46px"
                        placeholder="Memo Message" [(ngModel)]="memoMessage">
                 <span class="text-purple">28 bytes left</span>
               </div>
@@ -223,11 +224,11 @@
             </ng-template>
             <ng-template ngbTabContent>
               <div class="alert alert-warning text-purple" style="margin-top: 1rem">
-                The Receiver will get am email explaining how to claim the payment.
+                The Receiver will get an email explaining how to claim the payment.
                 <a href="javascript:void(0)" class="purple-link">Read More</a>
               </div>
               <p class="font-16 text-purple mt-2 mb-0 font-weight-bolder">Email Address</p>
-              <input type="text" class="form-control bg-gradient text-light" style="height: 46px"
+              <input type="text" class="form-control form-control-no-border bg-gradient text-light" style="height: 46px"
                      placeholder="Email Address" [(ngModel)]="emailAddress">
               <p class="mt-1 text-purple">Sending to the following address: {{emailAddress}}*grayll.io</p>
               <ngb-tabset type="pills">
@@ -241,7 +242,7 @@
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="GRXValue" class="fixed-input-height text-light form-control bg-purple" placeholder="GRX Amount">
+                        <input type="text" [(ngModel)]="GRXValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                       </div>
                       <span class="text-purple">*0 GRX are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -254,7 +255,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" class="fixed-input-height text-light form-control bg-purple" placeholder="USD Value">
+                        <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -269,7 +270,7 @@
                             <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="XLM Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="XLMValue" class="text-light form-control bg-purple" placeholder="XLM Amount">
+                        <input type="text" [(ngModel)]="XLMValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Amount">
                       </div>
                       <span class="text-purple">*1.5 XLM are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -282,7 +283,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" class="fixed-input-height text-light form-control bg-purple" placeholder="USD Value">
+                        <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -290,7 +291,7 @@
               </ngb-tabset>
               <div class="form-group" *ngIf="!noMemoMessageSelected">
                 <p class="font-16 text-purple mt-2 mb-0 font-weight-bolder">Memo Message</p>
-                <input type="text" class="form-control bg-gradient text-light" style="height: 46px"
+                <input type="text" class="form-control form-control-no-border bg-gradient text-light" style="height: 46px"
                        placeholder="Memo Message" [(ngModel)]="memoMessage">
                 <span class="text-purple">28 bytes left</span>
               </div>

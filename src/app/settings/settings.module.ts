@@ -17,11 +17,8 @@ import {DisableMultisignatureComponent} from './security/multisignature-transact
 import {SecurityComponent} from './security/security.component';
 import {WalletSettingsComponent} from './wallet-settings/wallet-settings.component';
 import {NotificationsSettingsComponent} from './notifications-settings/notifications-settings.component';
-import {MessagesSettingsComponent} from './messages-settings/messages-settings.component';
-import {DisableAlgoNotificationsSettingsComponent} from './notifications-settings/disable-algo-notifications-settings/disable-algo-notifications-settings.component';
-import {DisableWalletNotificationsSettingsComponent} from './notifications-settings/disable-wallet-notifications-settings/disable-wallet-notifications-settings.component';
-import {DisableWalletMessagesComponent} from './messages-settings/disable-wallet-messages/disable-wallet-messages.component';
-import {DisableAlgoMessagesComponent} from './messages-settings/disable-algo-messages/disable-algo-messages.component';
+import {DisableAlgoNotificationsSettingsComponent} from './notifications-settings/disable-algo-email-notifications-settings/disable-algo-notifications-settings.component';
+import {DisableWalletNotificationsSettingsComponent} from './notifications-settings/disable-wallet-email-notifications-settings/disable-wallet-notifications-settings.component';
 import {ProfileSettingsComponent} from './profile-settings/profile-settings.component';
 import {EditFederationAddressComponent} from './edit-federation-address/edit-federation-address.component';
 import {ChangeEmailAddressComponent} from './profile-settings/change-email-address/change-email-address.component';
@@ -32,8 +29,9 @@ import {NgxFlagIconCssModule} from 'ngx-flag-icon-css';
 import {VerifyPhoneNumberComponent} from './profile-settings/change-phone-number/verify-phone-number/verify-phone-number.component';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {DataSettingsComponent} from './data-settings/data-settings.component';
+import { DisableWalletAppNotificationsSettingsComponent } from './notifications-settings/disable-wallet-app-notifications-settings/disable-wallet-app-notifications-settings.component';
+import { DisableAlgoAppNotificationsSettingsComponent } from './notifications-settings/disable-algo-app-notifications-settings/disable-algo-app-notifications-settings.component';
 import { QRCodeModule } from 'angularx-qrcode';
-
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -47,18 +45,17 @@ import { QRCodeModule } from 'angularx-qrcode';
     SecurityComponent,
     WalletSettingsComponent,
     NotificationsSettingsComponent,
-    MessagesSettingsComponent,
     DisableWalletNotificationsSettingsComponent,
     DisableAlgoNotificationsSettingsComponent,
-    DisableWalletMessagesComponent,
-    DisableAlgoMessagesComponent,
     ProfileSettingsComponent,
     EditFederationAddressComponent,
     ChangeEmailAddressComponent,
     ChangePasswordComponent,
     ChangePhoneNumberComponent,
     VerifyPhoneNumberComponent,
-    DataSettingsComponent
+    DataSettingsComponent,
+    DisableWalletAppNotificationsSettingsComponent,
+    DisableAlgoAppNotificationsSettingsComponent
   ],
   imports: [
     CommonModule,

@@ -3,6 +3,9 @@ import {ActivatedRoute} from '@angular/router';
 import {SnotifyService} from 'ng-snotify';
 import {ErrorService} from '../../../../shared/error/error.service';
 import {PopupService} from '../../../../shared/popup/popup.service';
+import axios from 'axios'
+import { environment } from 'src/environments/environment';
+import { AuthService } from "../../../../shared/services/auth.service"
 
 @Component({
   selector: 'app-verify-phone-number',
@@ -19,7 +22,8 @@ export class VerifyPhoneNumberComponent implements OnInit {
     private route: ActivatedRoute,
     private snotifyService: SnotifyService,
     private errorService: ErrorService,
-    private popupService: PopupService
+    private popupService: PopupService,
+    public authService: AuthService, 
   ) {
     this.loadNumberFromRoute();
   }
@@ -54,9 +58,25 @@ export class VerifyPhoneNumberComponent implements OnInit {
   confirm() {
     this.errorService.clearError();
     if (this.clientValidation()) {
-      this.popupService.close().then(() => {
-        this.snotifyService.simple('Phone number confirmed.');
-      });
+      axios.post(`${environment.api_url}api/v1/phones/verifycode`, 
+          {code:this.code, sessionInfo:this.phoneNumber},
+          { headers: {Authorization: 'Bearer ' + this.authService.userData.token} }).then(res =>{
+            if (res.data.valid === true){
+              
+              this.popupService.close().then(() => {
+                this.snotifyService.simple('Phone number confirmed.');
+              });
+              // this.sharedService.showModalOverview();
+              // this.popupService.close().then(() => {
+              //   setTimeout(() => {
+              //     this.router.navigate(['/settings/profile', {outlets: {popup: ['verify-phone-number', this.phoneNumber]}}]);
+              //   }, 50);
+              // });
+            } else {
+              this.errorService.handleError(null, 'Please enter valid phone number.');
+            }
+        })
+     
     }
   }
 

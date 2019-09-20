@@ -1,0 +1,22 @@
+<router-outlet name="popup"></router-outlet>
+<app-navbar></app-navbar>
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="container-fluid pt-0" id="algoPositionForm">
+
+      <h4 class="text-light pt-3 pb-1">
+        Algo System
+      </h4>
+
+      <!-- Top 3 boxes -->
+      <app-system-header-boxes></app-system-header-boxes>
+      <br class="d-none d-lg-block">
+      <!-- Large chart -->
+      <app-main-chart></app-main-chart>
+
+      <!-- Bottom table -->
+      <app-activity [activeTabId]="activeTabId"></app-activity>
+    </div>
+  </div>
+</div>

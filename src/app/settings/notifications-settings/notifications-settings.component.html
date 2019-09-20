@@ -1,15 +1,31 @@
 <div class="card border-0">
   <div class="card-body bg-gradient text-light">
     <div class="row">
-      <div class="col-md-9">
+      <div class="col-md-6">
         <p class="lead">General Notifications</p>
-        <p>Important updates from GRAYLL delivered via App notifications.</p>
+        <p>Important updates from GRAYLL.</p>
       </div>
-      <div *ngIf="!isGeneralEnabled" class="col d-flex justify-content-center align-items-center">
-        <button (click)="toggleGeneral()" class="btn btn-purple text-center">Enable</button>
-      </div>
-      <div *ngIf="isGeneralEnabled" class="col d-flex justify-content-center align-items-center">
-        <button (click)="toggleGeneral()" class="btn btn-yellow text-center">Disable</button>
+      <div class="col-md-6 text-center">
+        <div class="row">
+          <div class="col-6">
+            <p>Email</p>
+            <div *ngIf="!isGeneralEmailEnabled" class="col d-flex justify-content-center align-items-center">
+              <button (click)="toggleGeneralEmail()" class="btn btn-purple text-center">Enable</button>
+            </div>
+            <div *ngIf="isGeneralEmailEnabled" class="col d-flex justify-content-center align-items-center">
+              <button (click)="toggleGeneralEmail()" class="btn btn-yellow text-center">Disable</button>
+            </div>
+          </div>
+          <div class="col-6">
+            <p>App</p>
+            <div *ngIf="!isGeneralAppEnabled" class="col d-flex justify-content-center align-items-center">
+              <button (click)="toggleGeneralApp()" class="btn btn-purple text-center">Enable</button>
+            </div>
+            <div *ngIf="isGeneralAppEnabled" class="col d-flex justify-content-center align-items-center">
+              <button (click)="toggleGeneralApp()" class="btn btn-yellow text-center">Disable</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -17,38 +33,72 @@
 
 <div class="card border-0">
   <div class="card-body bg-gradient text-light">
-    <div class="row">
-      <div class="col-md-9">
+    <div class="row mt-3">
+      <div class="col-md-6">
         <p class="lead">Wallet Notifications</p>
-        <p class="mb-0">Transaction and balance updates delivered via App notifications.</p>
+        <p class="mb-0">Transaction and balance updates.</p>
         <p class="font-italic font-weight-bolder">For your own security we recommend to keep your wallet notifications enabled.</p>
       </div>
-      <div *ngIf="!isWalletEnabled" class="col d-flex justify-content-center align-items-center">
-        <button (click)="enableWalletNotifications()" class="btn btn-purple text-center">Enable</button>
-      </div>
-      <div *ngIf="isWalletEnabled" class="col d-flex justify-content-center align-items-center">
-        <button [routerLink]="[{outlets: {popup: 'disable-wallet-notifications-settings'}}]" class="btn btn-yellow text-center">Disable</button>
+      <div class="col-md-6 text-center">
+        <div class="row">
+          <div class="col-6">
+            <p>Email</p>
+            <div *ngIf="!isWalletEmailEnabled" class="col d-flex justify-content-center align-items-center">
+              <button (click)="enableWalletEmailNotifications()" class="btn btn-purple text-center">Enable</button>
+            </div>
+            <div *ngIf="isWalletEmailEnabled" class="col d-flex justify-content-center align-items-center">
+              <button [routerLink]="[{outlets: {popup: 'disable-wallet-email-notifications-settings'}}]" class="btn btn-yellow text-center">Disable</button>
+            </div>
+          </div>
+          <div class="col-6">
+            <p>App</p>
+            <div *ngIf="!isWalletAppEnabled" class="col d-flex justify-content-center align-items-center">
+              <button (click)="enableWalletAppNotifications()" class="btn btn-purple text-center">Enable</button>
+            </div>
+            <div *ngIf="isWalletAppEnabled" class="col d-flex justify-content-center align-items-center">
+              <button [routerLink]="[{outlets: {popup: 'disable-wallet-app-notifications-settings'}}]" class="btn btn-yellow text-center">Disable</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
   </div>
 </div>
 
 <div class="card border-0 mb-0">
   <div class="card-body bg-gradient text-light">
-    <div class="row">
-      <div class="col-md-9">
+    <div class="row mt-3">
+      <div class="col-md-6">
         <p class="lead">Algo System Notifications</p>
         <p class="mb-0">Algorithmic position, transaction, performance updates and actionable alerts from the GRAYLL
-          Algorithmic System delivered via App notifications.</p>
+          Algorithmic System.</p>
         <p class="font-italic font-weight-bolder">To avoid loss of value we recommend to
           <span class="text-purple">never disable</span> algo system notifications!</p>
       </div>
-      <div *ngIf="!isAlgoEnabled" class="col d-flex justify-content-center align-items-center">
-        <button (click)="enableAlgoNotifications()" class="btn btn-purple text-center">Enable</button>
+      <div class="col-md-6 text-center">
+        <div class="row">
+          <div class="col-6">
+            <p>Email</p>
+            <div *ngIf="!isAlgoEmailEnabled" class="col d-flex justify-content-center align-items-center">
+              <button (click)="enableAlgoEmailNotifications()" class="btn btn-purple text-center">Enable</button>
+            </div>
+            <div *ngIf="isAlgoEmailEnabled" class="col d-flex justify-content-center align-items-center">
+              <button [routerLink]="[{outlets: {popup: 'disable-algo-email-notifications-settings'}}]" class="btn btn-yellow text-center">Disable</button>
+            </div>
+          </div>
+          <div class="col-6">
+            <p>App</p>
+            <div *ngIf="!isAlgoAppEnabled" class="col d-flex justify-content-center align-items-center">
+              <button (click)="enableAlgoAppNotifications()" class="btn btn-purple text-center">Enable</button>
+            </div>
+            <div *ngIf="isAlgoAppEnabled" class="col d-flex justify-content-center align-items-center">
+              <button [routerLink]="[{outlets: {popup: 'disable-algo-app-notifications-settings'}}]" class="btn btn-yellow text-center">Disable</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div *ngIf="isAlgoEnabled" class="col d-flex justify-content-center align-items-center">
-        <button [routerLink]="[{outlets: {popup: 'disable-algo-notifications-settings'}}]" class="btn btn-yellow text-center">Disable</button>
-      </div>
+
     </div>
   </div>
 </div>

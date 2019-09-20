@@ -6,6 +6,8 @@ import {ErrorService} from '../../../shared/error/error.service';
 import { auth } from 'firebase/app';
 import { AngularFireAuth } from "@angular/fire/auth";
 import { AuthService } from 'src/app/shared/services/auth.service';
+import axios from 'axios'
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-change-email-address',
@@ -16,7 +18,7 @@ export class ChangeEmailAddressComponent implements OnInit {
 
   @ViewChild('content') modal;
   form: FormGroup;
-
+  currentMail:string;
   get currentEmail() { return this.form.get('currentEmail'); }
   get newEmail() { return this.form.get('newEmail'); }
   get confirmNewEmail() { return this.form.get('confirmNewEmail'); }
@@ -38,7 +40,10 @@ export class ChangeEmailAddressComponent implements OnInit {
       currentEmail: [null, [Validators.required, Validators.email]],
       newEmail: [null, [Validators.required, Validators.email]],
       confirmNewEmail: [null, [Validators.required, Validators.email]],
-      password: [null, [Validators.required]]
+      password: [null, 
+        [ Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+          Validators.minLength(8),
+          Validators.maxLength(36)]]
     });
   }
 
@@ -63,41 +68,48 @@ export class ChangeEmailAddressComponent implements OnInit {
       this.errorService.handleError(null, 'Please correctly confirm your new email address.');
       return false;
     }
+    if (this.password.invalid) {
+      this.errorService.handleError(null, 'Please enter valid password.');
+      return false;
+    }
+    this.currentMail = this.currentEmail.value
     return true;
   }
 
   save() {
     this.errorService.clearError();
-    if (this.clientValidation()) {
-      
-
-      // this.authService.SignIn(this.currentEmail.value, this.password.value).
-      // //this.afsAuth.auth.signInWithEmailAndPassword(this.currentEmail.value, this.password.value).
-      // then(userCredential =>
-      // {
-      //   userCredential.user.updateEmail(this.newEmail.value).then(()=>{    
-      //       this.authService.userData.Email = this.newEmail.value
-            
-      //       this.authService.UpdateEmail(userCredential.user.uid, this.newEmail.value).then(()=>{
-      //         //this.onSaveSuccess();
-      //         this.authService.SetLocalUserData()
-      //         this.authService.SendVerificationMail().then(()=> {
-      //           this.errorService.handleError(null, 'New email is udpated. Please verify new email address before login!');
-      //           this.authService.SignOut()
-      //         }).catch (err => {
-      //           this.errorService.handleError(null, 'Can not send verification to new email address!');
-      //         })
-      //       }).catch(err=> {
-      //         this.errorService.handleError(null, 'Can not update new email address. Please try again later!');
-      //       })            
-      //     }
-      //   ).catch(err => {
-      //     this.errorService.handleError(null, err.message);
-      //   })        
-      // })
-      // .catch (err => {
-      //   this.errorService.handleError(null, 'Can not update new email address. Please try again later!');
-      // })     
+    if (this.clientValidation()) {      
+      axios.post(`${environment.api_url}api/v1/users/changeemail`, 
+        {email:this.currentEmail.value, newemail: this.newEmail.value, password: this.password.value},
+        { headers: { Authorization: 'Bearer ' + this.authService.userData.token}})                
+      .then(response => {      
+        console.log(response)          
+        if (response.data.errCode === environment.SUCCESS) {
+          this.form.reset()   
+          this.errorService.handleError(null, `An email was sent to ${this.currentMail} to confirm change email request.`);
+        } else {
+          switch (response.data.errCode) {
+            case environment.INVALID_UNAME_PASSWORD:
+              this.form.reset()   
+              this.errorService.handleError(null, 'The email or password is invalid!')
+              break
+            case environment.EMAIL_NOT_EXIST:
+              this.form.reset()   
+              this.errorService.handleError(null, 'The provided email does not exist.')
+              break
+            case environment.TOKEN_INVALID:
+              this.form.reset()   
+              this.errorService.handleError(null, 'Invalid request.')
+              break
+          }
+          
+        }
+      })
+      .catch(error => {        
+        console.log(error)                  
+        this.errorService.handleError(null, 'Can not update new email address. Please try again later!');
+        this.form.reset()    
+      });            
     }
   }
 

@@ -60,7 +60,7 @@ export class HandleComponent implements OnInit {
         case 'resetPassword':
           // Display reset password handler and UI.
           
-          this.handleResetPassword(this.afAuth.auth, this.actionCode, this.mode);
+          //this.handleResetPassword(this.afAuth.auth, this.actionCode, this.mode);
           break;
         case 'recoverEmail':
           // Display email recovery handler and UI.
@@ -72,6 +72,11 @@ export class HandleComponent implements OnInit {
           this.title = 'Email verification'
           this.handleVerifyEmail(this.afAuth.auth, this.actionCode, this.mode);
           break;
+        case 'changeEmail':
+            // Display email verification handler and UI.
+            this.title = 'Change Email'
+            this.handleChangeEmail(this.actionCode, this.mode);
+            break;
         default:
           // Error: invalid mode.
         }     
@@ -106,77 +111,12 @@ export class HandleComponent implements OnInit {
     
   }
   
-  handleResetPassword(auth, actionCode, mode) {
-    // axios.get(`https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
-    // .then(response => {              
-    //   //this.registerForm.reset() 
-    //   //this.content = 'Your account is verified. Now you can login!'
-    //   //this.errorService.handleError(null, this.content) 
-    // })
-    // .catch( error => {
-    //   console.log(error) 
-    //   this.content = 'Link may be expired. Please try again!'
-    //   //this.errorService.handleError(null, this.content)    
-    // });  
-  }
-  // handleResetPassword(auth, actionCode, mode) {
-  //   // Localize the UI to the selected language as determined by the lang
-  //   // parameter.
-  //   var accountEmail;
-  //   // Verify the password reset code is valid.
-  //   auth.verifyPasswordResetCode(actionCode).then(email => {
-  //     var accountEmail = email;
-  
-  //     // TODO: Show the reset screen with the user's email and ask the user for
-  //     // the new password.
-  
-  //     // Save the new password.      
-  //     //this.buildForm();
-  //     //this.content = 'Your new password is set'
-  //     this.errorService.handleError(null, this.content)
-      
-  //   }).catch(err =>  {
-  //     // Invalid or expired action code. Ask user to try to reset the password
-  //     // again.
-  //   });
-  // }
-  
-  // handleVerifyEmail(auth, actionCode, continueUrl, lang) {
-  //   // Localize the UI to the selected language as determined by the lang
-  //   // parameter.
-  //   // Try to apply the email verification code.
-  //   this.ngZone.run(() => {
-  //     auth.applyActionCode(actionCode).then(resp => {
-  //       // Email address has been verified.
-    
-  //       // TODO: Display a confirmation message to the user.
-  //       // You could also provide the user with a link back to the app.
-  //       //this.openEmailVerifyModal('Email Verification', 'Account was verified. Please login!', 'home/login')
-  //       this.content = 'Your account is verified. Now you can login!'
-  //       this.errorService.handleError(null, this.content)
-        
-  //       console.log('Your account is verified. Now you can login!')
-
-  //       // Gennerate 
-       
-  //       //this.buildForm()
-  //       // TODO: If a continue URL is available, display a button which on
-  //       // click redirects the user back to the app via continueUrl with
-  //       // additional state determined from that URL's parameters.
-  //     }).catch(err => {
-  //       // Code is invalid or expired. Ask the user to verify their email address
-  //       // again.
-  //       this.content = 'Link may be expired. Please verify again!'
-  //       this.errorService.handleError(null, this.content)
-  //       console.log(err)
-  //     });
-  //   })    
-  // }
+   
   handleVerifyEmail(auth, actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     // Try to apply the email verification code.
-    axios.get(`https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    axios.get(`${environment.api_url}api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
     .then(response => {              
       //this.registerForm.reset() 
       this.content = 'Your account is verified. Now you can login!'
@@ -188,12 +128,27 @@ export class HandleComponent implements OnInit {
       //this.errorService.handleError(null, this.content)    
     });         
   }
-
+  handleChangeEmail(actionCode, mode) {
+    // Localize the UI to the selected language as determined by the lang
+    // parameter.
+    // Try to apply the email verification code.
+    axios.get(`${environment.api_url}api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    .then(response => {              
+      //this.registerForm.reset() 
+      this.content = 'Your new email is confirmed. Please login to new email to verify!'
+      //this.errorService.handleError(null, this.content) 
+    })
+    .catch( error => {
+      console.log(error) 
+      this.content = 'Link may be expired. Please verify again!'
+      //this.errorService.handleError(null, this.content)    
+    });         
+  }
   handleConfirmIp(auth, actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     // Try to apply the email verification code.
-    axios.get(`https://grayll-app-bqqlgbdjbq-uc.a.run.app/api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    axios.get(`${environment.api_url}api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
     .then(response => {              
       //this.registerForm.reset() 
       this.content = 'Your account is verified. Now you can login!'

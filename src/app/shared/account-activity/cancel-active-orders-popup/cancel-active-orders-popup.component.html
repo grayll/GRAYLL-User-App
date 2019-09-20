@@ -1,0 +1,28 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Review Action"></app-popup-header>
+  <div class="modal-body">
+    <p class="text-purple lead">Cancel All Active Orders</p>
+    <div class="row my-2 d-flex align-items-center justify-content-center">
+      <div class="col">
+        <p class="text-purple">
+          Please review and confirm this action to cancel all active orders in the GRAYLL Wallet.
+          You may also cancel active orders individually by performing the cancel action for any active order.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col">
+        <a href="javascript:void(0)" class="btn btn-outline-secondary" (click)="popupService.close()">
+          Cancel
+        </a>
+      </div>
+      <div class="col">
+        <a (click)="popupService.close()" href="javascript:void(0)" class="btn btn-purple">
+          Confirm
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>

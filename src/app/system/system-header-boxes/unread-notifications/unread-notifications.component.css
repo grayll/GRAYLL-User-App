@@ -1,0 +1,105 @@
+.gradient-box {
+  background: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  color: white!important;
+}
+
+.card {
+  background-color: #636fa4 !important;
+}
+
+.card-body {
+  border-radius: 4px !important;
+}
+
+.border-navy {
+  border-radius: 0.3rem;
+  border: 1px solid #40278C!important;
+}
+
+.purple-link {
+  color: #cfa256!important;
+}
+
+.purple-link:hover {
+  color: #40278C!important;
+  cursor: pointer!important;
+}
+
+.cancel:hover {
+  cursor: pointer;
+}
+
+.navy-link {
+  color: #40278C!important;
+}
+
+.navy-span {
+  color: #40278C!important;
+}
+
+a.navy-span:hover {
+  cursor: default;
+}
+
+.navy-link:hover {
+  color: #cfa256!important;
+  cursor: pointer!important;
+}
+
+.navy-link-white {
+  color: #40278C!important;
+}
+
+.navy-link-white:hover {
+  color: white!important;
+}
+
+/* Animate bottom border on hover */
+.border-navy-hover:after {
+  padding-bottom: 0.5rem;
+  content: ""; /* This is necessary for the pseudo element to work. */
+  display: block; /* This will put the pseudo element on its own line. */
+  width: 0%; /* Change this to whatever width you want to have before hover. */
+  border-bottom: 2px solid #40278C!important; /* This creates the border. Replace black with whatever color you want. */
+  transition: .5s; /* This establishes the amount of time in seconds the animation should take from start to finish */
+}
+
+.border-navy-hover:hover:after {
+  width: 100%; /* This will be the new width of your border when on hover */
+}
+
+.badge-number {
+  position: relative;
+  top: -6px;
+}
+
+.search .input-group-text {
+  border-color: #40278C;
+  border-left: 0;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@media (min-width: 992px) {
+  .no-margin {
+    margin-bottom: 0!important;
+  }
+}

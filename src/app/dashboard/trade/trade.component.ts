@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {faChartLine, faCircle} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-trade',
@@ -6,6 +7,9 @@ import {Component} from '@angular/core';
   styleUrls: ['./trade.component.scss']
 })
 export class TradeComponent {
+
+  faChartLine = faChartLine;
+  faCircle = faCircle;
 
   constructor() { }
 

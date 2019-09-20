@@ -17,6 +17,11 @@ ul {
   margin-top: 30px;
 }
 
+::ng-deep ul.nav-tabs {
+  justify-content: center!important;
+  border: 0;
+}
+
 ::ng-deep .tooltip-inner {
   background-color: #40278C!important;
 }
@@ -47,7 +52,6 @@ ul {
 
 input {
   border-left: 1px solid #CFA256;
-  line-height: calc(1.5em + 1rem + 2px)!important;
 }
 
 ::placeholder {
@@ -98,6 +102,60 @@ input {
 
 .purple-link:hover {
   color: #CFA256!important;
+}
+
+:host ::ng-deep .carousel-inner {
+  outline: 0!important;
+}
+
+:host ::ng-deep .carousel-item.active {
+  outline: 0!important;
+}
+
+:host ::ng-deep .carousel {
+  outline: 0!important;
+}
+
+:host ::ng-deep .carousel-control-prev {
+  display: block;
+  position: absolute;
+  top: 100px;
+  left: -15px;
+}
+
+:host ::ng-deep .carousel-control-next {
+  display: block;
+  position: absolute;
+  top: 100px;
+  right: -15px;
+}
+
+:host ::ng-deep .carousel-control-prev-icon {
+  background-image: url('../../../assets/images/left-chevron.png');
+  width: 15px;
+  height: 24px;
+}
+
+:host ::ng-deep .carousel-control-next-icon {
+  background-image: url('../../../assets/images/right-chevron.png');
+  width: 15px;
+  height: 24px;
+}
+
+:host #tabset-mobile ::ng-deep .custom-pills ul {
+  justify-content: center!important;
+}
+
+@media (max-width: 480px) {
+  .p-font {
+    font-size: 14px!important;
+  }
+}
+
+@media (min-width: 481px) {
+  .p-font {
+    font-size: 16px!important;
+  }
 }
 
 @media (min-width: 992px) {

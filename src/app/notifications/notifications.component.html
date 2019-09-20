@@ -1,0 +1,295 @@
+<router-outlet name="popup"></router-outlet>
+<app-navbar></app-navbar>
+
+<div class="main-wrapper">
+  <div class="page-wrapper h-100">
+    <div class="container-fluid pt-0">
+
+      <h4 class="text-light pt-3 pb-1">
+        Notifications
+      </h4>
+
+      <!-- Displayed on larger devices only -->
+
+      <div class="row d-none d-lg-flex fixed-desktop-cards">
+        <div class="col-lg-4 col-sm-12">
+          <div class="card h-100 border-0">
+            <div class="card-body gradient-box">
+              <div class="row">
+                <div class="col-7 font-weight-bolder">
+                  Algo System Notifications
+                </div>
+                <div class="col-5 align-self-center text-right bottom-border-navy-animated" (click)="filterReadAlgoNotifications()">
+                  <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
+                    <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                    <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.getNumberOfUnreadAlgoNotifications()}}
+                    </span>
+                  </a>
+                </div>
+              </div>
+              <div class="row my-3">
+                <div class="col search">
+                  <div class="input-group">
+                    <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                           type="search" style="border-color: #40278C!important">
+                    <span class="input-group-append">
+                      <div class="input-group-text bg-transparent">
+                        <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+                      </div>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="fixed-desktop-box">
+                <ng-container *ngFor="let notification of algoNotificationsToShow">
+                  <app-algo-notification-item
+                    (markAsRead)="markAlgoNotificationAsRead(notification)"
+                    [notification]="notification">
+                  </app-algo-notification-item>
+                </ng-container>
+                <p class="text-center mb-0" *ngIf="algoNotificationsToShow.length === 0">
+                  There are no unread algo notifications.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <div class="card h-100 border-0">
+            <div class="card-body gradient-box">
+              <div class="row">
+                <div class="col-7 font-weight-bolder">
+                  Wallet Notifications
+                </div>
+                <div class="col-5 align-self-center text-right bottom-border-navy-animated" (click)="filterReadWalletNotifications()">
+                  <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
+                    <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                    <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.getNumberOfUnreadWalletNotifications()}}
+                    </span>
+                  </a>
+                </div>
+              </div>
+              <div class="row my-3">
+                <div class="col search">
+                  <div class="input-group">
+                    <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                           type="search" style="border-color: #40278C!important">
+                    <span class="input-group-append">
+                      <div class="input-group-text bg-transparent">
+                        <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+                      </div>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="fixed-desktop-box">
+                <ng-container *ngFor="let notification of walletNotificationsToShow">
+                  <app-wallet-notification-item
+                    (markAsRead)="markWalletNotificationAsRead(notification)"
+                    [notification]="notification">
+                  </app-wallet-notification-item>
+                </ng-container>
+                <p class="text-center mb-0" *ngIf="walletNotificationsToShow.length === 0">
+                  There are no unread wallet notifications.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <div class="card h-100 border-0">
+            <div class="card-body gradient-box">
+              <div class="row">
+                <div class="col-7 font-weight-bolder">
+                  General Notifications
+                </div>
+                <div class="col-5 align-self-center text-right bottom-border-navy-animated" (click)="filterReadSystemNotifications()">
+                  <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
+                    <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                    <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.getNumberOfUnreadSystemNotifications()}}
+                    </span>
+                  </a>
+                </div>
+              </div>
+              <div class="row my-3">
+                <div class="col search">
+                  <div class="input-group">
+                    <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                           type="search" style="border-color: #40278C!important">
+                    <span class="input-group-append">
+                      <div class="input-group-text bg-transparent">
+                        <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+                      </div>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="fixed-desktop-box">
+                <ng-container *ngFor="let notification of systemNotificationsToShow">
+                  <app-general-notification-item
+                    (markAsRead)="markSystemNotificationAsRead(notification)"
+                    [notification]="notification">
+                  </app-general-notification-item>
+                </ng-container>
+                <p class="text-center mb-0" *ngIf="systemNotificationsToShow.length === 0">
+                  There are no unread system notifications.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Displayed on smaller devices only -->
+
+      <div class="row d-lg-none">
+        <ngb-carousel id="carousel" [interval]="0" [showNavigationIndicators]="false">
+          <div>
+            <ng-template ngbSlide>
+              <div class="col-12">
+                <div class="card border-0">
+                  <div class="card-body gradient-box size-card">
+                    <div class="row" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+                      <div class="col-8 font-weight-bolder">
+                        Algo System Notifications
+                      </div>
+                      <div class="col-4 align-self-center text-right"
+                           (click)="filterReadAlgoNotifications()" style="z-index: 2;">
+                        <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
+                          <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                          <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.getNumberOfUnreadAlgoNotifications()}}
+                    </span>
+                        </a>
+                      </div>
+                    </div>
+                    <div class="row my-3" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+                      <div class="col search">
+                        <div class="input-group">
+                          <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                                 type="search" style="border-color: #40278C!important">
+                          <span class="input-group-append">
+                      <div class="input-group-text bg-transparent">
+                        <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+                      </div>
+                    </span>
+                        </div>
+                      </div>
+                    </div >
+                    <div (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()" class="scroll-cont">
+                      <ng-container *ngFor="let notification of algoNotificationsToShow">
+                        <app-algo-notification-item
+                          (markAsRead)="markAlgoNotificationAsRead(notification)"
+                          [notification]="notification">
+                        </app-algo-notification-item>
+                      </ng-container>
+                      <p class="text-center mb-0" *ngIf="algoNotificationsToShow.length === 0">
+                        There are no unread algo notifications.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template ngbSlide>
+              <div class="col-12">
+                <div class="card border-0">
+                  <div class="card-body gradient-box size-card">
+                    <div class="row" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+                      <div class="col-7 font-weight-bolder">
+                        Wallet Notifications
+                      </div>
+                      <div class="col-5 align-self-center text-right"
+                           (click)="filterReadWalletNotifications()" style="z-index: 2;">
+                        <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
+                          <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                          <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.getNumberOfUnreadWalletNotifications()}}
+                    </span>
+                        </a>
+                      </div>
+                    </div>
+                    <div class="row my-3" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+                      <div class="col search">
+                        <div class="input-group">
+                          <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                                 type="search" style="border-color: #40278C!important">
+                          <span class="input-group-append">
+                      <div class="input-group-text bg-transparent">
+                        <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+                      </div>
+                    </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()" class="scroll-cont">
+                      <ng-container *ngFor="let notification of walletNotificationsToShow">
+                        <app-wallet-notification-item
+                          (markAsRead)="markWalletNotificationAsRead(notification)"
+                          [notification]="notification">
+                        </app-wallet-notification-item>
+                      </ng-container>
+                      <p class="text-center mb-0" *ngIf="walletNotificationsToShow.length === 0">
+                        There are no unread wallet notifications.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template ngbSlide>
+              <div class="col-12">
+                <div class="card border-0">
+                  <div class="card-body gradient-box size-card">
+                    <div class="row" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+                      <div class="col-7 font-weight-bolder">
+                        General Notifications
+                      </div>
+                      <div class="col-5 align-self-center text-right"
+                           (click)="filterReadSystemNotifications()" style="z-index: 2;">
+                        <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
+                          <fa-icon [icon]="faBell" size="lg"></fa-icon>
+                          <span class="badge bg-yellow text-light badge-number">
+                      {{notificationsService.getNumberOfUnreadSystemNotifications()}}
+                    </span>
+                        </a>
+                      </div>
+                    </div>
+                    <div class="row my-3" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">
+                      <div class="col search">
+                        <div class="input-group">
+                          <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                                 type="search" style="border-color: #40278C!important">
+                          <span class="input-group-append">
+                      <div class="input-group-text bg-transparent">
+                        <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+                      </div>
+                    </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()" class="scroll-cont">
+                      <ng-container *ngFor="let notification of systemNotificationsToShow">
+                        <app-general-notification-item
+                          (markAsRead)="markSystemNotificationAsRead(notification)"
+                          [notification]="notification">
+                        </app-general-notification-item>
+                      </ng-container>
+                      <p class="text-center mb-0" *ngIf="systemNotificationsToShow.length === 0">
+                        There are no unread system notifications.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </ngb-carousel>
+      </div>
+
+    </div>
+  </div>
+</div>

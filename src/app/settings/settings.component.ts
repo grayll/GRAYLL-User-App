@@ -30,11 +30,6 @@ export class SettingsComponent {
       routerLink: '/settings/profile/notifications'
     },
     {
-      name: 'Messages',
-      icon: this.faComment,
-      routerLink: '/settings/profile/messages'
-    },
-    {
       name: 'Data',
       icon: this.faChartBar,
       routerLink: '/settings/profile/data'

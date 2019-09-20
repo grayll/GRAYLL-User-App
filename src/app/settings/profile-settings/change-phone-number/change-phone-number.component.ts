@@ -1,8 +1,13 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {PopupService} from '../../../shared/popup/popup.service';
 import {ErrorService} from '../../../shared/error/error.service';
 import {Router} from '@angular/router';
 import {SharedService} from '../../../shared/shared.service';
+//import { ReCaptchaV3Service } from 'ng-recaptcha';
+import axios from 'axios'
+import { environment } from 'src/environments/environment';
+import { AuthService } from "../../../shared/services/auth.service"
+import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'app-change-phone-number',
@@ -14,6 +19,8 @@ export class ChangePhoneNumberComponent implements OnInit {
   @ViewChild('content') modal;
   selectedCountryCode: string;
   phoneNumber: string;
+  public recaptchaVerifier: firebase.auth.RecaptchaVerifier;
+  public token: any;
 
   countryCodes = [
     'af', 'al', 'dz', 'as', 'ad', 'ao', 'ai', 'aq', 'ag', 'ar', 'am', 'aw', 'au', 'at', 'az', 'bs', 'bh', 'bd', 'bb', 'by', 'be', 'bz',
@@ -26,21 +33,23 @@ export class ChangePhoneNumberComponent implements OnInit {
     'nz', 'ni', 'ne', 'ng', 'nu', 'nf', 'mp', 'no', 'om', 'pk', 'pw', 'pa', 'pg', 'py', 'pe', 'ph', 'pn', 'pl', 'pt', 'pr', 'qa', 're',
     'ro', 'ru', 'ru', 'rw', 'kn', 'lc', 'pm', 'vc', 'vc', 'vc', 'ws', 'sm', 'st', 'sa', 'sn', 'rs', 'sc', 'sl', 'sg', 'sk', 'si', 'sb',
     'so', 'za', 'gs', 'es', 'lk', 'sd', 'sr', 'sj', 'sz', 'se', 'ch', 'sy', 'tw', 'tj', 'th', 'tl', 'tg', 'tk', 'to', 'tt', 'tt', 'tn',
-    'tr', 'tm', 'tc', 'tv', 'ug', 'ua', 'ae', 'gb', 'us', 'um', 'uy', 'uz', 'vu', 've', 'vn', 'vn', 'us', 'wf', 'eh', 'ye', 'zm', 'zw'
+    'tr', 'tm', 'tc', 'tv', 'ug', 'ua', 'ae', 'gb', 'us', 'um', 'uy', 'uz', 'vu', 've', 'vn',  'wf', 'eh', 'ye', 'zm', 'zw'
   ];
 
   constructor(
-    private popupService: PopupService,
+    public popupService: PopupService,
     private errorService: ErrorService,
-    private router: Router,
+    private router: Router, 
+    public authService: AuthService, 
+    //private recaptchaV3Service: ReCaptchaV3Service,
     private sharedService: SharedService
   ) { }
 
   ngOnInit() {
-    this.selectedCountryCode = 'af';
+    this.selectedCountryCode = 'af';   
     this.popupService.open(this.modal);
   }
-
+  
   clientValidation(): boolean {
     if (!this.phoneNumber || (this.phoneNumber && this.phoneNumber === '')) {
       this.errorService.handleError(null, 'Please enter your phone number.');
@@ -48,16 +57,45 @@ export class ChangePhoneNumberComponent implements OnInit {
     }
     return true;
   }
-
+  // this.recaptchaVerifier.render().then(function (widgetId) {
+  //   window.recaptchaWidgetId = widgetId;
+  // });
   verify() {
-    if (this.clientValidation()) {
-      this.sharedService.showModalOverview();
-      this.popupService.close().then(() => {
-        setTimeout(() => {
-          this.router.navigate(['/settings/profile', {outlets: {popup: ['verify-phone-number', this.phoneNumber]}}]);
-        }, 50);
+    console.log("form is valid")
+    if (this.clientValidation()) { 
+      console.log("form is valid 1")     
+      this.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        'size': 'invisible',
+        'callback': function(response) {
+          // reCAPTCHA solved - will proceed with submit function
+          this.token = response
+          console.log(response)
+          axios.post(`${environment.api_url}api/v1/phones/sendcode`, 
+          {recaptchaToken:this.token, phoneNumber:this.phoneNumber},
+          { headers: {Authorization: 'Bearer ' + this.authService.userData.token} }).then(res =>{
+            if (res.data.valid === true){
+
+              this.sharedService.showModalOverview();
+              this.popupService.close().then(() => {
+                setTimeout(() => {
+                  this.router.navigate(['/settings/profile', {outlets: {popup: ['verify-phone-number', this.phoneNumber]}}]);
+                }, 50);
+              });
+            } else {
+              this.errorService.handleError(null, 'Please enter valid phone number.');
+            }
+          })            
+        },
+        'expired-callback': function() {
+          console.log('reset capcha')
+        }
       });
+     
+            
+      // })     
+    } else {
+      console.log("form is invalid")
     }
   }
-
+  
 }

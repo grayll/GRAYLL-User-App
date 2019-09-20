@@ -8,17 +8,15 @@ import {EnableTwoFaLastStepComponent} from './security/two-FA-enable/enable-two-
 import {DisableTwoFaComponent} from './security/two-FA-enable/disable-two-fa/disable-two-fa.component';
 import {DisableMultisignatureComponent} from './security/multisignature-transactions/disable-multisignature/disable-multisignature.component';
 import {EnableMultisignatureComponent} from './security/multisignature-transactions/enable-multisignature/enable-multisignature.component';
-import {DisableWalletNotificationsSettingsComponent} from './notifications-settings/disable-wallet-notifications-settings/disable-wallet-notifications-settings.component';
-import {DisableAlgoNotificationsSettingsComponent} from './notifications-settings/disable-algo-notifications-settings/disable-algo-notifications-settings.component';
-import {DisableWalletMessagesComponent} from './messages-settings/disable-wallet-messages/disable-wallet-messages.component';
-import {DisableAlgoMessagesComponent} from './messages-settings/disable-algo-messages/disable-algo-messages.component';
+import {DisableWalletNotificationsSettingsComponent} from './notifications-settings/disable-wallet-email-notifications-settings/disable-wallet-notifications-settings.component';
+import {DisableAlgoNotificationsSettingsComponent} from './notifications-settings/disable-algo-email-notifications-settings/disable-algo-notifications-settings.component';
 import {EditFederationAddressComponent} from './edit-federation-address/edit-federation-address.component';
 import {ChangePasswordComponent} from './profile-settings/change-password/change-password.component';
 import {ChangeEmailAddressComponent} from './profile-settings/change-email-address/change-email-address.component';
 import {ChangePhoneNumberComponent} from './profile-settings/change-phone-number/change-phone-number.component';
 import {VerifyPhoneNumberComponent} from './profile-settings/change-phone-number/verify-phone-number/verify-phone-number.component';
-import { SecureInnerPagesGuard } from '../shared/guard/secure-inner-pages.guard';
-import { AuthGuard } from '../shared/guard/auth.guard';
+import {DisableWalletAppNotificationsSettingsComponent} from "./notifications-settings/disable-wallet-app-notifications-settings/disable-wallet-app-notifications-settings.component";
+import {DisableAlgoAppNotificationsSettingsComponent} from "./notifications-settings/disable-algo-app-notifications-settings/disable-algo-app-notifications-settings.component";
 
 const popupRoutes: Routes = [
   {
@@ -57,23 +55,23 @@ const popupRoutes: Routes = [
     outlet: 'popup'
   },
   {
-    path: 'disable-wallet-notifications-settings',
+    path: 'disable-wallet-email-notifications-settings',
     component: DisableWalletNotificationsSettingsComponent,
     outlet: 'popup'
   },
   {
-    path: 'disable-algo-notifications-settings',
+    path: 'disable-wallet-app-notifications-settings',
+    component: DisableWalletAppNotificationsSettingsComponent,
+    outlet: 'popup'
+  },
+  {
+    path: 'disable-algo-email-notifications-settings',
     component: DisableAlgoNotificationsSettingsComponent,
     outlet: 'popup'
   },
   {
-    path: 'disable-wallet-messages',
-    component: DisableWalletMessagesComponent,
-    outlet: 'popup'
-  },
-  {
-    path: 'disable-algo-messages',
-    component: DisableAlgoMessagesComponent,
+    path: 'disable-algo-app-notifications-settings',
+    component: DisableAlgoAppNotificationsSettingsComponent,
     outlet: 'popup'
   },
   {
@@ -109,8 +107,7 @@ const routes: Routes = [
     component: SettingsComponent,
     children: [
       ...popupRoutes
-    ],
-    canActivate:[AuthGuard]
+    ]
   }
 ];
 

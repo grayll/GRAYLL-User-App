@@ -1,0 +1,91 @@
+.first-box {
+  background: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  color: white!important;
+}
+
+.second-box {
+  background: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  color: white!important;
+}
+
+.third-box {
+  background: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+  color: white!important;
+}
+
+.card {
+  background-color: #636fa4 !important;
+}
+
+.pointer:hover {
+  cursor: pointer!important;
+}
+
+.card-body {
+  border-radius: 4px !important;
+}
+
+.border-navy-hover {
+  border-radius: 0.3rem;
+  padding: 0.5rem 0.25rem;
+  border: 1px solid transparent!important;
+}
+
+.border-navy-hover:hover {
+  cursor: pointer!important;
+  border-radius: 0.3rem;
+  padding: 0.5rem 0.25rem;
+  border: 1px solid #40278C!important;
+}
+
+.line-chart {
+  max-width: 130px;
+  height: 15px;
+}
+
+:host ::ng-deep .carousel-inner {
+  outline: 0!important;
+}
+
+:host ::ng-deep .carousel-item.active {
+  outline: 0!important;
+}
+
+:host ::ng-deep .carousel {
+  outline: 0!important;
+}
+
+:host ::ng-deep .carousel-control-prev {
+  display: block;
+  position: absolute;
+  top: 100px;
+  left: -15px;
+}
+
+:host ::ng-deep .carousel-control-next {
+  display: block;
+  position: absolute;
+  top: 100px;
+  right: -15px;
+}
+
+:host ::ng-deep .carousel-control-prev-icon {
+  background-image: url('../../../assets/images/left-chevron.png');
+  width: 15px;
+  height: 24px;
+}
+
+:host ::ng-deep .carousel-control-next-icon {
+  background-image: url('../../../assets/images/right-chevron.png');
+  width: 15px;
+  height: 24px;
+}
+
+@media (min-width: 992px) {
+  .card {
+    height: 100%!important;
+  }
+  .card-body {
+    padding-bottom: 0!important;
+  }
+}

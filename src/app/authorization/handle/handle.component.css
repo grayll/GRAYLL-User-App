@@ -44,5 +44,6 @@ a.blue-link {
 }
 
 a.blue-link:hover {
+  cursor: pointer!important;
   color: #40278C!important;
 }
