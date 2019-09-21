@@ -34,6 +34,7 @@
           },
           "configurations": {
             "production": {
+              "serviceWorker": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -52,7 +53,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
+                  "maximumWarning": "4mb",
                   "maximumError": "5mb"
                 }
               ]

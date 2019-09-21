@@ -61,9 +61,7 @@ export class MyHammerConfig extends HammerGestureConfig  {
     RecaptchaV3Module,
     NgxPasswordToggleModule,
     NgxUiLoaderModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
-
-   
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: true }),   
   ],
   providers: [
     ErrorService, AuthService, StellarService,

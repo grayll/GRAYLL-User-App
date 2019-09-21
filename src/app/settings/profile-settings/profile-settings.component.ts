@@ -9,6 +9,7 @@ import axios from 'axios'
 import { environment } from 'src/environments/environment';
 import {SubSink} from 'subsink';
 import {SettingsService} from '../settings.service';
+import {SwPush, SwUpdate} from "@angular/service-worker";
 
 @Component({
   selector: 'app-profile-settings',
@@ -17,6 +18,8 @@ import {SettingsService} from '../settings.service';
 })
 export class ProfileSettingsComponent implements OnDestroy {
   private subscriptions = new SubSink();
+
+  readonly VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
 
   federationAddress: string;
   stellarAddress: string;
@@ -34,6 +37,7 @@ export class ProfileSettingsComponent implements OnDestroy {
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
     private settingsService: SettingsService,
+    private swPush: SwPush,
   ) {
     this.buildForm()     
 
@@ -50,6 +54,8 @@ export class ProfileSettingsComponent implements OnDestroy {
         this.federationAddress = fed
       }
     )
+
+    this.requestSubNotifications()
   }
  
   buildForm(): void {    
@@ -71,6 +77,16 @@ export class ProfileSettingsComponent implements OnDestroy {
        ]],  
        'inlineFormInputGroup':['+387 63 763 354'],
       });
+  }
+
+  requestSubNotifications() {
+    this.swPush.requestSubscription({
+        serverPublicKey: this.VAPID_PUBLIC_KEY
+    })
+    .then(sub => { 
+      console.log("sub:", sub)
+    })
+    .catch(err => console.error("Could not subscribe to notifications", err));
   }
 
   // Updates validation state on form changes.
