@@ -1,15 +1,18 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {faChartLine, faCircle, faWallet} from '@fortawesome/free-solid-svg-icons';
 import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
 import {NgbCarousel} from '@ng-bootstrap/ng-bootstrap';
+import {SubSink} from 'subsink';
+import {SettingsService} from '../../settings/settings.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-wallet-stats',
   templateUrl: './wallet-stats.component.html',
   styleUrls: ['./wallet-stats.component.scss']
 })
-export class WalletStatsComponent implements OnInit {
+export class WalletStatsComponent implements OnInit, OnDestroy {
 
   @ViewChild(NgbCarousel) carouselWallet;
 
@@ -25,9 +28,13 @@ export class WalletStatsComponent implements OnInit {
   secretKey: string;
   isSecretKeyRevealed: boolean;
 
+  private subscriptions = new SubSink();
+
   constructor(
     private clipboardService: ClipboardService,
-    private snotifyService: SnotifyService
+    private snotifyService: SnotifyService,
+    private settingsService: SettingsService,
+    private router: Router
   ) {
     this.federationAddress = 'grayll3*grayll.io';
     this.stellarAddress = 'DKJNSFUIHLJ238OHUIDLFJN23023OHUIFSDKJNS032P3DSKJAFNLSD';
@@ -39,6 +46,11 @@ export class WalletStatsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.observeRevealSecretKey();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   copyFederationAddress() {
@@ -53,8 +65,20 @@ export class WalletStatsComponent implements OnInit {
     }
   }
 
-  toggleRevealSecretKey() {
-    this.isSecretKeyRevealed = !this.isSecretKeyRevealed;
+  revealSecretKey() {
+    this.router.navigate(['/wallet/overview', {outlets: {popup: 'reveal-secret-key'}}]);
+  }
+
+  hideSecretKey() {
+    this.isSecretKeyRevealed = false;
+  }
+
+  observeRevealSecretKey() {
+    this.subscriptions.sink = this.settingsService.observeConfirmAuthority()
+    .subscribe((confirm) => {
+      // Not a secure solution. Please make a request to backend to get the code
+      this.isSecretKeyRevealed = confirm;
+    });
   }
 
   populateMaxXLM() {

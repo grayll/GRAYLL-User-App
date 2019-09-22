@@ -5,9 +5,37 @@
   <div class="page-wrapper">
     <div class="container-fluid pt-0">
 
-      <h4 class="text-light pt-3 pb-1">
-        {{activeTabId}}
-      </h4>
+      <div *ngIf="!sharedService.getIsLoanPaid(); else loanPaid">
+        <!-- Display on mobile -->
+        <div class="alert justify-content-between alert-warning d-lg-none loan-unpaid-mobile" role="alert">
+          <div style="display: inline;">
+            <fa-icon [icon]="faWarning" class="text-purple-important" [fixedWidth]="true"></fa-icon>
+            Please click the button "Pay Off Loan" to return the 1.50 XLM loan to GRAYLL.
+          </div>
+          <button class="btn btn-purple" [routerLink]="[{outlets: {popup: 'xlm-loan'}}]">Pay Off Loan</button>
+        </div>
+
+        <h4 class="text-light pb-1 page-title">
+          {{activeTabId}}
+        </h4>
+
+        <!-- Display on larger devices -->
+        <div class="alert alert-warning loan-unpaid justify-content-between d-none d-lg-flex" role="alert">
+          <div style="display: inline;">
+            <fa-icon [icon]="faWarning" class="text-purple-important" [fixedWidth]="true"></fa-icon>
+            Please click the button "Pay Off Loan" to return the 1.50 XLM loan to GRAYLL.
+          </div>
+          <button class="btn btn-purple" [routerLink]="[{outlets: {popup: 'xlm-loan'}}]">Pay Off Loan</button>
+        </div>
+      </div>
+
+      <ng-template #loanPaid>
+        <h4 class="text-light pt-3 pb-1">
+          {{activeTabId}}
+        </h4>
+      </ng-template>
+
+      <div style="clear:both"></div>
 
       <div class="row d-flex justify-content-center align-items-center d-md-none mb-3">
         <div class="col mx-auto">

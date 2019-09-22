@@ -13,6 +13,23 @@
   min-height: calc(100vh - 100px);
 }
 
+.loan-unpaid {
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  margin-top: 6px;
+  margin-bottom: 0;
+  padding: 0.1rem 1.25rem;
+  align-items: center;
+}
+
+.loan-unpaid-mobile {
+  margin-top: calc(50px + 1rem);
+  display: flex;
+  align-items: center;
+}
+
 ::ng-deep ul.nav-tabs {
   justify-content: center!important;
   border: 0;
@@ -58,5 +75,12 @@
       font-size: 0.7rem;
       text-align: left;
     }
+  }
+}
+
+@media (min-width: 991px) {
+  .page-title {
+    float: left;
+    padding-top: 1rem;
   }
 }

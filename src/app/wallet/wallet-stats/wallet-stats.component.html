@@ -6,13 +6,18 @@
     <div class="card border-0">
       <div class="card-body first-box">
 
-        <div class="w-auto c-cost">
+        <div class="w-auto c-cost c-cost-wallet">
           <div class="d-inline-block align-middle text-yellow">
             <fa-icon [icon]="faWallet" size="3x" fixedWidth></fa-icon>
           </div>
           <div class="d-inline-block text-white align-middle wallet-box">
             <span class="text-light font-16">Wallet Balance</span>
-            <h5 class="text-light font-weight-bolder">$100,000,000,000.00</h5>
+            <h5 class="text-light font-weight-bolder mb-0">$100,000,000,000.00</h5>
+            <small>
+              <a href="javascript:void(0)" class="white-link" [routerLink]="[{outlets: {popup: 'xlm-balance-status'}}]">
+                1.50 XLM Reserved ($0.11381)
+              </a>
+            </small>
           </div>
         </div>
 
@@ -128,7 +133,9 @@
             <p>Your secret key is hidden and must not be shared.</p>
 
             <div class="row" *ngIf="!isSecretKeyRevealed">
-              <button (click)="toggleRevealSecretKey()" class="btn btn-block btn-yellow w-auto mx-auto">Reveal Secret Key</button>
+              <button (click)="revealSecretKey()" class="btn btn-block btn-yellow w-auto mx-auto">
+                Reveal Secret Key
+              </button>
             </div>
 
             <div class="row" *ngIf="isSecretKeyRevealed">
@@ -136,7 +143,7 @@
                 <input disabled [value]="secretKey" type="text" class="form-control form-control-no-border bg-transparent text-light" style="border-left: 1px solid white">
               </div>
               <div class="col-md-6 col-sm-12 mt-xs-4 mt-xs-4">
-                <button (click)="toggleRevealSecretKey()" class="btn btn-block btn-yellow">Hide Secret Key</button>
+                <button (click)="hideSecretKey()" class="btn btn-block btn-yellow">Hide Secret Key</button>
               </div>
             </div>
 

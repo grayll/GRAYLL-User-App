@@ -1,0 +1,91 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Account Activation | 1.50 XLM Loan"></app-popup-header>
+  <div class="modal-body">
+
+    <div class="row mb-1" *ngIf="!success && !error">
+      <div class="col-12 text-center">
+        <p class="text-purple">
+          All active Stellar Network Accounts must maintain a minimum balance of Stellar
+          Lumens (XLM), which will be reserved by the Stellar Network.
+        </p>
+        <p class="text-purple">
+          To provide you with an integrated and efficient service, GRAYLL will loan you 1.50 XLM
+          to create your active Stellar Network account for GRAYLL.
+        </p>
+        <p class="text-purple font-weight-bolder">
+          You will need to return the 1.50 XLM loan within 60 days by depositing Stellar Lumens
+          (XLM) to your GRAYLL App account.
+        </p>
+        <p class="text-purple">
+          Certain features or functions may not be available until the loan has been settled.
+          If the loan is not paid within 60 days, your GRAYLL account will become invalid. You will receive
+          timely notifications to remind you of the loan status.
+        </p>
+      </div>
+    </div>
+
+    <ng-container *ngIf="success">
+      <div class="success-checkmark">
+        <div class="check-icon">
+          <span class="icon-line line-tip"></span>
+          <span class="icon-line line-long"></span>
+          <div class="icon-circle"></div>
+          <div class="icon-fix"></div>
+        </div>
+      </div>
+
+      <div class="row text-center">
+        <div class="col">
+          <p class="text-purple font-16">Account Activation Successful</p>
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <div class="col-12 text-center">
+          <p class="text-purple">
+            Please deposit a minimum of 2.00 XLM (Stellar Lumens) to your GRAYLL Account wallet to pay off the
+            1.50 XLM loan and have 0.50 XLM for the minimal cost of transfers on the Stellar Network.
+          </p>
+          <p class="text-purple">
+            Once you have paid off the loan, you will have full access to the GRAYLL Algorithmic System and other
+            features and functions.
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="error">
+      <div class="swal2-icon swal2-error swal2-animate-error-icon" style="display: flex;">
+        <span class="swal2-x-mark">
+          <span class="swal2-x-mark-line-left"></span>
+          <span class="swal2-x-mark-line-right"></span>
+        </span>
+      </div>
+
+      <div class="row text-center">
+        <div class="col">
+          <p class="text-purple font-16">Account Activation Failed</p>
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <div class="col-12 text-center">
+          <p class="text-purple">
+            Please retry to activate your GRAYLL Account.
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+
+  <div class="modal-footer">
+    <div class="row text-center" style="display: contents!important;">
+      <div class="col">
+        <button class="btn btn-purple" *ngIf="!success && !error" (click)="activate()">Activate</button>
+        <button class="btn btn-purple" *ngIf="success" (click)="goToDeposit()">Pay Off Loan</button>
+        <button class="btn btn-purple" *ngIf="error" (click)="retry()">Retry</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

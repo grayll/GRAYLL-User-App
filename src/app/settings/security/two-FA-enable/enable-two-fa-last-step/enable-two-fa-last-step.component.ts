@@ -9,6 +9,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import {ErrorService} from '../../../../shared/error/error.service';
 import { environment } from 'src/environments/environment.prod';
+import {UserService} from '../../../../authorization/user.service';
 
 @Component({
   selector: 'app-enable-two-fa-last-step',
@@ -31,7 +32,8 @@ export class EnableTwoFaLastStepComponent implements OnInit {
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
     private authService: AuthService,
-    private ngZone:NgZone
+    private ngZone:NgZone,
+    private userService: UserService,
   ) { }
   buildForm(): void {    
     this.enableTwoFAForm = this.formBuilder.group({
@@ -149,7 +151,7 @@ export class EnableTwoFaLastStepComponent implements OnInit {
         
         console.log('userData: verifyTfaAuth: ', this.authService.userData)
         this.settingsService.sendTwoFAEnabledToObserver(true);
-
+        this.userService.enable2FA(true);
         this.popupService.close()
         .then(() => {
           setTimeout(() => {

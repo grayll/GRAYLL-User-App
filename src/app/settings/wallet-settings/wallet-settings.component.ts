@@ -1,4 +1,4 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
 import { AuthService } from "../../shared/services/auth.service"
@@ -10,10 +10,10 @@ import {SettingsService} from '../settings.service';
   templateUrl: './wallet-settings.component.html',
   styleUrls: ['./wallet-settings.component.css']
 })
-export class WalletSettingsComponent implements OnDestroy {
+export class WalletSettingsComponent implements OnInit, OnDestroy {
 
-  federationAddress: string;
-  stellarAddress: string;
+  federationAddress: string = '';
+  stellarAddress: string = '';
   secretKey: string;
   isSecretKeyRevealed: boolean;
   private subscriptions = new SubSink();
@@ -24,8 +24,12 @@ export class WalletSettingsComponent implements OnDestroy {
     private authService: AuthService,
     private settingsService: SettingsService,
   ) {
-    this.federationAddress = this.authService.userData.Federation;
-    this.stellarAddress = this.authService.userData.PublicKey;
+    if (this.authService.userData.Federation){
+      this.federationAddress = this.authService.userData.Federation;
+    }
+    if (this.authService.userData.PublicKey){
+      this.stellarAddress = this.authService.userData.PublicKey;
+    }
     this.secretKey = 'GBMF3WYPDWQFOXVL2CO6NQPGQZJWLLKSGVTGGV7QPKCZCIQ3PZJGX4OG';
 
     this.subscriptions.sink = this.settingsService.observeFederationAddress().subscribe(
@@ -34,8 +38,12 @@ export class WalletSettingsComponent implements OnDestroy {
         this.federationAddress = fed
       }
     )
+}
+  ngOnInit(): void {
+    this.observeRevealSecretKey();
   }
 
+ 
   copyFederationAddress() {
     if (this.clipboardService.copyFromContent(this.federationAddress)) {
       this.snotifyService.simple('Federation address copied.');
@@ -48,12 +56,20 @@ export class WalletSettingsComponent implements OnDestroy {
     }
   }
 
-  toggleRevealSecretKey() {
-    this.isSecretKeyRevealed = !this.isSecretKeyRevealed;
+  hideSecretKey() {
+    this.isSecretKeyRevealed = false;
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+  
+  observeRevealSecretKey() {
+    this.subscriptions.sink = this.settingsService.observeConfirmAuthority()
+    .subscribe((confirm) => {
+      // Not a secure solution. Please make a request to backend to get the code
+      this.isSecretKeyRevealed = confirm;
+    });
   }
 
 }

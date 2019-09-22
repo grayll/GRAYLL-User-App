@@ -16,6 +16,12 @@
   background-color: #636fa4 !important;
 }
 
+.disabled-field {
+  color: #f8f9fa!important;
+  -webkit-text-fill-color: #f8f9fa;
+  opacity: 1; /* required on iOS */
+}
+
 @media (max-width: 768px) {
   .card-with-margin {
     margin-bottom: 1.2rem!important;

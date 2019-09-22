@@ -39,6 +39,40 @@ li.nav-item a {
   .navbar-wrapper {
     height: 64px!important;
   }
+  li[alt]:hover:after {
+    content: attr(alt);
+    position: absolute;
+    background-color: #40278C;
+    color: white;
+    padding: 5px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  li {
+    position: relative;
+  }
+  a[alt]:hover:after {
+    content: attr(alt);
+    position: absolute;
+    top: 64px;
+    right: 0;
+    background-color: #40278C;
+    color: white;
+    padding: 5px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 12px;
+    width: auto;
+    white-space: nowrap;
+  }
+  a.navbar-brand:hover:after {
+    left: calc(1rem + 5px)!important;
+    right: auto!important;
+  }
 }
 
 @media (max-width: 768px) {

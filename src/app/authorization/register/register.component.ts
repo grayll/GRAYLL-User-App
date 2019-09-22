@@ -137,9 +137,9 @@ registerClicked() {
           Name: this.registerForm.value['name'],  
           LName: this.registerForm.value['lname'],  
           Setting: setting,
-          PublicKey: pair.publicKey(),              
-          EncryptedSecretKey: encryptedSecret.EncryptedSecretKey,
-          SecretKeySalt: encryptedSecret.Salt,
+          //PublicKey: pair.publicKey(),              
+          //EncryptedSecretKey: encryptedSecret.EncryptedSecretKey,
+          //SecretKeySalt: encryptedSecret.Salt,
         }
         console.log(userData)      
         
@@ -150,7 +150,7 @@ registerClicked() {
         })             
         .then(response => {  
           if (response.data.errCode == environment.EMAIL_IN_USED)  {
-            let content = "Email address already in used"
+            let content = "The email address already in used."
             this.errorService.handleError(null, content)
             this.registerForm.reset() 
           } else {    

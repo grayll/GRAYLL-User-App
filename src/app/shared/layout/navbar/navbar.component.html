@@ -1,6 +1,6 @@
 <div class="bg-gradient navbar-wrapper fixed-top">
   <nav class="navbar navbar-expand-md pt-0 pb-0 fixed-top">
-    <a class="navbar-brand ml-2" routerLink="/dashboard/overview">
+    <a class="navbar-brand ml-2" routerLink="/dashboard/overview" alt="DASHBOARD">
       <img src="assets/images/logo.png" width="40" height="40" class="d-inline-block align-top" alt="Logo">
     </a>
     <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed"
@@ -9,9 +9,9 @@
     </button>
     <div [ngbCollapse]="!isNavbarCollapsed" class="collapse navbar-collapse text-right" id="navbarsDefault">
       <ul class="navbar-nav ml-auto pb-0">
-        <li class="nav-item" data-toggle="tooltip" title="ALGO SYSTEM"
+        <li class="nav-item" data-toggle="tooltip"
             (click)="isNavbarCollapsed = !isNavbarCollapsed">
-          <a href="javascript:void(0)" class="nav-link" routerLink="/system/overview">
+          <a href="javascript:void(0)" class="nav-link" routerLink="/system/overview" alt="ALGO SYSTEM">
             <span class="d-inline d-md-none mr-2">Algo System</span>
             <fa-icon [icon]="faChartLine" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
@@ -19,24 +19,24 @@
             </span>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" title="WALLET"
+        <li class="nav-item" data-toggle="tooltip"
             (click)="isNavbarCollapsed = !isNavbarCollapsed">
-          <a href="javascript:void(0)" class="nav-link" routerLink="/wallet/overview">
+          <a href="javascript:void(0)" class="nav-link" routerLink="/wallet/overview" alt="WALLET">
             <span class="d-inline d-md-none mr-2">Wallet</span>
             <fa-icon [icon]="faWallet" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">5</span>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" title="DATA" routerLink="/data/overview"
+        <li class="nav-item" data-toggle="tooltip" routerLink="/data/overview"
             (click)="isNavbarCollapsed = !isNavbarCollapsed">
-          <a href="javascript:void(0)" class="nav-link">
+          <a href="javascript:void(0)" class="nav-link" alt="DATA">
             <span class="d-inline d-md-none mr-2">Data</span>
             <fa-icon [icon]="faChartBar" size="lg"></fa-icon>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" title="NOTIFICATIONS" routerLink="/notifications/overview"
+        <li class="nav-item" data-toggle="tooltip" routerLink="/notifications/overview"
             (click)="isNavbarCollapsed = !isNavbarCollapsed">
-          <a href="javascript:void(0)" class="nav-link">
+          <a href="javascript:void(0)" alt="NOTIFICATIONS" class="nav-link">
             <span class="d-inline d-md-none mr-2">Notifications</span>
             <fa-icon [icon]="faBell" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
@@ -44,9 +44,9 @@
             </span>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" title="SETTINGS" routerLink="/settings/profile"
+        <li class="nav-item" data-toggle="tooltip" routerLink="/settings/profile"
             (click)="isNavbarCollapsed = !isNavbarCollapsed">
-          <a href="javascript:void(0)" class="nav-link">
+          <a href="javascript:void(0)" class="nav-link" alt="SETTINGS">
             <span class="d-inline d-md-none mr-2">Settings</span>
             <fa-icon [icon]="faUser" size="lg"></fa-icon>
           </a>

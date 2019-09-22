@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {WithdrawModel} from '../wallet/wallet-stats/withdraw/withdraw.model';
 import {AlgoPositionModel} from '../system/algo-position.model';
+import {UserService} from '../authorization/user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,11 @@ export class SharedService {
   modalOverlay = false;
   private withdrawModel: WithdrawModel;
   private algoPosition: AlgoPositionModel;
+  private isLoanPaid: boolean;
 
-  constructor() {}
+  constructor(
+    private userService: UserService
+  ) {}
 
   public showModalOverview() {
     this.modalOverlay = true;
@@ -18,6 +22,14 @@ export class SharedService {
 
   public hideModalOverview() {
     this.modalOverlay = false;
+  }
+
+  public setIsLoanPaid(value: boolean) {
+    this.isLoanPaid = value;
+  }
+
+  public getIsLoanPaid() {
+    return this.isLoanPaid;
   }
 
   // Wallet page - Withdraw popup

@@ -1,0 +1,88 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Pay Off | 1.50 XLM Loan"></app-popup-header>
+  <div class="modal-body">
+
+    <app-error></app-error>
+
+    <div class="row mb-1" *ngIf="!success && !error">
+      <div class="col-12">
+        <p class="text-purple">Pay off the loan to use all features and access the GRAYLL System.</p>
+      </div>
+      <div class="col-12">
+        <label for="xlmBalance" class="text-purple">
+          Current XLM Balance
+        </label>
+        <input disabled id="xlmBalance" type="text" class="form-control purple-input disabled-input" [value]="currentXLMBalance + ' XLM'">
+      </div>
+      <div class="col-12 text-right">
+        <small class="text-purple">1.50 XLM Reserved</small>
+      </div>
+      <div class="col-12">
+        <label for="loanValue" class="text-purple">
+          XLM Loan Value
+        </label>
+        <input disabled id="loanValue" type="text" class="form-control purple-input disabled-input" [value]="XLMLoanValue + ' XLM'">
+        <div class="col-12"><small>&nbsp;</small></div>
+      </div>
+      <div class="col-12">
+        <label for="difference" class="text-purple">
+          XLM Balance After Loan Payment
+        </label>
+        <input disabled id="difference" type="text" class="form-control purple-input disabled-input" [value]="currentXLMBalance - XLMLoanValue + ' XLM'">
+      </div>
+    </div>
+
+    <ng-container *ngIf="success">
+      <div class="success-checkmark">
+        <div class="check-icon">
+          <span class="icon-line line-tip"></span>
+          <span class="icon-line line-long"></span>
+          <div class="icon-circle"></div>
+          <div class="icon-fix"></div>
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <div class="col-12 text-center">
+          <p class="text-purple">
+            Thank you, your 1.50 XLM loan has been repaid successfully.
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="error">
+      <div class="swal2-icon swal2-error swal2-animate-error-icon" style="display: flex;">
+        <span class="swal2-x-mark">
+          <span class="swal2-x-mark-line-left"></span>
+          <span class="swal2-x-mark-line-right"></span>
+        </span>
+      </div>
+
+      <div class="row text-center">
+        <div class="col">
+          <p class="text-purple font-16">Loan Repayment Failed</p>
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <div class="col-12 text-center">
+          <p class="text-purple">
+            Something went wrong, please retry the 1.50 XLM load repayment.
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+
+  <div class="modal-footer">
+    <div class="row text-center" style="display: contents!important;">
+      <div class="col">
+        <button class="btn btn-purple" *ngIf="!success && !error" (click)="payOffLoan()">Pay Off 1.50 XLM</button>
+        <button class="btn btn-purple" *ngIf="success" (click)="popupService.close()">Close</button>
+        <button class="btn btn-purple" *ngIf="error" (click)="retry()">Retry</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

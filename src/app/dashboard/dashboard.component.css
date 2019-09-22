@@ -13,6 +13,23 @@
   min-height: calc(100vh - 100px);
 }
 
+.loan-unpaid {
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  margin-top: 6px;
+  margin-bottom: 0;
+  padding: 0.1rem 1.25rem;
+  align-items: center;
+}
+
+.loan-unpaid-mobile {
+  margin-top: calc(50px + 1rem);
+  display: flex;
+  align-items: center;
+}
+
 @media (min-width: 760px) {
   .page-wrapper {
     margin: 64px auto 0 auto;
@@ -22,5 +39,12 @@
 
   .main-wrapper {
     background-color: #414755;
+  }
+}
+
+@media (min-width: 991px) {
+  .page-title {
+    float: left;
+    padding-top: 1rem;
   }
 }

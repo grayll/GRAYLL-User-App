@@ -108,6 +108,10 @@ h6 {
   background-color: #414755!important;
 }
 
+.dark-navy-background {
+  background: #414755!important;
+}
+
 /* Global animations */
 .bottom-border-navy-animated:hover {
   cursor: pointer;

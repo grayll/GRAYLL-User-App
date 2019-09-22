@@ -165,12 +165,13 @@ loginClicked() {
                   if (this.authService.userData.Tfa.Expire && t <= this.authService.userData.Tfa.Expire && 
                       tfaData && tfaData.Expire && 
                       tfaData.Expire === this.authService.userData.Tfa.Expire){
-                    this.router.navigate(['/settings/profile'])
+                    //this.router.navigate(['/settings/profile'])
+                    this.router.navigate(['/dashboard/overview'])
                   } else {
                     this.router.navigate(['/login/two-factor'])
                   }
               } else {
-                this.router.navigate(['/settings/profile'])
+                this.router.navigate(['/dashboard/overview'])
               } 
             } else if (response.data.errCode === environment.INVALID_UNAME_PASSWORD){
               this.errorService.handleError(null, 'Invalid user name or password.') 

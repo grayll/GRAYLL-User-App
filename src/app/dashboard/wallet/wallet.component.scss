@@ -31,6 +31,9 @@
       font-size: 48px;
     }
   }
+  .c-cost-wallet {
+    padding: 20px 20px 7px 20px!important;
+  }
 }
 
 .css-bar {
@@ -199,6 +202,14 @@ ul {
 
 .card {
   background-color: #636fa4 !important;
+}
+
+.navy-link {
+  color: #fff;
+}
+
+.navy-link:hover {
+  color: #CFA256;
 }
 
 @media (max-width: 991px) {

@@ -65,15 +65,18 @@
             </p>
 
             <div class="row" *ngIf="!isSecretKeyRevealed">
-              <button (click)="toggleRevealSecretKey()" class="btn btn-block btn-yellow w-auto mx-auto">Reveal Secret Key</button>
+              <button [routerLink]="['/settings/profile', {outlets: {popup: 'reveal-secret-key'}}]"
+                      class="btn btn-block btn-yellow w-auto mx-auto">
+                Reveal Secret Key
+              </button>
             </div>
 
             <div class="row" *ngIf="isSecretKeyRevealed">
               <div class="col-md-7 col-sm-12 text-center" placement="bottom" [ngbTooltip]="secretKey" triggers="click:blur">
-                <input disabled [value]="secretKey" type="text" class="form-control form-control-no-border">
+                <input disabled [value]="secretKey" type="text" class="form-control form-control-no-border bg-gradient disabled-field">
               </div>
               <div class="col-md-3 col-sm-12 mt-xs-4 mt-xs-4">
-                <button (click)="toggleRevealSecretKey()" class="btn btn-block btn-yellow">Hide Secret Key</button>
+                <button (click)="hideSecretKey()" class="btn btn-block btn-yellow">Hide Secret Key</button>
               </div>
             </div>
           </div>

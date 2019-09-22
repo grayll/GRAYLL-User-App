@@ -1,9 +1,10 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {faBell, faSearch} from '@fortawesome/free-solid-svg-icons';
+import {faBell, faExclamationTriangle, faSearch} from '@fortawesome/free-solid-svg-icons';
 import {AlgoNotificationModel, GeneralNotificationModel, WalletNotificationModel} from './notification.model';
 import {NotificationsService} from './notifications.service';
 import {NgbCarousel} from '@ng-bootstrap/ng-bootstrap';
-import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
+import {disableBodyScroll, enableBodyScroll} from 'body-scroll-lock';
+import {SharedService} from '../shared/shared.service';
 
 @Component({
   selector: 'app-notifications',
@@ -31,22 +32,29 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private generalNotificationsMobileScrollContainer: Element;
 
   // Font Awesome Icons
+  faWarning = faExclamationTriangle;
   faBell = faBell;
   faSearch = faSearch;
 
   constructor(
-    public notificationsService: NotificationsService
+    public notificationsService: NotificationsService,
+    public sharedService: SharedService
   ) {
     this.populateNotifications();
     this.populateNumberOfUnreadNotifications();
   }
 
   ngOnInit() {
-    const body = document.getElementsByTagName('body')[0];
-    body.classList.add('dark-navy-bg');
+    this.changeBackgroundColor(true);
     setTimeout(() => {
       this.loadMobileNotificationContainers();
     }, 100);
+  }
+
+  private changeBackgroundColor(addClass: boolean) {
+    const body = document.getElementsByTagName('body')[0];
+    addClass ? body.classList.add('dark-navy-background') : body.classList.remove('dark-navy-background');
+    addClass ? body.classList.add('dark-navy-bg') : body.classList.remove('dark-navy-bg');
   }
 
   private loadMobileNotificationContainers() {
@@ -60,8 +68,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    const body = document.getElementsByTagName('body')[0];
-    body.classList.remove('dark-navy-bg');
+    this.changeBackgroundColor(false);
     enableBodyScroll(this.algoNotificationsMobileScrollContainer);
     enableBodyScroll(this.walletNotificationsMobileScrollContainer);
     enableBodyScroll(this.generalNotificationsMobileScrollContainer);

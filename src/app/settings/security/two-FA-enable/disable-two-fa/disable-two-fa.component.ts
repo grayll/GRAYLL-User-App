@@ -6,6 +6,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import {ErrorService} from '../../../../shared/error/error.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { environment } from 'src/environments/environment';
+import {UserService} from '../../../../authorization/user.service';
 
 @Component({
   selector: 'app-disable-two-fa',
@@ -24,6 +25,7 @@ export class DisableTwoFaComponent implements OnInit {
     private authService: AuthService,
     private errorService: ErrorService,
     private formBuilder: FormBuilder,
+    private userService: UserService,
   ) { }
 
   ngOnInit() {
@@ -68,6 +70,7 @@ export class DisableTwoFaComponent implements OnInit {
         .then(() => {
           setTimeout(() => {
             this.snotifyService.simple('Two-factor authentication disabled.');
+            this.userService.enable2FA(false);
             this.settingsService.sendTwoFAEnabledToObserver(false);
           }, 50);
         })

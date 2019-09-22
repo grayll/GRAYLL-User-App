@@ -21,8 +21,8 @@ export class ProfileSettingsComponent implements OnDestroy {
 
   readonly VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
 
-  federationAddress: string;
-  stellarAddress: string;
+  federationAddress: string ='';
+  stellarAddress: string = '';
 
   faCheck = faCheck;
   faExclamation = faExclamation;
@@ -45,8 +45,12 @@ export class ProfileSettingsComponent implements OnDestroy {
     if (!this.userData.Lname){
       this.userData.Lname = ''
     }
-    this.federationAddress = this.userData.Federation;
-    this.stellarAddress = this.userData.PublicKey;  
+    if (this.userData.Federation){
+      this.federationAddress = this.userData.Federation;
+    }
+    if (this.userData.PublicKey){
+      this.stellarAddress = this.userData.PublicKey;  
+    }
     
     this.subscriptions.sink = this.settingsService.observeFederationAddress().subscribe(
       fed => {

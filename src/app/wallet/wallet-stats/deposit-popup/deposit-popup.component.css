@@ -3,3 +3,9 @@
   height: 70px;
   margin-top: 5px;
 }
+
+.disabled-field {
+  color: #f8f9fa!important;
+  -webkit-text-fill-color: #f8f9fa;
+  opacity: 1; /* required on iOS */
+}

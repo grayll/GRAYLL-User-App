@@ -6,6 +6,7 @@ import {SharedModule} from '../shared/shared.module';
 import {DataHeaderBoxesComponent} from './data-header-boxes/data-header-boxes.component';
 import {ChartsModule} from 'ng2-charts';
 import {NgbCarouselModule, NgbTabsetModule} from '@ng-bootstrap/ng-bootstrap';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {NgbCarouselModule, NgbTabsetModule} from '@ng-bootstrap/ng-bootstrap';
     SharedModule,
     ChartsModule,
     NgbTabsetModule,
-    NgbCarouselModule
+    NgbCarouselModule,
+    FontAwesomeModule
   ]
 })
 export class DataModule { }

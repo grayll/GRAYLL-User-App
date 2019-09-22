@@ -29,9 +29,11 @@ import { FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import { StellarService } from './authorization/services/stellar-service';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 declare var Hammer: any;
 
+// Solve conflict when swiping mobile cards
 export class MyHammerConfig extends HammerGestureConfig  {
   buildHammer(element: HTMLElement) {
     const mc = new Hammer(element, {
@@ -53,7 +55,7 @@ export class MyHammerConfig extends HammerGestureConfig  {
     SharedModule,
     SnotifyModule,
     NgbModule,
-
+    BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
@@ -67,7 +69,11 @@ export class MyHammerConfig extends HammerGestureConfig  {
     ErrorService, AuthService, StellarService,
     { provide: 'SnotifyToastConfig', useValue: NotifierConfig},
     { provide: RECAPTCHA_V3_SITE_KEY, useValue: '6LfYI7EUAAAAAGYF0RFiE6p28pfDCkXFXE1REW0w' },
-    SnotifyService
+     SnotifyService,
+    {
+      provide: HAMMER_GESTURE_CONFIG,
+      useClass: MyHammerConfig,
+    },
   ],
   bootstrap: [AppComponent]
 })

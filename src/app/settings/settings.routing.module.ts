@@ -15,8 +15,10 @@ import {ChangePasswordComponent} from './profile-settings/change-password/change
 import {ChangeEmailAddressComponent} from './profile-settings/change-email-address/change-email-address.component';
 import {ChangePhoneNumberComponent} from './profile-settings/change-phone-number/change-phone-number.component';
 import {VerifyPhoneNumberComponent} from './profile-settings/change-phone-number/verify-phone-number/verify-phone-number.component';
-import {DisableWalletAppNotificationsSettingsComponent} from "./notifications-settings/disable-wallet-app-notifications-settings/disable-wallet-app-notifications-settings.component";
-import {DisableAlgoAppNotificationsSettingsComponent} from "./notifications-settings/disable-algo-app-notifications-settings/disable-algo-app-notifications-settings.component";
+import {DisableWalletAppNotificationsSettingsComponent} from './notifications-settings/disable-wallet-app-notifications-settings/disable-wallet-app-notifications-settings.component';
+import {DisableAlgoAppNotificationsSettingsComponent} from './notifications-settings/disable-algo-app-notifications-settings/disable-algo-app-notifications-settings.component';
+import {RevealSecretKeyPopupComponent} from '../shared/popup/reveal-secret-key-popup/reveal-secret-key-popup.component';
+import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
 
 const popupRoutes: Routes = [
   {
@@ -99,6 +101,16 @@ const popupRoutes: Routes = [
     component: VerifyPhoneNumberComponent,
     outlet: 'popup'
   },
+  {
+    path: 'reveal-secret-key',
+    component: RevealSecretKeyPopupComponent,
+    outlet: 'popup'
+  },
+  {
+    path: 'xlm-loan',
+    component: XlmLoanPopupComponent,
+    outlet: 'popup'
+  }
 ];
 
 const routes: Routes = [
