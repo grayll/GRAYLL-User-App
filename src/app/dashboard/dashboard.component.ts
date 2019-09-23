@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.changeBackgroundColor(true);
-    if (this.authService.userData.PublicKey && this.authService.userData.PublicKey == ''){
+    if (!this.authService.isActivated){
       this.showActivationPopup();
     }    
   }
@@ -46,8 +46,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private showActivationPopup() {
-    if (!this.user.isAccountActivated) {
-      this.router.navigate([{outlets: {popup: 'activate-account'}}], {relativeTo: this.route});
-    }
+    this.router.navigate([{outlets: {popup: 'activate-account'}}], {relativeTo: this.route});
   }
 }

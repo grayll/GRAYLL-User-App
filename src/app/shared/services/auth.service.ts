@@ -38,32 +38,16 @@ export class AuthService {
     public http: HttpClient,
     
   ) {    
-    /* Saving user data in localstorage when 
-    logged in and setting up null when logged out */
-    // this.afAuth.authState.subscribe(user => {
-    //   console.log("auth.service-afAuth.authState.subscribe-localStorage.getItem():", localStorage.getItem('user'))
-    //   if (user) {       
-    //     const data: User = {
-    //       uid: user.uid,
-    //       email: user.email,
-    //       displayName: user.displayName,
-    //       photoURL: user.photoURL,
-    //       emailVerified: user.emailVerified
-    //     }
-    //     this.userData = data; 
-    //     console.log("auth.service-afAuth.authState.subscribe-userData", data)       
-    //     //localStorage.setItem('user', JSON.stringify(this.userData));
-    //     //JSON.parse(localStorage.getItem('user'));
-    //   } else {
-    //     localStorage.setItem('user', null);
-    //     //JSON.parse(localStorage.getItem('user'));
-    //   }
-    // })
+   
   }
   
-  // getAuth(account:string) {
-  //   return this.http.get("http://127.0.0.1:5555/tfa/setup", { observe: 'response' });
-  // }
+  isActivated(){
+    if (!this.userData.PublicKey || 
+      this.userData.PublicKey && this.userData.PublicKey.trim().length === 0){
+      return false
+    }  
+    return true
+  }
   setupTfa(account:string) {
     //return this.http.get("https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/TfaSetup?account=" + account, { observe: 'response' });
     //let url = `${environment.api_url}verifytoken?token=${token}&secret=${secret}`

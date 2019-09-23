@@ -11,7 +11,7 @@ import {PopupModule} from './popup/popup.module';
 import {MainChartComponent} from '../dashboard/main-chart/main-chart.component';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {ChartsModule} from 'ng2-charts';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ActivityComponent} from './system-activity/activity.component';
 import {CountdownModule} from 'ngx-countdown';
 import {AlgoNotificationItemComponent} from './algo-notification-item/algo-notification-item.component';
@@ -50,6 +50,7 @@ import {XlmBalanceStatusPopupComponent} from './popup/xlm-balance-status-popup/x
     NgSelectModule,
     ChartsModule,
     FormsModule,
+    ReactiveFormsModule,
     CountdownModule
   ],
   exports: [

@@ -80,12 +80,23 @@
   </div>
 
   <div class="modal-footer">
-    <div class="row text-center" style="display: contents!important;">
-      <div class="col">
-        <button class="btn btn-purple" *ngIf="!success && !error" (click)="activate()">Activate</button>
-        <button class="btn btn-purple" *ngIf="success" (click)="goToDeposit()">Pay Off Loan</button>
-        <button class="btn btn-purple" *ngIf="error" (click)="retry()">Retry</button>
-      </div>
-    </div>
+    <form [formGroup]="frm">
+      
+        <app-error></app-error>
+        <small class="text-light" *ngIf="formErrors.password">
+          {{ formErrors.password }}
+        </small> 
+        <div class="row text-center" style="display: contents!important;">      
+            <input type="text" *ngIf="!success && !error" formControlName="password" class="form-control form-control-no-border" placeholder="Password">      
+        </div>
+        <div class="row text-center" style="display: contents!important;">     
+          <div class="col">        
+            <button class="btn btn-purple" *ngIf="!success && !error" (click)="activate()">Activate</button>
+            <button class="btn btn-purple" *ngIf="success" (click)="goToDeposit()">Pay Off Loan</button>
+            <button class="btn btn-purple" *ngIf="error" (click)="retry()">Retry</button>
+          </div>
+        </div>
+      
+    </form>
   </div>
 </ng-template>
