@@ -7,6 +7,11 @@ import { User, Setting } from "../../../shared/services/user";
 import { StellarService } from '../../../authorization/services/stellar-service';
 import { FormGroup, Validators, FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {ErrorService} from '../../../shared/error/error.service';
+import axios from 'axios';
+import { environment } from 'src/environments/environment';
+const bip39 = require('bip39')
+var naclutil = require('tweetnacl-util');
+
 
 @Component({
   selector: 'app-pay-loan-popup',
@@ -83,8 +88,24 @@ export class ActivateAccountPopupComponent implements OnInit {
       this.error = false;
       this.success = true;
       let pair = this.stellarService.generateKeyPair();
+      
       this.stellarService.encryptSecretKey(this.frm.value['password'], pair.rawSecretKey(), (encryptedSecret) => { 
-        console.log(encryptedSecret)
+        let data = {password:this.frm.value['password'], publicKey:pair.publicKey(), 
+          encryptedSecretKey:encryptedSecret.EncryptedSecretKey, salt: encryptedSecret.Salt}
+
+          this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Uid, res => {
+            console.log('phrase:', res.recoveryPhrase)
+          })
+          
+
+
+        // axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
+        // { headers: { Authorization:'Bearer ' + this.authService.userData.token}}).then(res => {
+        //   console.log(res)
+
+        // }).catch(err => {
+        //   console.log(err)
+        // })
       })
      
       //this.userService.activateAccount();

@@ -31,8 +31,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.changeBackgroundColor(true);
-    if (!this.authService.isActivated){
+    if (!this.authService.isActivated()){
       this.showActivationPopup();
+    } else {
+      console.log("acc is activated", this.authService.userData)
     }    
   }
 

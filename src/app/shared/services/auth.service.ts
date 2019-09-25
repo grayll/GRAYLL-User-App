@@ -41,11 +41,13 @@ export class AuthService {
    
   }
   
-  isActivated(){
-    if (!this.userData.PublicKey || 
-      this.userData.PublicKey && this.userData.PublicKey.trim().length === 0){
+  isActivated() : boolean {
+    console.log("pk:", this.userData.PublicKey)
+    if (!this.userData.PublicKey || (this.userData.PublicKey && this.userData.PublicKey.trim().length === 0)){
+      console.log("false")
       return false
-    }  
+    } 
+    console.log("true") 
     return true
   }
   setupTfa(account:string) {

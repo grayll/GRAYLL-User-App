@@ -1,24 +1,34 @@
-//import * as StellarSdk from '../../../../node_modules/stellar-sdk/dist/stellar-sdk.min.js';
-//import * as argon2 from 'argon2'
 import { Injectable } from '@angular/core';
-const StellarSdk = require('stellar-sdk');
+import { environment } from 'src/environments/environment.prod';
+import { callbackify } from 'util';
+var StellarSdk = require('stellar-sdk');
+var naclutil = require('tweetnacl-util');
+const bip39 = require('bip39')
 const nacl = require('tweetnacl')
 const scrypt = require('scrypt-async');
-var naclutil = require('tweetnacl-util');
 
 @Injectable()
 export class StellarService {   
-    public wallet: any;
-    public input: any;
-    public output: string;
+    // public wallet: any;
+    // public input: any;
+    // public output: string;
     interruptStep = 0;
     dkLen = 32;    
     logN = 16;
     blockSize = 8;
+    horizon: any
+    grxAsset: any
+    
 
     public constructor() { 
-        
-      
+        if (environment.production){
+            StellarSdk.Network.usePublicNetwork();
+            this.horizon = new StellarSdk.Server('https://horizon.stellar.org');
+        } else {
+            StellarSdk.Network.useTestNetwork()
+            this.horizon = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+        }    
+        this.grxAsset = new StellarSdk.Asset(environment.ASSET, environment.ASSET_ISSUER)  
     }
 
     generateKeyPair(): any {
@@ -33,6 +43,74 @@ export class StellarService {
          console.log('key secret:', naclutil.encodeBase64(pair.secretKey))
          console.log('key public:', naclutil.encodeBase64(pair.publicKey))
         return pair
+    }
+
+    async trustAsset(asset:string, accSeed:string) {
+
+        let source = StellarSdk.Keypair.fromSecret('distributors secret key');
+        let dest = StellarSdk.Keypair.fromSecret('receiver secret key');
+
+        // Keypair for the destination account can be generated using StellarSdk.Keypair.random().
+        // let assetCode = 'COOL';
+        // let assetIssuerAddress = 'GANQDVASPYIVJF7YJNFZJ6DPXEWKI57NRYVSC7WYM6ZAL5J7FVPXS3NU';
+
+        // 2. Load current source account state from Horizon server
+        let sourceAccount = await this.horizon.loadAccount(source.publicKey());
+
+        const fee = await this.horizon.fetchBaseFee();
+        // 3. Create a transaction builder
+        let builder = new StellarSdk.TransactionBuilder(sourceAccount, {fee});
+
+        // 4. Add CHANGE_TRUST operation to establish trustline
+        builder.addOperation(StellarSdk.Operation.changeTrust({ 
+            asset: this.grxAsset,
+            amount: '',
+            source: dest.publicKey()
+        }))
+
+
+        // Note that source parameter contains a public key of our destination account
+        //because we perform this operation on behalf of the destination account.
+        // 5. Add PAYMENT operation to transfer your custom asset
+        builder.addOperation(StellarSdk.Operation.payment({ 
+            destination: dest.publicKey(),
+            asset: this.grxAsset,
+            amount: '10'
+        }))
+
+        // 6. Build and sign transaction with both source and destination keypairs
+        let tx = builder.setTimeout(180).build()
+        tx.sign(source)
+        tx.sign(dest)
+
+        // 7. Submit transaction to network
+        let txResult = await this.horizon.submitTransaction(tx)
+        console.log(txResult);
+    }
+
+    makeSeedAndRecoveryPhrase(userid, callback) {
+        const seed = nacl.randomBytes(16); // Stellar seeds are 32 bytes long, but having a 24-word recovery phrase is not great. 16 bytes is enough with the scrypt step below
+        const recoveryPhrase = bip39.entropyToMnemonic(seed);
+        scrypt(seed, userid, this.logN,
+        this.blockSize,
+        this.dkLen,
+        this.interruptStep, (res) => {
+            const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);
+            console.log('pubkey:', keypair.publicKey())
+            console.log('seckey:', keypair.secret())
+            callback({keypair, recoveryPhrase})
+        });       
+    }
+
+    recoverKeypairFromPhrase(userid, recoveryPhrase, callback) {
+        const seed = bip39.mnemonicToSeedSync(recoveryPhrase);
+        scrypt(seed, userid, this.logN,
+        this.blockSize,
+        this.dkLen,
+        this.interruptStep, (res) => {
+            const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);
+            callback(keypair)
+        });
     }
 
     encryptSecretKey(password, secretKey, callback) {
