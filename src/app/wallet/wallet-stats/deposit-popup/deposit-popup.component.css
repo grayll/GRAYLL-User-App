@@ -9,3 +9,10 @@
   -webkit-text-fill-color: #f8f9fa;
   opacity: 1; /* required on iOS */
 }
+
+@media (max-width: 420px) {
+  .center-mobile {
+    display: contents!important;
+    text-align: center!important;
+  }
+}

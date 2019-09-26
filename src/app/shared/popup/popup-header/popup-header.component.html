@@ -1,6 +1,6 @@
 <div class="modal-header">
   <h4 class="text-purple" id="modal-basic-title">{{popupHeaderTitle}}</h4>
-  <button type="button" class="close" aria-label="Close" (click)="closePopup()">
+  <button type="button" class="close" aria-label="Close" (click)="closePopup()" *ngIf="!hideCloseButton">
     <span aria-hidden="true">&times;</span>
   </button>
   <span ngbAutofocus></span>

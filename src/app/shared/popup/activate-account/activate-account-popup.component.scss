@@ -1,3 +1,30 @@
+.disabled-field {
+  color: #f8f9fa!important;
+  -webkit-text-fill-color: #f8f9fa;
+  opacity: 1; /* required on iOS */
+}
+
+.purple-input {
+  color : #40278C!important;
+}
+
+::ng-deep .bs-tooltip-auto[x-placement^=bottom] ::ng-deep .arrow::before,
+::ng-deep .bs-tooltip-bottom ::ng-deep .arrow::before {
+  border-bottom-color: #40278C!important;
+}
+
+::ng-deep .tooltip-inner {
+  background-color: #40278C!important;
+}
+
+@media (max-width: 400px) {
+  input,
+  input::-webkit-input-placeholder {
+    font-size: 12px;
+    line-height: 12px;
+  }
+}
+
 .success-checkmark {
   width: 80px;
   height: 115px;

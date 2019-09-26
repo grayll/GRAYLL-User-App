@@ -45,7 +45,7 @@ export class StellarService {
     //     return pair
     // }
 
-    trustAsset(accSeed:string) {
+    async trustAsset(accSeed:string) {
 
         let source = StellarSdk.Keypair.fromSecret(accSeed);
         //let dest = StellarSdk.Keypair.fromSecret('receiver secret key');
@@ -55,9 +55,9 @@ export class StellarService {
         // let assetIssuerAddress = 'GANQDVASPYIVJF7YJNFZJ6DPXEWKI57NRYVSC7WYM6ZAL5J7FVPXS3NU';
 
         // 2. Load current source account state from Horizon server
-        let sourceAccount = this.horizon.loadAccount(source.publicKey());
+        let sourceAccount = await this.horizon.loadAccount(source.publicKey());
 
-        const fee = this.horizon.fetchBaseFee();
+        const fee = await this.horizon.fetchBaseFee();
         // 3. Create a transaction builder
         let builder = new StellarSdk.TransactionBuilder(sourceAccount, {fee});
 
@@ -84,14 +84,15 @@ export class StellarService {
         //tx.sign(dest)
 
         // 7. Submit transaction to network
-        let txResult = this.horizon.submitTransaction(tx)
+        let txResult = await this.horizon.submitTransaction(tx)
         console.log(txResult);
     }
 
     makeSeedAndRecoveryPhrase(userid, callback) {
         // Stellar seeds are 32 bytes long, but having a 24-word recovery phrase is not great. 
         // 16 bytes is enough with the scrypt step below
-        const seed = nacl.randomBytes(16); 
+        const seed = nacl.randomBytes(16)
+        console.log('seed:', seed)
         const recoveryPhrase = bip39.entropyToMnemonic(seed);
         scrypt(seed, userid, this.logN,
         this.blockSize, this.dkLen, this.interruptStep, (res) => {
@@ -103,7 +104,9 @@ export class StellarService {
     }
 
     recoverKeypairFromPhrase(userid, recoveryPhrase, callback) {
-        const seed = bip39.mnemonicToSeedSync(recoveryPhrase);
+        const hexString = bip39.mnemonicToEntropy(recoveryPhrase);
+        const seed = Uint8Array.from(Buffer.from(hexString, 'hex'));
+        console.log('seed1:', seed)
         scrypt(seed, userid, this.logN,
         this.blockSize, this.dkLen, this.interruptStep, (res) => {
             const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);

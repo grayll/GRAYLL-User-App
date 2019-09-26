@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ErrorComponent} from './error/error.component';
 import {NavbarComponent} from './layout/navbar/navbar.component';
-import {NgbCollapseModule, NgbTabsetModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbCollapseModule, NgbTabsetModule, NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {AccountActivityComponent} from './account-activity/account-activity.component';
 import {RouterModule} from '@angular/router';
@@ -51,7 +51,8 @@ import {XlmBalanceStatusPopupComponent} from './popup/xlm-balance-status-popup/x
     ChartsModule,
     FormsModule,
     ReactiveFormsModule,
-    CountdownModule
+    CountdownModule,
+    NgbTooltipModule
   ],
   exports: [
     ErrorComponent,

@@ -7,6 +7,8 @@ import { User, Setting } from "../../../shared/services/user";
 import { StellarService } from '../../../authorization/services/stellar-service';
 import { FormGroup, Validators, FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {ErrorService} from '../../../shared/error/error.service';
+import {ClipboardService} from 'ngx-clipboard';
+import {SnotifyService} from 'ng-snotify';
 import axios from 'axios';
 import { environment } from 'src/environments/environment';
 const bip39 = require('bip39')
@@ -25,6 +27,16 @@ export class ActivateAccountPopupComponent implements OnInit {
   success: boolean;
   didShowErrorOnce: boolean;
   frm: FormGroup;
+  
+  isSecretKeyRevealed: boolean;
+  secretKey: string;
+  password: string;
+  seed: string;
+  firstPopup: boolean;
+  hideCloseButton: boolean;
+  displayFinalLayOffLoanPopup: boolean;
+  canGoToDeposit: boolean;
+  onCloseRedirectTo: string;
 
   constructor(
     private popupService: PopupService,
@@ -34,7 +46,15 @@ export class ActivateAccountPopupComponent implements OnInit {
     private stellarService: StellarService,
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
-  ) { }
+    private clipboardService: ClipboardService,
+    private snotifyService: SnotifyService
+  ) { 
+  
+    this.firstPopup = true;
+    this.secretKey = '';
+    this.seed = '';
+    this.onCloseRedirectTo = '/login';
+  }
 
   ngOnInit() {
     this.buildForm() 
@@ -82,38 +102,53 @@ export class ActivateAccountPopupComponent implements OnInit {
     },    
   };
   activate() {
-    this.errorService.clearError();
-    this.onValueChanged()
-    //if (this.didShowErrorOnce) {
-      this.error = false;
-      this.success = true;
-      let pair = this.stellarService.generateKeyPair();
+    //if (this.clientValidation()) {
+	    this.errorService.clearError();
+	    this.onValueChanged()
+	    //if (this.didShowErrorOnce) {
+	      this.error = false;
+	      this.success = true;
+	      //let pair = this.stellarService.generateKeyPair();
       
-      this.stellarService.encryptSecretKey(this.frm.value['password'], pair.rawSecretKey(), (enSecret) => { 
-        let data = {password:this.frm.value['password'], publicKey:pair.publicKey(), 
-          enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
-
         this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Uid, res => {
           console.log('phrase:', res.recoveryPhrase)
+            this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
+              let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
+                enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
+            
+              this.stellarService.recoverKeypairFromPhrase(this.authService.userData.Uid, res.recoveryPhrase, (kp)=> {
+                console.log('recover secret:', kp.secret())
+                console.log('recover pubkey:', kp.publicKey())
+              })
 
-          axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
-          { headers: { Authorization:'Bearer ' + this.authService.userData.token}}).then(res => {
-            console.log(res)
-            if (res.data.errCode === environment.SUCCESS){
-              this.stellarService.trustAsset(pair.secret())
-            }
-          }).catch(err => {
-            console.log(err)
-          })
-        })       
-      })
+	          axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
+	          { headers: { Authorization:'Bearer ' + this.authService.userData.token}}).then(resp => {
+	            console.log(resp)
+	            if (resp.data.errCode === environment.SUCCESS){
+
+                this.stellarService.trustAsset(res.keypair.secret()).then( ()=> {
+                  this.hideCloseButton = true;
+                  this.firstPopup = false;
+                  this.secretKey = res.keypair.secret()
+                  this.seed = res.recoveryPhrase
+                }).catch(err => {
+                  this.error = true;
+                })               
+	            }
+	          }).catch(err => {
+              console.log(err)
+              this.error = true;
+	          })
+	        })       
+	      })
      
-      //this.userService.activateAccount();
-    // } else {
-    //   this.error = true;
-    // }
-    //this.didShowErrorOnce = true;
-  }
+	      //this.userService.activateAccount();
+	    // } else {
+	    //   this.error = true;
+	    // }
+	    //this.didShowErrorOnce = true;
+	  }  
+  //}
 
   retry() {
     this.error = false;
@@ -121,11 +156,40 @@ export class ActivateAccountPopupComponent implements OnInit {
     this.didShowErrorOnce = true;
   }
 
+  copySecretKey() {
+    if (this.clipboardService.copyFromContent(this.secretKey)) {
+      this.snotifyService.simple('Copied to clipboard.');
+    }
+  }
+
+  copySeed() {
+    if (this.clipboardService.copyFromContent(this.seed)) {
+      this.snotifyService.simple('Copied to clipboard.');
+    }
+  }
+
+  displayLoan() {
+    this.displayFinalLayOffLoanPopup = true;
+    this.canGoToDeposit = true;
+    this.error = false;
+    this.success = false;
+    this.hideCloseButton = false;
+    this.onCloseRedirectTo = '/dashboard/overview';
+  }
   goToDeposit() {
     this.popupService.close().then(() => {
       setTimeout(() => {
         this.router.navigate(['/wallet/overview', {outlets: {popup: 'deposit'}}]);
-      }, 50);
+      }, 200);
     });
   }
 }
+  
+// clientValidation(): boolean {
+//     if (!this.password || (this.password && this.password === '')) {
+//       this.errorService.handleError(null, 'You must enter a password to activate your GRAYLL account.');
+//       return false;
+//     }
+//     return true;
+//   }
+// }

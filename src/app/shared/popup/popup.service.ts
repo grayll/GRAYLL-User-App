@@ -34,4 +34,11 @@ export class PopupService {
     }, 0);
     this.modalService.dismissAll();
   }
+
+  public async closeAndRedirectTo(absoluteUrl: string) {
+    setTimeout(() => {
+      this.router.navigate([absoluteUrl, {outlets: {popup: null } }]);
+    }, 0);
+    this.modalService.dismissAll();
+  }
 }
