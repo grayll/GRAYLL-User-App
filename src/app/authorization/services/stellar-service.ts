@@ -38,26 +38,26 @@ export class StellarService {
         return pair
     }
 
-    generateKeyPairNacl(): any {       
-        let pair = nacl.box.keyPair()    
-         console.log('key secret:', naclutil.encodeBase64(pair.secretKey))
-         console.log('key public:', naclutil.encodeBase64(pair.publicKey))
-        return pair
-    }
+    // generateKeyPairNacl(): any {       
+    //     let pair = nacl.box.keyPair()    
+    //      console.log('key secret:', naclutil.encodeBase64(pair.secretKey))
+    //      console.log('key public:', naclutil.encodeBase64(pair.publicKey))
+    //     return pair
+    // }
 
-    async trustAsset(asset:string, accSeed:string) {
+    trustAsset(accSeed:string) {
 
-        let source = StellarSdk.Keypair.fromSecret('distributors secret key');
-        let dest = StellarSdk.Keypair.fromSecret('receiver secret key');
+        let source = StellarSdk.Keypair.fromSecret(accSeed);
+        //let dest = StellarSdk.Keypair.fromSecret('receiver secret key');
 
         // Keypair for the destination account can be generated using StellarSdk.Keypair.random().
         // let assetCode = 'COOL';
         // let assetIssuerAddress = 'GANQDVASPYIVJF7YJNFZJ6DPXEWKI57NRYVSC7WYM6ZAL5J7FVPXS3NU';
 
         // 2. Load current source account state from Horizon server
-        let sourceAccount = await this.horizon.loadAccount(source.publicKey());
+        let sourceAccount = this.horizon.loadAccount(source.publicKey());
 
-        const fee = await this.horizon.fetchBaseFee();
+        const fee = this.horizon.fetchBaseFee();
         // 3. Create a transaction builder
         let builder = new StellarSdk.TransactionBuilder(sourceAccount, {fee});
 
@@ -65,36 +65,36 @@ export class StellarService {
         builder.addOperation(StellarSdk.Operation.changeTrust({ 
             asset: this.grxAsset,
             amount: '',
-            source: dest.publicKey()
+            source: this.grxAsset.issuer,
         }))
 
 
         // Note that source parameter contains a public key of our destination account
         //because we perform this operation on behalf of the destination account.
         // 5. Add PAYMENT operation to transfer your custom asset
-        builder.addOperation(StellarSdk.Operation.payment({ 
-            destination: dest.publicKey(),
-            asset: this.grxAsset,
-            amount: '10'
-        }))
+        // builder.addOperation(StellarSdk.Operation.payment({ 
+        //     destination: dest.publicKey(),
+        //     asset: this.grxAsset,
+        //     amount: '10'
+        // }))
 
         // 6. Build and sign transaction with both source and destination keypairs
         let tx = builder.setTimeout(180).build()
         tx.sign(source)
-        tx.sign(dest)
+        //tx.sign(dest)
 
         // 7. Submit transaction to network
-        let txResult = await this.horizon.submitTransaction(tx)
+        let txResult = this.horizon.submitTransaction(tx)
         console.log(txResult);
     }
 
     makeSeedAndRecoveryPhrase(userid, callback) {
-        const seed = nacl.randomBytes(16); // Stellar seeds are 32 bytes long, but having a 24-word recovery phrase is not great. 16 bytes is enough with the scrypt step below
+        // Stellar seeds are 32 bytes long, but having a 24-word recovery phrase is not great. 
+        // 16 bytes is enough with the scrypt step below
+        const seed = nacl.randomBytes(16); 
         const recoveryPhrase = bip39.entropyToMnemonic(seed);
         scrypt(seed, userid, this.logN,
-        this.blockSize,
-        this.dkLen,
-        this.interruptStep, (res) => {
+        this.blockSize, this.dkLen, this.interruptStep, (res) => {
             const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);
             console.log('pubkey:', keypair.publicKey())
             console.log('seckey:', keypair.secret())
@@ -105,9 +105,7 @@ export class StellarService {
     recoverKeypairFromPhrase(userid, recoveryPhrase, callback) {
         const seed = bip39.mnemonicToSeedSync(recoveryPhrase);
         scrypt(seed, userid, this.logN,
-        this.blockSize,
-        this.dkLen,
-        this.interruptStep, (res) => {
+        this.blockSize, this.dkLen, this.interruptStep, (res) => {
             const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);
             callback(keypair)
         });
@@ -119,10 +117,10 @@ export class StellarService {
         
         
         scrypt(password, Salt, this.logN, this.blockSize, this.dkLen, this.interruptStep, (derivedKey) => {
-            const EncryptedSecretKey = naclutil.encodeBase64(
+            const EnSecretKey = naclutil.encodeBase64(
                 nacl.secretbox(secretKey, nonce, naclutil.decodeBase64(derivedKey))
             );
-            callback({ Salt, EncryptedSecretKey });
+            callback({ EnSecretKey, Salt });
         }, 'base64');
     }
 

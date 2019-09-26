@@ -89,23 +89,23 @@ export class ActivateAccountPopupComponent implements OnInit {
       this.success = true;
       let pair = this.stellarService.generateKeyPair();
       
-      this.stellarService.encryptSecretKey(this.frm.value['password'], pair.rawSecretKey(), (encryptedSecret) => { 
+      this.stellarService.encryptSecretKey(this.frm.value['password'], pair.rawSecretKey(), (enSecret) => { 
         let data = {password:this.frm.value['password'], publicKey:pair.publicKey(), 
-          encryptedSecretKey:encryptedSecret.EncryptedSecretKey, salt: encryptedSecret.Salt}
+          enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
 
-          this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Uid, res => {
-            console.log('phrase:', res.recoveryPhrase)
+        this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Uid, res => {
+          console.log('phrase:', res.recoveryPhrase)
+
+          axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
+          { headers: { Authorization:'Bearer ' + this.authService.userData.token}}).then(res => {
+            console.log(res)
+            if (res.data.errCode === environment.SUCCESS){
+              this.stellarService.trustAsset(pair.secret())
+            }
+          }).catch(err => {
+            console.log(err)
           })
-          
-
-
-        // axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
-        // { headers: { Authorization:'Bearer ' + this.authService.userData.token}}).then(res => {
-        //   console.log(res)
-
-        // }).catch(err => {
-        //   console.log(err)
-        // })
+        })       
       })
      
       //this.userService.activateAccount();
