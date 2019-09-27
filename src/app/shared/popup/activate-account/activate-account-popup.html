@@ -63,9 +63,16 @@
             </div>
           </div>
           <div class="row mb-3" *ngIf="!isSecretKeyRevealed">
-            <button (click)="isSecretKeyRevealed = true" class="btn btn-block btn-yellow w-auto mx-auto">
+            <!-- <button (click)="isSecretKeyRevealed = true" class="btn btn-block btn-yellow w-auto mx-auto">
               Reveal Secret Key
-            </button>
+            </button> -->
+
+            <div class="col-md-8 col-sm-12 text-center" placement="bottom" [ngbTooltip]="secretKey" triggers="click:blur">
+              <input disabled [value]="" type="text" class="form-control form-control-no-border bg-gradient disabled-field">
+            </div>
+            <div class="col-md-4 col-sm-12 mt-xs-4 mt-xs-4">
+              <button (click)="isSecretKeyRevealed = true" class="btn float-right btn-yellow btn-block">Reveal Secret</button>
+            </div>
           </div>
           <div class="row mb-3" *ngIf="isSecretKeyRevealed">
             <div class="col-md-8 col-sm-12 text-center" placement="bottom" [ngbTooltip]="secretKey" triggers="click:blur">

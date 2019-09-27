@@ -5,6 +5,8 @@ import {SettingsService} from '../../../settings/settings.service';
 import {ErrorService} from '../../error/error.service';
 import {UserService} from '../../../authorization/user.service';
 import {SharedService} from '../../shared.service';
+import { AuthService } from "../../../shared/services/auth.service"
+import { StellarService } from '../../../authorization/services/stellar-service';
 
 @Component({
   selector: 'app-xlm-loan-popup',
@@ -27,10 +29,15 @@ export class XlmLoanPopupComponent implements OnInit {
     private settingsService: SettingsService,
     private errorService: ErrorService,
     private userService: UserService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private authService: AuthService,
+    private stellarService: StellarService,
   ) {
     this.user = this.userService.getUser();
-    this.currentXLMBalance = this.user.XLMBalance;
+    this.stellarService.getAccountBalance(this.authService.userData.PublicKey, (xlm,grx)=>{
+      this.currentXLMBalance = xlm
+    })
+     
   }
 
   ngOnInit() {

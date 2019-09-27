@@ -37,6 +37,7 @@ export class ActivateAccountPopupComponent implements OnInit {
   displayFinalLayOffLoanPopup: boolean;
   canGoToDeposit: boolean;
   onCloseRedirectTo: string;
+  isSubmitted:boolean = false;
 
   constructor(
     private popupService: PopupService,
@@ -51,9 +52,14 @@ export class ActivateAccountPopupComponent implements OnInit {
   ) { 
   
     this.firstPopup = true;
-    this.secretKey = '';
+    this.secretKey = '                                                        ';
     this.seed = '';
     this.onCloseRedirectTo = '/login';
+    if (this.authService.userData.PublicKey && this.authService.userData.PublicKey.length === 56){
+      this.router.navigateByUrl('/dashboard/overview')
+    } else {
+      console.log(this.authService.userData.PublicKey)
+    }
   }
 
   ngOnInit() {
@@ -101,59 +107,68 @@ export class ActivateAccountPopupComponent implements OnInit {
       'maxlength':     'Password cannot be more than 36 characters long.'
     },    
   };
-  activate() {
-    //if (this.clientValidation()) {
-	    this.errorService.clearError();
-	    this.onValueChanged()
-	    //if (this.didShowErrorOnce) {
-	      this.error = false;
-	      this.success = true;
-	      //let pair = this.stellarService.generateKeyPair();
-      
-        this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Uid, res => {
-          console.log('phrase:', res.recoveryPhrase)
-            this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
-              let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
-                enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
-            
-              this.stellarService.recoverKeypairFromPhrase(this.authService.userData.Uid, res.recoveryPhrase, (kp)=> {
-                console.log('recover secret:', kp.secret())
-                console.log('recover pubkey:', kp.publicKey())
-              })
+  activate() {    
+    if (this.isSubmitted){
+      return
+    }
+    this.isSubmitted = true
+    console.log('click activate')
+    this.errorService.clearError();
+    this.onValueChanged()
+        
+    this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
+      console.log('phrase:', res.recoveryPhrase)
+        this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
+          let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
+            enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
+        
+          // this.stellarService.recoverKeypairFromPhrase(this.authService.userData.Email, res.recoveryPhrase, (kp)=> {
+          //   console.log('recover secret:', kp.secret())
+          //   console.log('recover pubkey:', kp.publicKey())
+          // })
 
-	          axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
-	          { headers: { Authorization:'Bearer ' + this.authService.userData.token}}).then(resp => {
-	            console.log(resp)
-	            if (resp.data.errCode === environment.SUCCESS){
-
-                this.stellarService.trustAsset(res.keypair.secret()).then( ()=> {
-                  this.hideCloseButton = true;
-                  this.firstPopup = false;
-                  this.secretKey = res.keypair.secret()
-                  this.seed = res.recoveryPhrase
-                }).catch(err => {
-                  this.error = true;
-                })               
-	            }
-	          }).catch(err => {
-              console.log(err)
-              this.error = true;
-	          })
-	        })       
-	      })
-     
-	      //this.userService.activateAccount();
-	    // } else {
-	    //   this.error = true;
-	    // }
-	    //this.didShowErrorOnce = true;
-	  }  
-  //}
+        axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
+          { headers: { Authorization: 'Bearer ' + this.authService.userData.token}}).then(resp => {
+          console.log(resp)
+          if (resp.data.errCode === environment.SUCCESS){
+            this.stellarService.setNetwork()            
+            this.stellarService.trustAsset(res.keypair.secret()).then(
+              txd => {
+                this.hideCloseButton = true;
+                this.firstPopup = false;
+                this.secretKey = res.keypair.secret()
+                this.seed = res.recoveryPhrase  
+                this.error = false;
+                this.success = true;       
+                this.authService.userData.PublicKey = res.keypair.publicKey()
+                this.authService.SetLocalUserData() 
+              },
+              err => {
+                this.error = true;
+                this.success = false;
+              }
+            )                                            
+          } else if (resp.data.errCode === environment.INVALID_UNAME_PASSWORD){
+            this.frm.reset()
+            this.errorService.handleError(null, "Please input valid password.")
+          } else {
+            this.frm.reset()
+            this.errorService.handleError(null, "Can not activate account right now. Please try again later.")
+          }
+        }).catch(err => {
+          console.log(err)
+          this.error = true;
+          this.success = false;
+        })
+      })       
+    })     
+  }  
+ 
 
   retry() {
     this.error = false;
     this.success = false;
-    this.didShowErrorOnce = true;
+    this.isSubmitted = false;
   }
 
   copySecretKey() {
