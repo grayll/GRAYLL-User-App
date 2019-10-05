@@ -50,7 +50,8 @@
         </div>
       </div>
       <div class="col-md-3 text-center">
-        <img class="qr-code-img text-sm-center float-md-right" src="assets/images/qrcode_demo.png" alt="Demo QR Code">
+        <!-- <img class="qr-code-img text-sm-center float-md-right" src="assets/images/qrcode_demo.png" alt="Demo QR Code"> -->
+        <qrcode [qrdata]="stellarAddress" [size]="50" class="qr-code-img text-sm-center float-md-right" [level]="'M'"></qrcode>
       </div>
     </div>
   </div>

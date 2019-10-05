@@ -6,6 +6,8 @@ import {NgbCarousel} from '@ng-bootstrap/ng-bootstrap';
 import {SubSink} from 'subsink';
 import {SettingsService} from '../../settings/settings.service';
 import {Router} from '@angular/router';
+import { StellarService } from '../../authorization/services/stellar-service';
+import { AuthService } from "../../shared/services/auth.service"
 
 @Component({
   selector: 'app-wallet-stats',
@@ -23,6 +25,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   stellarAddress: string;
   totalXLM: number;
   totalGRX: number;
+  walletValue: string;
+  walletBalance: number;
   XLMValue: string;
   GRXValue: string;
   secretKey: string;
@@ -34,15 +38,40 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     private clipboardService: ClipboardService,
     private snotifyService: SnotifyService,
     private settingsService: SettingsService,
-    private router: Router
+    private router: Router,
+    private stellarService: StellarService,
+    private authService: AuthService,
   ) {
-    this.federationAddress = 'grayll3*grayll.io';
-    this.stellarAddress = 'DKJNSFUIHLJ238OHUIDLFJN23023OHUIFSDKJNS032P3DSKJAFNLSD';
+    this.federationAddress = this.authService.userData.Federation;
+    this.stellarAddress = this.authService.userData.PublicKey;
     this.secretKey = 'GBMF3WYPDWQFOXVL2CO6NQPGQZJWLLKSGVTGGV7QPKCZCIQ3PZJGX4OG';
-    this.totalXLM = 99999999999.99999;
-    this.totalGRX = 99999999999.99999;
-    this.XLMValue = null;
-    this.GRXValue = null;
+
+    this.stellarService.getAccountBalance(this.authService.userData.PublicKey, res => {
+      this.totalXLM = res.xlm;
+      this.totalGRX = res.grx;
+      console.log('getCurrentGrxPrice xlm: ', res)
+      this.stellarService.getCurrentGrxPrice(resp =>{
+        if (resp.err) {
+          console.log('getCurrentGrxPrice error: ', resp.err)
+          this.XLMValue = '';
+          this.GRXValue = '';
+          this.snotifyService.simple('Please check your internet connection');
+        } else {
+          this.stellarService.getCurrentXlmPrice(resp1 => {
+            if (resp1.err){
+              this.XLMValue = '';
+              this.GRXValue = '';
+              this.snotifyService.simple('Please check your internet connection');
+            } else {              
+              this.walletBalance = this.totalGRX*resp.p + this.totalXLM*resp1.p
+              this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
+              this.GRXValue = '' + Math.round(this.totalGRX*resp.p*100/this.walletBalance)
+              this.XLMValue = '' + Math.round(this.totalXLM*resp1.p*100/this.walletBalance)
+            }
+          })
+        }
+      })     
+    })
   }
 
   ngOnInit() {

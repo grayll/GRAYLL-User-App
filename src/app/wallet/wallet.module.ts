@@ -15,6 +15,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {WithdrawErrorPopupComponent} from './wallet-stats/withdraw/withdraw-error-popup/withdraw-error-popup.component';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {NgxFlagIconCssModule} from 'ngx-flag-icon-css';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import {NgxFlagIconCssModule} from 'ngx-flag-icon-css';
     ReactiveFormsModule,
     NgSelectModule,
     NgbCarouselModule,
-    NgxFlagIconCssModule
+    NgxFlagIconCssModule,
+    QRCodeModule
   ]
 })
 export class WalletModule { }

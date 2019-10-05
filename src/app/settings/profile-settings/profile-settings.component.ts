@@ -19,7 +19,7 @@ import {SwPush, SwUpdate} from "@angular/service-worker";
 export class ProfileSettingsComponent implements OnDestroy {
   private subscriptions = new SubSink();
 
-  readonly VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
+  
 
   federationAddress: string ='';
   stellarAddress: string = '';
@@ -84,11 +84,19 @@ export class ProfileSettingsComponent implements OnDestroy {
   }
 
   requestSubNotifications() {
+    const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
     this.swPush.requestSubscription({
-        serverPublicKey: this.VAPID_PUBLIC_KEY
+        serverPublicKey: VAPID_PUBLIC_KEY
     })
     .then(sub => { 
       console.log("sub:", sub)
+      axios.post(`${environment.api_url}api/v1/users/savesubcriber`, sub).then(res => {
+        if (res.data.errCode == environment.SUCCESS){
+          console.log("subs are saved")
+        }
+      }).catch(err => {
+        console.log("subs err:", err)
+      })
     })
     .catch(err => console.error("Could not subscribe to notifications", err));
   }
