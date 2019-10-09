@@ -20,6 +20,7 @@ export class StellarService {
     blockSize = 8;
     horizon: any
     grxAsset: any
+    nativeAsset: any
     
 
     public constructor() { 
@@ -33,6 +34,7 @@ export class StellarService {
             console.log('use test net')
         }    
         this.grxAsset = new StellarSdk.Asset(environment.ASSET, environment.ASSET_ISSUER)
+        this.nativeAsset = StellarSdk.Asset.native()
     }
 
     setNetwork(){
@@ -148,7 +150,7 @@ export class StellarService {
         })       
     }
 
-    async sendAsset(accSeed: string, dest: string, amount: number, asset: any, memo: string) {
+    async sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string, cb) {
         let source = StellarSdk.Keypair.fromSecret(accSeed);
         await this.horizon.accounts()
         .accountId(source.publicKey())
@@ -179,11 +181,24 @@ export class StellarService {
             tx.sign(source)
             
             // 7. Submit transaction to network
-            return this.horizon.submitTransaction(tx)
+            try {
+                this.horizon.submitTransaction(tx).then( resp => {
+                    console.log('resp: ', resp);
+                    cb(resp.ledger)
+                }).catch(err => {
+                    cb(-1)
+                })
+                
+                
+            } catch(e ){
+                console.log('submitTransaction error: ', e)
+                cb(-1)
+            }
         })
         .catch( err => {
             console.log(err)
-        })       
+            cb(-1)
+        })      
     }
 
     async trustAsset(accSeed: string) {

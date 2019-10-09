@@ -12,7 +12,7 @@
         <label for="xlmBalance" class="text-purple">
           Current XLM Balance
         </label>
-        <input disabled id="xlmBalance" type="text" class="form-control purple-input disabled-input" [value]="currentXLMBalance + ' XLM'">
+        <input disabled id="xlmBalance" type="text" class="form-control purple-input disabled-input" [value]="XLMBalanceS">
       </div>
       <div class="col-12 text-right">
         <small class="text-purple">1.50 XLM Reserved</small>
@@ -21,15 +21,22 @@
         <label for="loanValue" class="text-purple">
           XLM Loan Value
         </label>
-        <input disabled id="loanValue" type="text" class="form-control purple-input disabled-input" [value]="XLMLoanValue + ' XLM'">
+        <input disabled id="loanValue" type="text" class="form-control purple-input disabled-input" [value]="XLMLoanS">
         <div class="col-12"><small>&nbsp;</small></div>
       </div>
       <div class="col-12">
         <label for="difference" class="text-purple">
           XLM Balance After Loan Payment
         </label>
-        <input disabled id="difference" type="text" class="form-control purple-input disabled-input" [value]="currentXLMBalance - XLMLoanValue + ' XLM'">
+        <input disabled id="difference" type="text" class="form-control purple-input disabled-input" [value]="XLMRemainS">
       </div>
+      <div class="col-12">
+        <label for="password" class="text-purple">
+          Password
+        </label>
+        <input [(ngModel)]="password" id="password" type="password" class="form-control purple-input disabled-input">
+      </div>
+      
     </div>
 
     <ng-container *ngIf="success">

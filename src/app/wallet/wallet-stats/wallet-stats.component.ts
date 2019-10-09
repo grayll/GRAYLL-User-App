@@ -25,10 +25,26 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   stellarAddress: string;
   totalXLM: number;
   totalGRX: number;
+  xlmBalance: number;
+  grxBalance: number;
   walletValue: string;
   walletBalance: number;
   XLMValue: string;
   GRXValue: string;
+  XLMUsdValue: string;
+  GRXUsdValue: string;
+
+  // totalXLM: number;
+  // totalGRX: number;
+  gryBalance: number;
+  grzBalance: number;
+  algoWalletValue: string;
+  algoWalletBalance: number;
+  gryValue: string;
+  grzValue: string;
+  gryUsdValue: string;
+  grzUsdValue: string;
+
   secretKey: string;
   isSecretKeyRevealed: boolean;
 
@@ -62,11 +78,21 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
               this.XLMValue = '';
               this.GRXValue = '';
               this.snotifyService.simple('Please check your internet connection');
-            } else {              
-              this.walletBalance = this.totalGRX*resp.p + this.totalXLM*resp1.p
+            } else {        
+              this.xlmBalance =  this.totalXLM*resp1.p
+              this.grxBalance = this.totalGRX*resp.p    
+              this.walletBalance = this.xlmBalance + this.grxBalance
               this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
               this.GRXValue = '' + Math.round(this.totalGRX*resp.p*100/this.walletBalance)
-              this.XLMValue = '' + Math.round(this.totalXLM*resp1.p*100/this.walletBalance)
+              this.XLMValue = '' + (100 - +this.GRXValue)
+              this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
+              this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
+
+              this.authService.userData.totalGRX = this.totalGRX
+              this.authService.userData.totalXLM = this.totalXLM
+              this.authService.userData.xlmPrice = resp1.p
+              this.authService.userData.grxPrice = resp.p
+              this.authService.SetLocalUserData()
             }
           })
         }

@@ -5,6 +5,8 @@ import {SharedService} from '../../../../shared/shared.service';
 import {Router} from '@angular/router';
 import {ErrorService} from '../../../../shared/error/error.service';
 import {WithdrawModel} from '../withdraw.model';
+import { AuthService } from 'src/app/shared/services/auth.service';
+
 
 @Component({
   selector: 'app-withdraw-popup',
@@ -27,6 +29,10 @@ export class WithdrawPopupComponent implements OnInit {
   emailAddress: string;
   noMemoMessageSelected: boolean;
   isMemoMessageSelected: boolean;
+  // grxUsdValue: number;  
+  // xlmUsdValue: number;
+  grxPrice: number;  
+  xlmPrice: number;
 
   // Font Awesome Icons
   faWallet = faWallet;
@@ -51,16 +57,28 @@ export class WithdrawPopupComponent implements OnInit {
     public popupService: PopupService,
     private sharedService: SharedService,
     private router: Router,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private authService: AuthService,
   ) {
-    this.totalXLM = 99999999999.99999;
-    this.totalGRX = 99999999999.99999;
+    if (this.authService.userData.totalXLM){
+      this.totalXLM = this.authService.userData.totalXLM;
+    } else {
+      this.totalXLM = 0
+    }
+    if (this.authService.userData.totalGRX){
+      this.totalGRX = this.authService.userData.totalGRX;
+    } else {
+      this.totalGRX = 0
+    }
     this.XLMValue = null;
     this.memoMessage = null;
     this.GRXValue = null;
     this.recipient = null;
     this.withdrawModel = new WithdrawModel();
     this.isMemoMessageSelected = true;
+
+    this.xlmPrice = this.authService.userData.xlmPrice
+    this.grxPrice = this.authService.userData.grxPrice
   }
 
   ngOnInit() {
@@ -115,7 +133,7 @@ export class WithdrawPopupComponent implements OnInit {
   }
 
   clientValidation(): boolean {
-    if (!this.recipient && this.selectedTabId === 'wallet') {
+    if (!this.isValidAddress(this.recipient)) {
       this.errorService.handleError(null, 'Please enter a valid Stellar Wallet or Federation Address.');
       return false;
     }
@@ -153,5 +171,15 @@ export class WithdrawPopupComponent implements OnInit {
 
   isValidPhoneNumber(value: string): boolean {
     return this.isValidNumber(value.replace('+', ''));
+  }
+
+  isValidAddress(value: string): boolean {
+    if (value.startsWith('G') && value.length === 56){
+      return true
+    }
+    if (value.includes('*') && value.includes('.')){
+      return true
+    }
+    return false
   }
 }
