@@ -19,7 +19,8 @@ import { createHash } from 'crypto';
 export class AuthService {
   userData: any; // Save logged in user data
   tfa$ = new BehaviorSubject<any>({})
-  //user: User;
+  hash: string
+  seedData: any
   //user: AngularFirestoreDocument<User>;
 
   getTfa(){
@@ -41,13 +42,13 @@ export class AuthService {
    
   }
   
-  isActivated() : boolean {
-    console.log("pk:", this.userData.PublicKey)
-    if (!this.userData.PublicKey || (this.userData.PublicKey && this.userData.PublicKey.trim().length === 0)){
-      console.log("false")
+  isActivated() : boolean {    
+    let seedData = this.GetSeedData()    
+    if (!this.userData.PublicKey || (this.userData.PublicKey && this.userData.PublicKey.trim().length === 0)){      
       return false
-    } 
-    console.log("true") 
+    } else if (seedData){
+      return false
+    }    
     return true
   }
   setupTfa(account:string) {
@@ -175,6 +176,22 @@ export class AuthService {
     if (this.userData){
       localStorage.setItem('user', JSON.stringify(this.userData));       
     }    
+  }
+
+  SetSeedData(data:any){
+    this.seedData = data
+    localStorage.setItem('seedData', JSON.stringify(this.seedData));  
+  }
+  GetSeedData(): any {
+    let data = localStorage.getItem('seedData');
+    if (data){
+      this.seedData = JSON.parse(data); 
+    } 
+    return this.seedData
+  }
+  RemoveSeedData(){
+    localStorage.removeItem('seedData');  
+    this.seedData = null  
   }
   
   SetLocalTfa(uid, tfa){

@@ -103,7 +103,7 @@ export class DisableMultisignatureComponent implements OnInit {
       this.errorService.handleError(null, this.errMsg)
       return
     }
-    if (this.authService.userData.hash != this.disableMulSigForm.value['password']) {      
+    if (this.authService.hash != this.disableMulSigForm.value['password']) {      
       this.errorService.handleError(null, 'Password not match')
       return;
     }

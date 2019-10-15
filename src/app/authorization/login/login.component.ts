@@ -151,7 +151,7 @@ loginClicked() {
               this.authService.userData = response.data.user
               this.authService.userData.token = response.data.token                
             
-              this.authService.userData.hash = this.loginForm.value['password'];
+              this.authService.hash = this.loginForm.value['password'];
               this.authService.SetLocalUserData()
               //this.spinnerService.stop()
               //store on local storage

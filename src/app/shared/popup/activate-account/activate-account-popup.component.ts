@@ -55,7 +55,7 @@ export class ActivateAccountPopupComponent implements OnInit {
     this.secretKey = '                                                        ';
     this.seed = '';
     this.onCloseRedirectTo = '/login';
-    if (this.authService.userData.PublicKey && this.authService.userData.PublicKey.length === 56){
+    if (this.authService.isActivated()){
       this.router.navigateByUrl('/dashboard/overview')
     } else {
       console.log(this.authService.userData.PublicKey)
@@ -112,56 +112,91 @@ export class ActivateAccountPopupComponent implements OnInit {
       return
     }
     this.isSubmitted = true
-    console.log('click activate')
+    
     this.errorService.clearError();
     this.onValueChanged()
-        
-    this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
-      console.log('phrase:', res.recoveryPhrase)
+
+    if (!this.authService.GetSeedData()){
+      this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
+        console.log('phrase:', res.recoveryPhrase)  
         this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
           let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
             enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
-        
-          // this.stellarService.recoverKeypairFromPhrase(this.authService.userData.Email, res.recoveryPhrase, (kp)=> {
-          //   console.log('recover secret:', kp.secret())
-          //   console.log('recover pubkey:', kp.publicKey())
-          // })
-
-        axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
-          { headers: { Authorization: 'Bearer ' + this.authService.userData.token}}).then(resp => {
-          console.log(resp)
-          if (resp.data.errCode === environment.SUCCESS){
-            this.stellarService.setNetwork()            
-            this.stellarService.trustAsset(res.keypair.secret()).then(
-              txd => {
-                this.hideCloseButton = true;
-                this.firstPopup = false;
-                this.secretKey = res.keypair.secret()
-                this.seed = res.recoveryPhrase  
-                this.error = false;
-                this.success = true;       
-                this.authService.userData.PublicKey = res.keypair.publicKey()
-                this.authService.SetLocalUserData() 
-              },
-              err => {
+                
+          axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
+            { headers: { Authorization: 'Bearer ' + this.authService.userData.token}}).then(resp => {
+            console.log(resp)
+            if (resp.data.errCode === environment.SUCCESS){
+              let seedData = {seed: res.recoveryPhrase, publicKey: res.keypair.publicKey(), secret: res.keypair.secret()}
+              this.authService.SetSeedData(seedData)
+     
+              this.stellarService.trustAsset(res.keypair.secret()).then(
+                txd => {
+                  this.hideCloseButton = true;
+                  this.firstPopup = false;
+                  this.secretKey = res.keypair.secret()
+                  this.seed = res.recoveryPhrase  
+                  this.error = false;
+                  this.success = true;       
+                  this.authService.userData.PublicKey = res.keypair.publicKey()
+                  this.authService.SetLocalUserData() 
+                  this.authService.RemoveSeedData()
+                },
+                err => {
+                  console.log('err trust asset:', err)                 
+                  this.error = true;
+                  this.success = false;
+                }
+              ).catch(e => {
+                console.log('trustAsset.create error: ', e)
                 this.error = true;
                 this.success = false;
-              }
-            )                                            
-          } else if (resp.data.errCode === environment.INVALID_UNAME_PASSWORD){
-            this.frm.reset()
-            this.errorService.handleError(null, "Please input valid password.")
-          } else {
-            this.frm.reset()
-            this.errorService.handleError(null, "Can not activate account right now. Please try again later.")
-          }
-        }).catch(err => {
-          console.log(err)
+              })                                            
+            } else if (resp.data.errCode === environment.INVALID_UNAME_PASSWORD){
+              this.frm.reset()
+              this.errorService.handleError(null, "Please input valid password.")
+            } else {
+              this.frm.reset()
+              this.errorService.handleError(null, "Can not activate account right now. Please try again later.")
+            }
+          }).catch(err => {
+            console.log(err)
+            this.error = true;
+            this.success = false;
+          })
+        })       
+      }) 
+    } else {    
+      let data = this.authService.GetSeedData()
+      console.log('this.authService.GetSeedData()', data)
+      if (!data.secret){
+        this.authService.RemoveSeedData()
+        console.log('this.authService.RemoveSeedData()')
+        return
+      }
+      this.stellarService.trustAsset(data.secret).then(
+        txd => {
+          this.hideCloseButton = true;
+          this.firstPopup = false;
+          this.secretKey = data.secret
+          this.seed = data.seed 
+          this.error = false;
+          this.success = true;       
+          this.authService.userData.PublicKey = data.publicKey
+          this.authService.SetLocalUserData() 
+          this.authService.RemoveSeedData()
+        },
+        err => {
+          console.log('err trust asset:', err)        
           this.error = true;
           this.success = false;
-        })
-      })       
-    })     
+        }
+      ).catch(e => {
+        console.log('trustAsset.create error: ', e)
+        this.error = true;
+        this.success = false;
+      })
+    }        
   }  
  
 

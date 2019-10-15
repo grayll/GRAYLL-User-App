@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import {ErrorService} from '../../shared/error/error.service';
 import axios from 'axios';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-confirm-email',

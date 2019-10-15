@@ -3,6 +3,8 @@ import { environment } from 'src/environments/environment';
 import { callbackify } from 'util';
 import axios from 'axios';
 import { calcBindingFlags } from '@angular/core/src/view/util';
+import { resolve } from 'path';
+import { reject } from 'q';
 var StellarSdk = require('stellar-sdk');
 var naclutil = require('tweetnacl-util');
 const bip39 = require('bip39')
@@ -23,32 +25,27 @@ export class StellarService {
     nativeAsset: any
     
 
-    public constructor() { 
-        if (environment.production){
-            StellarSdk.Network.usePublicNetwork();
-            this.horizon = new StellarSdk.Server('https://horizon.stellar.org');
-            console.log('use main net')
-        } else {
-            StellarSdk.Network.useTestNetwork()
-            this.horizon = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-            console.log('use test net')
-        }    
+    public constructor() {        
+        this.horizon = new StellarSdk.Server(environment.horizon_url)  
         this.grxAsset = new StellarSdk.Asset(environment.ASSET, environment.ASSET_ISSUER)
         this.nativeAsset = StellarSdk.Asset.native()
     }
 
-    setNetwork(){
-        if (environment.production){
-           // StellarSdk.Network.usePublicNetwork();
-            this.horizon = new StellarSdk.Server('https://horizon.stellar.org');
-            console.log('use main net 1')
-        } else {
-           // StellarSdk.Network.useTestNetwork()
-            this.horizon = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-            console.log('use test net 1')
-        }    
-        this.grxAsset = new StellarSdk.Asset(environment.ASSET, environment.ASSET_ISSUER)
-    }
+    // setNetwork(){
+    //     if (environment.production){
+    //        //StellarSdk.Network.usePublicNetwork();
+    //        //StellarSdk.Networks.MAINNET
+    //         this.horizon = new StellarSdk.Server('https://horizon.stellar.org');
+    //         console.log('use main net 1')
+    //     } else {
+    //        //StellarSdk.Network.useTestNetwork()
+    //        //StellarSdk.Network.usePublicNetwork();
+    //        //StellarSdk.Networks.MAINNET
+    //         this.horizon = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+    //         console.log('use test net 1')
+    //     }    
+    //     this.grxAsset = new StellarSdk.Asset(environment.ASSET, environment.ASSET_ISSUER)
+    // }
 
     generateKeyPair(): any {
         const pair = StellarSdk.Keypair.random();
@@ -57,189 +54,216 @@ export class StellarService {
         return pair
     }
 
-    // generateKeyPairNacl(): any {       
-    //     let pair = nacl.box.keyPair()    
-    //      console.log('key secret:', naclutil.encodeBase64(pair.secretKey))
-    //      console.log('key public:', naclutil.encodeBase64(pair.publicKey))
-    //     return pair
-    // }
+ 
     getNetworkPassPhrase():any {
-        if (environment.production){
-            return  StellarSdk.Networks.MAINNET
-        } else {
+        if (environment.horizon_url.includes("horizon-testnet")){
             return  StellarSdk.Networks.TESTNET
+        } else {
+            return  StellarSdk.Networks.PUBLIC
         }
     }
 
-    async sellOrder(accSeed: string, p: number, amount: number) {
-        let source = StellarSdk.Keypair.fromSecret(accSeed);
-        await this.horizon.accounts()
-        .accountId(source.publicKey())
-        .call()
-        .then(({ sequence }) => {
-            const account = new StellarSdk.Account(source.publicKey(), sequence)
-            // 2. Load current source account state from Horizon server
-            // let sourceAccount = this.horizon.loadAccount(source.publicKey());
+    sellOrder(accSeed: string, p: string, amount: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let source = StellarSdk.Keypair.fromSecret(accSeed);
+            this.horizon.accounts()
+            .accountId(source.publicKey())
+            .call()
+            .then(({ sequence }) => {
+                const account = new StellarSdk.Account(source.publicKey(), sequence)
+                // 2. Load current source account state from Horizon server
+                // let sourceAccount = this.horizon.loadAccount(source.publicKey());
 
-            
-            // 3. Create a transaction builder
-            let tx = new StellarSdk.TransactionBuilder(account, 
-                {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
+                
+                // 3. Create a transaction builder
+                let tx = new StellarSdk.TransactionBuilder(account, 
+                    {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
 
-            // 4. Add CHANGE_TRUST operation to establish trustline
-            .addOperation(StellarSdk.Operation.manageSellOffer({ 
-                buying: new StellarSdk.Asset.native(),
-                selling: this.grxAsset,                
-                amount: amount,
-                price: p,
-                offerId: 0,             
-            }))
+                // 4. Add CHANGE_TRUST operation to establish trustline
+                .addOperation(StellarSdk.Operation.manageSellOffer({                     
+                    selling: this.grxAsset,    
+                    buying: new StellarSdk.Asset.native(),            
+                    amount: amount,
+                    price: p,
+                    //offerId: 0,             
+                }))
 
-            // 6. Build and sign transaction with both source and destination keypairs
-            .setTimeout(180).build()
-            tx.sign(source)
-            
-            // 7. Submit transaction to network
-            return this.horizon.submitTransaction(tx)
+                // 6. Build and sign transaction with both source and destination keypairs
+                .setTimeout(180).build()
+                tx.sign(source)
+                
+                // 7. Submit transaction to network
+                console.log('submit tx')
+                this.horizon = new StellarSdk.Server(environment.horizon_url)  
+                this.horizon.submitTransaction(tx).then( res => {
+                    resolve(res)
+                }).catch( err => {
+                    reject(err)
+                    console.log('sellOrder: ', err)
+                })
+            }).catch ( e => {
+                //reject(e)
+                console.log('sellOrder1: ', e)
+                reject(e)
+            })
+        })        
+    }
+
+    buyOrder(accSeed: string, p: string, amount: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let source = StellarSdk.Keypair.fromSecret(accSeed);
+            this.horizon.accounts()
+            .accountId(source.publicKey())
+            .call()
+            .then(({ sequence }) => {
+                const account = new StellarSdk.Account(source.publicKey(), sequence)
+                // 2. Load current source account state from Horizon server
+                // let sourceAccount = this.horizon.loadAccount(source.publicKey());
+
+                
+                // 3. Create a transaction builder
+                let tx = new StellarSdk.TransactionBuilder(account, 
+                    {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
+
+                // 4. Add CHANGE_TRUST operation to establish trustline
+                .addOperation(StellarSdk.Operation.manageBuyOffer({ 
+                    buying: this.grxAsset, 
+                    selling: new StellarSdk.Asset.native(),             
+                    buyAmount: amount,
+                    price: p,
+                    //offerId: 0,             
+                }))
+
+                // 6. Build and sign transaction with both source and destination keypairs
+                .setTimeout(180).build()
+                tx.sign(source)
+                
+                // 7. Submit transaction to network
+                console.log('submit tx')
+                this.horizon.submitTransaction(tx).then( res => {
+                    resolve(res)
+                }).catch( err => {
+                    console.log('buyOrder: ', err)
+                    reject(err)
+                })
+            })
+            .catch( e => {
+                console.log('buyOrder: ', e)
+                reject(e)
+                //reject(err)
+            })  
+        })             
+    }
+    // https://horizon-testnet.stellar.org/accounts/GCLPAXUV7XWZNLJQIQ3723ZBA2WFQHEGBQ3TFDUPRL733FDM5HV7KPOO/offers
+    getOffer(account: string, limit: number, offet: number): Promise<any>{
+        return new Promise( (resolve, reject) => {
+            axios.get(`${environment.horizon_url}/accounts/${account}/offers`).then( res => {
+
+            }).catch( e => {
+                console.log(e)
+                //reject(e)
+            })
+        })
+    }
+    getTrade(account: string, limit: number, offet: number): Promise<any>{
+        return new Promise( (resolve, reject) => {
+            // GCLPAXUV7XWZNLJQIQ3723ZBA2WFQHEGBQ3TFDUPRL733FDM5HV7KPOO
+            axios.get(`${environment.horizon_url}/accounts/${account}/trades`).then( res => {
+                
+            }).catch( e => {
+                console.log(e)
+                reject(e)
+            })
         })
     }
 
-    async buyOrder(accSeed: string, p: number, amount: number) {
-        let source = StellarSdk.Keypair.fromSecret(accSeed);
-        await this.horizon.accounts()
-        .accountId(source.publicKey())
-        .call()
-        .then(({ sequence }) => {
-            const account = new StellarSdk.Account(source.publicKey(), sequence)
-            // 2. Load current source account state from Horizon server
-            // let sourceAccount = this.horizon.loadAccount(source.publicKey());
+    sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string): Promise<any> {
 
-            
-            // 3. Create a transaction builder
-            let tx = new StellarSdk.TransactionBuilder(account, 
-                {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
+        return new Promise((resolve, reject) => {
+            let source = StellarSdk.Keypair.fromSecret(accSeed);
+            // this.horizon.accounts()
+            // .accountId(source.publicKey())
+            // .call()
+            // .then(({ sequence }) => {
+            this.horizon.loadAccount(source.publicKey()).then( account => {
+                console.log('account:', account)
+                // const account = new StellarSdk.Account(source.publicKey(), sequence)
+                // 2. Load current source account state from Horizon server
+                // let sourceAccount = this.horizon.loadAccount(source.publicKey());
 
-            // 4. Add CHANGE_TRUST operation to establish trustline
-            .addOperation(StellarSdk.Operation.manageBuyOffer({ 
-                buying: this.grxAsset, 
-                selling: new StellarSdk.Asset.native(),             
-                buyAmount: amount,
-                price: p,
-                offerId: 0,             
-            }))
+                
+                // 3. Create a transaction builder
+                let tx = new StellarSdk.TransactionBuilder(account, 
+                    {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
 
+                
+                // Note that source parameter contains a public key of our destination account
+                //because we perform this operation on behalf of the destination account.
+                // 5. Add PAYMENT operation to transfer your custom asset
+                .addOperation(StellarSdk.Operation.payment({ 
+                    destination: dest,
+                    asset: asset,
+                    amount: amount,
+                }))
+                .addMemo(StellarSdk.Memo.text(memo))
 
-            // Note that source parameter contains a public key of our destination account
-            //because we perform this operation on behalf of the destination account.
-            // 5. Add PAYMENT operation to transfer your custom asset
-            // builder.addOperation(StellarSdk.Operation.payment({ 
-            //     destination: dest.publicKey(),
-            //     asset: this.grxAsset,
-            //     amount: '10'
-            // }))
-
-            // 6. Build and sign transaction with both source and destination keypairs
-            .setTimeout(180).build()
-            tx.sign(source)
-            
-            // 7. Submit transaction to network
-            return this.horizon.submitTransaction(tx)
-        })
-        .catch( err => {
-            console.log(err)
-        })       
-    }
-
-    async sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string, cb) {
-        let source = StellarSdk.Keypair.fromSecret(accSeed);
-        await this.horizon.accounts()
-        .accountId(source.publicKey())
-        .call()
-        .then(({ sequence }) => {
-            const account = new StellarSdk.Account(source.publicKey(), sequence)
-            // 2. Load current source account state from Horizon server
-            // let sourceAccount = this.horizon.loadAccount(source.publicKey());
-
-            
-            // 3. Create a transaction builder
-            let tx = new StellarSdk.TransactionBuilder(account, 
-                {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
-
-            
-            // Note that source parameter contains a public key of our destination account
-            //because we perform this operation on behalf of the destination account.
-            // 5. Add PAYMENT operation to transfer your custom asset
-            .addOperation(StellarSdk.Operation.payment({ 
-                destination: dest,
-                asset: asset,
-                amount: amount,
-            }))
-            .addMemo(StellarSdk.Memo.text(memo))
-
-            // 6. Build and sign transaction with both source and destination keypairs
-            .setTimeout(180).build()
-            tx.sign(source)
-            
-            // 7. Submit transaction to network
-            try {
+                // 6. Build and sign transaction with both source and destination keypairs
+                .setTimeout(180).build()
+                tx.sign(source)
+                
                 this.horizon.submitTransaction(tx).then( resp => {
                     console.log('resp: ', resp);
-                    cb(resp.ledger)
+                    resolve(resp.ledger)
                 }).catch(err => {
-                    cb(-1)
-                })
-                
-                
-            } catch(e ){
-                console.log('submitTransaction error: ', e)
-                cb(-1)
-            }
-        })
-        .catch( err => {
-            console.log(err)
-            cb(-1)
-        })      
+                    reject(err)
+                })                
+            })
+            .catch( err => {
+                reject(err)                
+            }) 
+        })     
     }
 
-    async trustAsset(accSeed: string) {
-        let source = StellarSdk.Keypair.fromSecret(accSeed);
-        await this.horizon.accounts()
-        .accountId(source.publicKey())
-        .call()
-        .then(({ sequence }) => {
-            const account = new StellarSdk.Account(source.publicKey(), sequence)
-            // 2. Load current source account state from Horizon server
-            // let sourceAccount = this.horizon.loadAccount(source.publicKey());
+    trustAsset(accSeed: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let source = StellarSdk.Keypair.fromSecret(accSeed);
+            // this.horizon.accounts()
+            // .accountId(source.publicKey())
+            // .call()
+            // .then(({ sequence }) => {
+            //     const account = new StellarSdk.Account(source.publicKey(), sequence)            
+            this.horizon.loadAccount(source.publicKey()).then( account => {
+                console.log('account:', account)
+                // 2. Load current source account state from Horizon server
+                // let sourceAccount = this.horizon.loadAccount(source.publicKey());
 
-            
-            // 3. Create a transaction builder
-            let tx = new StellarSdk.TransactionBuilder(account, 
-                {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
-
-            // 4. Add CHANGE_TRUST operation to establish trustline
-            .addOperation(StellarSdk.Operation.changeTrust({ 
-                asset: this.grxAsset,
-                // amount: '',
-                // source: this.grxAsset.issuer,
-            }))
-
-
-            // Note that source parameter contains a public key of our destination account
-            //because we perform this operation on behalf of the destination account.
-            // 5. Add PAYMENT operation to transfer your custom asset
-            // builder.addOperation(StellarSdk.Operation.payment({ 
-            //     destination: dest.publicKey(),
-            //     asset: this.grxAsset,
-            //     amount: '10'
-            // }))
-
-            // 6. Build and sign transaction with both source and destination keypairs
-            .setTimeout(180).build()
-            tx.sign(source)
-            //tx.sign(dest)
-
-            // 7. Submit transaction to network
-            return this.horizon.submitTransaction(tx)
+                
+                // 3. Create a transaction builder
+                let tx = new StellarSdk.TransactionBuilder(account, 
+                    {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
+                
+                // 4. Add CHANGE_TRUST operation to establish trustline
+                .addOperation(StellarSdk.Operation.changeTrust({ 
+                    asset: this.grxAsset,                    
+                    source: source.publicKey(),
+                }))
+                              
+                // 6. Build and sign transaction with both source and destination keypairs
+                .setTimeout(180)
+                //.setNetworkPassphrase(StellarSdk.Networks.MAINNET)
+                .build()
+                tx.sign(source)                
+                this.horizon.submitTransaction(tx).then( res => {
+                    //console.log('submitTransaction res:', res)
+                    resolve(res)
+                }).catch( e => {
+                    //console.log('submitTransaction e:', e)
+                    reject(e)
+                })
+            }).catch( err => {
+                console.log('getaccount err:', err)                
+                reject(err)
+            })
         })
     }
 
@@ -403,8 +427,5 @@ export class StellarService {
     
     FromBase64 = function (str) {
         return atob(str).split('').map(function (c) { return c.charCodeAt(0); });
-    }
-
-
-   
+    }   
 }

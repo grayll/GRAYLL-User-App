@@ -39,6 +39,9 @@ export class AccountActivityComponent implements OnInit {
     private snotifyService: SnotifyService
   ) {
     this.selectedTab = this.activityTabs[0];
+
+    // Get all orders and open order
+    
   }
 
   ngOnInit() {

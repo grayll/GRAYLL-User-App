@@ -70,11 +70,9 @@ export class XlmLoanPopupComponent implements OnInit {
           console.log(environment.xlmLoanerAddress)  
           // let ledger = this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), environment.xlmLoanerAddress, 
           // this.XLMLoanValue.toString(), this.stellarService.nativeAsset, '')
-
-         
           
           this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), environment.xlmLoanerAddress, 
-            this.XLMLoanValue.toString(), this.stellarService.nativeAsset, '', ledger => {
+            this.XLMLoanValue.toString(), this.stellarService.nativeAsset, '').then( ledger => {
               if (ledger <= 0){
                 this.errorService.handleError(null, 'Can not payoff Loan now. Please try again later.')
               }
@@ -88,26 +86,22 @@ export class XlmLoanPopupComponent implements OnInit {
                 console.log(resp)
                 this.error = false;
                 this.success = true;
-                this.sharedService.setIsLoanPaid(true);
-                this.userService.loanPaid(true);
+                this.sharedService.setIsLoan(false);
+                //this.userService.loanPaid(true);
               }).catch(err => {
                 console.log(err)
+                this.error = true;
               })
 
                 //console.log('href: ', res._links.transaction);
                 //https://horizon-testnet.stellar.org/ledgers/1072717/payments
                 //https://horizon-testnet.stellar.org/payments?cursor=4607284432871424
+            }).catch( e => {
+              this.errorService.handleError(null, 'Can not execute XLM pay-off loaner now. Please try again later.')
+              this.error = true;
             })
         }
       })  
-      // this.error = false;
-      // this.success = true;
-      // this.sharedService.setIsLoanPaid(true);
-      // this.userService.loanPaid(true);
-    // } else {
-    //   this.error = true;
-    // }
-    //this.didShowErrorOnce = true;
   }
 
   retry() {

@@ -77,7 +77,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     SecKey => {
       if (SecKey != 'Decryption failed!'){        
         this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), this.withdrawModel.address, 
-          amount.toString(), asset, memo, ledger => {
+          amount.toString(), asset, memo).then(ledger => {
             if (ledger <= 0){
               this.error()
             } else {
@@ -88,6 +88,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
                 }, 50);
               })
             }
+          }).catch( e => {
+            this.error()
+            console.log('Send asset error: ', e)
           })
       }
     })   

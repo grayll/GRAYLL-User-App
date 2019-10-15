@@ -34,6 +34,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   XLMUsdValue: string;
   GRXUsdValue: string;
 
+  grxP: number
+  xlmP: number
+
   // totalXLM: number;
   // totalGRX: number;
   gryBalance: number;
@@ -47,6 +50,13 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
   secretKey: string;
   isSecretKeyRevealed: boolean;
+
+  // offers
+  grxAmount: string = ''
+  grxPrice: string = ''
+  grxXlmEqui: string = ''
+  grxUsdEqui: string = ''
+  SecKey: string = ''
 
   private subscriptions = new SubSink();
 
@@ -78,7 +88,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
               this.XLMValue = '';
               this.GRXValue = '';
               this.snotifyService.simple('Please check your internet connection');
-            } else {        
+            } else {   
+              this.grxP = resp.p
+              this.xlmP = resp1.p     
               this.xlmBalance =  this.totalXLM*resp1.p
               this.grxBalance = this.totalGRX*resp.p    
               this.walletBalance = this.xlmBalance + this.grxBalance
@@ -87,18 +99,24 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
               this.XLMValue = '' + (100 - +this.GRXValue)
               this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
               this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
-
+              
               this.authService.userData.totalGRX = this.totalGRX
               this.authService.userData.totalXLM = this.totalXLM
               this.authService.userData.xlmPrice = resp1.p
               this.authService.userData.grxPrice = resp.p
               this.authService.SetLocalUserData()
+
             }
           })
         }
       })     
     })
+
+    //
+        
+    
   }
+
 
   ngOnInit() {
     this.observeRevealSecretKey();
@@ -106,6 +124,45 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  buyGrx(){
+    console.log('buy')
+    this.stellarService.decryptSecretKey(this.authService.hash, 
+      {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
+      key => {
+        if (key != 'Decryption failed!'){   
+          this.SecKey = key
+          console.log('sec:', this.stellarService.SecretBytesToString(this.SecKey))
+          this.stellarService.buyOrder(this.stellarService.SecretBytesToString(this.SecKey), this.grxPrice, this.grxAmount).then( res => {
+            console.log(res)
+          }).catch(e => {
+            console.log(e)
+          })
+        } else {
+          console.log('got key')
+        }
+      })    
+  }
+
+  sellGrx(){   
+    console.log('sell')
+   
+    this.stellarService.decryptSecretKey(this.authService.hash, 
+      {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
+      key => {
+        if (key != 'Decryption failed!'){   
+          this.SecKey = key
+          console.log('sec:', this.stellarService.SecretBytesToString(this.SecKey))
+          this.stellarService.sellOrder(this.stellarService.SecretBytesToString(this.SecKey), this.grxPrice, this.grxAmount).then( res => {
+            console.log(res)
+          }).catch(e => {
+            console.log(e)
+          })
+        } else {
+          console.log('got key')
+        }
+      })
   }
 
   copyFederationAddress() {

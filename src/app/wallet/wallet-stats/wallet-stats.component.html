@@ -174,7 +174,7 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                     </div>
-                    <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                    <input type="text" name="grxamount" [(ngModel)]="grxAmount" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                   </div>
                 </div>
                 <div class="form-group float-right mb-0">
@@ -189,7 +189,7 @@
                         <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                       </span>
                     </div>
-                    <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX/USD Price">
+                    <input type="text" name="grxprice" [(ngModel)]="grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX/USD Price">
                   </div>
                 </div>
                 <div class="form-group">
@@ -199,7 +199,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                     </div>
-                    <input [value]="XLMValue" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                    <input [value]="(+grxAmount)*(+grxPrice)/xlmP" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                   </div>
                 </div>
                 <div class="form-group">
@@ -207,12 +207,12 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="(+grxAmount)*(+grxPrice)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
                   <div class="col">
-                    <button type="button" class="text-light btn bg-purple">Buy GRX</button>
+                    <button type="button" (click)="buyGrx()" class="text-light btn bg-purple">Buy GRX</button>
                   </div>
                   <div class="col">
                     <a class="purple-link" href="javascript:void(0)" (click)="populateMaxXLM()">
@@ -233,7 +233,7 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                     </div>
-                    <input [value]="GRXValue" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                    <input [value]="GRXValue" name="grxamount1"  [(ngModel)]="grxAmount" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                   </div>
                 </div>
                 <div class="form-group float-right mb-0">
@@ -248,7 +248,7 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                     </div>
-                    <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX/USD Price">
+                    <input type="text" name="grxprice" [(ngModel)]="grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX/USD Price">
                   </div>
                 </div>
                 <div class="form-group">
@@ -258,7 +258,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                     </div>
-                    <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                    <input type="text" [value]="(+grxAmount)*(+grxPrice)/xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                   </div>
                 </div>
                 <div class="form-group">
@@ -266,12 +266,12 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="(+grxAmount)*(+grxPrice)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
                   <div class="col">
-                    <button type="button" class="text-light btn bg-purple">Sell GRX</button>
+                    <button type="button" (click)="sellGrx()" class="text-light btn bg-purple">Sell GRX</button>
                   </div>
                   <div class="col">
                     <a class="purple-link" href="javascript:void(0)" (click)="populateMaxGRX()">
@@ -468,7 +468,7 @@
                         <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                       </span>
                       </div>
-                      <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX/USD Price">
+                      <input type="text" name="grxamount" [(ngModel)]="grxAmount" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX/USD Price">
                     </div>
                   </div>
                   <div class="form-group">
@@ -478,7 +478,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                       </div>
-                      <input [value]="XLMValue" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                      <input name="grxprice" [(ngModel)]="grxPrice" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                     </div>
                   </div>
                   <div class="form-group">
@@ -512,7 +512,7 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                       </div>
-                      <input [value]="GRXValue" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                      <input name="grxamount1" [(ngModel)]="grxAmount" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                     </div>
                   </div>
                   <div class="form-group float-right mb-0">
@@ -527,7 +527,7 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                       </div>
-                      <input type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX/USD Price">
+                      <input type="text" name="grxprice1" [(ngModel)]="grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX/USD Price">
                     </div>
                   </div>
                   <div class="form-group">
@@ -550,7 +550,7 @@
                   </div>
                   <div class="form-group row">
                     <div class="col">
-                      <button type="button" class="text-light btn bg-purple">Sell GRX</button>
+                      <button type="button" (click)="sellGrx()" class="text-light btn bg-purple">Sell GRX</button>
                     </div>
                     <div class="col">
                       <a class="purple-link" href="javascript:void(0)" (click)="populateMaxGRX()">
