@@ -70,19 +70,37 @@
       <th>Date</th>
       <th>Type</th>
       <th>Asset</th>
-      <th>Issuer</th>
+      <!-- <th>Issuer</th> -->
       <th>Amount</th>
       <th>Filled</th>
       <th>Price (XLM)</th>
-      <th>Price (USD)</th>
       <th>Total Price (XLM)</th>
+      <th>Price (USD)</th>      
       <th>Total Price (USD)</th>
       <th>Actions</th>
     </tr>
     </thead>
 
-    <tbody class="font-8 text-light">
-    <tr>
+    <tbody *ngIf="offers" class="font-8 text-light">
+      <tr *ngFor="let item of offers">    
+        <td>{{item.time}}</td>
+        <td>{{item.type}}</td>
+        
+        <td>{{item.asset}}</td>        
+        <td>{{item.amount}}</td>
+        <td>0%</td>
+        <td>{{item.xlmp}}</td>
+        <td>{{item.totalxlm}}</td>
+        <td>{{item.grxp}}</td>
+        <td>{{item.totalgrx}}</td>
+        <td>
+          <a href="javascript:void(0)" (click)='cancelOffer(item.cachedOffer, item.index)' class="purple-link">
+            <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+            <span class="ml-1 cancel text-danger">Cancel</span>
+          </a>
+        </td>
+    </tr>  
+    <!-- <tr>
       <td>18/08/2019 04:14</td>
       <td>BUY</td>
       <td>GRAYLL</td>
@@ -99,7 +117,7 @@
           <span class="ml-1 cancel text-danger">Cancel</span>
         </a>
       </td>
-    </tr>
+    </tr> -->
     </tbody>
   </table>
 </div>
@@ -117,8 +135,7 @@
       <th class="text-center">Info</th>
     </tr>
     </thead>
-
-    <tbody class="font-8 text-light">
+    <tbody  *ngIf="payments"  class="font-8 text-light">
     <tr>
       <td>05/08/2019 18:29</td>
       <td class="purple-link">GBMF3W...JGX4OG</td>
@@ -133,6 +150,21 @@
         </a>
       </td>
     </tr>
+    <!-- <tbody class="font-8 text-light">
+    <tr>
+      <td>05/08/2019 18:29</td>
+      <td class="purple-link">GBMF3W...JGX4OG</td>
+      <td class="">XLM</td>
+      <td class="">Stellar</td>
+      <td class="purple-link">
+        -29,999,999,999,999.22222
+      </td>
+      <td class="text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr> -->
     <tr>
       <td>23/08/2019 05:27</td>
       <td class="purple-link">GBMF3W...JGX4OG</td>

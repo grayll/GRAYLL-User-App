@@ -59,7 +59,7 @@ export class ProfileSettingsComponent implements OnDestroy {
       }
     )
 
-    this.requestSubNotifications()
+    //this.requestSubNotifications()
   }
  
   buildForm(): void {    

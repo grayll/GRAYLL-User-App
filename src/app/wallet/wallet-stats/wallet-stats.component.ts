@@ -58,7 +58,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   grxUsdEqui: string = ''
   SecKey: string = ''
 
-  private subscriptions = new SubSink();
+  private subs = new SubSink();
 
   constructor(
     private clipboardService: ClipboardService,
@@ -72,49 +72,40 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.stellarAddress = this.authService.userData.PublicKey;
     this.secretKey = 'GBMF3WYPDWQFOXVL2CO6NQPGQZJWLLKSGVTGGV7QPKCZCIQ3PZJGX4OG';
 
-    this.stellarService.getAccountBalance(this.authService.userData.PublicKey, res => {
-      this.totalXLM = res.xlm;
-      this.totalGRX = res.grx;
-      console.log('getCurrentGrxPrice xlm: ', res)
-      this.stellarService.getCurrentGrxPrice(resp =>{
-        if (resp.err) {
-          console.log('getCurrentGrxPrice error: ', resp.err)
-          this.XLMValue = '';
-          this.GRXValue = '';
-          this.snotifyService.simple('Please check your internet connection');
-        } else {
-          this.stellarService.getCurrentXlmPrice(resp1 => {
-            if (resp1.err){
-              this.XLMValue = '';
-              this.GRXValue = '';
-              this.snotifyService.simple('Please check your internet connection');
-            } else {   
-              this.grxP = resp.p
-              this.xlmP = resp1.p     
-              this.xlmBalance =  this.totalXLM*resp1.p
-              this.grxBalance = this.totalGRX*resp.p    
-              this.walletBalance = this.xlmBalance + this.grxBalance
-              this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
-              this.GRXValue = '' + Math.round(this.totalGRX*resp.p*100/this.walletBalance)
-              this.XLMValue = '' + (100 - +this.GRXValue)
-              this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
-              this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
-              
-              this.authService.userData.totalGRX = this.totalGRX
-              this.authService.userData.totalXLM = this.totalXLM
-              this.authService.userData.xlmPrice = resp1.p
-              this.authService.userData.grxPrice = resp.p
-              this.authService.SetLocalUserData()
+    // this.subs.add(this.stellarService.observeAccount().subscribe(account => {
+    //   console.log('observeAccount:', account)
+    //   this.stellarService.getBlFromAcc(account, res => {
+    //     this.fillWalletData(res)
+    //   })
+    // }))
 
-            }
-          })
-        }
-      })     
-    })
+    this.subs.add(this.stellarService.observePrices().subscribe(prices => {
+      this.grxP = prices[0]
+      this.xlmP = prices[1]      
+      this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
+        this.fillWalletData(res)
+      })
+    }))
+ 
+  }
 
-    //
-        
+  fillWalletData(res){
+    this.totalXLM = res.xlm;
+    this.totalGRX = res.grx;
+    this.xlmBalance =  this.totalXLM*this.xlmP
+    this.grxBalance = this.totalGRX*this.grxP    
+    this.walletBalance = this.xlmBalance + this.grxBalance
+    this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
+    this.GRXValue = '' + Math.round(this.totalGRX*this.grxP*100/this.walletBalance)
+    this.XLMValue = '' + (100 - +this.GRXValue)
+    this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
+    this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
     
+    this.authService.userData.totalGRX = this.totalGRX
+    this.authService.userData.totalXLM = this.totalXLM
+    this.authService.userData.xlmPrice = this.xlmP
+    this.authService.userData.grxPrice = this.grxP
+    this.authService.SetLocalUserData()     
   }
 
 
@@ -123,19 +114,29 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.subs.unsubscribe();
   }
 
   buyGrx(){
     console.log('buy')
+    if (!this.authService.hash){
+      this.router.navigateByUrl('/login')
+    }
+    console.log('this.authService.hash:', this.authService.hash)
     this.stellarService.decryptSecretKey(this.authService.hash, 
       {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
       key => {
         if (key != 'Decryption failed!'){   
-          this.SecKey = key
-          console.log('sec:', this.stellarService.SecretBytesToString(this.SecKey))
-          this.stellarService.buyOrder(this.stellarService.SecretBytesToString(this.SecKey), this.grxPrice, this.grxAmount).then( res => {
+          this.SecKey = key          
+          console.log('grxPrice:', this.grxPrice)
+          console.log('grxAmount:', this.grxAmount)
+          let grxOfPrice = +this.grxPrice/this.xlmP
+          this.stellarService.buyOrder(this.stellarService.SecretBytesToString(this.SecKey), grxOfPrice.toString(), this.grxAmount).then( res => {
             console.log(res)
+            let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
+              this.grxP, this.xlmP, this.stellarService.allOffers.length)
+              this.stellarService.allOffers.push(of)
+            this.snotifyService.simple('Buy order submitted successfully.'); 
           }).catch(e => {
             console.log(e)
           })
@@ -146,16 +147,21 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
 
   sellGrx(){   
-    console.log('sell')
+    if (!this.authService.hash){
+      this.router.navigateByUrl('/login')
+    } else {
+      console.log('this.authService.hash:', this.authService.hash)
+    }
    
     this.stellarService.decryptSecretKey(this.authService.hash, 
       {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
       key => {
         if (key != 'Decryption failed!'){   
           this.SecKey = key
-          console.log('sec:', this.stellarService.SecretBytesToString(this.SecKey))
-          this.stellarService.sellOrder(this.stellarService.SecretBytesToString(this.SecKey), this.grxPrice, this.grxAmount).then( res => {
+          let grxOfPrice = +this.grxPrice/this.xlmP
+          this.stellarService.sellOrder(this.stellarService.SecretBytesToString(this.SecKey), grxOfPrice.toString(), this.grxAmount).then( res => {
             console.log(res)
+            this.snotifyService.simple('Sell order submitted successfully.'); 
           }).catch(e => {
             console.log(e)
           })
@@ -186,11 +192,11 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
 
   observeRevealSecretKey() {
-    this.subscriptions.sink = this.settingsService.observeConfirmAuthority()
+    this.subs.add(this.settingsService.observeConfirmAuthority()
     .subscribe((confirm) => {
       // Not a secure solution. Please make a request to backend to get the code
       this.isSecretKeyRevealed = confirm;
-    });
+    }));
   }
 
   populateMaxXLM() {
