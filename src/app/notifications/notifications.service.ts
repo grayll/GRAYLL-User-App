@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import { AuthService } from '../shared/services/auth.service';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,10 +16,14 @@ export class NotificationsService {
   private numberOfUnreadGRY3Notifications: number;
   private numberOfUnreadGRZNotifications: number;
   private numberOfUnreadGrayllSystemNotifications: number;
+  private authService: AuthService;
 
   constructor() {
     this.resetNumberOfAllUnreadNotifications();
     this.resetNumberOfAllGrayllSystemNotifications();
+    // this.numberOfUnreadAlgoNotifications = this.authService.userData.UrAlgo;
+    // this.numberOfUnreadWalletNotifications= this.authService.userData.UrWallet;
+    // this.numberOfUnreadSystemNotifications= this.authService.userData.UrGeneral;
   }
 
   getNumberOfAllUnreadNotifications() {

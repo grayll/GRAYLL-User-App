@@ -30,7 +30,7 @@
         </label>
         <input disabled id="difference" type="text" class="form-control purple-input disabled-input" [value]="XLMRemainS">
       </div>
-      <div class="col-12">
+      <div *ngIf="!isHashCached" class="col-12">
         <label for="password" class="text-purple">
           Password
         </label>

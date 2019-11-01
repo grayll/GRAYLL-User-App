@@ -393,14 +393,14 @@ export class StellarService {
         return new Promise((resolve, reject) => {
             this.horizon.loadAccount(publicKey)
             .then( 
-                res => {                               
+                res => {                              
                     
                     this.accountData = res; 
                     resolve(res)              
                 },
                 err => {
                     resolve(err)
-                    console.log(err)
+                    console.log('this.horizon.loadAccount:', err)
                 }
             )
         })
@@ -477,6 +477,20 @@ export class StellarService {
         })
         
     }
+
+    getAccountFromFed(fed){
+      return new Promise((resolve, reject) => {
+        StellarSdk.FederationServer.resolve(fed)
+      .then(federationRecord => {
+        resolve(federationRecord.account_id)
+      })
+      .catch(err => {
+          console.error(err)
+          reject(err)
+        }); 
+      })         
+    }
+
     recoverKeypairFromPhrase(userid, recoveryPhrase, callback) {
         const hexString = bip39.mnemonicToEntropy(recoveryPhrase);
         const seed = Uint8Array.from(Buffer.from(hexString, 'hex'));        

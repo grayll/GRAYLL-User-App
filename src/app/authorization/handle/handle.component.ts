@@ -214,6 +214,11 @@ export class HandleComponent implements OnInit {
         this.message = "The email does not exist."
         this.errorService.handleError(null, this.message)
         this.handleForm.reset() 
+       } else if(response.data.errCode == environment.INVALID_CODE ){
+          this.message = "The reset password token is invalid."
+          this.errorService.handleError(null, this.message)
+          this.handleForm.reset() 
+        
       } else {   
         this.handleForm.reset()  
         this.message = 'Can not reset password right now. Please try again later.'

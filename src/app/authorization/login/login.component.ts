@@ -128,20 +128,11 @@ loginClicked() {
   // Execute recaptcha
   this.recaptchaV3Service.execute('login')
   .subscribe((token) => {
-    // Verify token
-    //console.log('token: ', token) 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json',
-        'Authorization': 'Bearer ' + token,       
-      })
-    };
-
+    // Verify token 
     axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
       headers: { Authorization: "Bearer " + token }
     })
-    .then(response => {
-      console.log(response)
+    .then(response => {      
       if (response.data.status === 'success'){       
         this.ngZone.run(() => {          
           axios.post(`${environment.api_url}api/v1/users/login`, 
@@ -150,9 +141,10 @@ loginClicked() {
             if (response.data.errCode === environment.SUCCESS) {
               this.authService.userData = response.data.user
               this.authService.userData.token = response.data.token                
-            
+              console.log('this.authService.userData:', this.authService.userData)
               this.authService.hash = this.loginForm.value['password'];
               this.authService.SetLocalUserData()
+              console.log('userData:', this.authService.userData)
               //this.spinnerService.stop()
               //store on local storage
               if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 

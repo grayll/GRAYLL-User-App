@@ -1,522 +1,237 @@
 <div class="bg-gradient text-light">
-  <div class="row align-items-center justify-content-center p-2">
-    <div class="col">
-      <span class="lead align-middle">Activity</span>
+    <div class="row align-items-center justify-content-center p-2">
+      <div class="col">
+        <span class="lead align-middle">Activity</span>
+      </div>
+      <div class="col-xs-12 col-md-5">
+        <ngb-tabset type="pills" class="custom-pills" justify="center" (tabChange)="onTabChange($event.nextId)">
+          <ng-container *ngFor="let tab of activityTabs">
+              <ngb-tab [id]="tab.id" [title]="tab.name"></ngb-tab>
+          </ng-container>
+        </ngb-tabset>
+      </div>
+      <div class="col text-center">
+        <hr class="mt-0 d-sm-none">
+        <a class="purple-link" href="javascript:void(0)">
+          <fa-icon [icon]="faDownload" [fixedWidth]="true"></fa-icon>
+          Download Activity History
+        </a>
+      </div>
     </div>
-    <div class="col-xs-12 col-md-5">
-      <ngb-tabset type="pills" class="custom-pills" justify="center" (tabChange)="onTabChange($event.nextId)">
-        <ng-container *ngFor="let tab of activityTabs">
-            <ngb-tab [id]="tab.id" [title]="tab.name"></ngb-tab>
-        </ng-container>
-      </ngb-tabset>
+  
+    <hr class="mt-0 mb-0">
+  
+    <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'allOrders'">
+      <div class="col-md-2 col-xs">
+        <span *ngIf="offers" class="align-middle font-weight-bolder font-14">Open Orders ({{offers.length}})</span>
+        <span *ngIf="!offers" class="align-middle font-weight-bolder font-14">Open Orders ({{0}})</span>
+      </div>
+      <div class="col" [routerLink]="['/wallet/overview', {outlets: {popup: 'cancel-active-orders'}}]" style="outline: none;">
+        <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+        <span class="ml-1 cancel text-danger">Cancel All Active Orders</span>
+      </div>
     </div>
-    <div class="col text-center">
-      <hr class="mt-0 d-sm-none">
-      <a class="purple-link" href="javascript:void(0)">
-        <fa-icon [icon]="faDownload" [fixedWidth]="true"></fa-icon>
-        Download Activity History
-      </a>
+  
+    <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'transfers'">
+      <div class="col" *ngIf="!showMoreDetails">
+        <span *ngIf="payments" class="align-middle font-weight-bolder font-14">Transfers ({{payments.length}})</span>
+        <span *ngIf="!payments" class="align-middle font-weight-bolder font-14">Transfers (0)</span>
+      </div>
+      <div class="col-md-2 col-xs" *ngIf="showMoreDetails">
+          <span *ngIf="payments" class="align-middle font-weight-bolder font-14">Transfers ({{payments.length}})</span>
+          <span *ngIf="!payments" class="align-middle font-weight-bolder font-14">Transfers (0)</span><br>
+        <span class="text-light font-10 font-weight-bolder">Most Recent Transfers</span>
+      </div>
+      <div class="col" *ngIf="showMoreDetails">
+        <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
+          All Completed Transfers
+        </a>
+      </div>
+    </div>
+  
+    <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'networkHistory'">
+      <div class="col" *ngIf="!showMoreDetails">
+        <!-- <span class="align-middle font-weight-bolder font-14">Network History ({{networkHistorys}})</span> -->
+        <span *ngIf="operations" class="align-middle font-weight-bolder font-14">Network History ({{operations.length}})</span>
+        <span *ngIf="!operations" class="align-middle font-weight-bolder font-14">Network History (0)</span>
+      </div>
+      <div class="col-md-2 col-xs" *ngIf="showMoreDetails">
+          <span *ngIf="operations" class="align-middle font-weight-bolder font-14">Network History ({{operations.length}})</span>
+          <span *ngIf="!operations" class="align-middle font-weight-bolder font-14">Network History (0)</span><br>
+        <span class="text-light font-10 font-weight-bolder">Most Recent Network History</span>
+      </div>
+      <div class="col" *ngIf="showMoreDetails">
+        <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
+          Full Network History
+        </a>
+      </div>
     </div>
   </div>
-
-  <hr class="mt-0 mb-0">
-
-  <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'allOrders'">
-    <div class="col-md-2 col-xs">
-      <span class="align-middle font-weight-bolder font-14">Open Orders (1)</span>
-    </div>
-    <div class="col" [routerLink]="['/wallet/overview', {outlets: {popup: 'cancel-active-orders'}}]" style="outline: none;">
-      <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
-      <span class="ml-1 cancel text-danger">Cancel All Active Orders</span>
-    </div>
+  
+  <!-- ALL ORDERS -->
+  <div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'allOrders'">
+    <table class="table mb-0">
+      <thead>
+      <tr class="font-weight-bolder font-10 text-light">
+        <th>Date</th>
+        <th>Type</th>
+        <th>Asset</th>
+        <!-- <th>Issuer</th> -->
+        <th>Amount</th>
+        <th>Filled</th>
+        <th>Price (XLM)</th>
+        <th>Total Price (XLM)</th>
+        <th>Price (USD)</th>      
+        <th>Total Price (USD)</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+  
+      <tbody *ngIf="offers" class="font-8 text-light">
+        <tr *ngFor="let item of offers">    
+          <td>{{item.time}}</td>
+          <td>{{item.type}}</td>
+          
+          <td>{{item.asset}}</td>        
+          <td>{{item.amount}}</td>
+          <td>0%</td>
+          <td>{{item.xlmp}}</td>
+          <td>{{item.totalxlm}}</td>
+          <td>{{item.grxp}}</td>
+          <td>{{item.totalusd}}</td>
+          <td>
+            <a href="javascript:void(0)" (click)='cancelOffer(item.cachedOffer, item.index)' class="purple-link">
+              <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+              <span class="ml-1 cancel text-danger">Cancel</span>
+            </a>
+          </td>
+      </tr>       
+      </tbody>
+    </table>
   </div>
-
-  <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'transfers'">
-    <div class="col" *ngIf="!showMoreDetails">
-      <span class="align-middle font-weight-bolder font-14">Transfers (11)</span>
-    </div>
-    <div class="col-md-2 col-xs" *ngIf="showMoreDetails">
-      <span class="align-middle font-weight-bolder font-14">Transfers (11)</span><br>
-      <span class="text-light font-10 font-weight-bolder">Most Recent Transfers</span>
-    </div>
-    <div class="col" *ngIf="showMoreDetails">
-      <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
-        All Completed Transfers
-      </a>
-    </div>
-  </div>
-
-  <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'networkHistory'">
-    <div class="col" *ngIf="!showMoreDetails">
-      <span class="align-middle font-weight-bolder font-14">Network History (6)</span>
-    </div>
-    <div class="col-md-2 col-xs" *ngIf="showMoreDetails">
-      <span class="align-middle font-weight-bolder font-14">Network History (6)</span><br>
-      <span class="text-light font-10 font-weight-bolder">Most Recent Network History</span>
-    </div>
-    <div class="col" *ngIf="showMoreDetails">
-      <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
-        Full Network History
-      </a>
-    </div>
-  </div>
-</div>
-
-<!-- ALL ORDERS -->
-<div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'allOrders'">
-  <table class="table mb-0">
-    <thead>
-    <tr class="font-weight-bolder font-10 text-light">
-      <th>Date</th>
-      <th>Type</th>
-      <th>Asset</th>
-      <!-- <th>Issuer</th> -->
-      <th>Amount</th>
-      <th>Filled</th>
-      <th>Price (XLM)</th>
-      <th>Total Price (XLM)</th>
-      <th>Price (USD)</th>      
-      <th>Total Price (USD)</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-
-    <tbody *ngIf="offers" class="font-8 text-light">
-      <tr *ngFor="let item of offers">    
-        <td>{{item.time}}</td>
-        <td>{{item.type}}</td>
-        
-        <td>{{item.asset}}</td>        
-        <td>{{item.amount}}</td>
-        <td>0%</td>
-        <td>{{item.xlmp}}</td>
-        <td>{{item.totalxlm}}</td>
-        <td>{{item.grxp}}</td>
-        <td>{{item.totalgrx}}</td>
-        <td>
-          <a href="javascript:void(0)" (click)='cancelOffer(item.cachedOffer, item.index)' class="purple-link">
-            <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
-            <span class="ml-1 cancel text-danger">Cancel</span>
+  
+  <!-- TRANSFERS -->
+  <div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'transfers'">
+    <table class="table mb-0">
+      <thead>
+      <tr class="font-weight-bolder font-10 text-light">
+        <th>Date</th>
+        <th>Counterparty</th>
+        <th>Asset</th>
+        <th>Issuer</th>
+        <th>Amount</th>
+        <th class="text-center">Info</th>
+      </tr>
+      </thead>
+      <tbody *ngIf="payments" class="font-8 text-light">
+        <tr *ngFor="let item of payments">
+            <td>{{item.time}}</td>
+            <td>{{item.counter}}</td>            
+            <td>{{item.asset}}</td>        
+            <td>{{item.issuer}}</td>            
+            <td>{{item.amount}}</td>            
+            <td class="text-center">
+                <a href="{{item.url}}" target="_blank">
+                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                </a>
+              </td>
+        </tr>
+      
+      <!-- <tr>
+        <td>23/08/2019 05:27</td>
+        <td class="purple-link">GBMF3W...JGX4OG</td>
+        <td class="">GRAYLL</td>
+        <td class="">grayll.io</td>
+        <td class="purple-link">
+          +29,999,999,999,999.22222
+        </td>
+        <td class="text-center">
+          <a href="https://stellar.expert/explorer/public" target="_blank">
+            <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
           </a>
         </td>
-    </tr>  
-    <!-- <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>
-        <a href="javascript:void(0)" class="purple-link">
-          <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
-          <span class="ml-1 cancel text-danger">Cancel</span>
-        </a>
-      </td>
-    </tr> -->
-    </tbody>
-  </table>
-</div>
-
-<!-- TRANSFERS -->
-<div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'transfers'">
-  <table class="table mb-0">
-    <thead>
-    <tr class="font-weight-bolder font-10 text-light">
-      <th>Date</th>
-      <th>Counterparty</th>
-      <th>Asset</th>
-      <th>Issuer</th>
-      <th>Amount</th>
-      <th class="text-center">Info</th>
-    </tr>
-    </thead>
-    <tbody  *ngIf="payments"  class="font-8 text-light">
-    <tr>
-      <td>05/08/2019 18:29</td>
-      <td class="purple-link">GBMF3W...JGX4OG</td>
-      <td class="">XLM</td>
-      <td class="">Stellar</td>
-      <td class="purple-link">
-        -29,999,999,999,999.22222
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <!-- <tbody class="font-8 text-light">
-    <tr>
-      <td>05/08/2019 18:29</td>
-      <td class="purple-link">GBMF3W...JGX4OG</td>
-      <td class="">XLM</td>
-      <td class="">Stellar</td>
-      <td class="purple-link">
-        -29,999,999,999,999.22222
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr> -->
-    <tr>
-      <td>23/08/2019 05:27</td>
-      <td class="purple-link">GBMF3W...JGX4OG</td>
-      <td class="">GRAYLL</td>
-      <td class="">grayll.io</td>
-      <td class="purple-link">
-        +29,999,999,999,999.22222
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>05/08/2019 18:29</td>
-      <td class="purple-link">GBMF3W...JGX4OG</td>
-      <td class="">XLM</td>
-      <td class="">Stellar</td>
-      <td class="purple-link">
-        -29,999,999,999,999.22222
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>23/08/2019 05:27</td>
-      <td class="purple-link">GBMF3W...JGX4OG</td>
-      <td class="">GRAYLL</td>
-      <td class="">grayll.io</td>
-      <td class="purple-link">
-        +29,999,999,999,999.22222
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>05/08/2019 18:29</td>
-      <td class="purple-link">GBMF3W...JGX4OG</td>
-      <td class="">XLM</td>
-      <td class="">Stellar</td>
-      <td class="purple-link">
-        -29,999,999,999,999.22222
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>23/08/2019 05:27</td>
-      <td class="purple-link">GBMF3W...JGX4OG</td>
-      <td class="">GRAYLL</td>
-      <td class="">grayll.io</td>
-      <td class="purple-link">
-        +29,999,999,999,999.22222
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- NETWORK HITORY -->
-<div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'networkHistory'">
-  <table class="table mb-0">
-    <thead>
-    <tr class="font-weight-bolder font-10 text-light">
-      <th>Date</th>
-      <th>Operation</th>
-      <th>ID</th>
-      <th>Amount</th>
-      <th>Asset</th>
-      <th>Account</th>
-      <th class="text-center">Info</th>
-    </tr>
-    </thead>
-
-    <tbody class="font-8 text-light">
-    <tr>
-      <td>05/08/2019 20:01</td>
-      <td>Credited</td>
-      <td>0108181408618385411</td>
-      <td class="text-purple">+15.6850428</td>
-      <td class="">XLM</td>
-      <td class="">...</td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>25/07/2019 13:29</td>
-      <td>Trustline Created</td>
-      <td>0107404015242878977</td>
-      <td class="">...</td>
-      <td class="">GRX</td>
-      <td class="">
-        GAQQZM...ODH333
-        <fa-icon (click)="copySuccess('GAQQZM...ODH333')" [icon]="faCopy"></fa-icon>
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>05/08/2019 20:01</td>
-      <td>Credited</td>
-      <td>0108181408618385411</td>
-      <td class="text-purple">+15.6850428</td>
-      <td class="">XLM</td>
-      <td class="">...</td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>25/07/2019 13:29</td>
-      <td>Trustline Created</td>
-      <td>0107404015242878977</td>
-      <td class="">...</td>
-      <td class="">GRX</td>
-      <td class="">
-        GAQQZM...ODH333
-        <fa-icon (click)="copySuccess('GAQQZM...ODH333')" [icon]="faCopy"></fa-icon>
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>05/08/2019 20:01</td>
-      <td>Credited</td>
-      <td>0108181408618385411</td>
-      <td class="text-purple">+15.6850428</td>
-      <td class="">XLM</td>
-      <td class="">...</td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td>25/07/2019 13:29</td>
-      <td>Trustline Created</td>
-      <td>0107404015242878977</td>
-      <td class="">...</td>
-      <td class="">GRX</td>
-      <td class="">
-        GAQQZM...ODH333
-        <fa-icon (click)="copySuccess('GAQQZMODH333')" [icon]="faCopy"></fa-icon>
-      </td>
-      <td class="text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
-          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-        </a>
-      </td>
-    </tr>
-
-    </tbody>
-  </table>
-</div>
-
-<div class="row m-0 justify-content-center align-items-center p-2 bg-gradient text-light" *ngIf="selectedTab.id === 'allOrders'">
-  <div class="col-md-2 col-xs pl-0">
-    <span class="align-middle font-14 font-weight-bolder">Completed Orders (10)</span><br>
-    <span class="text-light font-10 font-weight-bolder">Most Recent Completed Orders</span>
+      </tr> -->
+      </tbody>
+    </table>
   </div>
-  <div class="col">
-    <a href="javascript:void(0)" class="purple-link font-14">
-      All Completed Orders
-    </a>
+  
+  <!-- NETWORK HITORY -->
+  <div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'networkHistory'">
+    <table class="table mb-0">
+      <thead>
+      <tr class="font-weight-bolder font-10 text-light">
+        <th>Date</th>
+        <th>Operation</th>
+        <th>ID</th>
+        <th>Amount</th>
+        <th>Asset</th>
+        <th>Account</th>
+        <th class="text-center">Info</th>
+      </tr>
+      </thead>
+  
+      <tbody *ngIf="operations" class="font-8 text-light">
+        <tr *ngFor="let item of operations">    
+          <td>{{item.time}}</td>
+          <td>{{item.op}}</td>
+          <td>{{item.id}}</td>
+          <td>{{item.amount}}</td>
+          <td>{{item.asset}}</td>   
+          <td>{{item.account}}</td>
+          <td class="text-center">
+              <a href="{{item.url}}" target="_blank">
+                <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+              </a>
+            </td>
+        </tr>    
+      </tbody>
+    </table>
   </div>
-</div>
-
-<div class="table-responsive bg-gradient text-light" *ngIf="selectedTab.id === 'allOrders'">
-  <table class="table mb-0">
-    <thead>
-    <tr class="font-weight-bolder text-light font-10">
-      <th>Date</th>
-      <th>Type</th>
-      <th>Asset</th>
-      <th>Issuer</th>
-      <th>Amount</th>
-      <th>Filled</th>
-      <th>Price (XLM)</th>
-      <th>Price (USD)</th>
-      <th>Total Price (XLM)</th>
-      <th>Total Price (USD)</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-
-    <tbody class="font-8 text-light">
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>29,999,999,999,999.22222</td>
-      <td>100%</td>
-      <td>9999.44444</td>
-      <td>9999.44444</td>
-      <td>29,999,999,999,999.22222</td>
-      <td>29,999,999,999,999.22222</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-
-    <tr>
-      <td>18/08/2019 04:14</td>
-      <td>BUY</td>
-      <td>GRAYLL</td>
-      <td>grayll.io</td>
-      <td>1.00000</td>
-      <td>0%</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td>0.14500</td>
-      <td><a href="javascript:void(0)" class="purple-link">Details</a></td>
-    </tr>
-    </tbody>
-  </table>
-</div>
+  
+  <div class="row m-0 justify-content-center align-items-center p-2 bg-gradient text-light" *ngIf="selectedTab.id === 'allOrders'">
+    <div class="col-md-2 col-xs pl-0">
+      <span *ngIf="trades" class="align-middle font-14 font-weight-bolder">Completed Orders ({{trades.length}})</span><br>
+      <span *ngIf="!trades" class="align-middle font-14 font-weight-bolder">Completed Orders (0)</span><br>
+      <span class="text-light font-10 font-weight-bolder">Most Recent Completed Orders</span>
+    </div>
+    <div class="col">
+      <a href="javascript:void(0)" class="purple-link font-14">
+        All Completed Orders
+      </a>
+    </div>
+  </div>
+  
+  <div class="table-responsive bg-gradient text-light" *ngIf="selectedTab.id === 'allOrders'">
+    <table class="table mb-0">
+      <thead>
+        <tr class="font-weight-bolder font-10 text-light">
+          <th>Date</th>
+          <th>Type</th>
+          <th>Asset</th>       
+          <th>Amount</th>
+          <!-- <th>Filled</th> -->
+          <th>Price (XLM)</th>
+          <th>Total Price (XLM)</th>
+          <th>Price (USD)</th>      
+          <th>Total Price (USD)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+    
+      <tbody *ngIf="trades" class="font-8 text-light">
+        <tr *ngFor="let item of trades">    
+          <td>{{item.time}}</td>
+          <td>{{item.type}}</td>
+          
+          <td>{{item.asset}}</td>        
+          <td>{{item.amount}}</td>
+          <!-- <td>0%</td> -->
+          <td>{{item.xlmp}}</td>
+          <td>{{item.totalxlm}}</td>
+          <td>{{item.grxp}}</td>
+          <td>{{item.totalusd}}</td>
+          <td><a href="{{item.url}}" target="_blank" class="purple-link">Details</a></td>
+        </tr>    
+      </tbody>
+    </table>
+  </div>

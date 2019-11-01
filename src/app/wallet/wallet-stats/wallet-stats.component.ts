@@ -93,10 +93,10 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.totalXLM = res.xlm;
     this.totalGRX = res.grx;
     this.xlmBalance =  this.totalXLM*this.xlmP
-    this.grxBalance = this.totalGRX*this.grxP    
+    this.grxBalance = this.totalGRX*this.grxP*this.xlmP    
     this.walletBalance = this.xlmBalance + this.grxBalance
     this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
-    this.GRXValue = '' + Math.round(this.totalGRX*this.grxP*100/this.walletBalance)
+    this.GRXValue = '' + Math.round(this.grxBalance*100/this.walletBalance)
     this.XLMValue = '' + (100 - +this.GRXValue)
     this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
     this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
@@ -161,6 +161,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           let grxOfPrice = +this.grxPrice/this.xlmP
           this.stellarService.sellOrder(this.stellarService.SecretBytesToString(this.SecKey), grxOfPrice.toString(), this.grxAmount).then( res => {
             console.log(res)
+            let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
+              this.grxP, this.xlmP, this.stellarService.allOffers.length)
+              this.stellarService.allOffers.push(of)
             this.snotifyService.simple('Sell order submitted successfully.'); 
           }).catch(e => {
             console.log(e)

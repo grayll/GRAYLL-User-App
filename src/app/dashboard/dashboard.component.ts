@@ -38,31 +38,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.changeBackgroundColor(true);
     if (!this.authService.isActivated()){
       this.showActivationPopup();
-    } else {
-      console.log("acc is activated", this.authService.userData)
-      this.requestSubNotifications()
-      this.swPush.notificationClicks.subscribe( noticeData =>
-        {
-          console.log('Notification data.url: ' + noticeData.notification.data.url);
-          //this.router.navigateByUrl(noticeData.notification.data.url)
-          window.open(noticeData.notification.data.url, '_blank');
-       });
-
-    //    const notificationPayload = {
-    //     "notification": {
-    //        "title": "Web FTW",
-    //        "body": "Master the Web With Dr. K!",
-    //        "icon": "assets/main-page-logo-small-hat.png",
-    //        "vibrate": [100, 50, 100],
-    //        "data": {
-    //           "url": "https://medium.com/@waelkdouh"
-    //        },
-    //       "actions": [{
-    //           "action": "explore",
-    //           "title": "May the Force be with you"
-    //      }]
-    //    }
-    //  };
+    } else {      
+      if (this.swPush.isEnabled && !this.authService.userData.Setting.AppWallet){
+        this.requestSubNotifications()
+      }      
     }    
   }
 
@@ -89,14 +68,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         serverPublicKey: VAPID_PUBLIC_KEY
     }).then(sub => { 
       //https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription/getKey
-      let p256dh = sub.getKey('p256dh');
-      let auth = sub.getKey('auth');
-      console.log('sub:',sub)
+      // let p256dh = sub.getKey('p256dh');
+      // let auth = sub.getKey('auth');
+      // console.log('sub:',sub)
 
-      console.log("p256dh-applicationServerKey:", p256dh)
-      console.log("auth-applicationServerKey:", auth)
+      // console.log("p256dh-applicationServerKey:", p256dh)
+      // console.log("auth-applicationServerKey:", auth)
 
-      let subs = { endpoint: sub.endpoint, keys:{p256dh: this.ToBase64(p256dh), auth: this.ToBase64(auth)}}
+      // let subs = { endpoint: sub.endpoint, keys:{p256dh: this.ToBase64(p256dh), auth: this.ToBase64(auth)}}
       
       axios.post(`${environment.api_url}api/v1/users/savesubcriber`, sub,
       { headers: { Authorization: 'Bearer ' + this.authService.userData.token}}).then(res => {

@@ -20,7 +20,7 @@ export class WalletComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     private snotifyService: SnotifyService,
   ) {
-   
+   console.log('getIsLoanPaid:', this.sharedService.getIsLoanPaid())
     Promise.all([
       this.stellarService.getCurrentGrxPrice1(),
       this.stellarService.getCurrentXlmPrice1(),

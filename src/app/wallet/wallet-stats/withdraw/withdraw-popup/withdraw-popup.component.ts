@@ -114,6 +114,7 @@ export class WithdrawPopupComponent implements OnInit {
         this.withdrawModel.memoMessage = this.memoMessage;
         this.withdrawModel.phoneNumber = this.phoneNumber;
         this.withdrawModel.xlmAmount = +this.XLMValue;
+        this.authService.userData.withdraw = true
         this.popupService.close()
         .then(() => {
           setTimeout(() => {

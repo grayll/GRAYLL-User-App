@@ -5,28 +5,28 @@
   <div class="col-11">
     <div class="row mt-1">
       <div class="col">
-        <h6 class="font-weight-bolder">{{notification.subject}}</h6>
+        <h6 class="font-weight-bolder">{{notification.title}}</h6>
       </div>
       <div class="col text-right font-12">
-        {{notification.datetime | date: 'HH:MM | dd/MM/yyyy'}}
+        {{notification.time}}
       </div>
     </div>
     <div class="row">
       <div class="col">
         <div class="row">
           <div class="col-10">
-            Notification Subject
+            {{notification.title}}
           </div>
           <div class="col text-right hover" (click)="expandNotification()">
             <fa-icon [attr.aria-expanded]="!isContentCollapsed" aria-controls="collapsedContent" [icon]="faExpand"></fa-icon>
           </div>
         </div>
         <div id="collapsedContent" [ngbCollapse]="isContentCollapsed">
-          Notification Content
+          {{notification.body}}
         </div>
         <p class="font-12 mb-0">
-          <a href="javascript:void(0)" class="white-link" (click)="goTo('/system/activity')">
-            Transaction ID | {{notification.transactionId}}
+          <a href="{{notification.url}}" class="white-link">
+            Transaction ID | {{notification.txId}}
           </a>
         </p>
       </div>

@@ -23,6 +23,35 @@ export class AuthService {
   seedData: any
   //user: AngularFirestoreDocument<User>;
 
+  get UserData():any {
+    if (!this.userData){
+      this.GetLocalUserData()
+    }
+    return this.userData
+  }
+  // set UserData(userData:any){
+  //   this.userData = userData
+  //   this.SetLocalUserData()
+  // }
+
+  GetLocalUserData():any {    
+    if (!this.userData){
+      let data = localStorage.getItem('user');
+      this.userData = JSON.parse(data);  
+      //console.log('get from localstorage:', this.userData)  
+    } else {
+      //console.log('get from userData:', this.userData)  
+      return this.userData
+    }   
+    return this.userData
+  }
+  
+  SetLocalUserData(){
+    if (this.userData){
+      localStorage.setItem('user', JSON.stringify(this.userData));       
+    }    
+  }
+
   getTfa(){
     return this.tfa$.value
   }
@@ -99,37 +128,16 @@ export class AuthService {
       }
     }) 
   }
-  
-  SignIn(email, password) {
-    return this.firebaseAuth.auth.signInWithEmailAndPassword(email, password)
-      // .then((result) => {
-      //   this.ngZone.run(() => {
-      //     this.router.navigate(['dashboard']);
-      //   });
-      //   this.SetUserData(result.user);
-      // }).catch((error) => {
-      //   window.alert(error.message)
-      // })
-  }
-  
-  SignUp(email, password) {    
-    return this.firebaseAuth.auth.createUserWithEmailAndPassword(email, password)
-  }
-  
-  SendVerificationMail() {
-    return this.firebaseAuth.auth.currentUser.sendEmailVerification()    
-  }
 
-  // Reset Forggot password
-  ForgotPassword(passwordResetEmail) {
-    return this.firebaseAuth.auth.sendPasswordResetEmail(passwordResetEmail)
-    .then(() => {
-      //window.alert('Password reset email sent, check your inbox.');
-    }).catch((error) => {
-      console.log('ForgotPassword error:' + error.message)
-    })
+  isTfaEnable(){
+    console.log(this.userData)
+    if (this.userData.Tfa && this.userData.Tfa.Enable 
+      && this.userData.Tfa.Enable === true){
+      return true
+    }
+    return false
   }
-
+  
   // Returns true when user is looged in and email is verified
   get isLoggedIn(): boolean {    
     //console.log('localStorage.getItem()-', localStorage.getItem('user'))     
@@ -139,43 +147,6 @@ export class AuthService {
       return true
     }
     return false;
-  }
-
-  // Sign in with Google
-  GoogleAuth() {
-    return this.AuthLogin(new auth.GoogleAuthProvider());
-  }
-
-  // Auth logic to run auth providers
-  AuthLogin(provider) {
-    return this.firebaseAuth.auth.signInWithPopup(provider)
-    .then((result) => {
-       this.ngZone.run(() => {
-          this.router.navigate(['dashboard']);
-        })
-      this.SetUserData(result.user);
-    }).catch((error) => {
-      window.alert(error)
-    })
-  }
-
-  GetLocalUserData():any{
-    
-    if (!this.userData){
-      let data = localStorage.getItem('user');
-      this.userData = JSON.parse(data);  
-      console.log('get from localstorage')  
-    } else {
-      console.log('get from userData')  
-      return this.userData
-    }
-   
-    return this.userData
-  }
-  SetLocalUserData(){
-    if (this.userData){
-      localStorage.setItem('user', JSON.stringify(this.userData));       
-    }    
   }
 
   SetSeedData(data:any){

@@ -19,15 +19,25 @@ export class AlgoNotificationModel {
     public datetime?: any
   ) {}
 }
+export class NoticeModel {
+  constructor(
+    public id?: number,
+    public title?: string,
+    public body?: string,
+    public txId?: number,
+    public isRead?: boolean,
+    public time?: any
+  ) {}
+}
 
 export class WalletNotificationModel {
   constructor(
     public id?: number,
-    public subject?: string,
-    public content?: string,
-    public transactionId?: number,
+    public title?: string,
+    public body?: string,
+    public txId?: number,
     public isRead?: boolean,
-    public datetime?: any
+    public time?: any
   ) {}
 }
 

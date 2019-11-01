@@ -29,7 +29,7 @@ export class XlmLoanPopupComponent implements OnInit {
   success: boolean;
   didShowErrorOnce: boolean;
   password: string;
-
+  isHashCached:boolean
   private user: UserModel;
 
   constructor(
@@ -56,23 +56,26 @@ export class XlmLoanPopupComponent implements OnInit {
 
   ngOnInit() {
     this.popupService.open(this.modal);
+    if (this.authService.hash){
+      this.isHashCached = true
+      this.password = this.authService.hash
+    }
   }
 
-  payOffLoan() {
-    //if (this.didShowErrorOnce) {
+  payOffLoan() { 
       
-      console.log(this.authService.userData.EnSecretKey)
-      console.log(this.authService.userData.SecretKeySalt)
+      if (!this.authService.userData){
+        this.authService.GetLocalUserData()
+      }
+      
       this.stellarService.decryptSecretKey(this.password, 
         {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
       SecKey => {
         if (SecKey != 'Decryption failed!'){  
-          console.log(environment.xlmLoanerAddress)  
-          // let ledger = this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), environment.xlmLoanerAddress, 
-          // this.XLMLoanValue.toString(), this.stellarService.nativeAsset, '')
-          
+                              
           this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), environment.xlmLoanerAddress, 
-            this.XLMLoanValue.toString(), this.stellarService.nativeAsset, '').then( ledger => {
+            this.XLMLoanValue.toString(), this.stellarService.nativeAsset, '')
+            .then( ledger => {
               if (ledger <= 0){
                 this.errorService.handleError(null, 'Can not payoff Loan now. Please try again later.')
               }
@@ -98,8 +101,11 @@ export class XlmLoanPopupComponent implements OnInit {
                 //https://horizon-testnet.stellar.org/payments?cursor=4607284432871424
             }).catch( e => {
               this.errorService.handleError(null, 'Can not execute XLM pay-off loaner now. Please try again later.')
+              console.log(e)
               this.error = true;
             })
+        } else {
+          this.errorService.handleError(null, 'Can not execute XLM pay-off loaner now. Please try again later.')
         }
       })  
   }

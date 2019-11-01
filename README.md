@@ -25,6 +25,25 @@ When build with command `ng build --prod`, there is an unspecific error.
 `ng build --prod --configuration production --aot=false --build-optimizer=false`
 `http-server -p 8081 -c-1 dist/code`
 
+## Push notice
+
+https://stackoverflow.com/questions/54138763/open-pwa-when-clicking-on-push-notification-handled-by-service-worker-ng7-andr
+https://stackoverflow.com/questions/55178915/will-angular-swpush-web-push-work-when-the-browser-is-closed
+
+In angular 7 (specifically referring to "@angular/service-worker" v~7.2.0), after you build your app with ng build --prod, examine your /dist folder and look for the file ngsw-worker.js. Open it in an editor.
+
+On line 1885, you will find:
+
+this.scope.addEventListener('notificationclick', (event) => this.onClick(event));
+Change it to:
+
+this.scope.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    if (clients.openWindow && event.notification.data.url) {
+        event.waitUntil(clients.openWindow(event.notification.data.url));
+    }
+});
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).

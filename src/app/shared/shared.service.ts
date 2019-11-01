@@ -28,15 +28,17 @@ export class SharedService {
   }
 
   public setIsLoan(value: boolean) {
-    this.authService.userData.IsLoan = value;
+    this.authService.userData.LoanPaid = true;
+    this.authService.SetLocalUserData()
   }
 
-  public getIsLoanPaid() {    
-    if (this.authService.userData.IsLoan != null && this.authService.userData.IsLoan === false){  
-      //console.log('this.authService.userData.IsLoan 1:', this.authService.userData.IsLoan)    
-      return true
+  public getIsLoanPaid() { 
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
     }
-    //console.log('this.authService.userData.IsLoan:2', this.authService.userData.IsLoan)
+    if (this.authService.userData.LoanPaid){      
+      return true
+    }    
     return false;
   }
 

@@ -5,6 +5,10 @@ import {NotificationsService} from './notifications.service';
 import {NgbCarousel} from '@ng-bootstrap/ng-bootstrap';
 import {disableBodyScroll, enableBodyScroll} from 'body-scroll-lock';
 import {SharedService} from '../shared/shared.service';
+import {AuthService} from 'src/app/shared/services/auth.service';
+import axios from 'axios';
+import {environment} from 'src/environments/environment'
+import * as moment from 'moment'
 
 @Component({
   selector: 'app-notifications',
@@ -22,8 +26,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   algoNotifications: AlgoNotificationModel[] = [];
   algoNotificationsToShow: AlgoNotificationModel[] = [];
-  walletNotifications: WalletNotificationModel[] = [];
-  walletNotificationsToShow: WalletNotificationModel[] = [];
+  walletNotifications: any[] = [];
+  walletNotificationsToShow: any[] = [];
   systemNotifications: GeneralNotificationModel[] = [];
   systemNotificationsToShow: GeneralNotificationModel[] = [];
 
@@ -31,6 +35,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private algoNotificationsMobileScrollContainer: Element;
   private generalNotificationsMobileScrollContainer: Element;
 
+  readNoticeIds: string[] = []
   // Font Awesome Icons
   faWarning = faExclamationTriangle;
   faBell = faBell;
@@ -38,9 +43,32 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   constructor(
     public notificationsService: NotificationsService,
-    public sharedService: SharedService
+    public sharedService: SharedService,
+    private authService:AuthService,
   ) {
+    // Get notices from serve
     this.populateNotifications();
+
+    axios.post(`${environment.api_url}api/v1/users/notices`, {},
+    { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
+    }).then(res => {
+      console.log(res)
+      let url = 'https://stellar.expert/explorer/public/'
+      if (environment.horizon_url.includes('testnet')){
+        url = 'https://stellar.expert/explorer/testnet/'
+      }
+      url = url + 'search?term='
+      this.walletNotificationsToShow = res.data.notices.map(item => {
+        let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
+        item.time = time
+        item.url = url + item.txId 
+        return item
+      })
+      this.walletNotifications = this.walletNotificationsToShow
+
+    }).catch(e => {
+      console.log(e)
+    })
     this.populateNumberOfUnreadNotifications();
   }
 
@@ -50,7 +78,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.loadMobileNotificationContainers();
     }, 100);
   }
-
+  
   private changeBackgroundColor(addClass: boolean) {
     const body = document.getElementsByTagName('body')[0];
     addClass ? body.classList.add('dark-navy-background') : body.classList.remove('dark-navy-background');
@@ -72,6 +100,19 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     enableBodyScroll(this.algoNotificationsMobileScrollContainer);
     enableBodyScroll(this.walletNotificationsMobileScrollContainer);
     enableBodyScroll(this.generalNotificationsMobileScrollContainer);
+
+    // Send read ids to server
+    axios.post(`${environment.api_url}api/v1/users/updateReadNotices`, {ids:this.readNoticeIds},
+    { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
+    }).then(res => {
+      if (res.data.errCode == environment.SUCCESS){
+        this.readNoticeIds = []
+        console.log("Updated read notice ids")
+      }
+      console.log(res)
+    }).catch(e => {
+      console.log(e)
+    })
   }
 
   private populateNotifications() {
@@ -126,57 +167,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       )
   ];
     this.algoNotificationsToShow = this.algoNotifications;
-    this.walletNotifications = [
-      new WalletNotificationModel(
-        3,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        false,
-        Date.now()
-      ),
-      new WalletNotificationModel(
-        4,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        true,
-        Date.now()
-      ),
-      new WalletNotificationModel(
-        13,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        false,
-        Date.now()
-      ),
-      new WalletNotificationModel(
-        14,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        false,
-        Date.now()
-      ),
-      new WalletNotificationModel(
-        16,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        false,
-        Date.now()
-      ),
-      new WalletNotificationModel(
-        9,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        true,
-        Date.now()
-      )
-    ];
-    this.walletNotificationsToShow = this.walletNotifications;
+    
     this.systemNotifications = [
       new GeneralNotificationModel(
         5,
@@ -270,9 +261,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  markWalletNotificationAsRead(notification: WalletNotificationModel) {
+  markWalletNotificationAsRead(notification: any) {
     if (!notification.isRead) {
       notification.isRead = true;
+
+      // Save notice marked as read to list and update when component destroy
+      this.readNoticeIds.push(notification.id)
+
       this.notificationsService.decreaseNumberOfAllUnreadNotifications();
       this.notificationsService.decreaseNumberOfUnreadWalletNotifications();
     }

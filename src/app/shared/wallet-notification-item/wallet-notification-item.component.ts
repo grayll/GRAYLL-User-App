@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {faChevronCircleUp, faPlusCircle} from '@fortawesome/free-solid-svg-icons';
 import {Router} from '@angular/router';
 import {WalletNotificationModel} from '../../notifications/notification.model';
-
+import * as moment from 'moment';
 @Component({
   selector: 'app-wallet-notification-item',
   templateUrl: './wallet-notification-item.component.html',
@@ -10,10 +10,10 @@ import {WalletNotificationModel} from '../../notifications/notification.model';
 })
 export class WalletNotificationItemComponent implements OnInit {
 
-  @Input() notification: WalletNotificationModel;
+  @Input() notification: any;
   @Input() isInPopup: boolean;
   @Output() routeTo = new EventEmitter<string>();
-  @Output() markAsRead = new EventEmitter<WalletNotificationModel>();
+  @Output() markAsRead = new EventEmitter<any>();
   isContentCollapsed = true;
   isMarkedAsRead = false;
 
