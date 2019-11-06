@@ -15,7 +15,7 @@
             <span class="d-inline d-md-none mr-2">Algo System</span>
             <fa-icon [icon]="faChartLine" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
-              {{notificationsService.getNumberOfUnreadGrayllSystemNotifications()}}
+              {{algoNotices}}
             </span>
           </a>
         </li>
@@ -24,7 +24,9 @@
           <a href="javascript:void(0)" class="nav-link" routerLink="/wallet/overview" alt="WALLET">
             <span class="d-inline d-md-none mr-2">Wallet</span>
             <fa-icon [icon]="faWallet" size="lg"></fa-icon>
-            <span class="badge bg-yellow text-light badge-number">5</span>
+            <span class="badge bg-yellow text-light badge-number">
+              {{walletNotices}}
+            </span>
           </a>
         </li>
         <li class="nav-item" data-toggle="tooltip" routerLink="/data/overview"
@@ -40,7 +42,7 @@
             <span class="d-inline d-md-none mr-2">Notifications</span>
             <fa-icon [icon]="faBell" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
-              {{notificationsService.getNumberOfAllUnreadNotifications()}}
+              {{algoNotices + walletNotices + generalNotices}}
             </span>
           </a>
         </li>
@@ -51,9 +53,9 @@
             <fa-icon [icon]="faUser" size="lg"></fa-icon>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" title="SIGN OUT">
+        <li class="nav-item" data-toggle="tooltip" title="SIGN OUT" routerLink="/">
             <!-- (click)="isNavbarCollapsed = !isNavbarCollapsed"> --> 
-            <a (click)="signOut()" href="javascript:void(0)"  class="nav-link">
+            <a (click)="signOut()" href="javascript:void(0)"  class="nav-link" alt="SIGN OUT">
               <span class="d-inline d-md-none mr-2">Sign Out</span>
               <fa-icon [icon]="faPowerOff" size="lg"></fa-icon>
             </a>

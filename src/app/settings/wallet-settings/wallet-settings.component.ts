@@ -30,7 +30,7 @@ export class WalletSettingsComponent implements OnInit, OnDestroy {
     if (this.authService.userData.PublicKey){
       this.stellarAddress = this.authService.userData.PublicKey;
     }
-    this.secretKey = 'GBMF3WYPDWQFOXVL2CO6NQPGQZJWLLKSGVTGGV7QPKCZCIQ3PZJGX4OG';
+    this.secretKey = '';
 
     this.subscriptions.sink = this.settingsService.observeFederationAddress().subscribe(
       fed => {
@@ -66,9 +66,10 @@ export class WalletSettingsComponent implements OnInit, OnDestroy {
   
   observeRevealSecretKey() {
     this.subscriptions.sink = this.settingsService.observeConfirmAuthority()
-    .subscribe((confirm) => {
+    .subscribe((secretKey) => {
       // Not a secure solution. Please make a request to backend to get the code
-      this.isSecretKeyRevealed = confirm;
+      this.isSecretKeyRevealed = true;
+      this.secretKey = secretKey
     });
   }
 

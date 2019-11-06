@@ -23,12 +23,12 @@ export class AuthService {
   seedData: any
   //user: AngularFirestoreDocument<User>;
 
-  get UserData():any {
-    if (!this.userData){
-      this.GetLocalUserData()
-    }
-    return this.userData
-  }
+  // get UserData():any {
+  //   if (!this.userData){
+  //     this.GetLocalUserData()
+  //   }
+  //   return this.userData
+  // }
   // set UserData(userData:any){
   //   this.userData = userData
   //   this.SetLocalUserData()

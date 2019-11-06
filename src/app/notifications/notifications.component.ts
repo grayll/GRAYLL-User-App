@@ -24,18 +24,20 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private isShowingAllWalletNotifications = true;
   private isShowingAllSystemNotifications = true;
 
-  algoNotifications: AlgoNotificationModel[] = [];
-  algoNotificationsToShow: AlgoNotificationModel[] = [];
+  algoNotifications: any[] = [];
+  algoNotificationsToShow: any[] = [];
   walletNotifications: any[] = [];
   walletNotificationsToShow: any[] = [];
-  systemNotifications: GeneralNotificationModel[] = [];
-  systemNotificationsToShow: GeneralNotificationModel[] = [];
+  systemNotifications: any[] = [];
+  systemNotificationsToShow: any[] = [];
 
   private walletNotificationsMobileScrollContainer: Element;
   private algoNotificationsMobileScrollContainer: Element;
   private generalNotificationsMobileScrollContainer: Element;
 
-  readNoticeIds: string[] = []
+  readWalletNoticeIds: string[] = []
+  readAlgoNoticeIds: string[] = []
+  readGeneralNoticeIds: string[] = []
   // Font Awesome Icons
   faWarning = faExclamationTriangle;
   faBell = faBell;
@@ -44,32 +46,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   constructor(
     public notificationsService: NotificationsService,
     public sharedService: SharedService,
-    private authService:AuthService,
+    private authService: AuthService,
   ) {
     // Get notices from serve
     this.populateNotifications();
-
-    axios.post(`${environment.api_url}api/v1/users/notices`, {},
-    { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
-    }).then(res => {
-      console.log(res)
-      let url = 'https://stellar.expert/explorer/public/'
-      if (environment.horizon_url.includes('testnet')){
-        url = 'https://stellar.expert/explorer/testnet/'
-      }
-      url = url + 'search?term='
-      this.walletNotificationsToShow = res.data.notices.map(item => {
-        let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
-        item.time = time
-        item.url = url + item.txId 
-        return item
-      })
-      this.walletNotifications = this.walletNotificationsToShow
-
-    }).catch(e => {
-      console.log(e)
-    })
-    this.populateNumberOfUnreadNotifications();
   }
 
   ngOnInit() {
@@ -102,117 +82,70 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     enableBodyScroll(this.generalNotificationsMobileScrollContainer);
 
     // Send read ids to server
-    axios.post(`${environment.api_url}api/v1/users/updateReadNotices`, {ids:this.readNoticeIds},
-    { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
-    }).then(res => {
-      if (res.data.errCode == environment.SUCCESS){
-        this.readNoticeIds = []
-        console.log("Updated read notice ids")
+    if (this.readWalletNoticeIds.length > 0 || this.readGeneralNoticeIds.length > 0 || this.readAlgoNoticeIds.length > 0){
+      axios.post(`${environment.api_url}api/v1/users/updateReadNotices`, 
+      {walletIds:this.readWalletNoticeIds, algoIds:this.readAlgoNoticeIds, generalIds:this.readGeneralNoticeIds},
+      { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
+      }).then(res => {
+        if (res.data.errCode == environment.SUCCESS){
+          this.readWalletNoticeIds = []
+          this.readAlgoNoticeIds = []
+          this.readGeneralNoticeIds = []
+          console.log("Updated read notice ids")
+        }
+        console.log(res)
+      }).catch(e => {
+        console.log(e)
+      })
+      if (!this.authService.userData){
+        this.authService.GetLocalUserData()
       }
-      console.log(res)
-    }).catch(e => {
-      console.log(e)
-    })
+      // this.authService.userData.UrWallet = this.notificationsService.getNumberOfUnreadWalletNotifications
+      // this.authService.userData.UrAlgo = this.notificationsService.getNumberOfUnreadAlgoNotifications
+      // this.authService.userData.UrGeneral = this.notificationsService.getNumberOfUnreadSystemNotifications
+      // this.authService.SetLocalUserData()      
+    }
   }
 
   private populateNotifications() {
-    this.algoNotifications = [
-      new AlgoNotificationModel(
-        1,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        true,
-        Date.now()
-      ),
-      new AlgoNotificationModel(
-        18,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        false,
-        Date.now()
-      ),
-      new AlgoNotificationModel(
-        2,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        false,
-        Date.now()
-      ),
-      new AlgoNotificationModel(
-        10,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        true,
-        Date.now()
-      ),
-      new AlgoNotificationModel(
-        11,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        false,
-        Date.now()
-      ),
-      new AlgoNotificationModel(
-        12,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        10108181408618385411,
-        true,
-        Date.now()
-      )
-  ];
-    this.algoNotificationsToShow = this.algoNotifications;
-    
-    this.systemNotifications = [
-      new GeneralNotificationModel(
-        5,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        false,
-        Date.now()
-      ),
-      new GeneralNotificationModel(
-        15,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        false,
-        Date.now()
-      ),
-      new GeneralNotificationModel(
-        17,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        false,
-        Date.now()
-      ),
-      new GeneralNotificationModel(
-        6,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        false,
-        Date.now()
-      ),
-      new GeneralNotificationModel(
-        7,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        true,
-        Date.now()
-      ),
-      new GeneralNotificationModel(
-        8,
-        'GRZ | Arkady',
-        '0.11% ROI Increase | 18.81% Total Position ROI',
-        false,
-        Date.now()
-      )
-    ];
-    this.systemNotificationsToShow = this.systemNotifications;
+    axios.post(`${environment.api_url}api/v1/users/notices`, {},
+    { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
+    }).then(res => {
+      console.log(res)
+      let url = 'https://stellar.expert/explorer/public/'
+      if (environment.horizon_url.includes('testnet')){
+        url = 'https://stellar.expert/explorer/testnet/'
+      }
+      url = url + 'search?term='
+      this.walletNotificationsToShow = res.data.notices.filter(item => item.type =='wallet').map(item => {
+        let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
+        item.time = time
+        item.url = url + item.txId 
+        return item
+      })
+      this.walletNotifications = this.walletNotificationsToShow
+
+      this.systemNotifications = res.data.notices.filter(item => item.type =='general').map(item => {
+        let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
+        item.time = time
+        //item.url = url + item.txId 
+        return item
+      })
+      this.systemNotificationsToShow = this.systemNotifications
+
+      this.algoNotifications = res.data.notices.filter(item => item.type =='algo').map(item => {
+        let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
+        item.time = time
+        item.url = url + item.txId 
+        return item
+      })
+      this.algoNotificationsToShow = this.algoNotifications
+
+      this.populateNumberOfUnreadNotifications();
+
+    }).catch(e => {
+      console.log(e)
+    })
   }
 
   populateNumberOfUnreadNotifications() {
@@ -258,6 +191,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       notification.isRead = true;
       this.notificationsService.decreaseNumberOfAllUnreadNotifications();
       this.notificationsService.decreaseNumberOfUnreadAlgoNotifications();
+      this.notificationsService.publicNumberNotices([0,-1,0])
     }
   }
 
@@ -266,18 +200,20 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       notification.isRead = true;
 
       // Save notice marked as read to list and update when component destroy
-      this.readNoticeIds.push(notification.id)
-
+      this.readWalletNoticeIds.push(notification.id)
       this.notificationsService.decreaseNumberOfAllUnreadNotifications();
       this.notificationsService.decreaseNumberOfUnreadWalletNotifications();
+      this.notificationsService.publicNumberNotices([-1,0,0])
     }
   }
 
-  markSystemNotificationAsRead(notification: GeneralNotificationModel) {
+  markSystemNotificationAsRead(notification: any) {
     if (!notification.isRead) {
       notification.isRead = true;
+      this.readGeneralNoticeIds.push(notification.id)
       this.notificationsService.decreaseNumberOfAllUnreadNotifications();
       this.notificationsService.decreaseNumberOfUnreadSystemNotifications();
+      this.notificationsService.publicNumberNotices([0,0,-1])
     }
   }
 

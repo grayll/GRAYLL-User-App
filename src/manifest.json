@@ -1,6 +1,6 @@
 {
-  "name": "GrayLL App",
-  "short_name": "GrayLL",
+  "name": "Grayll App",
+  "short_name": "GrayllApp",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",
@@ -47,5 +47,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]  
+  ]
 }

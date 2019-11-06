@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 
 import { AuthService } from '../shared/services/auth.service';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { Observer } from 'firebase';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +20,28 @@ export class NotificationsService {
   private numberOfUnreadGrayllSystemNotifications: number;
   private authService: AuthService;
 
+  private numberNotices: Subject<number[]>
+
   constructor() {
     this.resetNumberOfAllUnreadNotifications();
     this.resetNumberOfAllGrayllSystemNotifications();
     // this.numberOfUnreadAlgoNotifications = this.authService.userData.UrAlgo;
     // this.numberOfUnreadWalletNotifications= this.authService.userData.UrWallet;
     // this.numberOfUnreadSystemNotifications= this.authService.userData.UrGeneral;
+  }
+
+  subsNumberNotices():Observable<number[]> {
+    if (!this.numberNotices){
+      this.numberNotices = new Subject<number[]>()
+    }
+    return this.numberNotices.asObservable()
+  }
+
+  publicNumberNotices(ns: number[]){
+    if (!this.numberNotices){
+      this.numberNotices = new Subject<number[]>()
+    }
+    this.numberNotices.next(ns)
   }
 
   getNumberOfAllUnreadNotifications() {

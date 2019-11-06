@@ -15,6 +15,7 @@ import { StellarService } from '../services/stellar-service';
 import axios from 'axios';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
 import { environment } from '../../../environments/environment';
+import { NotificationsService } from 'src/app/notifications/notifications.service';
 var naclutil = require('tweetnacl-util');
 
 
@@ -41,6 +42,7 @@ export class LoginComponent {
     private errorService: ErrorService,
     private router: Router,
     public authService: AuthService, private recaptchaV3Service: ReCaptchaV3Service,
+    public notificationsService: NotificationsService,
     public http: HttpClient,
     private stellarService: StellarService,
     private spinnerService: NgxUiLoaderModule,
@@ -145,6 +147,10 @@ loginClicked() {
               this.authService.hash = this.loginForm.value['password'];
               this.authService.SetLocalUserData()
               console.log('userData:', this.authService.userData)
+
+              this.notificationsService.publicNumberNotices([this.authService.userData.UrWallet,
+                this.authService.userData.UrAlgo, this.authService.userData.UrGeneral])
+
               //this.spinnerService.stop()
               //store on local storage
               if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 

@@ -70,7 +70,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   ) {
     this.federationAddress = this.authService.userData.Federation;
     this.stellarAddress = this.authService.userData.PublicKey;
-    this.secretKey = 'GBMF3WYPDWQFOXVL2CO6NQPGQZJWLLKSGVTGGV7QPKCZCIQ3PZJGX4OG';
+    this.secretKey = '';
 
     // this.subs.add(this.stellarService.observeAccount().subscribe(account => {
     //   console.log('observeAccount:', account)
@@ -196,9 +196,10 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
   observeRevealSecretKey() {
     this.subs.add(this.settingsService.observeConfirmAuthority()
-    .subscribe((confirm) => {
-      // Not a secure solution. Please make a request to backend to get the code
-      this.isSecretKeyRevealed = confirm;
+    .subscribe((secretKey) => {     
+      this.isSecretKeyRevealed = true;
+      
+      this.secretKey = secretKey
     }));
   }
 

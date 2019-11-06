@@ -9,7 +9,7 @@ export class SettingsService {
   // Security
   private twoFAEnabled: Subject<boolean>;
   private multisignatureEnabled: Subject<boolean>;
-  private confirmAuthority: Subject<boolean>;
+  private confirmAuthority: Subject<string>;
 
   // Notifications
   private walletEmailNotificationsDisabled: Subject<void>;
@@ -36,16 +36,16 @@ export class SettingsService {
     this.federationAddress.next(fed)
   }
   
-  public observeConfirmAuthority(): Observable<boolean> {
+  public observeConfirmAuthority(): Observable<string> {
     if (!this.confirmAuthority) {
-      this.confirmAuthority = new Subject<boolean>();
+      this.confirmAuthority = new Subject<string>();
     }
     return this.confirmAuthority.asObservable();
   }
 
-  public sendConfirmAuthorityToObserver(confirm: boolean): void {
+  public sendConfirmAuthorityToObserver(confirm: string): void {
     if (!this.confirmAuthority) {
-      this.confirmAuthority = new Subject<boolean>();
+      this.confirmAuthority = new Subject<string>();
     }
     this.confirmAuthority.next(confirm);
   }

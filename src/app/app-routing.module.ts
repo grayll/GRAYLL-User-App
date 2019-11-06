@@ -43,12 +43,12 @@ const routes: Routes = [
     loadChildren: './settings/settings.module#SettingsModule',
     canActivate: [AuthGuard],
   },
-  // {
-  //   path: '',
-  //   redirectTo: '/login',
-  //   pathMatch: 'full',
-  //   canActivate: [AuthGuard],
-  // },
+  {
+    path: '',
+    redirectTo: '/login',
+    pathMatch: 'full',
+    canActivate: [AuthGuard],
+  },  
   {
     path: 'dashboard',
     redirectTo: '/dashboard/overview',

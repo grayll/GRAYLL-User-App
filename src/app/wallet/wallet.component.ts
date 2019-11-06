@@ -20,7 +20,10 @@ export class WalletComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     private snotifyService: SnotifyService,
   ) {
-   console.log('getIsLoanPaid:', this.sharedService.getIsLoanPaid())
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
+    }
+    console.log('getIsLoanPaid:', this.sharedService.getIsLoanPaid())
     Promise.all([
       this.stellarService.getCurrentGrxPrice1(),
       this.stellarService.getCurrentXlmPrice1(),
@@ -32,8 +35,7 @@ export class WalletComponent implements OnInit, OnDestroy {
       })
     ])
     .then(([ grx, xlm, account ]) => {
-      console.log(grx, xlm)
-      console.log('wallet.com acc: ', account)
+      console.log(grx, xlm)      
       this.stellarService.userAccount = account;
       this.stellarService.publishPrices([+grx,+xlm])
       //this.stellarService.publishAccount(account)

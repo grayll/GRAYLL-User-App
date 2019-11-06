@@ -29,8 +29,8 @@ export class AppComponent {
         const url = noticeData.notification.data.url
         // window.open(url, '_blank');
         // console.log('data.url: ' + url);
-        this.router.navigateByUrl(noticeData.notification.data.url)
-        //window.open(noticeData.notification.data.url, '_blank');
+        //this.router.navigate(noticeData.notification.data.url)
+        window.open(noticeData.notification.data.url, '_blank');
      });
   }
 }

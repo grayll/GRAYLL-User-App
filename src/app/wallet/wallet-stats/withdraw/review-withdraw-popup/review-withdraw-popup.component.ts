@@ -88,6 +88,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
         this.authService.userData.withdraw = false
       }).catch( err => {
         console.log(err)
+        this.error()
       })       
     } else {
       this.sendAsset(amount, asset, memo)
