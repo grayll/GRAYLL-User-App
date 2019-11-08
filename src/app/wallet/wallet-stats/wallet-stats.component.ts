@@ -37,7 +37,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   GRXUsdValue: string;
 
   grxP: number
-  xlmP: number
+  xlmP: number = 1
 
   // totalXLM: number;
   // totalGRX: number;

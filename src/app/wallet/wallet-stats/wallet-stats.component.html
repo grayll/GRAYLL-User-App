@@ -178,9 +178,9 @@
                   </div>
                 </div>
                 <div class="form-group float-right mb-0">
-                  <a class="mr-1 purple-link" href="javascript:void(0)">Ask</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)">Bid</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)">Last</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=askPrice">Ask</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=bidPrice">Bid</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=grxP">Last</a>
                 </div>
                 <div class="form-group">
                   <div class="input-group input-group-lg fixed-input-height">
@@ -199,7 +199,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                     </div>
-                    <input [value]="(+grxAmount)*(+grxPrice)/xlmP" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                    <input [value]="(+grxAmount)*(+grxPrice)" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                   </div>
                 </div>
                 <div class="form-group">
@@ -207,7 +207,7 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" [value]="(+grxAmount)*(+grxPrice)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="(+grxAmount)*(+grxPrice)*xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -237,9 +237,9 @@
                   </div>
                 </div>
                 <div class="form-group float-right mb-0">
-                  <a class="mr-1 purple-link" href="javascript:void(0)">Ask</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)">Bid</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)">Last</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=askPrice">Ask</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=bidPrice">Bid</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=grxP">Last</a>
                 </div>
                 <div class="form-group">
                   <div class="input-group input-group-lg fixed-input-height">
@@ -258,7 +258,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                     </div>
-                    <input type="text" [value]="(+grxAmount)*(+grxPrice)/xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                    <input type="text" [value]="(+grxAmount)*(+grxPrice)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                   </div>
                 </div>
                 <div class="form-group">
@@ -266,7 +266,7 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" [value]="(+grxAmount)*(+grxPrice)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="(+grxAmount)*(+grxPrice)*xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -459,9 +459,9 @@
                     </div>
                   </div>
                   <div class="form-group float-right mb-0">
-                    <a class="mr-1 purple-link" href="javascript:void(0)">Ask</a>
-                    <a class="mr-1 purple-link" href="javascript:void(0)">Bid</a>
-                    <a class="mr-1 purple-link" href="javascript:void(0)">Last</a>
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=askPrice">Ask</a>
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=bidPrice">Bid</a>
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=grxP">Last</a>
                   </div>
                   <div class="form-group">
                     <div class="input-group input-group-lg fixed-input-height">
@@ -480,7 +480,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                       </div>
-                      <input [value]="(+grxAmount)*(+grxPrice)/xlmP" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                      <input [value]="(+grxAmount)*(+grxPrice)" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                     </div>
                   </div>
                   <div class="form-group">
@@ -488,7 +488,7 @@
                       <div class="input-group-prepend">
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
-                      <input type="text" [value]="(+grxAmount)*(+grxPrice)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      <input type="text" [value]="(+grxAmount)*(+grxPrice)*xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">
@@ -518,9 +518,9 @@
                     </div>
                   </div>
                   <div class="form-group float-right mb-0">
-                    <a class="mr-1 purple-link" href="javascript:void(0)">Ask</a>
-                    <a class="mr-1 purple-link" href="javascript:void(0)">Bid</a>
-                    <a class="mr-1 purple-link" href="javascript:void(0)">Last</a>
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=askPrice">Ask</a>
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=bidPrice">Bid</a>
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=grxP">Last</a>
                   </div>
                   <div class="form-group">
                     <div class="input-group input-group-lg fixed-input-height">
@@ -539,7 +539,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                       </div>
-                      <input type="text" [value]="(+grxAmount)*(+grxPrice)/xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                      <input type="text" [value]="(+grxAmount)*(+grxPrice)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                     </div>
                   </div>
                   <div class="form-group">
@@ -547,7 +547,7 @@
                       <div class="input-group-prepend">
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
-                      <input type="text" [value]="(+grxAmount)*(+grxPrice)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      <input type="text" [value]="(+grxAmount)*(+grxPrice)*xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">
