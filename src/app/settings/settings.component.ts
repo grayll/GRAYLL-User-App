@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {faBell, faChartBar, faCommentAlt, faExclamationTriangle, faLock, faUser, faWallet} from '@fortawesome/free-solid-svg-icons';
 import {SharedService} from '../shared/shared.service';
+import {AuthService} from 'src/app/shared/services/auth.service';
 
 @Component({
   selector: 'app-settings',
@@ -49,11 +50,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
-    public sharedService: SharedService
+    public sharedService: SharedService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.changeBackgroundColor(true);
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
+    }
   }
 
   ngOnDestroy(): void {

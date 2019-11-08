@@ -57,6 +57,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.loadMobileNotificationContainers();
     }, 100);
+
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
+    }
   }
   
   private changeBackgroundColor(addClass: boolean) {

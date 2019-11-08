@@ -10,10 +10,10 @@ import {Router} from '@angular/router';
 })
 export class GeneralNotificationItemComponent implements OnInit {
 
-  @Input() notification: GeneralNotificationModel;
+  @Input() notification: any;
   @Input() isInPopup: boolean;
   @Output() routeTo = new EventEmitter<string>();
-  @Output() markAsRead = new EventEmitter<GeneralNotificationModel>();
+  @Output() markAsRead = new EventEmitter<any>();
   isContentCollapsed = true;
   isMarkedAsRead = false;
 

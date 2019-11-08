@@ -10,10 +10,10 @@ import {Router} from '@angular/router';
 })
 export class AlgoNotificationItemComponent implements OnInit {
 
-  @Input() notification: AlgoNotificationModel;
+  @Input() notification: any;
   @Input() isInPopup: boolean;
   @Output() routeTo = new EventEmitter<string>();
-  @Output() markAsRead = new EventEmitter<AlgoNotificationModel>();
+  @Output() markAsRead = new EventEmitter<any>();
   isContentCollapsed = true;
   isMarkedAsRead = false;
 

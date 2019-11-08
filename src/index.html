@@ -8,14 +8,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap" rel="stylesheet">
-<<<<<<< Updated upstream
-  <link rel="canonical" href="https://app.grayll.io/" />
-  <script>
-    if (location.hostname.indexOf('grayll.io') === -1) {
-      location.href = "https://app.grayll.io/login";
-    }
-  </script>
-=======
 
   <link rel="icon" type="image/png" href="assets/icons/favicon.ico" />
   <link rel="canonical" href="https://app.grayll.io/" />
@@ -70,7 +62,7 @@
       bottom: 0;
     }
   </style>  
->>>>>>> Stashed changes
+
 </head>
 <body> 
   <app-root></app-root>
@@ -86,29 +78,24 @@
   </div> -->
       
   <script type="text/javascript">
-    if (location.hostname.indexOf('grayll.io') === -1) {
-      location.href = "https://app.grayll.io/";
-    }
-    var url = 'https://app.grayll.io/'   
-    if (localStorage.getItem("valid") === "passed"){     
-      //localStorage.removeItem("valid")     
-    } else {
-      var password = "7mPCHWdMDyOWfnFaEmHUK9kR5telLtEl0";
-      var x = prompt("Enter in the password "," ");
-      if (x === password) {            
-        localStorage.setItem("valid", "passed");            
-        window.location = url + "login";
-      }
-      else {
-        window.location = "bad.htm";                                                                  
-      }
-    } 
-
-    // if ('serviceWorker' in navigator) {
-    //   navigator.serviceWorker.register('service-worker.js')
-    //     .then(() => console.log('service worker installed'))
-    //     .catch(err => console.error('Error', err));
+    // if (location.hostname.indexOf('grayll.io') === -1) {
+    //   location.href = "https://app.grayll.io/";
     // }
+    // var url = 'https://app.grayll.io/'   
+    // if (localStorage.getItem("valid") === "passed"){     
+    //   //localStorage.removeItem("valid")     
+    // } else {
+    //   var password = "7mPCHWdMDyOWfnFaEmHUK9kR5telLtEl0";
+    //   var x = prompt("Enter in the password "," ");
+    //   if (x === password) {            
+    //     localStorage.setItem("valid", "passed");            
+    //     window.location = url + "login";
+    //   }
+    //   else {
+    //     window.location = "bad.htm";                                                                  
+    //   }
+    // } 
+   
     // function addToHomeScreen() {
     //   let a2hsBtn = document.querySelector(".ad2hs-prompt");  // hide our user interface that shows our A2HS button
     //   a2hsBtn.style.display = 'none';  // Show the prompt
