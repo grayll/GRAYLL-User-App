@@ -8,6 +8,8 @@ import {SettingsService} from '../../settings/settings.service';
 import {Router} from '@angular/router';
 import { StellarService } from '../../authorization/services/stellar-service';
 import { AuthService } from "../../shared/services/auth.service"
+import { environment } from 'src/environments/environment'
+import axios from 'axios'
 
 @Component({
   selector: 'app-wallet-stats',
@@ -57,6 +59,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   grxXlmEqui: string = ''
   grxUsdEqui: string = ''
   SecKey: string = ''
+
+  askPrice: number = 0;
+  bidPrice: number = 0;
 
   private subs = new SubSink();
 
@@ -111,6 +116,18 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.observeRevealSecretKey();
+
+    // get ask, bid, last prices
+    axios.get(environment.ask_bid_prices,  
+      { headers: {Autorization: 'Bearer ' + this.authService.userData.token}})
+      .then( res => {
+        this.askPrice = res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
+        this.bidPrice = res.data.bids[0].price_r.d/res.data.bids[0].price_r.n
+      })
+      .catch(e => {
+        console.log('can not get ask/bid price: ', e)
+      })
+
   }
 
   ngOnDestroy(): void {
