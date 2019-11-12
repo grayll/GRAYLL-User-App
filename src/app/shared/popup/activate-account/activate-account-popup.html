@@ -5,7 +5,7 @@
     popupHeaderTitle="Account Activation | 1.50 XLM Loan">
   </app-popup-header>
   <div class="modal-body">
-   <form [formGroup]="frm">
+  <form [formGroup]="frm">
     <app-error></app-error>
     <div class="row mb-1" *ngIf="!success && !error && firstPopup">
       <div class="col-12 text-center">
@@ -123,7 +123,7 @@
 
   </div>
 
-  <div class="modal-footer">
+  <div class="modal-footer justify-content-center">
     <div class="row text-center" style="display: contents!important;">
       <div class="col">
         <button class="btn btn-purple" *ngIf="!success && !error && firstPopup" (click)="activate()">Activate</button>

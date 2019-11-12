@@ -1,16 +1,19 @@
 import {Component, Input, OnInit, OnDestroy} from '@angular/core';
-import {faArrowAltCircleDown, faCopy, faInfoCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons';
+import {faArrowAltCircleDown, faCopy, faInfoCircle, faSearch, faTimesCircle} from '@fortawesome/free-solid-svg-icons';
 import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
 import {SubSink} from 'subsink';
 var StellarSdk = require('stellar-sdk')
-
+import {OrderModel} from './models/order.model';
 import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { SharedService } from 'src/app/shared/shared.service';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { environment } from 'src/environments/environment';
-
+import {TransfersModel} from './models/transfers.model';
+import {NetworkHistoryModel} from './models/network-history.model';
+import { deflate } from 'zlib';
 
 @Component({
   selector: 'app-account-activity',
@@ -20,6 +23,9 @@ import { environment } from 'src/environments/environment';
 export class AccountActivityComponent implements OnInit, OnDestroy {
 
   @Input() showMoreDetails: boolean;
+  @Input() activeTabId: string;
+  @Input() showAllCompletedOrders: boolean;
+  @Input() scrollToCompletedOrders: boolean;
 
   selectedTab: {id: string, name: string};
   activityTabs = [
@@ -59,6 +65,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
   faClose = faTimesCircle;
   faInfo = faInfoCircle;
   faCopy = faCopy;
+  faSearch = faSearch;
 
   constructor(
     private clipboardService: ClipboardService,
@@ -66,16 +73,18 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     private stellarService: StellarService,
     private authService: AuthService,
     private router: Router,
+    private sharedService:SharedService,
   ) {
     this.subs = new SubSink()
     this.selectedTab = this.activityTabs[0];
+     
     this.subs.add(this.stellarService.observePrices().subscribe(prices => {
       this.grxP = prices[0]
       this.xlmP = prices[1]
-
+      console.log('observePrices:')
       this.account = this.stellarService.userAccount
       this.account.offers().then( ofs => {  
-        console.log('account.offers():', ofs)      
+        //console.log('account.offers():', ofs)      
         this.stellarService.allOffers = ofs.records.map((of, index) => {
           let type = 'BUY'
           let asset = 'GRX'
@@ -145,14 +154,57 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
           }
           url = url+'ledger/'+of.offer_id
           let time = moment.utc(of.ledger_close_time).local().format('DD/MM/YYYY HH:mm:ss')
-          return {time: time, type:type, asset:asset, amount:of.counter_amount, xlmp: of.price.d/of.price.n, 
+          return {time: time, type:type, asset:asset, amount:of.counter_amount, filled:'100%', xlmp: of.price.d/of.price.n, 
             totalxlm: of.base_amount, grxp: this.grxP*this.xlmP, totalusd: of.base_amount*this.xlmP, index:index, url:url}
-        })  
-        //this.completedOrders = this.trades.length
-      })     
-       // this.offers = this.stellarService.allOffers 
+        })          
+      })            
+    }))
+  }
 
-    }))    
+  downloadHistory(){
+    console.log('this.selectedTab.id:', this.selectedTab.id)
+    switch(this.selectedTab.id){
+      case 'allOrders':
+        this.download('order')
+        break
+      case 'transfers':
+        this.download('transfer')
+        break
+      case 'networkHistory':
+        this.download('network')
+        break
+    }
+  }
+
+  download(table:string){
+    var fields = []
+    var columns = []
+    var fileName = ''
+    var data:any
+    switch (table){
+      case "order":
+        columns = ['Date',	'Type',	'Asset',	'Amount',	'Filled',	'Price (XLM)',	'Total Price (XLM)',	'Price (USD)',	'Total Price (USD)', 'URL']
+        fields = ['time','type','asset','amount', 'filled','xlmp','totalxlm','grxp', 'totalusd', 'url']
+        fileName = "OrderHistory.PDF"
+        data = this.offers            
+        break
+      case "transfer":
+        columns = ['Date',	'Counterparty',	'Asset', 'Issuer',	'Amount', 'Url']
+        fields = ['time','counter','asset', 'issuer', 'amount', 'url']
+        fileName = "TransferHistory.PDF"
+        data = this.payments          
+        break
+      case "network":
+          columns = ['Date',	'Operation', 'ID', 'Amount',	'Asset', 'Account', 'Url']
+          fields = ['time','op', 'id', 'amount', 'asset', 'account', 'url']
+          fileName = "NetworkHistory.PDF"
+          data = this.operations          
+        break
+      default:
+        console.log('invalid table name')
+        return 
+    }
+    this.sharedService.savePDF(columns, fields, data, fileName)        
     
   }
 
@@ -188,9 +240,36 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
       return new StellarSdk.Asset(asset.asset_code, asset.asset_issuer);
     }
   }
-
-  ngOnInit() {
+  private setActiveTab() {
+    if (this.activeTabId) {
+      this.selectedTab = this.activityTabs.find((t) => t.id === this.activeTabId);
+      if (this.scrollToCompletedOrders) {
+        setTimeout(() => {
+          const el = document.getElementById('completedOrdersContainer');
+          el.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+        }, 500);
+      }
+    }
   }
+  ngOnInit() {
+	this.setActiveTab();
+  }
+   onScrollOpenOrders() {
+    //this.populateOpenOrders();
+  }
+  
+  onScrollCompletedOrders() {
+    //this.populateCompletedOrders();
+  }
+  
+  onScrollNetworkHistory() {
+    //this.populateNetworkHistory();
+  }
+  
+  onScrollTransfers() {
+    //this.populateTransfers();
+  }
+  
   //allOrders, transfers, networkHistory 
   onTabChange(id: string) {
     console.log('tab: ', id)

@@ -11,7 +11,6 @@ import {PopupModule} from './popup/popup.module';
 import {MainChartComponent} from '../dashboard/main-chart/main-chart.component';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {ChartsModule} from 'ng2-charts';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ActivityComponent} from './system-activity/activity.component';
 import {CountdownModule} from 'ngx-countdown';
 import {AlgoNotificationItemComponent} from './algo-notification-item/algo-notification-item.component';
@@ -22,6 +21,8 @@ import {RevealSecretKeyPopupComponent} from './popup/reveal-secret-key-popup/rev
 import {ActivateAccountPopupComponent} from './popup/activate-account/activate-account-popup.component';
 import {XlmLoanPopupComponent} from './popup/xlm-loan-popup/xlm-loan-popup.component';
 import {XlmBalanceStatusPopupComponent} from './popup/xlm-balance-status-popup/xlm-balance-status-popup.component';
+import {InfiniteScrollModule} from 'ngx-infinite-scroll';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -50,9 +51,10 @@ import {XlmBalanceStatusPopupComponent} from './popup/xlm-balance-status-popup/x
     NgSelectModule,
     ChartsModule,
     FormsModule,
-    ReactiveFormsModule,
     CountdownModule,
-    NgbTooltipModule
+    NgbTooltipModule,
+    InfiniteScrollModule,
+    ReactiveFormsModule,
   ],
   exports: [
     ErrorComponent,

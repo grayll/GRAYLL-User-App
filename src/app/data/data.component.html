@@ -42,17 +42,18 @@
       <!-- Large chart -->
       <app-main-chart></app-main-chart>
 
-      <div class="justify-content-center align-items-center">
-        <ngb-tabset>
-          <ngb-tab title="GRAYLL System Activity">
+      <div class="justify-content-center align-items-center" id="tabs">
+        <ngb-tabset (tabChange)="onTabChange($event.nextId)" [activeId]="activeTabId">
+          <ngb-tab title="GRAYLL System Activity" id="system-activity">
             <ng-template ngbTabContent>
-              <app-activity></app-activity>
+              <app-activity [activeTabId]="activeSubTabId"></app-activity>
             </ng-template>
           </ngb-tab>
 
-          <ngb-tab title="GRAYLL Wallet Activity">
+          <ngb-tab title="GRAYLL Wallet Activity" id="wallet-activity">
             <ng-template ngbTabContent>
-              <app-account-activity [showMoreDetails]="true"></app-account-activity>
+              <app-account-activity [showAllCompletedOrders]="true" [showMoreDetails]="true">
+              </app-account-activity>
             </ng-template>
           </ngb-tab>
         </ngb-tabset>

@@ -77,13 +77,6 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.stellarAddress = this.authService.userData.PublicKey;
     this.secretKey = '';
 
-    // this.subs.add(this.stellarService.observeAccount().subscribe(account => {
-    //   console.log('observeAccount:', account)
-    //   this.stellarService.getBlFromAcc(account, res => {
-    //     this.fillWalletData(res)
-    //   })
-    // }))
-
     this.subs.add(this.stellarService.observePrices().subscribe(prices => {
       this.grxP = prices[0]
       this.xlmP = prices[1]      

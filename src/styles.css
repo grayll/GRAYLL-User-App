@@ -193,3 +193,53 @@ h6 {
 .input-group-lg > .form-control {
   font-size: 1rem!important;
 }
+
+.width-111px {
+  width: 111px!important;
+}
+
+.width-101px {
+  width: 111px!important;
+}
+
+.width-91px {
+  width: 91px!important;
+}
+
+.width-81px {
+  width: 81px!important;
+}
+
+.width-73px {
+  width: 73px!important;
+}
+
+.width-71px {
+  width: 71px!important;
+}
+
+.width-61px {
+  width: 61px!important;
+}
+
+.width-53px {
+  width: 53px!important;
+}
+
+.width-51px {
+  width: 51px!important;
+}
+
+.width-41px {
+  width: 41px!important;
+}
+
+.right-arrow-mobile-scroll-indicator-div {
+  position: absolute;
+  right: 24px;
+  margin-top: 4px;
+}
+
+.right-arrow-mobile-scroll-indicator-img {
+  width: 16px;
+}

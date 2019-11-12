@@ -4,7 +4,8 @@
         <span class="lead align-middle">Activity</span>
       </div>
       <div class="col-xs-12 col-md-5">
-        <ngb-tabset type="pills" class="custom-pills" justify="center" (tabChange)="onTabChange($event.nextId)">
+        <ngb-tabset type="pills" class="custom-pills" justify="center" 
+		(tabChange)="onTabChange($event.nextId)" [activeId]="activeTabId">
           <ng-container *ngFor="let tab of activityTabs">
               <ngb-tab [id]="tab.id" [title]="tab.name"></ngb-tab>
           </ng-container>
@@ -12,7 +13,7 @@
       </div>
       <div class="col text-center">
         <hr class="mt-0 d-sm-none">
-        <a class="purple-link" href="javascript:void(0)">
+        <a class="purple-link" (click)="downloadHistory()">
           <fa-icon [icon]="faDownload" [fixedWidth]="true"></fa-icon>
           Download Activity History
         </a>
@@ -29,8 +30,24 @@
       <div class="col" [routerLink]="['/wallet/overview', {outlets: {popup: 'cancel-active-orders'}}]" style="outline: none;">
         <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
         <span class="ml-1 cancel text-danger">Cancel All Active Orders</span>
+	</div>
+    <div class="col">
+      <div class="row">
+        <div class="col search">
+          <div class="input-group">
+            <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                   type="search" style="border-color: #40278C!important">
+            <span class="input-group-append">
+              <div class="input-group-text bg-transparent">
+                <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+              </div>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="col d-none d-md-block"></div>
+  </div>
   
     <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'transfers'">
       <div class="col" *ngIf="!showMoreDetails">
@@ -46,8 +63,24 @@
         <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
           All Completed Transfers
         </a>
+    </div>
+    <div class="col">
+      <div class="row">
+        <div class="col search">
+          <div class="input-group">
+            <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                   type="search" style="border-color: #40278C!important">
+            <span class="input-group-append">
+              <div class="input-group-text bg-transparent">
+                <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+              </div>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="col d-none d-md-block"></div>
+  </div>
   
     <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'networkHistory'">
       <div class="col" *ngIf="!showMoreDetails">
@@ -64,9 +97,25 @@
         <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
           Full Network History
         </a>
+    </div>
+    <div class="col">
+      <div class="row">
+        <div class="col search">
+          <div class="input-group">
+            <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                   type="search" style="border-color: #40278C!important">
+            <span class="input-group-append">
+              <div class="input-group-text bg-transparent">
+                <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+              </div>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="col d-none d-md-block"></div>
   </div>
+</div>
   
   <!-- ALL ORDERS -->
   <div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab.id === 'allOrders'">
@@ -87,7 +136,11 @@
       </tr>
       </thead>
   
-      <tbody *ngIf="offers" class="font-8 text-light">
+      
+	<tbody *ngIf="offers"  class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollOpenOrders()" [scrollWindow]="false">
+    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+    </div>
         <tr *ngFor="let item of offers">    
           <td>{{item.time}}</td>
           <td>{{item.type}}</td>
@@ -123,7 +176,11 @@
         <th class="text-center">Info</th>
       </tr>
       </thead>
-      <tbody *ngIf="payments" class="font-8 text-light">
+
+ 	<tbody *ngIf="payments" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollTransfers()" [scrollWindow]="false">
+    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+    </div>
         <tr *ngFor="let item of payments">
             <td>{{item.time}}</td>
             <td>{{item.counter}}</td>            
@@ -135,22 +192,7 @@
                   <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                 </a>
               </td>
-        </tr>
-      
-      <!-- <tr>
-        <td>23/08/2019 05:27</td>
-        <td class="purple-link">GBMF3W...JGX4OG</td>
-        <td class="">GRAYLL</td>
-        <td class="">grayll.io</td>
-        <td class="purple-link">
-          +29,999,999,999,999.22222
-        </td>
-        <td class="text-center">
-          <a href="https://stellar.expert/explorer/public" target="_blank">
-            <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-          </a>
-        </td>
-      </tr> -->
+        </tr>      
       </tbody>
     </table>
   </div>
@@ -169,8 +211,10 @@
         <th class="text-center">Info</th>
       </tr>
       </thead>
-  
-      <tbody *ngIf="operations" class="font-8 text-light">
+	  <tbody *ngIf="operations" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollNetworkHistory()" [scrollWindow]="false">
+		  <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+	      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+	    </div>
         <tr *ngFor="let item of operations">    
           <td>{{item.time}}</td>
           <td>{{item.op}}</td>
@@ -188,16 +232,19 @@
     </table>
   </div>
   
-  <div class="row m-0 justify-content-center align-items-center p-2 bg-gradient text-light" *ngIf="selectedTab.id === 'allOrders'">
+<div class="row m-0 justify-content-center align-items-center p-2 pt-4 bg-gradient text-light"
+     *ngIf="selectedTab.id === 'allOrders'" id="completedOrdersContainer">
+  <hr class="m-0 py-2 w-100 mx-0 px-0" style="border-color: #fff;">
     <div class="col-md-2 col-xs pl-0">
       <span *ngIf="trades" class="align-middle font-14 font-weight-bolder">Completed Orders ({{trades.length}})</span><br>
       <span *ngIf="!trades" class="align-middle font-14 font-weight-bolder">Completed Orders (0)</span><br>
       <span class="text-light font-10 font-weight-bolder">Most Recent Completed Orders</span>
     </div>
     <div class="col">
-      <a href="javascript:void(0)" class="purple-link font-14">
-        All Completed Orders
-      </a>
+    <a href="javascript:void(0)" class="purple-link font-14" *ngIf="showAllCompletedOrders"
+       routerLink="/data/overview/wallet-activity/all-orders/completed-orders">
+      All Completed Orders
+    </a>
     </div>
   </div>
   
@@ -218,7 +265,10 @@
         </tr>
       </thead>
     
-      <tbody *ngIf="trades" class="font-8 text-light">
+    <tbody *ngIf="trades" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollCompletedOrders()" [scrollWindow]="false">
+    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+    </div>
         <tr *ngFor="let item of trades">    
           <td>{{item.time}}</td>
           <td>{{item.type}}</td>

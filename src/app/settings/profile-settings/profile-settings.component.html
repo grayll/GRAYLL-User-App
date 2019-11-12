@@ -4,7 +4,7 @@
       <div class="card-body bg-gradient text-light">
         <div class="row">
           <div class="col">
-            <p class="lead font-weight-bolder">General GRAYLL Profile</p>
+            <p class="lead">General GRAYLL Profile</p>
             <p class="lead mb-0"><strong>Federation</strong> Address (Payment Alias)</p>
             <p>Your federation address is your payment alias so people can send you assets more easily.</p>
 
@@ -17,8 +17,15 @@
               </div>
             </div>
 
+            <div class="row justify-content-center text-center d-sm-none">
+              <div class="col-12 justify-content-center">
+                <button [routerLink]="[{outlets: {popup: 'edit-federation-address'}}]"
+                        class="btn btn-purple mt-3 mb-2">Edit Federation Address</button>
+              </div>
+            </div>
+
             <button [routerLink]="[{outlets: {popup: 'edit-federation-address'}}]"
-                    class="btn btn-purple mt-3 mb-2">Edit Federation Address</button>
+                    class="btn btn-purple mt-3 mb-2 d-none d-sm-block">Edit Federation Address</button>
             <p>Changing your GRAYLL alias also changes your network payment alias (aka your federation address).</p>
           </div>
         </div>

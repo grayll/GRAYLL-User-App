@@ -1,23 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
+import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
+import {SharedService} from '../shared/shared.service';
 
 @Component({
   selector: 'app-system',
   templateUrl: './system.component.html',
   styleUrls: ['./system.component.css']
 })
-export class SystemComponent implements OnInit {
+export class SystemComponent implements OnInit, OnDestroy {
 
   activeTabId: string;
+  faWarning = faExclamationTriangle;
 
   constructor(
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    public sharedService: SharedService
   ) {
     this.loadDataFromRoute();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     window.scroll(0, 0);
+    this.changeBackgroundColor(true);
+  }
+
+  ngOnDestroy(): void {
+    this.changeBackgroundColor(false);
+  }
+
+  private changeBackgroundColor(addClass: boolean) {
+    const body = document.getElementsByTagName('body')[0];
+    addClass ? body.classList.add('dark-navy-background') : body.classList.remove('dark-navy-background');
   }
 
   private loadDataFromRoute() {

@@ -3,6 +3,8 @@ import {WithdrawModel} from '../wallet/wallet-stats/withdraw/withdraw.model';
 import {AlgoPositionModel} from '../system/algo-position.model';
 import {UserService} from '../authorization/user.service';
 import { AuthService } from './services/auth.service';
+import * as jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,6 @@ export class SharedService {
   private algoPosition: AlgoPositionModel;
   private isLoanPaid: boolean;
   
-
   constructor(
     private userService: UserService,
     private authService: AuthService,
@@ -32,11 +33,29 @@ export class SharedService {
     this.authService.SetLocalUserData()
   }
 
+  savePDF(columns, fields, data:any, fileName: string) {
+    var doc = new jsPDF({orientation: 'landscape'});    
+    var rows = [];
+    data.forEach(item => {
+      let fieldData = []
+      fields.forEach(fieldName => {
+        fieldData.push(item[fieldName])
+      });
+      rows.push(fieldData)
+    })
+
+    doc.autoTable(columns, rows);
+    doc.save(fileName);
+  }
+
   public getIsLoanPaid() { 
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    if (this.authService.userData.LoanPaid){      
+    if (!this.authService.userData.LoanPaid){      
+      return false
+    } 
+    if (this.authService.userData.LoanPaid === true){      
       return true
     }    
     return false;
