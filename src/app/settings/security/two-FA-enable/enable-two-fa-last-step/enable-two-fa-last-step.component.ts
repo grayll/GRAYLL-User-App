@@ -140,9 +140,9 @@ export class EnableTwoFaLastStepComponent implements OnInit {
     tmpUserData.OneTimePassword = this.enableTwoFAForm.value['oneTimePassword']
     console.log('tmpUserData: ', tmpUserData)
     this.authService.updateTfaData(tmpUserData)
-    .then(res => {
+    .subscribe(res => {
       console.log('EnableTFA-data: ', res)     
-      if (res.data.errCode === environment.SUCCESS){
+      if ((res as any).errCode === environment.SUCCESS){
         console.log('Verification succesully ') 
         this.authService.userData = userData
         this.authService.SetLocalUserData()
@@ -160,12 +160,12 @@ export class EnableTwoFaLastStepComponent implements OnInit {
         })
         .catch((error) => console.log(error));
       } else {
-        switch (res.data.errCode){
+        switch ((res as any).errCode){
           case environment.TOKEN_INVALID:
             this.errorService.handleError(null, 'Onetime password is invalid.')
             break;
           case environment.INTERNAL_ERROR:
-              this.errorService.handleError(null, 'Can not enable TFA. Please try again later.')
+              this.errorService.handleError(null, 'Can not enable TFA. Please try again later!')
               break;
           case environment.INVALID_UNAME_PASSWORD:
               this.errorService.handleError(null, 'Your password is invalid.')
@@ -177,9 +177,10 @@ export class EnableTwoFaLastStepComponent implements OnInit {
         }
         this.authService.setTfa(false)        
       }     
-    }).catch(err => {
+    }),
+    err => {
       this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
-    })
+    }
   }
 }
 

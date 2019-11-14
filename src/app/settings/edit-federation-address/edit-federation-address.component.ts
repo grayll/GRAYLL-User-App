@@ -8,6 +8,7 @@ import {SettingsService} from '../settings.service';
 import {ErrorService} from '../../shared/error/error.service';
 import axios from 'axios'
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-edit-federation-address',
@@ -23,7 +24,8 @@ export class EditFederationAddressComponent implements OnInit {
     private snotifyService: SnotifyService,
     private authService: AuthService,
     private formBuilder: FormBuilder,
-    private setting: SettingsService
+    private setting: SettingsService,
+    private http: HttpClient,
   ) { 
     this.initializeForm()
     
@@ -46,11 +48,9 @@ export class EditFederationAddressComponent implements OnInit {
       this.snotifyService.simple('Federation address is invalid.');
       return
     }
-    axios.post(`${environment.api_url}api/v1/users/editfederation`, {federation:this.federation.value},
-      { headers: { Authorization: 'Bearer ' + this.authService.userData.token}})
-      .then(res => {
-        console.log(res)
-        if (res.data.valid === true ) {                
+    this.http.post(`api/v1/users/editfederation`, {federation: this.federation.value}).subscribe(
+      res => {        
+        if ((res as any).valid === true ) {                
           this.authService.userData.Federation = this.federation.value 
           if (!this.authService.userData.Federation.endsWith('*grayll.io')){
             this.authService.userData.Federation = this.authService.userData.Federation + '*grayll.io'
@@ -65,24 +65,23 @@ export class EditFederationAddressComponent implements OnInit {
             }, 50);
           })         
         } else {
-          switch (res.data.errCode){
+          switch ((res as any).errCode){
             case environment.INVALID_PARAMS:
-              this.snotifyService.simple('Please check you information.');
+              this.snotifyService.simple('Please check you input federation address.');
               break
             case environment.INTERNAL_ERROR:
-              this.snotifyService.simple('Can not update profile right now. Please try again later.');
+              this.snotifyService.simple(`Currently the federation address can't be updated. Please try again later!`);
               break
             case environment.INVALID_UNAME_PASSWORD:
-                this.snotifyService.simple('The federation address is used by other user. Please choose another.');
+                this.snotifyService.simple('The federation address is already used by other user. Please choose another one.');
                 break
           }
         }
-      }).catch( err => {
-        this.snotifyService.simple('Can not update update federation address right now. Please try again later.');
-      })
-    // this.popupService.close().then(() => {
-    //   this.snotifyService.simple('Federation address saved.');
-    // });
+      },
+      err => {
+        this.snotifyService.simple(`Currently the federation address can't be updated. Please try again later!`);
+      }
+    )
   }
 
 }

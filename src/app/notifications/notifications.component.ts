@@ -9,6 +9,7 @@ import {AuthService} from 'src/app/shared/services/auth.service';
 import axios from 'axios';
 import {environment} from 'src/environments/environment'
 import * as moment from 'moment'
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-notifications',
@@ -47,6 +48,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     public notificationsService: NotificationsService,
     public sharedService: SharedService,
     private authService: AuthService,
+    private http: HttpClient,
   ) {
     // Get notices from serve
     this.populateNotifications();
@@ -87,41 +89,36 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     // Send read ids to server
     if (this.readWalletNoticeIds.length > 0 || this.readGeneralNoticeIds.length > 0 || this.readAlgoNoticeIds.length > 0){
-      axios.post(`${environment.api_url}api/v1/users/updateReadNotices`, 
-      {walletIds:this.readWalletNoticeIds, algoIds:this.readAlgoNoticeIds, generalIds:this.readGeneralNoticeIds},
-      { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
-      }).then(res => {
-        if (res.data.errCode == environment.SUCCESS){
+      this.http.post(`api/v1/users/updateReadNotices`, 
+      {walletIds:this.readWalletNoticeIds, algoIds:this.readAlgoNoticeIds, generalIds:this.readGeneralNoticeIds}).
+      subscribe(res => {
+        if ((res as any).errCode == environment.SUCCESS){
           this.readWalletNoticeIds = []
           this.readAlgoNoticeIds = []
           this.readGeneralNoticeIds = []
           console.log("Updated read notice ids")
         }
         console.log(res)
-      }).catch(e => {
+      }),
+      e => {
         console.log(e)
-      })
+      }
       if (!this.authService.userData){
         this.authService.GetLocalUserData()
       }
-      // this.authService.userData.UrWallet = this.notificationsService.getNumberOfUnreadWalletNotifications
-      // this.authService.userData.UrAlgo = this.notificationsService.getNumberOfUnreadAlgoNotifications
-      // this.authService.userData.UrGeneral = this.notificationsService.getNumberOfUnreadSystemNotifications
-      // this.authService.SetLocalUserData()      
+       
     }
   }
 
   private populateNotifications() {
-    axios.post(`${environment.api_url}api/v1/users/notices`, {},
-    { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
-    }).then(res => {
+    this.http.post(`api/v1/users/notices`, {}).subscribe(res => {
       console.log(res)
       let url = 'https://stellar.expert/explorer/public/'
       if (environment.horizon_url.includes('testnet')){
         url = 'https://stellar.expert/explorer/testnet/'
       }
       url = url + 'search?term='
-      this.walletNotificationsToShow = res.data.notices.filter(item => item.type =='wallet').map(item => {
+      this.walletNotificationsToShow = (res as any).notices.filter(item => item.type =='wallet').map(item => {
         let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
         item.time = time
         item.url = url + item.txId 
@@ -129,7 +126,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       })
       this.walletNotifications = this.walletNotificationsToShow
 
-      this.systemNotifications = res.data.notices.filter(item => item.type =='general').map(item => {
+      this.systemNotifications = (res as any).notices.filter(item => item.type =='general').map(item => {
         let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
         item.time = time
         //item.url = url + item.txId 
@@ -137,7 +134,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       })
       this.systemNotificationsToShow = this.systemNotifications
 
-      this.algoNotifications = res.data.notices.filter(item => item.type =='algo').map(item => {
+      this.algoNotifications = (res as any).notices.filter(item => item.type =='algo').map(item => {
         let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
         item.time = time
         item.url = url + item.txId 
@@ -147,9 +144,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
       this.populateNumberOfUnreadNotifications();
 
-    }).catch(e => {
+    }),
+    e => {
       console.log(e)
-    })
+    }
   }
 
   populateNumberOfUnreadNotifications() {

@@ -83,71 +83,73 @@ export class NotificationsSettingsComponent implements OnDestroy {
   }
 
   toggleGeneralEmail() {   
-    this.authService.UpdateSetting("MailGeneral", !this.isGeneralEmailEnabled).then(res =>{
+    this.authService.UpdateSetting("MailGeneral", !this.isGeneralEmailEnabled).subscribe(res =>{
       this.authService.userData.Setting.MailGeneral = !this.isGeneralEmailEnabled
       this.isGeneralEmailEnabled = !this.isGeneralEmailEnabled;
       this.authService.SetLocalUserData()
       this.saveSettings();   
-    }).catch(err =>{      
+    }),
+    err =>{      
       this.displaySettingsFailToast()
-    })
+    }
   }
 
   toggleGeneralApp() {    
-    this.authService.UpdateSetting("AppGeneral", !this.isGeneralAppEnabled).then(res =>{
+    this.authService.UpdateSetting("AppGeneral", !this.isGeneralAppEnabled).subscribe(res =>{
       this.authService.userData.Setting.AppGeneral = !this.isGeneralAppEnabled
       this.isGeneralAppEnabled = !this.isGeneralAppEnabled;
       this.authService.SetLocalUserData()
       this.saveSettings();   
-    }).catch(err =>{      
+    }),
+    err =>{      
       this.displaySettingsFailToast()
-    })
+    }
   }
    
 
   enableWalletEmailNotifications() {
-    this.authService.UpdateSetting("MailWallet", true).then(res =>{
+    this.authService.UpdateSetting("MailWallet", true).subscribe(res =>{
       this.authService.userData.Setting.MailWallet = true
       this.isWalletEmailEnabled = true;
       this.authService.SetLocalUserData()
       this.saveSettings();   
-    }).catch(err =>{      
+    }),err =>{      
       this.displaySettingsFailToast()
-    })
+    }
   }
 
   enableAlgoEmailNotifications() {   
-    this.authService.UpdateSetting("MailAlgo", true).then(res =>{
+    this.authService.UpdateSetting("MailAlgo", true).subscribe(res =>{
       this.authService.userData.Setting.MailAlgo = true
       this.isAlgoEmailEnabled = true;
       this.authService.SetLocalUserData()
       this.saveSettings();   
-    }).catch(err =>{      
+    }),err =>{      
       this.displaySettingsFailToast()
-    })
+    }
   }
 
   enableWalletAppNotifications() {   
-    this.authService.UpdateSetting("AppWallet", true).then(res =>{
+    this.authService.UpdateSetting("AppWallet", true).subscribe(res =>{
       this.authService.userData.Setting.AppWallet = true
       this.isWalletAppEnabled = true;
       this.authService.SetLocalUserData()
       this.saveSettings();   
-    }).catch(err =>{      
+    }),err =>{      
       this.displaySettingsFailToast()
-    })
+    }
   }
 
   enableAlgoAppNotifications() {  
 
-    this.authService.UpdateSetting("AppAlgo", true).then(res =>{
+    this.authService.UpdateSetting("AppAlgo", true).subscribe(res =>{
       this.authService.userData.Setting.AppAlgo = true
       this.isAlgoAppEnabled = true;
       this.authService.SetLocalUserData()
       this.saveSettings();   
-    }).catch(err =>{      
+    }),err =>{      
       this.displaySettingsFailToast()
-    })
+    }
   }
 
   private saveSettings() {
@@ -158,7 +160,7 @@ export class NotificationsSettingsComponent implements OnDestroy {
     this.snotifyService.simple('Your settings are saved.');
   }
   private displaySettingsFailToast() {
-    this.snotifyService.simple('Can not change setting now. Please try again later.');
+    this.snotifyService.simple(`Currently this setting can't be updated. Please try again later!`);
   }
   
   ngOnDestroy(): void {

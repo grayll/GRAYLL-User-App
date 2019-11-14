@@ -8,6 +8,9 @@ import axios from 'axios'
 import { environment } from 'src/environments/environment';
 import { AuthService } from "../../../shared/services/auth.service"
 import * as firebase from 'firebase/app';
+import {SnotifyService} from 'ng-snotify';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-change-phone-number',
@@ -42,7 +45,9 @@ export class ChangePhoneNumberComponent implements OnInit {
     private router: Router, 
     public authService: AuthService, 
     //private recaptchaV3Service: ReCaptchaV3Service,
-    private sharedService: SharedService
+    private snotifyService: SnotifyService,
+    private sharedService: SharedService,
+    private http: HttpClient,
   ) { }
 
   ngOnInit() {
@@ -61,35 +66,51 @@ export class ChangePhoneNumberComponent implements OnInit {
   //   window.recaptchaWidgetId = widgetId;
   // });
   verify() {
-    console.log("form is valid")
+    
     if (this.clientValidation()) { 
-      console.log("form is valid 1")     
-      this.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        'size': 'invisible',
-        'callback': function(response) {
-          // reCAPTCHA solved - will proceed with submit function
-          this.token = response
-          console.log(response)
-          axios.post(`${environment.api_url}api/v1/phones/sendcode`, 
-          {recaptchaToken:this.token, phoneNumber:this.phoneNumber},
-          { headers: {Authorization: 'Bearer ' + this.authService.userData.token} }).then(res =>{
-            if (res.data.valid === true){
+      console.log("form is valid 1")    
+      
+      this.http.post(`api/v1/users/validatePhone`, {phone:this.phoneNumber})
+      .subscribe(res => {        
+        if ((res as any).errCode === environment.SUCCESS){
+          this.popupService.close().then(() => {
+            this.snotifyService.simple('Phone number is verified and saved.');
+          });
+        } else if ((res as any).errCode === environment.PHONE_EXIST){
+          this.errorService.handleError(null, 'This number already registered.');
+        } else if ((res as any).errCode === environment.INTERNAL_ERROR){
+          this.errorService.handleError(null, 'Can not verify phone number now. Please try again later!');
+        } 
+      }),
+      e => {
+        this.errorService.handleError(null, 'Can not verify phone number now. Please try again later!');
+      }
+      // this.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      //   'size': 'invisible',
+      //   'callback': function(response) {
+      //     // reCAPTCHA solved - will proceed with submit function
+      //     this.token = response
+      //     console.log(response)
+      //     axios.post(`${environment.api_url}api/v1/phones/sendcode`, 
+      //     {recaptchaToken:this.token, phoneNumber:this.phoneNumber},
+      //     { headers: {Authorization: 'Bearer ' + this.authService.userData.token} }).then(res =>{
+      //       if (res.data.valid === true){
 
-              this.sharedService.showModalOverview();
-              this.popupService.close().then(() => {
-                setTimeout(() => {
-                  this.router.navigate(['/settings/profile', {outlets: {popup: ['verify-phone-number', this.phoneNumber]}}]);
-                }, 50);
-              });
-            } else {
-              this.errorService.handleError(null, 'Please enter valid phone number.');
-            }
-          })            
-        },
-        'expired-callback': function() {
-          console.log('reset capcha')
-        }
-      });
+      //         this.sharedService.showModalOverview();
+      //         this.popupService.close().then(() => {
+      //           setTimeout(() => {
+      //             this.router.navigate(['/settings/profile', {outlets: {popup: ['verify-phone-number', this.phoneNumber]}}]);
+      //           }, 50);
+      //         });
+      //       } else {
+      //         this.errorService.handleError(null, 'Please enter valid phone number.');
+      //       }
+      //     })            
+      //   },
+      //   'expired-callback': function() {
+      //     console.log('reset capcha')
+      //   }
+      // });
      
             
       // })     

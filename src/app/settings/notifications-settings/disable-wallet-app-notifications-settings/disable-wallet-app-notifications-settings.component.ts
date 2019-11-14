@@ -25,20 +25,21 @@ export class DisableWalletAppNotificationsSettingsComponent implements OnInit {
   }
 
   disable() {
-    this.authService.UpdateSetting("AppWallet", false).then(res =>{
+    this.authService.UpdateSetting("AppWallet", false).subscribe(res =>{
       this.authService.userData.Setting.AppWallet = false      
       this.authService.SetLocalUserData()
       this.popupService.close().then(() => {
         this.settingsService.sendWalletAppNotificationsDisabled();
         this.snotifyService.simple('App wallet system notifications disabled.');
       });       
-    }).catch(err =>{      
+    }),
+    err =>{      
       this.displaySettingsFailToast()
-    })
+    }
   }
 
   private displaySettingsFailToast() {
-    this.snotifyService.simple('Can not change setting now. Please try again later.');
+    this.snotifyService.simple('Can not change setting now. Please try again later!');
   }
 
 }

@@ -11,6 +11,7 @@ import axios from 'axios';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
 import * as naclutil from 'tweetnacl-util'
 import {environment} from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -35,6 +36,7 @@ export class RegisterComponent implements OnInit {
     private router: Router, public authService: AuthService,
     private stellarService: StellarService,
     private ngZone:NgZone,
+    private http: HttpClient,
   ) {
    
   }
@@ -143,14 +145,10 @@ registerClicked() {
         }
         console.log(userData)      
         
-        axios.post(`${environment.api_url}api/v1/users/register`, userData, {
-          headers: {
-              'Content-Type': 'application/json',
-          }
-        })             
-        .then(response => {  
-          if (response.data.errCode == environment.EMAIL_IN_USED)  {
-            let content = "The email address already in used."
+        this.http.post(`api/v1/accounts/register`, userData)             
+        .subscribe(res => {  
+          if ((res as any).errCode == environment.EMAIL_IN_USED)  {
+            let content = "The email entered is already registered."
             this.errorService.handleError(null, content)
             this.registerForm.reset() 
           } else {    
@@ -159,12 +157,12 @@ registerClicked() {
                 name: this.registerForm.value['name']}})
             }) 
           }
-        })
-        .catch( error => {
+        }),
+        error => {
           console.log(error) 
           this.registerForm.reset()              
           this.errorService.handleError(null, 'Can not register now. Please try again later!')     
-        }); 
+        }; 
       })    
     })        
   }

@@ -106,10 +106,10 @@ export class EnableMultisignatureComponent implements OnInit {
     }
     
     this.authService.verifyTfaAuth(this.enableMulSigForm.value['oneTimePassword'],  
-      this.enableMulSigForm.value['password'], 0).then(res => {           
-      if (res.data.valid === true ){       
+      this.enableMulSigForm.value['password'], 0).subscribe(res => {           
+      if ((res as any).valid === true ){       
         this.authService.userData.Setting.MulSignature = true
-        this.authService.UpdateSetting("MulSignature", true).then(res =>{
+        this.authService.UpdateSetting("MulSignature", true).subscribe(res =>{
           this.popupService.close()
           .then(() => {
             setTimeout(() => {
@@ -117,12 +117,13 @@ export class EnableMultisignatureComponent implements OnInit {
               this.settingsService.sendMultisignatureEnabledToObserver(true);
             }, 50);
           })
-        }).catch(err =>{
+        }),
+        err =>{
           this.errorService.handleError(null, 'Can not enable Multisigature. Please try again later!')
-        })
+        }
                     
       } else {        
-       switch (res.data.errCode){
+       switch ((res as any).errCode){
         case environment.TOKEN_INVALID:
           this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
           break;
@@ -134,9 +135,10 @@ export class EnableMultisignatureComponent implements OnInit {
           break;
        }       
       }     
-    }).catch(err => {
+    }),
+    err => {
       this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
-    })
+    }
   }   
 
 }

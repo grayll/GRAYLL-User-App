@@ -8,6 +8,8 @@ import { AngularFireAuth } from "@angular/fire/auth";
 import { AuthService } from 'src/app/shared/services/auth.service';
 import axios from 'axios'
 import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-change-email-address',
@@ -31,6 +33,7 @@ export class ChangeEmailAddressComponent implements OnInit {
     private formBuilder: FormBuilder,
     private afsAuth: AngularFireAuth,
     private authService: AuthService,
+    private http: HttpClient,
   ) {
     this.initializeForm();
   }
@@ -79,16 +82,15 @@ export class ChangeEmailAddressComponent implements OnInit {
   save() {
     this.errorService.clearError();
     if (this.clientValidation()) {      
-      axios.post(`${environment.api_url}api/v1/users/changeemail`, 
-        {email:this.currentEmail.value, newemail: this.newEmail.value, password: this.password.value},
-        { headers: { Authorization: 'Bearer ' + this.authService.userData.token}})                
-      .then(response => {      
-        console.log(response)          
-        if (response.data.errCode === environment.SUCCESS) {
+      this.http.post(`api/v1/users/changeemail`, 
+        {email:this.currentEmail.value, newemail: this.newEmail.value, password: this.password.value})                
+      .subscribe(res => {      
+        console.log(res)          
+        if ((res as any).errCode === environment.SUCCESS) {
           this.form.reset()   
           this.errorService.handleError(null, `An email was sent to ${this.currentMail} to confirm change email request.`);
         } else {
-          switch (response.data.errCode) {
+          switch ((res as any).errCode) {
             case environment.INVALID_UNAME_PASSWORD:
               this.form.reset()   
               this.errorService.handleError(null, 'The email or password is invalid!')
@@ -104,12 +106,12 @@ export class ChangeEmailAddressComponent implements OnInit {
           }
           
         }
-      })
-      .catch(error => {        
+      }),
+      error => {        
         console.log(error)                  
-        this.errorService.handleError(null, 'Can not update new email address. Please try again later!');
+        this.errorService.handleError(null, `Currently the email address can't be updated. Please try again later!`);
         this.form.reset()    
-      });            
+      };            
     }
   }
 

@@ -7,8 +7,9 @@ import {SharedService} from '../shared/shared.service';
 import { AuthService } from "../shared/services/auth.service"
 import { environment } from 'src/environments/environment';
 import {SubSink} from 'subsink';
-import axios from 'axios'
+
 import {SwPush, SwUpdate} from "@angular/service-worker";
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,6 +30,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public sharedService: SharedService,
     public authService: AuthService,
     private swPush: SwPush,
+    private http: HttpClient,
 
   ) {
     //this.user = this.userService.getUser();
@@ -80,14 +82,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       // let subs = { endpoint: sub.endpoint, keys:{p256dh: this.ToBase64(p256dh), auth: this.ToBase64(auth)}}
       
-      axios.post(`${environment.api_url}api/v1/users/savesubcriber`, sub,
-      { headers: { Authorization: 'Bearer ' + this.authService.userData.token}}).then(res => {
-        if (res.data.errCode == environment.SUCCESS){
+      this.http.post(`api/v1/users/savesubcriber`, sub).subscribe(res => {
+        if ((res as any).errCode == environment.SUCCESS){
           console.log("subs are saved")
         }
-      }).catch(err => {
+      }),
+      err => {
         console.log("subs err:", err)
-      })
+      }
     }).catch(err => 
       { console.error("Could not subscribe to notifications", err)}
     );

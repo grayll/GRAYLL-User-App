@@ -6,6 +6,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import axios from 'axios';
 import {environment} from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-new-password',
@@ -27,7 +28,7 @@ export class NewPasswordComponent {
     private errorService: ErrorService,
     private router: Router,
     public authService: AuthService, 
-    
+    private http: HttpClient,
     private ngZone:NgZone) { }
 
   ngOnInit(): void {
@@ -95,14 +96,14 @@ export class NewPasswordComponent {
         return;
     }
 
-    axios.post(`${environment.api_url}/api/v1/users/mailresetpassword`, 
+    this.http.post(`${environment.api_url}/api/v1/accounts/mailresetpassword`, 
       { email: this.newPasswordForm.value['email']})             
-    .then(response => {  
-      if (response.data.errCode == environment.INVALID_PARAMS)  {
-        this.message = "Can not send reset password now. Please try again later."
+    .subscribe(res => {  
+      if ((res as any).errCode == environment.INVALID_PARAMS)  {
+        this.message = "Can not send reset password now. Please try again later!"
         this.errorService.handleError(null, this.message)
         this.newPasswordForm.reset() 
-      } else if(response.data.errCode == environment.EMAIL_NOT_EXIST ){
+      } else if((res as any).errCode == environment.EMAIL_NOT_EXIST ){
         this.message = "The email does not exist."
         this.errorService.handleError(null, this.message)
         this.newPasswordForm.reset() 
@@ -111,13 +112,13 @@ export class NewPasswordComponent {
         this.message = 'We have sent password reset to your email!'
         this.errorService.handleError(null, this.message);
       }
-    })
-    .catch( error => {
+    }),
+    error => {
       console.log(error) 
       this.newPasswordForm.reset()              
       this.message = 'Can not sent mail for password reset!'
       this.errorService.handleError(null, this.message);     
-    });     
+    };     
   } 
 
 }

@@ -31,6 +31,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from 'src/app/shared/services/auth.interceptor';
+
 declare var Hammer: any;
 
 // Solve conflict when swiping mobile cards
@@ -74,6 +77,15 @@ export class MyHammerConfig extends HammerGestureConfig  {
       provide: HAMMER_GESTURE_CONFIG,
       useClass: MyHammerConfig,
     },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+    // {
+    //   provide: AuthInterceptor,
+    //   //useClass: AuthInterceptor
+    // },
   ],
   bootstrap: [AppComponent]
 })

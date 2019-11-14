@@ -25,20 +25,21 @@ export class DisableAlgoNotificationsSettingsComponent implements OnInit {
   }
 
   disable() {
-    this.authService.UpdateSetting("MailAlgo", false).then(res =>{
+    this.authService.UpdateSetting("MailAlgo", false).subscribe(res =>{
       this.authService.userData.Setting.MailAlgo = false      
       this.authService.SetLocalUserData()
       this.popupService.close().then(() => {
         this.settingsService.sendAlgoEmailNotificationsDisabled();
         this.snotifyService.simple('E-mail algo system notifications disabled.');
       });       
-    }).catch(err => {      
+    }),
+    err => {      
       this.displaySettingsFailToast()
-    })
+    }
   }
 
   private displaySettingsFailToast() {
-    this.snotifyService.simple('Can not change setting now. Please try again later.');
+    this.snotifyService.simple('Can not change setting now. Please try again later!');
   }
 
 }

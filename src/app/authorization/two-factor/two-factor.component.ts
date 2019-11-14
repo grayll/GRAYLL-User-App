@@ -90,9 +90,9 @@ export class TwoFactorComponent {
 
     let userData = this.authService.userData
     this.authService.verifyTfaAuth(this.code, userData.Tfa.Secret, exp)
-    .then(res => {
+    .subscribe(res => {
       console.log('verifyTfaAuth-data: ', res)     
-      if (res.data.valid === true ){
+      if ((res as any).valid === true ){
         this.router.navigate(['/settings/profile'])
         if (this.dontAskForNext30Days){
           console.log('Do not ask for 30 days')          
@@ -106,10 +106,10 @@ export class TwoFactorComponent {
       } else {
         this.errorService.handleError(null, 'Your onetime password is invalid.');
       }
-    })
-    .catch(err => {
+    }),
+    err => {
       this.errorService.handleError(null, 'Your onetime password is invalid.');
-    })
+    }
     
   }
 

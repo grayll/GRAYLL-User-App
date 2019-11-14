@@ -12,6 +12,7 @@ import { MustMatch } from '../services/helper/helper.service';
 import axios from 'axios';
 import * as tweetnacl from 'tweetnacl'
 import {environment} from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -41,7 +42,8 @@ export class HandleComponent implements OnInit {
     public formBuilder:FormBuilder, private ngZone: NgZone,
     public authService: AuthService, private route: ActivatedRoute,
     private afAuth:AngularFireAuth,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private http: HttpClient,
   ) {
     this.buildForm();
     this.route.queryParams.subscribe(params => {
@@ -108,57 +110,54 @@ export class HandleComponent implements OnInit {
         validator: MustMatch('password', 'confirm')
     });
     this.onValueChanged()
-    
   }
-  
-   
   handleVerifyEmail(auth, actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     // Try to apply the email verification code.
-    axios.get(`${environment.api_url}api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
-    .then(response => {              
+    this.http.get(`api/v1/accounts/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    .subscribe(response => {              
       //this.registerForm.reset() 
       this.content = 'Your account is verified. Now you can login!'
       //this.errorService.handleError(null, this.content) 
-    })
-    .catch( error => {
+    }),
+    error => {
       console.log(error) 
       this.content = 'Link may be expired. Please verify again!'
       //this.errorService.handleError(null, this.content)    
-    });         
+    };         
   }
   handleChangeEmail(actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     // Try to apply the email verification code.
-    axios.get(`${environment.api_url}api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
-    .then(response => {              
+    this.http.get(`api/v1/accounts/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    .subscribe(res => {              
       //this.registerForm.reset() 
       this.content = 'Your new email is confirmed. Please login to new email to verify!'
       //this.errorService.handleError(null, this.content) 
     })
-    .catch( error => {
+    error => {
       console.log(error) 
       this.content = 'Link may be expired. Please verify again!'
       //this.errorService.handleError(null, this.content)    
-    });         
+    };         
   }
   handleConfirmIp(auth, actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     // Try to apply the email verification code.
-    axios.get(`${environment.api_url}api/v1/users/validatecode?mode=${mode}&oobCode=${actionCode}`)             
-    .then(response => {              
+    this.http.get(`api/v1/accounts/validatecode?mode=${mode}&oobCode=${actionCode}`)             
+    .subscribe(res => {              
       //this.registerForm.reset() 
       this.content = 'Your account is verified. Now you can login!'
       //this.errorService.handleError(null, this.content) 
     })
-    .catch( error => {
+    ,error => {
       console.log(error) 
       this.content = 'Link may be expired. Please verify again!'
       //this.errorService.handleError(null, this.content)    
-    });         
+    };         
   }
 
   handleRecoverEmail(auth, actionCode, lang) {
@@ -203,34 +202,34 @@ export class HandleComponent implements OnInit {
         return;
     }
     this.ngZone.run(() => {
-      axios.post(`${environment.api_url}/api/v1/users/resetpassword`, 
+      this.http.post(`api/v1/accounts/resetpassword`, 
         { oobCode: this.actionCode, newPassword:this.handleForm.value['password']})             
-    .then(response => {  
-      if (response.data.errCode == environment.SUCCESS)  {
+    .subscribe(res => {  
+      if ((res as any).errCode == environment.SUCCESS)  {
         this.message = "Your password is reset."
         this.errorService.handleError(null, this.message)
         this.handleForm.reset() 
-      } else if(response.data.errCode == environment.EMAIL_NOT_EXIST ){
+      } else if((res as any).errCode == environment.EMAIL_NOT_EXIST ){
         this.message = "The email does not exist."
         this.errorService.handleError(null, this.message)
         this.handleForm.reset() 
-       } else if(response.data.errCode == environment.INVALID_CODE ){
+       } else if((res as any).errCode == environment.INVALID_CODE ){
           this.message = "The reset password token is invalid."
           this.errorService.handleError(null, this.message)
           this.handleForm.reset() 
         
       } else {   
         this.handleForm.reset()  
-        this.message = 'Can not reset password right now. Please try again later.'
+        this.message = 'Can not reset password right now. Please try again later!'
         this.errorService.handleError(null, this.message);
       }
-    })
-    .catch( error => {
+    }),
+    error => {
       console.log(error) 
       //this.newPasswordForm.reset()              
-      this.message = 'Can not reset password right now. Please try again later.'
+      this.message = 'Can not reset password right now. Please try again later!'
       this.errorService.handleError(null, this.message);
-    }); 
+    }; 
       // this.afAuth.auth.confirmPasswordReset(this.actionCode, this.handleForm.value['password']).then(resp => {
       //   // Password reset has been confirmed and new password updated.
       //   this.message = 'New password is updated'

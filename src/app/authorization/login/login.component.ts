@@ -17,6 +17,8 @@ import { NgxUiLoaderModule } from  'ngx-ui-loader';
 import { environment } from '../../../environments/environment';
 import { NotificationsService } from 'src/app/notifications/notifications.service';
 var naclutil = require('tweetnacl-util');
+import * as moment from 'moment'
+
 
 
 @Component({
@@ -114,94 +116,100 @@ export class LoginComponent {
 
  
 
-get f() { return this.loginForm.controls; }
+  get f() { return this.loginForm.controls; }
 
-loginClicked() {
-  this.submitted = true;
-  this.errorService.clearError()
-  this.onValueChanged() 
+  loginClicked() {
+    this.submitted = true;
+    this.errorService.clearError()
+    this.onValueChanged() 
 
-  
-  // stop here if form is invalid
-  if (this.loginForm.invalid) {
-    return;
-  }
-  
-  // Execute recaptcha
-  this.recaptchaV3Service.execute('login')
-  .subscribe((token) => {
-    // Verify token 
-    axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
-      headers: { Authorization: "Bearer " + token }
-    })
-    .then(response => {      
-      if (response.data.status === 'success'){       
-        this.ngZone.run(() => {          
-          axios.post(`${environment.api_url}api/v1/users/login`, 
-            {email:this.loginForm.value['email'], password: this.loginForm.value['password']})                
-          .then(response => {                
-            if (response.data.errCode === environment.SUCCESS) {
-              this.authService.userData = response.data.user
-              this.authService.userData.token = response.data.token                
-              console.log('this.authService.userData:', this.authService.userData)
-              this.authService.hash = this.loginForm.value['password'];
-              this.authService.SetLocalUserData()
-              console.log('userData:', this.authService.userData)
-
-              this.notificationsService.publicNumberNotices([this.authService.userData.UrWallet,
-                this.authService.userData.UrAlgo, this.authService.userData.UrGeneral])
-
-              //this.spinnerService.stop()
-              //store on local storage
-              if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 
-                && this.authService.userData.Tfa.Enable === true){
-                  //let d = new Date();
-                  let t = new Date().getTime();
-                  let tfaData = this.authService.GetLocalTfa(this.authService.userData.Uid)
-                  console.log('Expire:', tfaData)
-                  console.log('userData tfa:', this.authService.userData.Tfa)
-                  if (this.authService.userData.Tfa.Expire && t <= this.authService.userData.Tfa.Expire && 
-                      tfaData && tfaData.Expire && 
-                      tfaData.Expire === this.authService.userData.Tfa.Expire){
-                    //this.router.navigate(['/settings/profile'])
-                    this.router.navigate(['/dashboard/overview'])
-                  } else {
-                    this.router.navigate(['/login/two-factor'])
-                  }
-              } else {
-                this.router.navigate(['/dashboard/overview'])
+    
+    // stop here if form is invalid
+    if (this.loginForm.invalid) {
+      return;
+    }
+    
+    // Execute recaptcha
+    console.log('start call recapcha:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+    this.recaptchaV3Service.execute('login')
+    .subscribe((token) => {
+      // Verify token 
+      axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
+        headers: { Authorization: "Bearer " + token }
+      })
+      .then(response => {      
+        if (response.data.status === 'success'){    
+          console.log('recapcha resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+          this.ngZone.run(() => {     
+            console.log('login start:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))     
+            this.http.post(`api/v1/accounts/login`, 
+              {email:this.loginForm.value['email'], password: this.loginForm.value['password']})                
+            .subscribe(res => {                
+              if ((res as any).errCode === environment.SUCCESS) {
+                console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                this.authService.userData = (res as any).user
+                this.authService.userData.token = (res as any).token                
+                
+                this.authService.hash = this.loginForm.value['password'];
+                this.authService.SetLocalUserData()
+                
+                this.notificationsService.publicNumberNotices([this.authService.userData.UrWallet,
+                  this.authService.userData.UrAlgo, this.authService.userData.UrGeneral])
+                
+                //store on local storage
+                if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 
+                  && this.authService.userData.Tfa.Enable === true){
+                    //let d = new Date();
+                    let t = new Date().getTime();
+                    let tfaData = this.authService.GetLocalTfa(this.authService.userData.Uid)
+                    console.log('Expire:', tfaData)
+                    console.log('userData tfa:', this.authService.userData.Tfa)
+                    if (this.authService.userData.Tfa.Expire && t <= this.authService.userData.Tfa.Expire && 
+                        tfaData && tfaData.Expire && 
+                        tfaData.Expire === this.authService.userData.Tfa.Expire){
+                      //this.router.navigate(['/settings/profile'])
+                      this.router.navigate(['/dashboard/overview'])
+                    } else {
+                      this.router.navigate(['/login/two-factor'])
+                    }
+                } else {
+                  this.router.navigate(['/dashboard/overview'])
+                } 
+              } else if ((res as any).errCode === environment.INVALID_UNAME_PASSWORD){
+                this.errorService.handleError(null, 'Invalid user name or password.') 
+                this.loginForm.reset()
+              }  else if((res as any).errCode === environment.UNVERIFIED)  {    
+                this.errorService.handleError(null, 'Please verify your email before login.') 
+                this.loginForm.reset()
+              }  else if((res as any).errCode === environment.IP_CONFIRM) {    
+                this.errorService.handleError(null, 'Please confirm your ip before login.') 
+                this.loginForm.reset()
               } 
-            } else if (response.data.errCode === environment.INVALID_UNAME_PASSWORD){
-              this.errorService.handleError(null, 'Invalid user name or password.') 
-              this.loginForm.reset()
-            }  else if(response.data.errCode === environment.UNVERIFIED)  {    
-              this.errorService.handleError(null, 'Please verify your email before login.') 
-              this.loginForm.reset()
-            }  else if(response.data.errCode === environment.IP_CONFIRM) {    
-              this.errorService.handleError(null, 'Please confirm your ip before login.') 
-              this.loginForm.reset()
-            } 
-          })
-          .catch(error => {
-            //this.spinnerService.stop()
-            console.log(error)                  
-            this.errorService.handleError(null, 'Can not login now. Please try again later!')
-            this.loginForm.reset()    
-          });                 
-        });  
-         
-      } else {
+            }),
+            error => {
+              //this.spinnerService.stop()
+              console.log(error)                  
+              this.showError()
+              this.loginForm.reset()    
+            }                 
+          });  
+          
+        } else {
+          //this.spinnerService.stop()
+          this.showError()
+          this.loginForm.reset()  
+        }
+      })
+      .catch(err => {
         //this.spinnerService.stop()
-        this.errorService.handleError(null, 'Can not login, please try again later!');
-        this.loginForm.reset()  
-      }
-    })
-    .catch(err => {
-      //this.spinnerService.stop()
-      this.errorService.handleError(null, 'Can not login, please try again later!');
-    })   
-  });
-}
+        this.showError()
+      })   
+    });
+  }
+
+  showError(){
+    this.errorService.handleError(null, 'Can not login, please try again later!');
+  }
 
   private clientValidation() {
     if (!this.email || (this.email && !this.email.value)) {

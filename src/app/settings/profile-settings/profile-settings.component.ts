@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import {SubSink} from 'subsink';
 import {SettingsService} from '../settings.service';
 import {SwPush, SwUpdate} from "@angular/service-worker";
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-profile-settings',
@@ -19,15 +20,13 @@ import {SwPush, SwUpdate} from "@angular/service-worker";
 export class ProfileSettingsComponent implements OnDestroy {
   private subscriptions = new SubSink();
 
-  
-
   federationAddress: string ='';
   stellarAddress: string = '';
 
   faCheck = faCheck;
   faExclamation = faExclamation;
   userData: any;
-
+  phoneNumber: string = ''
   profileForm: FormGroup;
 
   constructor(
@@ -38,12 +37,16 @@ export class ProfileSettingsComponent implements OnDestroy {
     private errorService: ErrorService,
     private settingsService: SettingsService,
     private swPush: SwPush,
+    private http: HttpClient,
   ) {
     this.buildForm()     
 
     this.userData = this.authService.GetLocalUserData()
-    if (!this.userData.Lname){
-      this.userData.Lname = ''
+    if (!this.userData.LName){
+      this.userData.LName = ''
+    }
+    if (!this.userData.Name){
+      this.userData.Name = ''
     }
     if (this.userData.Federation){
       this.federationAddress = this.userData.Federation;
@@ -52,12 +55,16 @@ export class ProfileSettingsComponent implements OnDestroy {
       this.stellarAddress = this.userData.PublicKey;  
     }
     
-    this.subscriptions.sink = this.settingsService.observeFederationAddress().subscribe(
+    this.subscriptions.add(this.settingsService.observeFederationAddress().subscribe(
       fed => {
         this.authService.userData.Federation = fed
         this.federationAddress = fed
       }
-    )
+    ))
+
+    if (this.userData.Phone){
+      this.phoneNumber = this.userData.Phone
+    }
 
     //this.requestSubNotifications()
   }
@@ -79,7 +86,9 @@ export class ProfileSettingsComponent implements OnDestroy {
           Validators.minLength(6),
           Validators.maxLength(15)
        ]],  
-       'inlineFormInputGroup':['+387 63 763 354'],
+       'inlineFormInputGroup': ['', [
+        Validators.pattern('/^\d{1,10}$/'),       
+     ]],  
       });
   }
 
@@ -89,16 +98,17 @@ export class ProfileSettingsComponent implements OnDestroy {
         serverPublicKey: VAPID_PUBLIC_KEY
     })
     .then(sub => { 
-      console.log("sub:", sub)
-      axios.post(`${environment.api_url}api/v1/users/savesubcriber`, sub).then(res => {
-        if (res.data.errCode == environment.SUCCESS){
+      
+      this.http.post(`api/v1/users/savesubcriber`, sub).subscribe(res => {
+        if ((res as any).errCode == environment.SUCCESS){
           console.log("subs are saved")
         }
-      }).catch(err => {
+      }),
+      err => {
         console.log("subs err:", err)
-      })
-    })
-    .catch(err => console.error("Could not subscribe to notifications", err));
+      }
+    }),
+    err => console.error("Could not subscribe to notifications", err);
   }
 
   // Updates validation state on form changes.
@@ -172,54 +182,56 @@ export class ProfileSettingsComponent implements OnDestroy {
     }
     let hasChange = false
     let tmp: any = {}
-    if (this.profileForm.value['first_name'] && this.profileForm.value['first_name'] != ''){      
+    if (this.profileForm.value['first_name'] && this.profileForm.value['first_name'] != '' 
+    && this.profileForm.value['first_name'] != this.userData.Name){      
+      console.log('change fname')
       hasChange = true
     }
-    if (this.profileForm.value['last_name'] && this.profileForm.value['last_name'] != ''){      
+    if (this.profileForm.value['last_name'] && this.profileForm.value['last_name'] != '' 
+    && this.profileForm.value['last_name'] != this.userData.LName){      
       hasChange = true
+      console.log('change lname')
     }
-    if (this.profileForm.value['phone'] && this.profileForm.value['phone'] != ''){      
-      hasChange = true
-    }
+    // if (this.profileForm.value['phone'] && this.profileForm.value['phone'] != ''){      
+    //   hasChange = true
+    // }
     tmp.name = this.profileForm.value['first_name']
     tmp.lname = this.profileForm.value['last_name']
-    tmp.phone = this.profileForm.value['phone']
+    console.log('tmp: ', tmp)
+    //tmp.phone = this.profileForm.value['phone']
     if (!hasChange){
       return
     }
 
-    axios.post(`${environment.api_url}api/v1/users/updateprofile`, tmp,
-      { headers: { Authorization: 'Bearer ' + this.authService.userData.token}})
-      .then(res => {
-        console.log(res)
-        if (res.data.valid === true ) {
+    this.http.post(`api/v1/users/updateprofile`, tmp).subscribe(res => {        
+        if ((res as any).valid === true ) {
           if (tmp.name) {
-            this.authService.userData.name = tmp.name
+            this.authService.userData.Name = tmp.name
           }
           if (tmp.lname) {
-            this.authService.userData.lname = tmp.lname
+            this.authService.userData.LName = tmp.lname
           }
-          if (tmp.phone) {
-            this.authService.userData.phone = tmp.phone
-          }          
+          
+          this.userData = this.authService.userData  
+          console.log('tmp1: ', this.userData)       
           this.authService.SetLocalUserData()     
-          this.profileForm.reset()   
+          
+          //this.profileForm.reset()   
           this.snotifyService.simple('Your changes are saved.');
         } else {
-          switch (res.data.errCode){
+          switch ((res as any).errCode){
             case environment.INVALID_PARAMS:
-              this.snotifyService.simple('Please check you information.');
+              this.snotifyService.simple('The input data is invalid.');
               break
             case environment.INTERNAL_ERROR:
-              this.snotifyService.simple('Can not update profile right now. Please try again later.');
+              this.snotifyService.simple(`Currently the profile can't be updated. Please try again later!`);
               break
           }
         }
-      }).catch( err => {
-        this.snotifyService.simple('Can not update profile right now. Please try again later.');
-      })
-        
-    
+      }),
+      err => {
+        this.snotifyService.simple(`Currently the profile can't be updated. Please try again later!`);
+      }    
   }
 
   ngOnDestroy(): void {

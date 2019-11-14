@@ -111,8 +111,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.observeRevealSecretKey();
 
     // get ask, bid, last prices
-    axios.get(environment.ask_bid_prices,  
-      { headers: {Autorization: 'Bearer ' + this.authService.userData.token}})
+    axios.get(environment.ask_bid_prices)
       .then( res => {
         this.askPrice = res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
         this.bidPrice = res.data.bids[0].price_r.d/res.data.bids[0].price_r.n

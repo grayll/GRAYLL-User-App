@@ -78,6 +78,23 @@
   </div> -->
       
   <script type="text/javascript">
+    window.addEventListener('beforeunload', function (e) {
+      var localStorageTime = localStorage.getItem('storagetime')
+      if( localStorageTime!=null && localStorageTime!=undefined){
+      	var currentTime = new Date().getTime(),
+    		timeDifference = currentTime - localStorageTime;
+      	
+        if(timeDifference<25){//Browser Closed
+          console.log("close 1")
+           localStorage.removeItem('storagetime');
+        }else{//Browser Tab Closed
+          console.log("close 2")
+           localStorage.setItem('storagetime',new Date().getTime());
+        }      
+      } else {
+      	localStorage.setItem('storagetime',new Date().getTime());
+      }
+    });
     // if (location.hostname.indexOf('grayll.io') === -1) {
     //   location.href = "https://app.grayll.io/";
     // }

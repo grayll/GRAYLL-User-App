@@ -76,15 +76,16 @@ export class SecurityComponent implements OnDestroy, OnInit {
   toggleIPConfirm() {    
     this.isIPConfirmEnabled = !this.isIPConfirmEnabled;
     this.authService.userData.Setting.IpConfirm = this.isIPConfirmEnabled
-    this.authService.UpdateSetting("IpConfirm", this.isIPConfirmEnabled).then(res =>{
-      if (res.data.valid === true ){
+    this.authService.UpdateSetting("IpConfirm", this.isIPConfirmEnabled).subscribe(res =>{
+      if ((res as any).valid === true ){
         this.saveSettings('Your settings are saved.');
       } else {
-        this.saveSettings('Can not save the settings now. Please try again later.');
+        this.saveSettings('Can not save the settings now. Please try again later!');
       }      
-    }).catch(err =>{
-      this.saveSettings('Can not save the settings now. Please try again later.');
-    })    
+    }),
+    err =>{
+      this.saveSettings('Can not save the settings now. Please try again later!');
+    }   
   }
 
   toggleMulSignature() {  
@@ -97,15 +98,16 @@ export class SecurityComponent implements OnDestroy, OnInit {
     } 
     this.isMultisignatureEnabled = !this.isMultisignatureEnabled;
     this.authService.userData.Setting.MulSignature = this.isMultisignatureEnabled
-    this.authService.UpdateSetting("MulSignature", this.isMultisignatureEnabled).then(res =>{
-      if (res.data.valid === true ){
+    this.authService.UpdateSetting("MulSignature", this.isMultisignatureEnabled).subscribe(res =>{
+      if ((res as any).valid === true ){
         this.saveSettings('Your settings are saved.');
       } else {
-        this.saveSettings('Can not save the settings now. Please try again later.');
+        this.saveSettings('Can not save the settings now. Please try again later!');
       }      
-    }).catch(err =>{
-      this.saveSettings('Can not save the settings now. Please try again later.');
-    })    
+    }),
+    err =>{
+      this.saveSettings('Can not save the settings now. Please try again later!');
+    }
   }
 
   private saveSettings(msg) {

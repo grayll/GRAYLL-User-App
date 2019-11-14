@@ -28,18 +28,18 @@ export class GoogleAuthenticatorComponent implements OnInit {
     this.setupTfa(this.authService.GetLocalUserData().Email)
   }
   setupTfa(account:string){
-    this.authService.setupTfa(account).then(res =>{
-      this.Tfa.Secret = res.data.secret;
-      this.Tfa.DataURL = res.data.dataURL; 
+    this.authService.setupTfa(account).subscribe(res =>{
+      this.Tfa.Secret = (res as any).secret;
+      this.Tfa.DataURL = (res as any).dataURL; 
       this.Tfa.Enable = true;        
       
       this.authService.userData.Tfa = this.Tfa;
       this.authService.SetLocalUserData();  
       console.log('google: setupTfa: userData', this.authService.userData)
-    })
-    .catch(err => {
+    }),
+    err => {
       console.log(err)
-    })
+    }
   }
 
   next() {

@@ -59,9 +59,9 @@ export class DisableTwoFaComponent implements OnInit {
     this.errorService.clearError();
 
    // let userData = this.authService.GetLocalUserData()
-    this.authService.verifyTfaAuth(this.code.value, this.password.value, -1).then(res => {
+    this.authService.verifyTfaAuth(this.code.value, this.password.value, -1).subscribe(res => {
       console.log('verifyTfaAuth-data: ', res)     
-      if (res.data.valid === true ){       
+      if ((res as any).valid === true ){       
         //userData.Tfa = {}
         this.authService.userData.Tfa = {}
         this.authService.SetLocalUserData()
@@ -77,7 +77,7 @@ export class DisableTwoFaComponent implements OnInit {
         .catch((error) => console.log(error));  
 
       } else {
-        switch (res.data.errCode) {
+        switch ((res as any).errCode) {
           case environment.INVALID_UNAME_PASSWORD:
             this.errorService.handleError(null, 'The password is invalid.');
             break;
@@ -85,7 +85,7 @@ export class DisableTwoFaComponent implements OnInit {
               this.errorService.handleError(null, 'The onetime password is invalid.');
               break;
           default:
-              this.errorService.handleError(null, 'Can not disable TFA right now. Please try again later.');
+              this.errorService.handleError(null, 'Can not disable TFA right now. Please try again later!');
               break;
         }        
       }

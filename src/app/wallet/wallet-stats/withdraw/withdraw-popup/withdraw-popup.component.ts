@@ -70,9 +70,9 @@ export class WithdrawPopupComponent implements OnInit {
     } else {
       this.totalGRX = 0
     }
-    this.XLMValue = null;
+    this.XLMValue = '';
     this.memoMessage = null;
-    this.GRXValue = null;
+    this.GRXValue = '';
     this.recipient = null;
     this.withdrawModel = new WithdrawModel();
     this.isMemoMessageSelected = true;

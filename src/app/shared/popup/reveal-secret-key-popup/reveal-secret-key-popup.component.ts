@@ -7,6 +7,7 @@ import { StellarService } from 'src/app/authorization/services/stellar-service';
 import axios from 'axios'
 import {AuthService} from 'src/app/shared/services/auth.service';
 import {environment} from 'src/environments/environment'
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-reveal-secret-key-popup',
@@ -27,25 +28,24 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     private errorService: ErrorService,
     private stellarService: StellarService,
     private authService: AuthService,
+    private http: HttpClient,
   ) {
     // check tfa status
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    axios.post(`${environment.api_url}api/v1/users/getFieldInfo`, 
-    {tfa:'get', action:'reveal'},
-    { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
-    }).then(res => {
-      if (res.data.errCode == environment.SUCCESS){
-        this.tfaEnable = res.data.tfa;
+    this.http.post(`api/v1/users/getFieldInfo`, {tfa:'get', action:'reveal'}).subscribe(res => {
+      if ((res as any).errCode == environment.SUCCESS){
+        this.tfaEnable = (res as any).tfa;
       } else {
-        this.errorService.handleError(null, 'Can not peform the request right now. Please try again later.');
+        this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
       }
-      console.log(res.data) 
-    }).catch(e => {
+      console.log((res as any)) 
+    }),
+    e => {
       console.log(e)
-      this.errorService.handleError(null, 'Can not peform the request right now. Please try again later.');
-    })    
+      this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
+    } 
   }
 
   ngOnInit() {
@@ -57,19 +57,18 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     
     if (!this.tfaEnable){
       //send request token to email
-      axios.post(`${environment.api_url}api/v1/users/sendRevealSecretToken`, {},
-        { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token}
-      }).then(res => {
-        if (res.data.errCode == environment.SUCCESS){
-          //this.tfaEnable = res.data.tfa;
+      this.http.post(`api/v1/users/sendRevealSecretToken`, {}).subscribe(res => {
+        if ((res as any).errCode == environment.SUCCESS){
+          //this.tfaEnable = (res as any).tfa;
         } else {
-          this.errorService.handleError(null, 'Can not peform the request right now. Please try again later.');
+          this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
         } 
-        console.log(res.data)        
-      }).catch(e => {
+        console.log((res as any))        
+      }),
+      e => {
         console.log(e)
-        this.errorService.handleError(null, 'Can not peform the request right now. Please try again later.');
-      }) 
+        this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
+      }
     }
 
     if (this.authService.hash){
@@ -82,8 +81,8 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     this.errorService.clearError();
     if (this.clientValidation()) {
       if (this.tfaEnable){
-        this.authService.verifyTfaAuth(this.password, this.code, 0).then(res => {           
-          if (res.data.valid === true ){                 
+        this.authService.verifyTfaAuth(this.password, this.code, 0).subscribe(res => {           
+          if ((res as any).valid === true ){                 
             this.stellarService.decryptSecretKey(this.password, 
               {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
               SecKey => {
@@ -92,7 +91,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
               }
             })                     
           } else {        
-            switch (res.data.errCode){
+            switch ((res as any).errCode){
               case environment.TOKEN_INVALID:
                 this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
                 break;
@@ -104,16 +103,15 @@ export class RevealSecretKeyPopupComponent implements OnInit {
                 break;
             }       
           }     
-          }).catch(err => {
+          }),
+          err => {
             //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
-          })        
+          }        
       } else {
         //send request token to email
         
-        axios.post(`${environment.api_url}api/v1/users/verifyRevealSecretToken`, {token:this.code},
-        { headers: { 'Authorization': 'Bearer ' + this.authService.userData.token,}
-        }).then(res => {
-          if (res.data.errCode == environment.SUCCESS){
+        this.http.post(`api/v1/users/verifyRevealSecretToken`, {token:this.code}).subscribe(res => {
+          if ((res as any).errCode == environment.SUCCESS){
             this.stellarService.decryptSecretKey(this.password, 
               {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
               SecKey => {
@@ -124,21 +122,20 @@ export class RevealSecretKeyPopupComponent implements OnInit {
                 });
               }
             })
-          } else if (res.data.errCode == environment.INVALID_CODE) {
+          } else if ((res as any).errCode == environment.INVALID_CODE) {
             this.errorService.handleError(null, 'Please provide a valid token.');
           } else {
             
           }
-          console.log(res.data)          
+          console.log((res as any))          
           // 
-        }).catch(e => {
+        }),
+        e => {
           console.log(e)
-          this.errorService.handleError(null, 'Can not peform the request right now. Please try again later.');
-        }) 
-
+          this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
+        }
       }
-      //this.errorService.handleError(null, 'A token already sent ');
-     
+          
     }
   }
   

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import {ErrorService} from '../../shared/error/error.service';
 import axios from 'axios';
 import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-confirm-email',
@@ -12,7 +13,7 @@ import { environment } from 'src/environments/environment';
 export class ConfirmEmailComponent implements OnInit {
   public email:string = "hello@grayll.io"
   private name:string = ''
-  constructor(private router: Router, private errorService: ErrorService) {
+  constructor(private router: Router, private errorService: ErrorService, private http: HttpClient,) {
     if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state 
       && this.router.getCurrentNavigation().extras.state.email && this.router.getCurrentNavigation().extras.state.email != ''){
       this.email = this.router.getCurrentNavigation().extras.state.email      
@@ -29,14 +30,14 @@ export class ConfirmEmailComponent implements OnInit {
 
   resendEmail() {
     this.didResent = true;    
-    axios.post(`${environment.api_url}api/v1/users/resendemail`, {email: this.email, name:this.name}, {
+    this.http.post(`api/v1/accounts/resendemail`, {email: this.email, name:this.name}, {
       headers: {
           'Content-Type': 'application/json',
       }
     })             
-    .then(response => {  
+    .subscribe(res => {  
       let content = ''
-      switch (response.data.errCode){
+      switch ((res as any).errCode){
         case 12:
             content = "The email is not registered yet"           
             break
@@ -48,10 +49,10 @@ export class ConfirmEmailComponent implements OnInit {
             break
       }
       this.errorService.handleError(null, content)
-    })
-    .catch( error => {               
+    }),
+    error => {               
       this.errorService.handleError(null, 'Can not register now. Please try again later!')     
-    }); 
+    }; 
   }
 
 }

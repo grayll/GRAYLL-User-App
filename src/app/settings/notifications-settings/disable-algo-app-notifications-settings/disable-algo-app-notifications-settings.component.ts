@@ -25,20 +25,21 @@ export class DisableAlgoAppNotificationsSettingsComponent implements OnInit {
   }
   
   disable() {
-    this.authService.UpdateSetting("AppAlgo", false).then(res =>{
+    this.authService.UpdateSetting("AppAlgo", false).subscribe(res =>{
       this.authService.userData.Setting.AppAlgo = false      
       this.authService.SetLocalUserData()
       this.popupService.close().then(() => {
         this.settingsService.sendAlgoAppNotificationsDisabled();
         this.snotifyService.simple('App Algo system notifications disabled.');
       });       
-    }).catch(err =>{      
+    }),
+    err =>{      
       this.displaySettingsFailToast()
-    })
+    }
   }
 
   private displaySettingsFailToast() {
-    this.snotifyService.simple('Can not change setting now. Please try again later.');
+    this.snotifyService.simple('Can not change setting now. Please try again later!');
   }
 
 }

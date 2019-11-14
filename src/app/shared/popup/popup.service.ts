@@ -13,6 +13,8 @@ export class PopupService {
     ariaLabelledBy: 'modal-basic-title'
   };
 
+  public isOpen:boolean = false
+
   constructor(
     private modalService: NgbModal,
     private router: Router,
@@ -20,6 +22,7 @@ export class PopupService {
   ) { }
 
   public open(modal) {
+    this.isOpen = true
     this.sharedService.hideModalOverview();
     setTimeout(() => {
       this.modalService.open(modal, this.ngbModalOptions).result
@@ -28,14 +31,16 @@ export class PopupService {
   }
 
   public async close() {
+    this.isOpen = false
     setTimeout(() => {
       this.router.navigate([{ outlets: { popup: null } }])
       .then(() => window.history.back());
     }, 0);
     this.modalService.dismissAll();
   }
-
+  
   public async closeAndRedirectTo(absoluteUrl: string) {
+    this.isOpen = false
     setTimeout(() => {
       this.router.navigate([absoluteUrl, {outlets: {popup: null } }]);
     }, 0);

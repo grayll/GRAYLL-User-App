@@ -226,7 +226,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
 
           ).catch(e => {
             console.log('cancelOffer error:', e)
-            this.snotifyService.simple('Can not cancel offer now. Please try again later.')
+            this.snotifyService.simple('Can not cancel offer now. Please try again later!')
           })
         }
       }  

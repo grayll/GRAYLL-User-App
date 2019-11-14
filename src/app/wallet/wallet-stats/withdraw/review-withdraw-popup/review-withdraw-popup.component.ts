@@ -101,7 +101,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     //   if (SecKey != 'Decryption failed!'){
     //     if (this.tfaEnable && this.twoFaCode){
     //       this.authService.verifyTfaAuth(this.password, this.twoFaCode, 0).then(res => {           
-    //         if (res.data.valid === true ){                 
+    //         if ((res as any).valid === true ){                 
     //           this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), this.withdrawModel.address, 
     //           amount.toString(), asset, memo).then(ledger => {
     //             if (ledger <= 0){
@@ -119,7 +119,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     //             console.log('Send asset error: ', e)
     //           })                        
     //         } else {        
-    //           switch (res.data.errCode){
+    //           switch ((res as any).errCode){
     //             case environment.TOKEN_INVALID:
     //               //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
     //               break;
@@ -164,8 +164,8 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
       SecKey => {
       if (SecKey != 'Decryption failed!'){
         if (this.tfaEnable && this.twoFaCode){
-          this.authService.verifyTfaAuth(this.password, this.twoFaCode, 0).then(res => {           
-            if (res.data.valid === true ){                 
+          this.authService.verifyTfaAuth(this.password, this.twoFaCode, 0).subscribe(res => {           
+            if ((res as any).valid === true ){                 
               this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), this.withdrawModel.address, 
               amount.toString(), asset, memo).then(ledger => {
                 if (ledger <= 0){
@@ -183,7 +183,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
                 console.log('Send asset error: ', e)
               })                        
             } else {        
-              switch (res.data.errCode){
+              switch ((res as any).errCode){
                 case environment.TOKEN_INVALID:
                   //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
                   break;
@@ -195,9 +195,10 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
                   break;
               }       
             }     
-            }).catch(err => {
+            }),
+            err => {
               //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
-            })
+            }
           } else if (!this.tfaEnable) {
             this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), this.withdrawModel.address, 
               amount.toString(), asset, memo)

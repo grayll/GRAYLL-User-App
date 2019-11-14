@@ -5,6 +5,7 @@ import {DashboardRoutingModule} from './dashboard.routing.module';
 import {ChartsModule} from 'ng2-charts';
 import {InfoBoxesComponent} from './info-boxes/info-boxes.component';
 import {WalletComponent} from './wallet/wallet.component';
+//import {WalletComponent} from 'src/app/wallet/wallet.component';
 import {TradeComponent} from './trade/trade.component';
 import {SharedModule} from '../shared/shared.module';
 import {NgSelectModule} from '@ng-select/ng-select';

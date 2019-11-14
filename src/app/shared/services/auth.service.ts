@@ -66,7 +66,7 @@ export class AuthService {
     public router: Router,  
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     public http: HttpClient,
-    
+        
   ) {    
    
   }
@@ -82,14 +82,9 @@ export class AuthService {
   }
   setupTfa(account:string) {
     //return this.http.get("https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/TfaSetup?account=" + account, { observe: 'response' });
-    //let url = `${environment.api_url}verifytoken?token=${token}&secret=${secret}`
+    //let url = `verifytoken?token=${token}&secret=${secret}`
     console.log(this.userData.token)
-    return axios.post(`${environment.api_url}api/v1/users/setuptfa`, { account: account},
-    {
-      headers: {
-        'Authorization': 'Bearer ' + this.userData.token,        
-      }
-    })             
+    return this.http.post(`api/v1/users/setuptfa`, { account: account})             
   }
 
   // deleteTfa() {
@@ -97,36 +92,16 @@ export class AuthService {
   // }
 
   verifyTfaAuth(token: any, secret: any, exp: Number) {       
-    return axios.post(`${environment.api_url}api/v1/users/verifytoken`,  { token: token, secret:secret, expire:exp},
-    {
-      headers: {
-        'Authorization': 'Bearer ' + this.userData.token,        
-      }
-    })         
+    return this.http.post(`api/v1/users/verifytoken`,  { token: token, secret:secret, expire:exp})         
   }
   UpdateSetting(field, status) {
-    return axios.post(`${environment.api_url}api/v1/users/updatesetting`,  { field: field, status:status},
-    {
-      headers: {
-        'Authorization': 'Bearer ' + this.userData.token,        
-      }
-    }) 
+    return this.http.post(`api/v1/users/updatesetting`,  { field: field, status:status}) 
   }
   UpdateEmail(email, password) {
-    return axios.post(`${environment.api_url}api/v1/users/updatesetting`,  {email: email, password: password},
-    {
-      headers: {
-        'Authorization': 'Bearer ' + this.userData.token,        
-      }
-    }) 
+    return this.http.post(`api/v1/users/updatesetting`,  {email: email, password: password}) 
   }
   updateTfaData(tfa) {   
-    return axios.post(`${environment.api_url}api/v1/users/updatetfa`, tfa,
-    {
-      headers: {
-        'Authorization': 'Bearer ' + this.userData.token,        
-      }
-    }) 
+    return this.http.post(`api/v1/users/updatetfa`, tfa) 
   }
 
   isTfaEnable(){
@@ -190,24 +165,13 @@ export class AuthService {
       merge: true
     })
   }
-  
-  
- 
-  
   // Sign out 
   SignOut() {
     
     localStorage.removeItem('user');    
     this.userData = null  
     this.ngZone.run(()=> {
-      this.router.navigateByUrl('/login')
-      // return this.firebaseAuth.auth.signOut().then(() => {
-      //   console.log('SignOut')
-      //   localStorage.removeItem('user');
-      //   this.userData = null  
-      // }).catch(err =>{
-      //   console.log('Err:', err)
-      // })
+      this.router.navigateByUrl('/login')      
     })
   }
 

@@ -52,7 +52,7 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
             }
           ).catch(e => {
             console.log('cancelAllOffer error:', e)
-            this.snotifyService.simple('Some order could not be cancelled. Please try again later.')
+            this.snotifyService.simple('Some order could not be cancelled. Please try again later!')
           })
         }
       }  

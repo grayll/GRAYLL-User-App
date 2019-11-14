@@ -13,7 +13,7 @@ import axios from 'axios';
 import { environment } from 'src/environments/environment';
 const bip39 = require('bip39')
 var naclutil = require('tweetnacl-util');
-
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-pay-loan-popup',
@@ -48,7 +48,8 @@ export class ActivateAccountPopupComponent implements OnInit {
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
     private clipboardService: ClipboardService,
-    private snotifyService: SnotifyService
+    private snotifyService: SnotifyService,
+    private http: HttpClient,
   ) { 
   
     this.firstPopup = true;
@@ -123,10 +124,9 @@ export class ActivateAccountPopupComponent implements OnInit {
           let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
             enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
                 
-          axios.post(`${environment.api_url}api/v1/users/validateaccount`, data,
-            { headers: { Authorization: 'Bearer ' + this.authService.userData.token}}).then(resp => {
+          this.http.post(`api/v1/users/validateaccount`, data).subscribe(resp => {
             console.log(resp)
-            if (resp.data.errCode === environment.SUCCESS){
+            if ((resp as any).errCode === environment.SUCCESS){
               let seedData = {seed: res.recoveryPhrase, publicKey: res.keypair.publicKey(), secret: res.keypair.secret()}
               this.authService.SetSeedData(seedData)
      
@@ -152,18 +152,19 @@ export class ActivateAccountPopupComponent implements OnInit {
                 this.error = true;
                 this.success = false;
               })                                            
-            } else if (resp.data.errCode === environment.INVALID_UNAME_PASSWORD){
+            } else if ((resp as any).errCode === environment.INVALID_UNAME_PASSWORD){
               this.frm.reset()
               this.errorService.handleError(null, "Please input valid password.")
             } else {
               this.frm.reset()
-              this.errorService.handleError(null, "Can not activate account right now. Please try again later.")
+              this.errorService.handleError(null, "Can not activate account right now. Please try again later!")
             }
-          }).catch(err => {
+          }),
+          err => {
             console.log(err)
             this.error = true;
             this.success = false;
-          })
+          }
         })       
       }) 
     } else {    
