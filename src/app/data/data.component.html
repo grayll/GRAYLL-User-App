@@ -44,6 +44,7 @@
 
       <div class="justify-content-center align-items-center" id="tabs">
         <ngb-tabset (tabChange)="onTabChange($event.nextId)" [activeId]="activeTabId">
+          <ng-container>
           <ngb-tab title="GRAYLL System Activity" id="system-activity">
             <ng-template ngbTabContent>
               <app-activity [activeTabId]="activeSubTabId"></app-activity>
@@ -56,6 +57,7 @@
               </app-account-activity>
             </ng-template>
           </ngb-tab>
+          </ng-container>
         </ngb-tabset>
       </div>
     </div>

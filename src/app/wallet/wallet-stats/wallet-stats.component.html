@@ -15,7 +15,7 @@
             <h5 class="text-light font-weight-bolder mb-0">{{walletValue}}</h5>
             <small>
               <a href="javascript:void(0)" class="white-link" [routerLink]="[{outlets: {popup: 'xlm-balance-status'}}]">
-                1.50 XLM Reserved ($0.11381)
+                1.50 XLM Reserved (${{(1.5*xlmP).toFixed(2)}})
               </a>
             </small>
           </div>
@@ -416,8 +416,8 @@
 
               <div class="row" *ngIf="!isSecretKeyRevealed">
                 <button (click)="revealSecretKey()" class="btn btn-block btn-yellow w-auto mx-auto">
-				Reveal Secret Key
-				</button>
+                Reveal Secret Key
+                </button>
               </div>
 
               <div class="row" *ngIf="isSecretKeyRevealed">

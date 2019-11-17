@@ -38,9 +38,7 @@ export class WalletComponent implements OnInit, OnDestroy {
       console.log(grx, xlm)      
       this.stellarService.userAccount = account;
       this.stellarService.publishPrices([+grx,+xlm])
-      //this.stellarService.publishAccount(account)
       
-      //console.log('wallet.com this.stellarService.userAccount :', this.stellarService.userAccount)
     })
    }
 

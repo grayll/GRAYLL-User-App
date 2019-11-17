@@ -46,18 +46,10 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
   offers: any;
   trades: any;
   payments: any;
-  operations: any;
-
-  // openOrders:number = 0
-  // completedOrders:number = 0
-  // transfers:number = 0
-  // networkHistorys:number = 0
-  
+  operations: any;  
   account: any
-
   grxP:number
   xlmP:number
-
   subs: SubSink
 
   // Font Awesome Icons
@@ -75,13 +67,30 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     private router: Router,
     private sharedService:SharedService,
   ) {
+    console.log('constructor-account activity')
     this.subs = new SubSink()
     this.selectedTab = this.activityTabs[0];
+
+    Promise.all([
+      this.stellarService.getCurrentGrxPrice1(),
+      this.stellarService.getCurrentXlmPrice1(),
+      this.stellarService.getAccountData(this.authService.userData.PublicKey)
+      .catch(err => {
+        // Notify internet connection.
+        this.snotifyService.simple('Please check your internet connection.')
+        console.log(err)
+      })
+    ])
+    .then(([ grx, xlm, account ]) => {
+      console.log(account)      
+      this.stellarService.userAccount = account;
+      this.stellarService.publishPrices([+grx,+xlm])     
+   // })
      
-    this.subs.add(this.stellarService.observePrices().subscribe(prices => {
-      this.grxP = prices[0]
-      this.xlmP = prices[1]
-      console.log('observePrices:')
+   // this.subs.add(this.stellarService.observePrices().subscribe(prices => {
+      this.grxP = +grx
+      this.xlmP = +xlm
+      //console.log('acc-activity received Prices:', prices)
       this.account = this.stellarService.userAccount
       this.account.offers().then( ofs => {  
         //console.log('account.offers():', ofs)      
@@ -158,7 +167,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
             totalxlm: of.base_amount, grxp: this.grxP*this.xlmP, totalusd: of.base_amount*this.xlmP, index:index, url:url}
         })          
       })            
-    }))
+    })
   }
 
   downloadHistory(){
@@ -276,6 +285,45 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     this.selectedTab = this.activityTabs.find((t) => t.id === id);
     switch (id){
       case 'allOrders':
+          this.account.offers().then( ofs => {  
+            //console.log('account.offers():', ofs)      
+            this.stellarService.allOffers = ofs.records.map((of, index) => {
+              let type = 'BUY'
+              let asset = 'GRX'
+              
+              if (of.buying.asset_type == 'native'){
+                type = 'SELL'
+                asset = of.selling.asset_code
+              } else {
+                asset = of.buying.asset_code
+              }
+              let buying = this.parseAsset(of.buying);
+              let selling = this.parseAsset(of.selling);
+              let cachedOffer
+              if (type == 'SELL'){
+                cachedOffer = StellarSdk.Operation.manageSellOffer({
+                  buying: buying,
+                  selling: selling,
+                  amount: '0',
+                  price: of.price_r,
+                  offerId: of.id,
+                });
+              } else {
+                cachedOffer = StellarSdk.Operation.manageBuyOffer({
+                  buying: buying,
+                  selling: selling,
+                  buyAmount: '0',
+                  price: of.price_r,
+                  offerId: of.id,
+                });
+              }
+    
+              let time = moment.utc(of.last_modified_time).local().format('DD/MM/YYYY HH:mm:ss')
+              return {time: time, type:type, asset:asset, amount:of.amount, xlmp: of.price, 
+                totalxlm: of.amount*of.price, grxp: this.grxP*this.xlmP, totalusd: of.amount*of.price*this.xlmP, cachedOffer: cachedOffer, index:index}
+            })       
+            this.offers = this.stellarService.allOffers             
+          })
           break;
       case 'transfers':
         if (this.account){

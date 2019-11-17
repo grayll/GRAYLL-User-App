@@ -58,6 +58,7 @@ export class ActivityComponent implements OnInit, OnChanges {
     private snotifyService: SnotifyService
   ) {
     this.populateOpenAlgoPositionsArray();
+    console.log('constructor-system activity')
   }
 
   ngOnInit() {

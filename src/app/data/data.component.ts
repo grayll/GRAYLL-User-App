@@ -59,9 +59,9 @@ export class DataComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     window.scroll(0, 0);
-    //this.loadDataFromRoute();
-    this.activeTabId = 'system-activity';
-    this.activeSubTabId = 'closedAlgoPositions';
+    this.loadDataFromRoute();
+    // this.activeTabId = 'system-activity';
+    // this.activeSubTabId = 'closedAlgoPositions';
     this.changeBackgroundColor(true);    
   }
 

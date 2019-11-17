@@ -18,8 +18,9 @@ export class RevealSecretKeyPopupComponent implements OnInit {
 
   @ViewChild('content') modal;
   didContinue: boolean;
-  tfaEnable: boolean;
+  tfaEnable: boolean = false;
   code: string;
+  secret: string;
   password: string;
  
   constructor(
@@ -37,14 +38,17 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     this.http.post(`api/v1/users/getFieldInfo`, {tfa:'get', action:'reveal'}).subscribe(res => {
       if ((res as any).errCode == environment.SUCCESS){
         this.tfaEnable = (res as any).tfa;
+        if (this.tfaEnable){
+          this.secret = (res as any).secret;
+        }        
       } else {
-        this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
+        this.errorService.handleError(null, `Currently the request can't not be performed. Please try again later!`);
       }
       console.log((res as any)) 
     }),
     e => {
       console.log(e)
-      this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
+      this.errorService.handleError(null, `Currently the request can't not be performed. Please try again later!`);
     } 
   }
 
@@ -81,13 +85,15 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     this.errorService.clearError();
     if (this.clientValidation()) {
       if (this.tfaEnable){
-        this.authService.verifyTfaAuth(this.password, this.code, 0).subscribe(res => {           
+        this.authService.verifyTfaAuth(this.code, this.secret, 0).subscribe(res => {           
           if ((res as any).valid === true ){                 
             this.stellarService.decryptSecretKey(this.password, 
               {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
               SecKey => {
               if (SecKey != 'Decryption failed!'){
-                this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
+                this.popupService.close().then(() => {
+                  this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
+                });
               }
             })                     
           } else {        
@@ -99,7 +105,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
                 this.errorService.handleError(null, 'Your password is invalid. Please try again!')
                 break;
               default:
-                this.errorService.handleError(null, 'Can not enable Multisigature. Please try again later!')
+                this.errorService.handleError(null, `Currently the request can't be performed. Please try again later!`)
                 break;
             }       
           }     
@@ -115,8 +121,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
             this.stellarService.decryptSecretKey(this.password, 
               {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
               SecKey => {
-              if (SecKey != 'Decryption failed!'){
-                console.log('seckey:', SecKey)
+              if (SecKey != 'Decryption failed!'){               
                 this.popupService.close().then(() => {
                   this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
                 });
