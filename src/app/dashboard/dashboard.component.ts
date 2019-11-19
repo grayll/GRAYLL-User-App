@@ -42,15 +42,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     this.changeBackgroundColor(true);
     if (!this.authService.isActivated()){
+      console.log('not activated, show activate pop-up')
       this.showActivationPopup();
-    } else {      
-      if (this.swPush.isEnabled && !this.authService.userData.Setting.AppWallet){
+    } else {   
+      console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
+      console.log('this.authService.userData:', this.authService.userData) 
+      if (this.swPush.isEnabled && !this.authService.userData.Subs){
+        console.log('request subs')
         this.requestSubNotifications()
       }      
-    }    
+    }  
+
   }
 
   ngOnDestroy(): void {
+    this.authService.RemoveSeedData()
     this.changeBackgroundColor(false);
   }
 

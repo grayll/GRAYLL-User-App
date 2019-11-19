@@ -39,7 +39,7 @@ export class NotificationsSettingsComponent implements OnDestroy {
       this.isWalletAppEnabled = true
     }
     if (this.authService.userData.Setting.AppAlgo && this.authService.userData.Setting.AppAlgo == true){
-      this.isWalletAppEnabled = true
+      this.isAlgoAppEnabled = true
     }
 
     if (this.authService.userData.Setting.MailGeneral && this.authService.userData.Setting.MailGeneral == true){

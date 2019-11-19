@@ -52,10 +52,10 @@ export class SharedService {
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    if (!this.authService.userData.LoanPaid){      
+    if (this.authService.userData && !this.authService.userData.LoanPaid){      
       return false
     } 
-    if (this.authService.userData.LoanPaid === true){      
+    if (this.authService.userData && this.authService.userData.LoanPaid === true){      
       return true
     }    
     return false;

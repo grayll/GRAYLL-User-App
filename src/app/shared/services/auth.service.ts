@@ -1,15 +1,12 @@
-import { User } from "../services/user";
-import { auth } from 'firebase/app';
-//import { AngularFireAuth } from "@angular/fire/auth";
+
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Router } from "@angular/router";
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from "rxjs";
-//import { AngularFireDatabase, } from 'angularfire2/database';
+
 import { AngularFireAuth } from "angularfire2/auth";
-import { environment } from '../../../environments/environment';
-import axios from 'axios';
+import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { createHash } from 'crypto';
 
 @Injectable({
@@ -61,36 +58,31 @@ export class AuthService {
   }
 
   constructor(
-    public afs: AngularFirestore,   // Inject Firestore service
-    public firebaseAuth: AngularFireAuth, // Inject Firebase auth service
+    //public afs: AngularFirestore,   // Inject Firestore service
+    //public firebaseAuth: AngularFireAuth, // Inject Firebase auth service
     public router: Router,  
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     public http: HttpClient,
-        
+    public stellarService: StellarService,        
   ) {    
    
   }
   
   isActivated() : boolean {    
-    let seedData = this.GetSeedData()    
+    //let seedData = this.GetSeedData()    
     if (!this.userData.PublicKey || (this.userData.PublicKey && this.userData.PublicKey.trim().length === 0)){      
       return false
-    } else if (seedData){
-      return false
-    }    
+    }
+    // } else if (seedData){
+    //   return false
+    // }    
     return true
   }
   setupTfa(account:string) {
-    //return this.http.get("https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/TfaSetup?account=" + account, { observe: 'response' });
-    //let url = `verifytoken?token=${token}&secret=${secret}`
-    console.log(this.userData.token)
     return this.http.post(`api/v1/users/setuptfa`, { account: account})             
   }
 
-  // deleteTfa() {
-  //   return this.http.delete("http://127.0.0.1:5555/tfa/disable", { observe: 'response' });
-  // }
-
+  
   verifyTfaAuth(token: any, secret: any, exp: Number) {       
     return this.http.post(`api/v1/users/verifytoken`,  { token: token, secret:secret, expire:exp})         
   }
@@ -124,19 +116,30 @@ export class AuthService {
     return false;
   }
 
-  SetSeedData(data:any){
+  SetSeedData(data:any, password: string){
     this.seedData = data
-    localStorage.setItem('seedData', JSON.stringify(this.seedData));  
+    this.stellarService.encryptSecretKey(password, JSON.stringify(this.seedData), (encryptedSeed) => { 
+      sessionStorage.setItem('seedData', JSON.stringify(encryptedSeed));  
+    })
+    
   }
-  GetSeedData(): any {
-    let data = localStorage.getItem('seedData');
+  GetSeedData(password: string, cb) {
+    let data = sessionStorage.getItem('seedData');
     if (data){
-      this.seedData = JSON.parse(data); 
+      let encryptedData = JSON.parse(data); 
+      this.stellarService.decryptSecretKey(password, 
+        {Salt: encryptedData.Salt, EncryptedSecretKey:encryptedData.EnSecretKey}, 
+        SecKey => {
+        if (SecKey != 'Decryption failed!'){
+          this.seedData = JSON.parse(this.stellarService.SecretBytesToString(SecKey))
+          cb(this.seedData)
+        }
+      })      
     } 
-    return this.seedData
+    //return this.seedData
   }
   RemoveSeedData(){
-    localStorage.removeItem('seedData');  
+    sessionStorage.removeItem('seedData');  
     this.seedData = null  
   }
   
@@ -158,13 +161,13 @@ export class AuthService {
   /* Setting up user data when sign in with username/password, 
   sign up with username/password and sign in with social auth  
   provider in Firestore database using AngularFirestore + AngularFirestoreDocument service */
-  SetUserData(user) {
-    console.log('SetUserData ')
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);        
-    return userRef.set(user, {
-      merge: true
-    })
-  }
+  // SetUserData(user) {
+  //   console.log('SetUserData ')
+  //   const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);        
+  //   return userRef.set(user, {
+  //     merge: true
+  //   })
+  // }
   // Sign out 
   SignOut() {
     

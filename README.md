@@ -21,10 +21,10 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Build option to fix error
 When build with command `ng build --prod`, there is an unspecific error.
-`ng build --prod --aot=false --build-optimizer=false`
-`ng build --prod --configuration production --aot=false --build-optimizer=false`
-`ng build --prod --configuration production --aot --build-optimizer=false`
-`http-server -p 8081 -c-1 dist/code`
+ng build --prod --aot=false --build-optimizer=false
+ng build --prod --configuration production --aot=false --build-optimizer=false
+ng build --prod --configuration production --aot --build-optimizer=false
+http-server -p 8081 -c-1 dist/code
 
 ## Push notice
 

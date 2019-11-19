@@ -8,7 +8,7 @@ import { AuthService } from "../../shared/services/auth.service"
 import { User, Setting } from "../../shared/services/user";
 import { StellarService } from '../services/stellar-service';
 import axios from 'axios';
-import { NgxUiLoaderModule } from  'ngx-ui-loader';
+import { ReCaptchaV3Service } from 'ng-recaptcha';
 import * as naclutil from 'tweetnacl-util'
 import {environment} from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -34,7 +34,7 @@ export class RegisterComponent implements OnInit {
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
     private router: Router, public authService: AuthService,
-    private stellarService: StellarService,
+    private recaptchaV3Service: ReCaptchaV3Service,
     private ngZone:NgZone,
     private http: HttpClient,
   ) {
@@ -127,45 +127,50 @@ registerClicked() {
       return;
   }
   
-  let pair = this.stellarService.generateKeyPair();
-    this.stellarService.encryptSecretKey(this.registerForm.value['password'], pair.rawSecretKey(), (encryptedSecret) => {    
-      this.stellarService.hashPassword(this.registerForm.value['password'], hash => {
-        const setting: Setting = {IpConfirm:true}
-        let userData = {
-          //Token:token,
-          //Uid: res.user.uid,
-          Email: this.registerForm.value['email'],
-          HashPassword: this.registerForm.value['password'],
-          Name: this.registerForm.value['name'],  
-          LName: this.registerForm.value['lname'],  
-          Setting: setting,
-          //PublicKey: pair.publicKey(),              
-          //EncryptedSecretKey: encryptedSecret.EncryptedSecretKey,
-          //SecretKeySalt: encryptedSecret.Salt,
-        }
-        console.log(userData)      
+  // let pair = this.stellarService.generateKeyPair();
+  //   this.stellarService.encryptSecretKey(this.registerForm.value['password'], pair.rawSecretKey(), (encryptedSecret) => {    
+  //     this.stellarService.hashPassword(this.registerForm.value['password'], hash => {
+  //       const setting: Setting = {IpConfirm:true}
         
-        this.http.post(`api/v1/accounts/register`, userData)             
-        .subscribe(res => {  
-          if ((res as any).errCode == environment.EMAIL_IN_USED)  {
-            let content = "The email entered is already registered."
-            this.errorService.handleError(null, content)
-            this.registerForm.reset() 
-          } else {    
-            this.ngZone.run(() => {                    
-              this.router.navigate(['/login/confirm-email'], { state: { email: this.registerForm.value['email'],
-                name: this.registerForm.value['name']}})
-            }) 
+  //     })    
+  //   })        
+  // }
+  this.recaptchaV3Service.execute('register')
+    .subscribe((token) => {
+      // Verify token 
+      axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
+        headers: { Authorization: "Bearer " + token }
+      }).then(response => {      
+        if (response.data.status === 'success'){ 
+          let userData = {            
+            Email: this.registerForm.value['email'],
+            HashPassword: this.registerForm.value['password'],
+            Name: this.registerForm.value['name'],  
+            LName: this.registerForm.value['lname'],           
           }
-        }),
-        error => {
-          console.log(error) 
-          this.registerForm.reset()              
-          this.errorService.handleError(null, 'Can not register now. Please try again later!')     
-        }; 
-      })    
-    })        
-  }
+                   
+          this.http.post(`api/v1/accounts/register`, userData)             
+          .subscribe(res => {  
+            if ((res as any).errCode == environment.EMAIL_IN_USED)  {
+              let content = "The email entered is already registered."
+              this.errorService.handleError(null, content)
+              this.registerForm.reset() 
+            } else {    
+              this.ngZone.run(() => {                    
+                this.router.navigate(['/login/confirm-email'], { state: { email: this.registerForm.value['email'],
+                  name: this.registerForm.value['name']}})
+              }) 
+            }
+          }),
+          error => {
+            console.log(error) 
+            this.registerForm.reset()              
+            this.errorService.handleError(null, `Currently, registration can't be processed. Please try again later!`)     
+          }; 
+        }
+      })
+    })
+  }  
 }
 
 

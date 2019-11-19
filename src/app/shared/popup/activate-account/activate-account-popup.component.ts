@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {PopupService} from '../popup.service';
 import {Router} from '@angular/router';
 import {UserService} from '../../../authorization/user.service';
@@ -20,7 +20,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './activate-account-popup.html',
   styleUrls: ['./activate-account-popup.component.scss']
 })
-export class ActivateAccountPopupComponent implements OnInit {
+export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
 
   @ViewChild('content') modal;
   error: boolean;
@@ -66,6 +66,9 @@ export class ActivateAccountPopupComponent implements OnInit {
   ngOnInit() {
     this.buildForm() 
     this.popupService.open(this.modal);
+  }
+  ngOnDestroy(){
+    this.authService.RemoveSeedData()
   }
   buildForm(): void {    
     this.frm = this.formBuilder.group({      
@@ -117,7 +120,7 @@ export class ActivateAccountPopupComponent implements OnInit {
     this.errorService.clearError();
     this.onValueChanged()
 
-    if (!this.authService.GetSeedData()){
+    //if (!this.authService.GetSeedData(this.frm.value['password'])){
       this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
         console.log('phrase:', res.recoveryPhrase)  
         this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
@@ -127,8 +130,8 @@ export class ActivateAccountPopupComponent implements OnInit {
           this.http.post(`api/v1/users/validateaccount`, data).subscribe(resp => {
             console.log(resp)
             if ((resp as any).errCode === environment.SUCCESS){
-              let seedData = {seed: res.recoveryPhrase, publicKey: res.keypair.publicKey(), secret: res.keypair.secret()}
-              this.authService.SetSeedData(seedData)
+              // let seedData = {seed: res.recoveryPhrase, publicKey: res.keypair.publicKey(), secret: res.keypair.secret()}
+              // this.authService.SetSeedData(seedData, this.frm.value['password'])
      
               this.stellarService.trustAsset(res.keypair.secret()).then(
                 txd => {
@@ -167,37 +170,35 @@ export class ActivateAccountPopupComponent implements OnInit {
           }
         })       
       }) 
-    } else {    
-      let data = this.authService.GetSeedData()
-      console.log('this.authService.GetSeedData()', data)
-      if (!data.secret){
-        this.authService.RemoveSeedData()
-        console.log('this.authService.RemoveSeedData()')
-        return
-      }
-      this.stellarService.trustAsset(data.secret).then(
-        txd => {
-          this.hideCloseButton = true;
-          this.firstPopup = false;
-          this.secretKey = data.secret
-          this.seed = data.seed 
-          this.error = false;
-          this.success = true;       
-          this.authService.userData.PublicKey = data.publicKey
-          this.authService.SetLocalUserData() 
-          this.authService.RemoveSeedData()
-        },
-        err => {
-          console.log('err trust asset:', err)        
-          this.error = true;
-          this.success = false;
-        }
-      ).catch(e => {
-        console.log('trustAsset.create error: ', e)
-        this.error = true;
-        this.success = false;
-      })
-    }        
+    // } else {    
+    //   let data = this.authService.GetSeedData()      
+    //   if (!data.secret){
+    //     this.authService.RemoveSeedData()        
+    //     return
+    //   }
+    //   this.stellarService.trustAsset(data.secret).then(
+    //     txd => {
+    //       this.hideCloseButton = true;
+    //       this.firstPopup = false;
+    //       this.secretKey = data.secret
+    //       this.seed = data.seed 
+    //       this.error = false;
+    //       this.success = true;       
+    //       this.authService.userData.PublicKey = data.publicKey
+    //       this.authService.SetLocalUserData() 
+    //       this.authService.RemoveSeedData()
+    //     },
+    //     err => {
+    //       console.log('err trust asset:', err)        
+    //       this.error = true;
+    //       this.success = false;
+    //     }
+    //   ).catch(e => {
+    //     console.log('trustAsset.create error: ', e)
+    //     this.error = true;
+    //     this.success = false;
+    //   })
+    // }        
   }  
  
 
@@ -205,6 +206,7 @@ export class ActivateAccountPopupComponent implements OnInit {
     this.error = false;
     this.success = false;
     this.isSubmitted = false;
+    this.activate()
   }
 
   copySecretKey() {

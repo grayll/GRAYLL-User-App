@@ -134,7 +134,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
       })
 
       this.account.trades().then( ofs => {  
-        console.log('account.offers():', ofs)      
+        //console.log('account.offers():', ofs)      
         this.trades = ofs.records.map((of, index) => {
           let type = 'BUY'
           let asset = of.counter_asset_code
