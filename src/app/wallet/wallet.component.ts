@@ -23,7 +23,7 @@ export class WalletComponent implements OnInit, OnDestroy {
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    console.log('getIsLoanPaid:', this.sharedService.getIsLoanPaid())
+    console.log('getLoanPaid:', this.sharedService.getLoanPaid())
     Promise.all([
       this.stellarService.getCurrentGrxPrice1(),
       this.stellarService.getCurrentXlmPrice1(),

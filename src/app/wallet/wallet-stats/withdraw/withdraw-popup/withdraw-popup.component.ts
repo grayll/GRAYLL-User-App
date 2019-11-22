@@ -96,7 +96,7 @@ export class WithdrawPopupComponent implements OnInit {
   }
 
   populateMaxXLM() {
-    this.XLMValue = this.totalXLM.toString();
+    this.XLMValue = (this.totalXLM - 1.5 - (+this.authService.GetOpenOrder())).toString()
   }
 
   next() {

@@ -120,28 +120,29 @@ export class HandleComponent implements OnInit {
       //this.registerForm.reset() 
       this.content = 'Your account is verified. Now you can login!'
       //this.errorService.handleError(null, this.content) 
-    }),
+    },
     error => {
       console.log(error) 
       this.content = 'Link may be expired. Please verify again!'
       //this.errorService.handleError(null, this.content)    
-    };         
+    })        
   }
   handleChangeEmail(actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
     // parameter.
     // Try to apply the email verification code.
     this.http.get(`api/v1/accounts/validatecode?mode=${mode}&oobCode=${actionCode}`)             
-    .subscribe(res => {              
-      //this.registerForm.reset() 
-      this.content = 'Your new email is confirmed. Please login to new email to verify!'
-      //this.errorService.handleError(null, this.content) 
-    })
-    error => {
-      console.log(error) 
-      this.content = 'Link may be expired. Please verify again!'
-      //this.errorService.handleError(null, this.content)    
-    };         
+    .subscribe(
+      res => {              
+        //this.registerForm.reset() 
+        this.content = 'Your new email is confirmed. Please login to new email to verify!'        
+      },
+      error => {
+        console.log(error) 
+        this.content = 'Link may be expired. Please verify again!'
+        //this.errorService.handleError(null, this.content)    
+      }    
+    )            
   }
   handleConfirmIp(auth, actionCode, mode) {
     // Localize the UI to the selected language as determined by the lang
@@ -152,12 +153,14 @@ export class HandleComponent implements OnInit {
       //this.registerForm.reset() 
       this.content = 'Your account is verified. Now you can login!'
       //this.errorService.handleError(null, this.content) 
-    })
-    ,error => {
-      console.log(error) 
-      this.content = 'Link may be expired. Please verify again!'
-      //this.errorService.handleError(null, this.content)    
-    };         
+      },
+      error => {
+        console.log(error) 
+        this.content = 'Link may be expired. Please verify again!'
+        //this.errorService.handleError(null, this.content)    
+      }
+    )
+            
   }
 
   handleRecoverEmail(auth, actionCode, lang) {
@@ -204,53 +207,31 @@ export class HandleComponent implements OnInit {
     this.ngZone.run(() => {
       this.http.post(`api/v1/accounts/resetpassword`, 
         { oobCode: this.actionCode, newPassword:this.handleForm.value['password']})             
-    .subscribe(res => {  
-      if ((res as any).errCode == environment.SUCCESS)  {
-        this.message = "Your password is reset."
-        this.errorService.handleError(null, this.message)
-        this.handleForm.reset() 
-      } else if((res as any).errCode == environment.EMAIL_NOT_EXIST ){
-        this.message = "The email does not exist."
-        this.errorService.handleError(null, this.message)
-        this.handleForm.reset() 
-       } else if((res as any).errCode == environment.INVALID_CODE ){
-          this.message = "The reset password token is invalid."
+      .subscribe(res => {  
+        if ((res as any).errCode == environment.SUCCESS)  {
+          this.message = "Your password is reset."
           this.errorService.handleError(null, this.message)
           this.handleForm.reset() 
-        
-      } else {   
-        this.handleForm.reset()  
+        } else if((res as any).errCode == environment.EMAIL_NOT_EXIST ){
+          this.message = "The email does not exist."
+          this.errorService.handleError(null, this.message)
+          this.handleForm.reset() 
+        } else if((res as any).errCode == environment.INVALID_CODE ){
+            this.message = "The reset password token is invalid."
+            this.errorService.handleError(null, this.message)
+            this.handleForm.reset()        
+        } else {   
+          this.handleForm.reset()  
+          this.message = 'Can not reset password right now. Please try again later!'
+          this.errorService.handleError(null, this.message);
+        }
+      },
+      error => {
+        console.log(error)               
         this.message = 'Can not reset password right now. Please try again later!'
         this.errorService.handleError(null, this.message);
-      }
-    }),
-    error => {
-      console.log(error) 
-      //this.newPasswordForm.reset()              
-      this.message = 'Can not reset password right now. Please try again later!'
-      this.errorService.handleError(null, this.message);
-    }; 
-      // this.afAuth.auth.confirmPasswordReset(this.actionCode, this.handleForm.value['password']).then(resp => {
-      //   // Password reset has been confirmed and new password updated.
-      //   this.message = 'New password is updated'
-      //   console.log('message:', this.message)
-      //   this.isUpdated = true
-
-      //   // TODO: Display a link back to the app, or sign-in the user directly
-      //   // if the page belongs to the same domain as the app:
-      //   // auth.signInWithEmailAndPassword(accountEmail, newPassword);
-
-      //   // TODO: If a continue URL is available, display a button which on
-      //   // click redirects the user back to the app via continueUrl with
-      //   // additional state determined from that URL's parameters.
-      // }).catch(err =>  {
-      //   // Error occurred during confirmation. The code might have expired or the
-      //   // password is too weak.
-      //   this.message = 'Can not reset password. Please try again later!'
-      //   this.errorService.handleError(null, this.message)
-      // });
-    })
-    
+      })      
+    })    
   }
 
   get f() { return this.handleForm.controls; }

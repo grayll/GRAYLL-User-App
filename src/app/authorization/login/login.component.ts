@@ -43,11 +43,10 @@ export class LoginComponent {
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
     private router: Router,
-    public authService: AuthService, private recaptchaV3Service: ReCaptchaV3Service,
+    public authService: AuthService, 
+    private recaptchaV3Service: ReCaptchaV3Service,
     public notificationsService: NotificationsService,
-    public http: HttpClient,
-    private stellarService: StellarService,
-    private spinnerService: NgxUiLoaderModule,
+    public http: HttpClient,   
     private ngZone:NgZone) {}
 
   ngOnInit(): void {
@@ -118,16 +117,17 @@ export class LoginComponent {
 
   get f() { return this.loginForm.controls; }
 
-  loginClicked() {
-    this.submitted = true;
+  loginClicked() {    
+    if (this.submitted){
+      return
+    }
     this.errorService.clearError()
-    this.onValueChanged() 
-
-    
+    this.onValueChanged()     
     // stop here if form is invalid
     if (this.loginForm.invalid) {
       return;
     }
+    this.submitted = true;
     
     // Execute recaptcha
     console.log('start call recapcha:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
@@ -148,7 +148,8 @@ export class LoginComponent {
               if ((res as any).errCode === environment.SUCCESS) {
                 console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                 this.authService.userData = (res as any).user
-                this.authService.userData.token = (res as any).token                
+                this.authService.userData.token = (res as any).token
+                this.authService.userData.tokenExpiredTime = (res as any).tokenExpiredTime
                 
                 this.authService.hash = this.loginForm.value['password'];
                 this.authService.SetLocalUserData()
@@ -166,8 +167,7 @@ export class LoginComponent {
                     console.log('userData tfa:', this.authService.userData.Tfa)
                     if (this.authService.userData.Tfa.Expire && t <= this.authService.userData.Tfa.Expire && 
                         tfaData && tfaData.Expire && 
-                        tfaData.Expire === this.authService.userData.Tfa.Expire){
-                      //this.router.navigate(['/settings/profile'])
+                        tfaData.Expire === this.authService.userData.Tfa.Expire){                      
                       this.router.navigate(['/dashboard/overview'])
                     } else {
                       this.router.navigate(['/login/two-factor'])
@@ -176,39 +176,38 @@ export class LoginComponent {
                   this.router.navigate(['/dashboard/overview'])
                 } 
               } else if ((res as any).errCode === environment.INVALID_UNAME_PASSWORD){
-                this.errorService.handleError(null, 'Invalid user name or password.') 
-                this.loginForm.reset()
+                this.showError('Invalid user name or password.')                                 
               }  else if((res as any).errCode === environment.UNVERIFIED)  {    
-                this.errorService.handleError(null, 'Please verify your email before login.') 
-                this.loginForm.reset()
+                this.showError('Please verify your email before login.')                                
               }  else if((res as any).errCode === environment.IP_CONFIRM) {    
-                this.errorService.handleError(null, 'Please confirm your ip before login.') 
-                this.loginForm.reset()
+                this.showError('Please confirm your ip before login.')                                
               } 
-            }),
-            error => {
-              //this.spinnerService.stop()
+            },
+            error => {              
               console.log(error)                  
-              this.showError()
-              this.loginForm.reset()    
-            }                 
+              this.showError(null)                             
+            })                
           });  
           
-        } else {
-          //this.spinnerService.stop()
-          this.showError()
-          this.loginForm.reset()  
+        } else {          
+          this.showError(null)
+              
         }
       })
-      .catch(err => {
-        //this.spinnerService.stop()
-        this.showError()
+      .catch(err => {        
+        this.showError(null)        
       })   
     });
   }
 
-  showError(){
-    this.errorService.handleError(null, 'Can not login, please try again later!');
+  showError(msg:string){
+    if (!msg){
+      this.errorService.handleError(null, 'Can not login, please try again later!');
+    } else {
+      this.errorService.handleError(null, msg);
+    }
+    this.loginForm.reset()       
+    this.submitted = false
   }
 
   private clientValidation() {

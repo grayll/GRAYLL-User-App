@@ -1,15 +1,17 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {faCircle, faWallet} from '@fortawesome/free-solid-svg-icons';
 import { StellarService } from '../../authorization/services/stellar-service';
 import { AuthService } from "../../shared/services/auth.service"
 import {SnotifyService} from 'ng-snotify';
+import {SubSink} from 'subsink';
+
 
 @Component({
   selector: 'app-wallet',
   templateUrl: './wallet.component.html',
   styleUrls: ['./wallet.component.scss']
 })
-export class WalletComponent {
+export class WalletComponent implements OnDestroy  {
 
   faWallet = faWallet;
   faCircle = faCircle;
@@ -28,8 +30,6 @@ export class WalletComponent {
   grxP: number
   xlmP: number = 1
 
-  // totalXLM: number;
-  // totalGRX: number;
   gryBalance: number;
   grzBalance: number;
   algoWalletValue: string;
@@ -38,6 +38,7 @@ export class WalletComponent {
   grzValue: string;
   gryUsdValue: string;
   grzUsdValue: string;
+  subs: SubSink
 
   constructor ( 
       private stellarService: StellarService,
@@ -45,30 +46,18 @@ export class WalletComponent {
       private snotifyService: SnotifyService,
     ) 
   {
-    Promise.all([
-      this.stellarService.getCurrentGrxPrice1(),
-      this.stellarService.getCurrentXlmPrice1(),
-      this.stellarService.getAccountData(this.authService.userData.PublicKey)
-      .catch(err => {
-        // Notify internet connection.
-        this.snotifyService.simple('Please check your internet connection.')
-        console.log(err)
-      })
-    ])
-    .then(([ grx, xlm, account ]) => {
-      console.log(grx, xlm)   
-      this.xlmP = +xlm
-      this.grxP = +grx
-      this.stellarService.userAccount = account;   
-      this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
-        this.fillWalletData(res)   
-    })
-    })  
+    this.subs = new SubSink()
+    this.subs.add(this.stellarService.observePrices().subscribe(values => {
+      this.xlmP = values[0]
+      this.grxP = values[1]
+      this.totalXLM = values[2]
+      this.totalGRX = values[3]
+      this.fillWalletData()
+    }))
+   
   }
   
-  fillWalletData(res){
-    this.totalXLM = res.xlm;
-    this.totalGRX = res.grx;
+  fillWalletData(){    
     this.xlmBalance =  this.totalXLM*this.xlmP
     this.grxBalance = this.totalGRX*this.grxP*this.xlmP    
     this.walletBalance = this.xlmBalance + this.grxBalance
@@ -84,7 +73,9 @@ export class WalletComponent {
     this.authService.userData.grxPrice = this.grxP
     this.authService.SetLocalUserData()     
   }
-
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
 }
 
 

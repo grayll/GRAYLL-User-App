@@ -30,11 +30,7 @@ export class ConfirmEmailComponent implements OnInit {
 
   resendEmail() {
     this.didResent = true;    
-    this.http.post(`api/v1/accounts/resendemail`, {email: this.email, name:this.name}, {
-      headers: {
-          'Content-Type': 'application/json',
-      }
-    })             
+    this.http.post(`api/v1/accounts/resendemail`, {email: this.email, name:this.name})             
     .subscribe(res => {  
       let content = ''
       switch ((res as any).errCode){
@@ -49,10 +45,10 @@ export class ConfirmEmailComponent implements OnInit {
             break
       }
       this.errorService.handleError(null, content)
-    }),
+    },
     error => {               
-      this.errorService.handleError(null, 'Can not register now. Please try again later!')     
-    }; 
+      this.errorService.handleError(null, `Currently the request can't be performed. Please try again later!`)     
+    })
   }
 
 }

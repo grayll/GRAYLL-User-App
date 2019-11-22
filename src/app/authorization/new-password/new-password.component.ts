@@ -112,13 +112,13 @@ export class NewPasswordComponent {
         this.message = 'We have sent password reset to your email!'
         this.errorService.handleError(null, this.message);
       }
-    }),
+    },
     error => {
       console.log(error) 
       this.newPasswordForm.reset()              
       this.message = 'Can not sent mail for password reset!'
       this.errorService.handleError(null, this.message);     
-    };     
+    })     
   } 
 
 }

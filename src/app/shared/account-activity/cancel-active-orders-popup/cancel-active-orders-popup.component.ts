@@ -36,7 +36,7 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
     this.stellarService.decryptSecretKey(this.authService.hash, 
       {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
       key => {
-        if (key === 'Decryption failed!'){ 
+        if (key === ''){ 
           this.snotifyService.simple('Invalid key')         
         } else { 
           let keyStr  = this.stellarService.SecretBytesToString(key)
@@ -49,6 +49,7 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
           Promise.all(promises).then(()=> {
             this.stellarService.allOffers.splice(0,this.stellarService.allOffers.length)
             this.popupService.close();
+            this.authService.SetOpenOrder(0)
             }
           ).catch(e => {
             console.log('cancelAllOffer error:', e)

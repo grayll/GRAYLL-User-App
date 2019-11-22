@@ -28,8 +28,8 @@ export class SharedService {
     this.modalOverlay = false;
   }
 
-  public setIsLoan(value: boolean) {
-    this.authService.userData.LoanPaid = true;
+  public setLoanPaid() {
+    this.authService.userData.LoanPaidStatus = 2;
     this.authService.SetLocalUserData()
   }
 
@@ -48,14 +48,14 @@ export class SharedService {
     doc.save(fileName);
   }
 
-  public getIsLoanPaid() { 
+  public getLoanPaid() { 
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    if (this.authService.userData && !this.authService.userData.LoanPaid){      
+    if (this.authService.userData && !this.authService.userData.LoanPaidStatus){      
       return false
     } 
-    if (this.authService.userData && this.authService.userData.LoanPaid === true){      
+    if (this.authService.userData && this.authService.userData.LoanPaidStatus === 2){      
       return true
     }    
     return false;

@@ -14,6 +14,7 @@ import { environment } from 'src/environments/environment';
 const bip39 = require('bip39')
 var naclutil = require('tweetnacl-util');
 import { HttpClient } from '@angular/common/http';
+import {SwPush} from "@angular/service-worker";
 
 @Component({
   selector: 'app-pay-loan-popup',
@@ -42,7 +43,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
   constructor(
     private popupService: PopupService,
     private router: Router,
-    private userService: UserService,
+    private swPush: SwPush,
     public authService: AuthService,
     private stellarService: StellarService,
     private formBuilder: FormBuilder,
@@ -127,7 +128,8 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
           let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
             enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
                 
-          this.http.post(`api/v1/users/validateaccount`, data).subscribe(resp => {
+          this.http.post(`api/v1/users/validateaccount`, data)
+          .subscribe(resp => {
             console.log(resp)
             if ((resp as any).errCode === environment.SUCCESS){
               // let seedData = {seed: res.recoveryPhrase, publicKey: res.keypair.publicKey(), secret: res.keypair.secret()}
@@ -144,6 +146,10 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
                   this.authService.userData.PublicKey = res.keypair.publicKey()
                   this.authService.SetLocalUserData() 
                   this.authService.RemoveSeedData()
+                  if (this.swPush.isEnabled && !this.authService.userData.Subs){
+                    console.log('request subs')
+                    this.requestSubNotifications()
+                  } 
                 },
                 err => {
                   console.log('err trust asset:', err)                 
@@ -162,12 +168,12 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
               this.frm.reset()
               this.errorService.handleError(null, "Can not activate account right now. Please try again later!")
             }
-          }),
+          },
           err => {
             console.log(err)
             this.error = true;
             this.success = false;
-          }
+          })
         })       
       }) 
     // } else {    
@@ -207,6 +213,36 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     this.success = false;
     this.isSubmitted = false;
     this.activate()
+  }
+
+  //Its easy to navigate to page using angular router, btw (instead of window.open) but this is not solution in case PWA is not running already.
+  //this.router.navigateByUrl(notpayload.notification.data.url)
+  requestSubNotifications() {    
+    const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
+    this.swPush.requestSubscription({
+        serverPublicKey: VAPID_PUBLIC_KEY
+    }).then(sub => { 
+      //https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription/getKey
+      // let p256dh = sub.getKey('p256dh');
+      // let auth = sub.getKey('auth');
+      // console.log('sub:',sub)
+
+      // console.log("p256dh-applicationServerKey:", p256dh)
+      // console.log("auth-applicationServerKey:", auth)
+
+      // let subs = { endpoint: sub.endpoint, keys:{p256dh: this.ToBase64(p256dh), auth: this.ToBase64(auth)}}
+      
+      this.http.post(`api/v1/users/savesubcriber`, sub).subscribe(res => {
+        if ((res as any).errCode == environment.SUCCESS){
+          console.log("subs are saved")
+        }
+      },
+      err => {
+        console.log("subs err:", err)
+      })
+    }).catch(err => 
+      { console.error("Could not subscribe to notifications", err)}
+    );
   }
 
   copySecretKey() {

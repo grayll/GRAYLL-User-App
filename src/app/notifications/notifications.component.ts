@@ -97,22 +97,20 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           this.readAlgoNoticeIds = []
           this.readGeneralNoticeIds = []
           console.log("Updated read notice ids")
-        }
-        console.log(res)
-      }),
+        }        
+      },
       e => {
         console.log(e)
-      }
+      })
       if (!this.authService.userData){
         this.authService.GetLocalUserData()
-      }
-       
+      }       
     }
   }
 
   private populateNotifications() {
-    this.http.post(`api/v1/users/notices`, {}).subscribe(res => {
-      console.log(res)
+    this.http.post(`api/v1/users/notices`, {})
+    .subscribe(res => {      
       let url = 'https://stellar.expert/explorer/public/'
       if (environment.horizon_url.includes('testnet')){
         url = 'https://stellar.expert/explorer/testnet/'
@@ -144,10 +142,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
       this.populateNumberOfUnreadNotifications();
 
-    }),
+    },
     e => {
       console.log(e)
-    }
+    })
   }
 
   populateNumberOfUnreadNotifications() {

@@ -161,12 +161,12 @@ registerClicked() {
                   name: this.registerForm.value['name']}})
               }) 
             }
-          }),
+          },
           error => {
             console.log(error) 
             this.registerForm.reset()              
             this.errorService.handleError(null, `Currently, registration can't be processed. Please try again later!`)     
-          }; 
+          })
         }
       })
     })

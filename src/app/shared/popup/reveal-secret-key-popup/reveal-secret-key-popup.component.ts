@@ -35,7 +35,8 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    this.http.post(`api/v1/users/getFieldInfo`, {tfa:'get', action:'reveal'}).subscribe(res => {
+    this.http.post(`api/v1/users/getFieldInfo`, {tfa:'get', action:'reveal'})
+    .subscribe(res => {
       if ((res as any).errCode == environment.SUCCESS){
         this.tfaEnable = (res as any).tfa;
         if (this.tfaEnable){
@@ -45,11 +46,11 @@ export class RevealSecretKeyPopupComponent implements OnInit {
         this.errorService.handleError(null, `Currently the request can't not be performed. Please try again later!`);
       }
       console.log((res as any)) 
-    }),
+    },
     e => {
       console.log(e)
       this.errorService.handleError(null, `Currently the request can't not be performed. Please try again later!`);
-    } 
+    } )
   }
 
   ngOnInit() {
@@ -61,18 +62,19 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     
     if (!this.tfaEnable){
       //send request token to email
-      this.http.post(`api/v1/users/sendRevealSecretToken`, {}).subscribe(res => {
+      this.http.post(`api/v1/users/sendRevealSecretToken`, {})
+      .subscribe(res => {
         if ((res as any).errCode == environment.SUCCESS){
           //this.tfaEnable = (res as any).tfa;
         } else {
           this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
         } 
         console.log((res as any))        
-      }),
+      },
       e => {
         console.log(e)
         this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
-      }
+      })
     }
 
     if (this.authService.hash){
@@ -90,7 +92,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
             this.stellarService.decryptSecretKey(this.password, 
               {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
               SecKey => {
-              if (SecKey != 'Decryption failed!'){
+              if (SecKey != ''){
                 this.popupService.close().then(() => {
                   this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
                 });
@@ -116,12 +118,13 @@ export class RevealSecretKeyPopupComponent implements OnInit {
       } else {
         //send request token to email
         
-        this.http.post(`api/v1/users/verifyRevealSecretToken`, {token:this.code}).subscribe(res => {
+        this.http.post(`api/v1/users/verifyRevealSecretToken`, {token:this.code})
+        .subscribe(res => {
           if ((res as any).errCode == environment.SUCCESS){
             this.stellarService.decryptSecretKey(this.password, 
               {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
               SecKey => {
-              if (SecKey != 'Decryption failed!'){               
+              if (SecKey != ''){               
                 this.popupService.close().then(() => {
                   this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
                 });
@@ -134,11 +137,11 @@ export class RevealSecretKeyPopupComponent implements OnInit {
           }
           console.log((res as any))          
           // 
-        }),
+        },
         e => {
           console.log(e)
           this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
-        }
+        })
       }
           
     }

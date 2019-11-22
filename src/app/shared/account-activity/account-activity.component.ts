@@ -4,16 +4,16 @@ import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
 import {SubSink} from 'subsink';
 var StellarSdk = require('stellar-sdk')
-import {OrderModel} from './models/order.model';
+//import {OrderModel} from './models/order.model';
 import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { SharedService } from 'src/app/shared/shared.service';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { environment } from 'src/environments/environment';
-import {TransfersModel} from './models/transfers.model';
-import {NetworkHistoryModel} from './models/network-history.model';
-import { deflate } from 'zlib';
+// import {TransfersModel} from './models/transfers.model';
+// import {NetworkHistoryModel} from './models/network-history.model';
+// import { deflate } from 'zlib';
 
 @Component({
   selector: 'app-account-activity',
@@ -92,8 +92,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
       this.xlmP = +xlm
       //console.log('acc-activity received Prices:', prices)
       this.account = this.stellarService.userAccount
-      this.account.offers().then( ofs => {  
-        //console.log('account.offers():', ofs)      
+      this.account.offers().then( ofs => {              
         this.stellarService.allOffers = ofs.records.map((of, index) => {
           let type = 'BUY'
           let asset = 'GRX'
@@ -124,17 +123,21 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
               offerId: of.id,
             });
           }
-
+          console.log('offer:', of)
+          let grxXlmP = of.price_r.d/of.price_r.n
           let time = moment.utc(of.last_modified_time).local().format('DD/MM/YYYY HH:mm:ss')
-          return {time: time, type:type, asset:asset, amount:of.amount, xlmp: of.price, 
-            totalxlm: of.amount*of.price, grxp: this.grxP*this.xlmP, totalusd: of.amount*of.price*this.xlmP, cachedOffer: cachedOffer, index:index}
+          return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
+            totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, cachedOffer: cachedOffer, index:index}
+
+          // return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
+          //     totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, cachedOffer: cachedOffer, index:index}
         })       
         this.offers = this.stellarService.allOffers 
         //this.openOrders = this.offers.length
       })
 
       this.account.trades().then( ofs => {  
-        //console.log('account.offers():', ofs)      
+        console.log('account.trades():', ofs)      
         this.trades = ofs.records.map((of, index) => {
           let type = 'BUY'
           let asset = of.counter_asset_code
@@ -145,9 +148,9 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
 
           if (of.base_account === this.authService.userData.PublicKey){
             if (of.base_is_seller === true){
-              type = 'BUY'
-            } else {
               type = 'SELL'
+            } else {             
+              type = 'BUY'
             }            
           } else {
             if (of.base_is_seller === true){
@@ -161,10 +164,18 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
           if (environment.horizon_url.includes('testnet')){
             url = 'https://stellar.expert/explorer/testnet/'
           }
-          url = url+'ledger/'+of.offer_id
+          url = url+'ledger/'+of.counter_offer_id
+          console.log('of.counter_offer_id:', of.counter_offer_id)
+          console.log('of.base_offer_id:', of.base_offer_id)
+          let grxXlmP = of.price.d/of.price.n
           let time = moment.utc(of.ledger_close_time).local().format('DD/MM/YYYY HH:mm:ss')
-          return {time: time, type:type, asset:asset, amount:of.counter_amount, filled:'100%', xlmp: of.price.d/of.price.n, 
-            totalxlm: of.base_amount, grxp: this.grxP*this.xlmP, totalusd: of.base_amount*this.xlmP, index:index, url:url}
+          return {time: time, type:type, asset:asset, amount:of.counter_amount, filled:'100%', xlmp: grxXlmP, 
+            totalxlm: of.base_amount, priceusd: grxXlmP*this.xlmP, totalusd: of.base_amount*this.xlmP, index:index, url:url}
+            
+           // let time = moment.utc(of.last_modified_time).local().format('DD/MM/YYYY HH:mm:ss')
+          // return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
+          //   totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, cachedOffer: cachedOffer, index:index}
+
         })          
       })            
     })
@@ -193,7 +204,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     switch (table){
       case "order":
         columns = ['Date',	'Type',	'Asset',	'Amount',	'Filled',	'Price (XLM)',	'Total Price (XLM)',	'Price (USD)',	'Total Price (USD)', 'URL']
-        fields = ['time','type','asset','amount', 'filled','xlmp','totalxlm','grxp', 'totalusd', 'url']
+        fields = ['time','type','asset','amount', 'filled','xlmp','totalxlm','priceusd', 'totalusd', 'url']
         fileName = "OrderHistory.PDF"
         data = this.offers            
         break
@@ -224,18 +235,18 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     this.stellarService.decryptSecretKey(this.authService.hash, 
       {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
       key => {
-        if (key === 'Decryption failed!'){ 
+        if (key === ''){ 
           this.snotifyService.simple('Invalid key')         
         } else {         
           this.stellarService.cancelOffer(this.account, this.stellarService.SecretBytesToString(key), offer).then(res=>
             {               
               this.stellarService.allOffers.splice(index, 1)
-              //this.openOrders--
+              this.authService.SetOpenOrder(-1)
             }
 
           ).catch(e => {
             console.log('cancelOffer error:', e)
-            this.snotifyService.simple('Can not cancel offer now. Please try again later!')
+            this.snotifyService.simple(`Currently the order can't be cancelled. Please try again later!`)
           })
         }
       }  
@@ -285,46 +296,50 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     this.selectedTab = this.activityTabs.find((t) => t.id === id);
     switch (id){
       case 'allOrders':
-          this.account.offers().then( ofs => {  
-            //console.log('account.offers():', ofs)      
-            this.stellarService.allOffers = ofs.records.map((of, index) => {
-              let type = 'BUY'
-              let asset = 'GRX'
-              
-              if (of.buying.asset_type == 'native'){
-                type = 'SELL'
-                asset = of.selling.asset_code
-              } else {
-                asset = of.buying.asset_code
-              }
-              let buying = this.parseAsset(of.buying);
-              let selling = this.parseAsset(of.selling);
-              let cachedOffer
-              if (type == 'SELL'){
-                cachedOffer = StellarSdk.Operation.manageSellOffer({
-                  buying: buying,
-                  selling: selling,
-                  amount: '0',
-                  price: of.price_r,
-                  offerId: of.id,
-                });
-              } else {
-                cachedOffer = StellarSdk.Operation.manageBuyOffer({
-                  buying: buying,
-                  selling: selling,
-                  buyAmount: '0',
-                  price: of.price_r,
-                  offerId: of.id,
-                });
-              }
-    
-              let time = moment.utc(of.last_modified_time).local().format('DD/MM/YYYY HH:mm:ss')
-              return {time: time, type:type, asset:asset, amount:of.amount, xlmp: of.price, 
-                totalxlm: of.amount*of.price, grxp: this.grxP*this.xlmP, totalusd: of.amount*of.price*this.xlmP, cachedOffer: cachedOffer, index:index}
-            })       
-            this.offers = this.stellarService.allOffers             
-          })
-          break;
+        this.account.offers().then( ofs => {  
+          console.log('account.offers():', ofs)      
+          this.stellarService.allOffers = ofs.records.map((of, index) => {
+            let type = 'BUY'
+            let asset = 'GRX'
+            
+            if (of.buying.asset_type == 'native'){
+              type = 'SELL'
+              asset = of.selling.asset_code
+            } else {
+              asset = of.buying.asset_code
+            }
+            let buying = this.parseAsset(of.buying);
+            let selling = this.parseAsset(of.selling);
+            let cachedOffer
+            if (type == 'SELL'){
+              cachedOffer = StellarSdk.Operation.manageSellOffer({
+                buying: buying,
+                selling: selling,
+                amount: '0',
+                price: of.price_r,
+                offerId: of.id,
+              });
+            } else {
+              cachedOffer = StellarSdk.Operation.manageBuyOffer({
+                buying: buying,
+                selling: selling,
+                buyAmount: '0',
+                price: of.price_r,
+                offerId: of.id,
+              });
+            }
+            //console.log('offer:', of)
+            let grxXlmP = of.price_r.d/of.price_r.n
+            let time = moment.utc(of.last_modified_time).local().format('DD/MM/YYYY HH:mm:ss')
+            return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
+              totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, cachedOffer: cachedOffer, index:index}
+  
+            // return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
+            //     totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, cachedOffer: cachedOffer, index:index}
+          })       
+          this.offers = this.stellarService.allOffers          
+        })
+        break;
       case 'transfers':
         if (this.account){
           this.account.payments().then(pms => {

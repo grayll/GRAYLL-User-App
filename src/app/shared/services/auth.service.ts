@@ -18,34 +18,54 @@ export class AuthService {
   tfa$ = new BehaviorSubject<any>({})
   hash: string
   seedData: any
-  //user: AngularFirestoreDocument<User>;
+  // xlm loan paid ledger id
+  loanPaidLedgerId: any
+  openOrders: number
 
-  // get UserData():any {
-  //   if (!this.userData){
-  //     this.GetLocalUserData()
-  //   }
-  //   return this.userData
-  // }
-  // set UserData(userData:any){
-  //   this.userData = userData
-  //   this.SetLocalUserData()
-  // }
-
+  SetLoanPaidLedgerId(id){
+    this.loanPaidLedgerId = id
+    localStorage.setItem('loanPaidLedgerId', this.loanPaidLedgerId);   
+  }
+  GetLoadPaidLedgerId(){
+    if (!this.loanPaidLedgerId){
+      this.loanPaidLedgerId = localStorage.getItem('loanPaidLedgerId')
+    }
+    return this.loanPaidLedgerId
+  }
+  SetOpenOrder(id){
+    if (id == 0){
+      this.openOrders = 0
+    } else {
+      this.openOrders += id
+    }
+    if (this.openOrders < 0){
+      this.openOrders = 0
+    }
+    localStorage.setItem('openOrders', this.openOrders.toString());   
+  }
+  GetOpenOrder():number{
+    if (!this.openOrders){
+      this.openOrders = +localStorage.getItem('openOrders')
+    }
+    if (!this.openOrders){
+      this.openOrders = 0
+    }
+    return this.openOrders
+  }
+  
   GetLocalUserData():any {    
     if (!this.userData){
-      let data = localStorage.getItem('user');
-      this.userData = JSON.parse(data);  
-      //console.log('get from localstorage:', this.userData)  
-    } else {
-      //console.log('get from userData:', this.userData)  
-      return this.userData
+      let data = localStorage.getItem('grayll-user');
+      if (data){
+        this.userData = JSON.parse(data); 
+      }      
     }   
     return this.userData
   }
   
   SetLocalUserData(){
     if (this.userData){
-      localStorage.setItem('user', JSON.stringify(this.userData));       
+      localStorage.setItem('grayll-user', JSON.stringify(this.userData));       
     }    
   }
 
@@ -58,8 +78,7 @@ export class AuthService {
   }
 
   constructor(
-    //public afs: AngularFirestore,   // Inject Firestore service
-    //public firebaseAuth: AngularFireAuth, // Inject Firebase auth service
+    
     public router: Router,  
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     public http: HttpClient,
@@ -104,6 +123,17 @@ export class AuthService {
     }
     return false
   }
+
+  isTokenExpired(){
+    let currentTs = Math.round(new Date().getTime()/1000)
+    if (!this.userData){
+      this.GetLocalUserData()
+    }
+    if (this.userData && currentTs >= this.userData.tokenExpiredTime){
+      return true
+    }
+    return false
+  }
   
   // Returns true when user is looged in and email is verified
   get isLoggedIn(): boolean {    
@@ -130,7 +160,7 @@ export class AuthService {
       this.stellarService.decryptSecretKey(password, 
         {Salt: encryptedData.Salt, EncryptedSecretKey:encryptedData.EnSecretKey}, 
         SecKey => {
-        if (SecKey != 'Decryption failed!'){
+        if (SecKey != ''){
           this.seedData = JSON.parse(this.stellarService.SecretBytesToString(SecKey))
           cb(this.seedData)
         }

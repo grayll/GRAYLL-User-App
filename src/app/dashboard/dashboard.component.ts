@@ -7,8 +7,9 @@ import {SharedService} from '../shared/shared.service';
 import { AuthService } from "../shared/services/auth.service"
 import { environment } from 'src/environments/environment';
 import {SubSink} from 'subsink';
-
-import {SwPush, SwUpdate} from "@angular/service-worker";
+import { StellarService } from '../authorization/services/stellar-service';
+import {SnotifyService} from 'ng-snotify';
+import {SwPush} from "@angular/service-worker";
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -22,18 +23,80 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // Font Awesome Icons
   faWarning = faExclamationTriangle;
+  xlmP: number
+  grxP: number
+  totalXLM: number
+  totalGRX: number
+  totalGRY: number
+  totalGRZ: number
+
+  // constructor(
+  //   public sharedService: SharedService,
+  //   public stellarService: StellarService,
+  //   public authService: AuthService,
+  //   private snotifyService: SnotifyService,
+  // ) {
+  //   if (!this.authService.userData){
+  //     this.authService.GetLocalUserData()
+  //   }
+  //   console.log('getLoanPaid:', this.sharedService.getLoanPaid())
+  //   Promise.all([
+  //     this.stellarService.getCurrentGrxPrice1(),
+  //     this.stellarService.getCurrentXlmPrice1(),
+  //     this.stellarService.getAccountData(this.authService.userData.PublicKey)
+  //     .catch(err => {
+  //       // Notify internet connection.
+  //       this.snotifyService.simple('Please check your internet connection.')
+  //       console.log(err)
+  //     })
+  //   ])
+  //   .then(([ grx, xlm, account ]) => {
+  //     console.log(grx, xlm)      
+  //     this.stellarService.userAccount = account;
+  //     this.stellarService.publishPrices([+grx,+xlm])
+      
+  //   })
+  //  }
 
   constructor(
-    private userService: UserService,
+    private swPush: SwPush,
+    private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
     public sharedService: SharedService,
-    public authService: AuthService,
-    private swPush: SwPush,
-    private http: HttpClient,
+    public authService: AuthService,    
+    private snotifyService: SnotifyService,
+    public stellarService: StellarService,
 
   ) {
-    //this.user = this.userService.getUser();
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
+    }
+    console.log('getLoanPaid:', this.sharedService.getLoanPaid())
+    if (this.authService.isActivated()){
+      Promise.all([
+        this.stellarService.getCurrentGrxPrice1(),
+        this.stellarService.getCurrentXlmPrice1(),
+        this.stellarService.getAccountData(this.authService.userData.PublicKey)
+        .catch(err => {
+          // Notify internet connection.
+          this.snotifyService.simple('Please check your internet connection.')
+          console.log(err)
+        })
+      ])
+      .then(([ grx, xlm, account ]) => {
+        console.log(grx, xlm)   
+        this.xlmP = +xlm
+        this.grxP = +grx
+        this.stellarService.userAccount = account;   
+        this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
+          //this.fillWalletData(res) 
+          this.totalXLM = res.xlm;
+          this.totalGRX = res.grx;  
+          this.stellarService.publishPrices([this.xlmP, this.grxP, this.totalXLM, this.totalGRX])
+        })
+      }) 
+    } 
   }
 
   ngOnInit(): void {
@@ -47,10 +110,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     } else {   
       console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
       console.log('this.authService.userData:', this.authService.userData) 
-      if (this.swPush.isEnabled && !this.authService.userData.Subs){
-        console.log('request subs')
-        this.requestSubNotifications()
-      }      
+      // if (this.swPush.isEnabled && !this.authService.userData.Subs){
+      //   console.log('request subs')
+      //   this.requestSubNotifications()
+      // }      
     }  
 
   }
@@ -72,8 +135,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   
   //Its easy to navigate to page using angular router, btw (instead of window.open) but this is not solution in case PWA is not running already.
   //this.router.navigateByUrl(notpayload.notification.data.url)
-  requestSubNotifications() {
-    
+  requestSubNotifications() {    
     const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
     this.swPush.requestSubscription({
         serverPublicKey: VAPID_PUBLIC_KEY
@@ -88,14 +150,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       // let subs = { endpoint: sub.endpoint, keys:{p256dh: this.ToBase64(p256dh), auth: this.ToBase64(auth)}}
       
-      this.http.post(`api/v1/users/savesubcriber`, sub).subscribe(res => {
+      this.http.post(`api/v1/users/savesubcriber`, sub)
+      .subscribe(res => {
         if ((res as any).errCode == environment.SUCCESS){
           console.log("subs are saved")
         }
-      }),
+      },
       err => {
         console.log("subs err:", err)
-      }
+      })
     }).catch(err => 
       { console.error("Could not subscribe to notifications", err)}
     );

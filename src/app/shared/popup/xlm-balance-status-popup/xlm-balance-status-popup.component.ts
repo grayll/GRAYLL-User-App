@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {PopupService} from '../popup.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 @Component({
   selector: 'app-xlm-balance-status-popup',
@@ -9,10 +10,16 @@ import {PopupService} from '../popup.service';
 export class XlmBalanceStatusPopupComponent implements OnInit {
 
   @ViewChild('content') modal;
+  openOrderReserved: number
 
   constructor(
-    public popupService: PopupService
-  ) { }
+    public popupService: PopupService,
+    public authService: AuthService,
+  ) { 
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
+    }
+  }
 
   ngOnInit() {
     this.popupService.open(this.modal);

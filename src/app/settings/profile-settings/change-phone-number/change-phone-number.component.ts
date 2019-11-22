@@ -81,10 +81,10 @@ export class ChangePhoneNumberComponent implements OnInit {
         } else if ((res as any).errCode === environment.INTERNAL_ERROR){
           this.errorService.handleError(null, 'Can not verify phone number now. Please try again later!');
         } 
-      }),
+      },
       e => {
         this.errorService.handleError(null, 'Can not verify phone number now. Please try again later!');
-      }
+      })
       // this.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
       //   'size': 'invisible',
       //   'callback': function(response) {

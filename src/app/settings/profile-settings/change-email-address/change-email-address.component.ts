@@ -106,12 +106,12 @@ export class ChangeEmailAddressComponent implements OnInit {
           }
           
         }
-      }),
+      },
       error => {        
         console.log(error)                  
         this.errorService.handleError(null, `Currently the email address can't be updated. Please try again later!`);
         this.form.reset()    
-      };            
+      })           
     }
   }
 

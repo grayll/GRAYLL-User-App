@@ -37,6 +37,10 @@ export class StellarService {
         this.nativeAsset = StellarSdk.Asset.native()
     }
 
+    public getNativeAsset(){
+        return StellarSdk.Asset.native()
+    }
+
     // public observeAccount(): Observable<Account> {
     //     if (!this.account){
     //         this.account = new Subject<Account>()
@@ -142,13 +146,13 @@ export class StellarService {
     buyOrder(accSeed: string, p: string, amount: string): Promise<any> {
         return new Promise((resolve, reject) => {
             let source = StellarSdk.Keypair.fromSecret(accSeed);
-            this.horizon.accounts()
-            .accountId(source.publicKey())
-            .call()
-            .then(({ sequence }) => {
-                const account = new StellarSdk.Account(source.publicKey(), sequence)
+            // this.horizon.accounts()
+            // .accountId(source.pupriceblicKey())
+            // .call()
+            // .then(({ sequence }) => {
+                 //const account = new StellarSdk.Account(source.publicKey(), sequence)
                 // 2. Load current source account state from Horizon server
-                // let sourceAccount = this.horizon.loadAccount(source.publicKey());
+                this.horizon.loadAccount(source.publicKey()).then(account => {  
 
                 
                 // 3. Create a transaction builder
@@ -222,10 +226,10 @@ export class StellarService {
                 offerId: of.id,
             });
         }
-        let grxXlmP = of.price.n/of.price.d
+        let grxXlmP = of.price.d/of.price.n
         let time = moment().subtract(1, 'seconds').local().format('DD/MM/YYYY HH:mm:ss')
-        return {time: time, type:type, asset:asset, amount:of.amount, xlmp: grxXlmP, 
-        totalxlm: of.amount*grxXlmP, grxp: grxP, totalgrx: of.amount*grxXlmP*xlmP, cachedOffer: cachedOffer, index:index}
+        return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
+        totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, cachedOffer: cachedOffer, index:index}
     }
     // // https://horizon-testnet.stellar.org/accounts/GCLPAXUV7XWZNLJQIQ3723ZBA2WFQHEGBQ3TFDUPRL733FDM5HV7KPOO/offers
     // getOffer(account: string, limit: number, offet: number): Promise<any>{
@@ -249,62 +253,74 @@ export class StellarService {
     //         })
     //     })
     // }
-
+    // sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string) {
+    //     return new Promise((resolve, reject) => {
+    //        let source = StellarSdk.Keypair.fromSecret(accSeed);            
+    //        this.horizon.loadAccount(source.publicKey())
+    //        .then( account => {      
+    //            console.log('sendAsset- account:', account)                                        
+    //             let tx = new StellarSdk.TransactionBuilder(account, 
+    //                 {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})               
+    //             .addOperation(StellarSdk.Operation.payment({ 
+    //                 destination: dest,
+    //                 asset: asset,
+    //                 amount: amount,
+    //             }))
+    //             .addMemo(StellarSdk.Memo.text(memo))
+    //             // 6. Build and sign transaction with both source and destination keypairs
+    //             .setTimeout(180).build()
+    //             tx.sign(source)
+    //             console.log('submitTransaction')
+    //             let server =  new StellarSdk.Server(environment.horizon_url)  
+    //             try {
+    //                 server.submitTransaction(tx)
+    //               } catch (e) {
+    //                 console.log('submitTransaction ex:', e)
+    //                 console.log(e.response.data.extras);
+    //               }
+    //         })
+    //         .catch(function(error) {
+    //             console.log('loadAccount error: ', error);                
+                        
+    //         }) 
+    //     })     
+    // }
     sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string): Promise<any> {
-
         return new Promise((resolve, reject) => {
-            let source = StellarSdk.Keypair.fromSecret(accSeed);
-            // this.horizon.accounts()
-            // .accountId(source.publicKey())
-            // .call()
-            // .then(({ sequence }) => {
-            this.horizon.loadAccount(source.publicKey()).then( account => {
-                console.log('account:', account)
-                // const account = new StellarSdk.Account(source.publicKey(), sequence)
-                // 2. Load current source account state from Horizon server
-                // let sourceAccount = this.horizon.loadAccount(source.publicKey());
-
-                
-                // 3. Create a transaction builder
+           let source = StellarSdk.Keypair.fromSecret(accSeed);            
+           this.horizon.loadAccount(source.publicKey())
+           .then( account => {      
+               console.log('sendAsset- account:', account)                                        
                 let tx = new StellarSdk.TransactionBuilder(account, 
-                    {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
-
-                
-                // Note that source parameter contains a public key of our destination account
-                //because we perform this operation on behalf of the destination account.
-                // 5. Add PAYMENT operation to transfer your custom asset
+                    {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})               
                 .addOperation(StellarSdk.Operation.payment({ 
                     destination: dest,
                     asset: asset,
                     amount: amount,
                 }))
                 .addMemo(StellarSdk.Memo.text(memo))
-
                 // 6. Build and sign transaction with both source and destination keypairs
                 .setTimeout(180).build()
                 tx.sign(source)
-                
+                console.log('submitTransaction')               
                 this.horizon.submitTransaction(tx).then( resp => {
                     console.log('resp: ', resp);
                     resolve(resp.ledger)
                 }).catch(err => {
+                    console.log('err: ', err);                    
                     reject(err)
                 })                
             })
-            .catch( err => {
-                reject(err)                
+            .catch(function(error) {
+                console.log('loadAccount error: ', error);                
+                reject(error)                
             }) 
         })     
     }
 
     trustAsset(accSeed: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            let source = StellarSdk.Keypair.fromSecret(accSeed);
-            // this.horizon.accounts()
-            // .accountId(source.publicKey())
-            // .call()
-            // .then(({ sequence }) => {
-            //     const account = new StellarSdk.Account(source.publicKey(), sequence)            
+            let source = StellarSdk.Keypair.fromSecret(accSeed);                    
             this.horizon.loadAccount(source.publicKey()).then( account => {                
                 // 3. Create a transaction builder
                 let tx = new StellarSdk.TransactionBuilder(account, 
@@ -527,7 +543,7 @@ export class StellarService {
             const secretKey = nacl.secretbox.open(naclutil.decodeBase64(
                 encryptedSecretKeyBundle.EncryptedSecretKey), nonce, naclutil.decodeBase64(derivedKey)
             );
-            secretKey ? callback(secretKey) : callback('Decryption failed!');
+            secretKey ? callback(secretKey) : callback('');
         }, 'base64');
     }
 
