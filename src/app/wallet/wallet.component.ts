@@ -49,6 +49,9 @@ export class WalletComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.changeBackgroundColor(false);
+    // save user data totalxlm,grx,openorders
+    console.log('ngOnDestroy: ', this.authService.userData)
+
   }
 
   private changeBackgroundColor(addClass: boolean) {

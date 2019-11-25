@@ -109,12 +109,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.showActivationPopup();
     } else {   
       console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
-      console.log('this.authService.userData:', this.authService.userData) 
-      // if (this.swPush.isEnabled && !this.authService.userData.Subs){
-      //   console.log('request subs')
-      //   this.requestSubNotifications()
-      // }      
+      console.log('this.authService.userData:', this.authService.userData)           
     }  
+    console.log('dashboard-OpenOrders', this.authService.userData.OpenOrders)
+    this.authService.GetSecretKey(null).then(seckey => {
+      console.log('seckey:', seckey)
+    }).catch(err => {
+      console.log('err:', err)
+    })
 
   }
 

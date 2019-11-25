@@ -32,32 +32,25 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
     if (!this.authService.hash){
       this.popupService.close();
       this.router.navigateByUrl('/login')
-    }
-    this.stellarService.decryptSecretKey(this.authService.hash, 
-      {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
-      key => {
-        if (key === ''){ 
-          this.snotifyService.simple('Invalid key')         
-        } else { 
-          let keyStr  = this.stellarService.SecretBytesToString(key)
-          
-          let promises = []
-          this.stellarService.allOffers.forEach(item => {
-            promises.push(this.stellarService.cancelOffer(this.stellarService.userAccount, keyStr, item.cachedOffer))
-          });
+    }   
+    this.authService.GetSecretKey(null).then(SecKey => {       
+      let promises = []
+      this.stellarService.allOffers.forEach(item => {
+        promises.push(this.stellarService.cancelOffer(this.stellarService.userAccount, 
+          SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType))
+      });
 
-          Promise.all(promises).then(()=> {
-            this.stellarService.allOffers.splice(0,this.stellarService.allOffers.length)
-            this.popupService.close();
-            this.authService.SetOpenOrder(0)
-            }
-          ).catch(e => {
-            console.log('cancelAllOffer error:', e)
-            this.snotifyService.simple('Some order could not be cancelled. Please try again later!')
-          })
+      Promise.all(promises).then(()=> {
+        this.stellarService.allOffers.splice(0, this.stellarService.allOffers.length)
+        this.popupService.close();
+        this.authService.userData.OpenOrders = 0
+        this.authService.SetLocalUserData()
         }
-      }  
-    ) 
+      ).catch(e => {
+        console.log('cancelAllOffer error:', e)
+        this.snotifyService.simple('Some order could not be cancelled. Please try again later!')
+      })       
+    }) 
   }
 
 }

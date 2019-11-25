@@ -37,11 +37,7 @@ export class StellarService {
         this.nativeAsset = StellarSdk.Asset.native()
     }
 
-    public getNativeAsset(){
-        return StellarSdk.Asset.native()
-    }
-
-    // public observeAccount(): Observable<Account> {
+        // public observeAccount(): Observable<Account> {
     //     if (!this.account){
     //         this.account = new Subject<Account>()
     //     }
@@ -87,32 +83,38 @@ export class StellarService {
             return  StellarSdk.Networks.PUBLIC
         }
     }
-    cancelOffer(account, accSeed: string, offer:any): Promise<any> {
+    cancelOffer(accountOld, accSeed: string, offer:any, userData:any, realAmount:any, assetType:string): Promise<any> {
         return new Promise((resolve, reject) => {
             let source = StellarSdk.Keypair.fromSecret(accSeed); 
-            let tx = new StellarSdk.TransactionBuilder(account, 
-                {fee: StellarSdk.BASE_FEE, networkPassphrase:this.getNetworkPassPhrase()})
-                .addOperation(offer)
-                .setTimeout(180).build()
-            tx.sign(source)
-            this.horizon.submitTransaction(tx).then( res => {
-                resolve(res)
-            }).catch( err => {
-                reject(err)
-                console.log('cancellOffer error: ', err)
+            this.horizon.loadAccount(source.publicKey()).then(account => { 
+                let tx = new StellarSdk.TransactionBuilder(account, 
+                    {fee: StellarSdk.BASE_FEE, networkPassphrase:this.getNetworkPassPhrase()})
+                    .addOperation(offer)
+                    .setTimeout(180).build()
+                tx.sign(source)
+                let xdr = tx.toXDR('base64')   
+                console.log('cancelOffer xdr', xdr)     
+                this.horizon.submitTransaction(tx).then( res => {
+                    console.log('cancel offer:', offer)
+                    console.log('cancel userData:', userData)
+                    if (assetType === 'XLM'){                    
+                        userData.OpenOrdersXLM -= realAmount
+                    } else {
+                        userData.OpenOrdersGRX -= realAmount
+                    }   
+                    console.log('cancel userData 1:', userData)       
+                    resolve(res)
+                }).catch( err => {
+                    reject(err)
+                    console.log('cancellOffer error: ', err)
+                })
             })
         })
     }
     sellOrder(accSeed: string, p: string, amount: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            let source = StellarSdk.Keypair.fromSecret(accSeed);
-            // this.horizon.accounts()
-            // .accountId(source.publicKey())
-            // .call()
-            // .then(({ sequence }) => {
-            //     const account = new StellarSdk.Account(source.publicKey(), sequence)   
-            this.horizon.loadAccount(source.publicKey()).then(account => {             
-                
+            let source = StellarSdk.Keypair.fromSecret(accSeed);            
+            this.horizon.loadAccount(source.publicKey()).then(account => {                
                 // 3. Create a transaction builder
                 let tx = new StellarSdk.TransactionBuilder(account, 
                     {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
@@ -121,7 +123,7 @@ export class StellarService {
                     selling: this.grxAsset,    
                     buying: new StellarSdk.Asset.native(),            
                     amount: amount,
-                    price: p,                       
+                    price: p                     
                 }))
 
                 // 6. Build and sign transaction with both source and destination keypairs
@@ -129,12 +131,13 @@ export class StellarService {
                 tx.sign(source)
                 
                 // 7. Submit transaction to network
-                console.log('submit tx')                
+                let xdr = tx.toXDR('base64')   
+                console.log('submitTransaction xdr', xdr)     
+                //console.log('submit tx', tx.toXDR())                
                 this.horizon.submitTransaction(tx).then( res => {
                     resolve(res)
                 }).catch( err => {
-                    reject(err)
-                    console.log('sellOrder: ', err)
+                    reject(err)                    
                 })
             }).catch ( e => {                
                 console.log('sellOrder1: ', e)
@@ -145,16 +148,8 @@ export class StellarService {
 
     buyOrder(accSeed: string, p: string, amount: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            let source = StellarSdk.Keypair.fromSecret(accSeed);
-            // this.horizon.accounts()
-            // .accountId(source.pupriceblicKey())
-            // .call()
-            // .then(({ sequence }) => {
-                 //const account = new StellarSdk.Account(source.publicKey(), sequence)
-                // 2. Load current source account state from Horizon server
-                this.horizon.loadAccount(source.publicKey()).then(account => {  
-
-                
+            let source = StellarSdk.Keypair.fromSecret(accSeed);            
+                this.horizon.loadAccount(source.publicKey()).then(account => {                
                 // 3. Create a transaction builder
                 let tx = new StellarSdk.TransactionBuilder(account, 
                     {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
@@ -164,8 +159,7 @@ export class StellarService {
                     buying: this.grxAsset, 
                     selling: new StellarSdk.Asset.native(),             
                     buyAmount: amount,
-                    price: p,
-                    //offerId: 0,             
+                    price: p                        
                 }))
 
                 // 6. Build and sign transaction with both source and destination keypairs
@@ -195,7 +189,8 @@ export class StellarService {
           return new StellarSdk.Asset(asset.assetCode, issuer);
         }
       }
-    parseOffer(of, grxP:number, xlmP:number,index: number){
+      
+    parseOffer(of, grxP:number, xlmP:number,index: number, userData:any){
         console.log('parseOffer-offer:', of)
         let type = 'BUY'
         let asset
@@ -206,30 +201,43 @@ export class StellarService {
         } else {
             asset = of.buying.assetCode
         }
+        let time = moment().subtract(1, 'seconds').local().format('DD/MM/YYYY HH:mm:ss')
         let buying = this.parseAsset(of.buying);
         let selling = this.parseAsset(of.selling);
         let cachedOffer
+        let offerData
         if (type == 'SELL'){
+            let grxXlmP = of.price.n/of.price.d
             cachedOffer = StellarSdk.Operation.manageSellOffer({
                 buying: buying,
                 selling: selling,
                 amount: '0',
                 price: of.price,
-                offerId: of.id,
+                offerId: of.id               
             });
-            } else {
+            userData.OpenOrdersGRX += +of.amount
+            offerData = {time: time, type:type, asset:asset, amount:of.amount, xlmp: grxXlmP, 
+              totalxlm: of.amount*grxXlmP, priceusd: grxXlmP*xlmP, totalusd: of.amount*grxXlmP*xlmP, 
+              cachedOffer: cachedOffer, index:index,  realAmount: +of.amount, assetType:'GRX'}
+        } else {
+            let grxXlmP = of.price.d/of.price.n
             cachedOffer = StellarSdk.Operation.manageBuyOffer({
                 buying: buying,
                 selling: selling,
                 buyAmount: '0',
                 price: of.price,
-                offerId: of.id,
+                offerId: of.id                
             });
+            userData.OpenOrdersXLM += +of.amount
+            offerData = {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
+              totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, 
+              cachedOffer: cachedOffer, index:index, realAmount: +of.amount, assetType:'XLM'}
         }
-        let grxXlmP = of.price.d/of.price.n
-        let time = moment().subtract(1, 'seconds').local().format('DD/MM/YYYY HH:mm:ss')
-        return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
-        totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, cachedOffer: cachedOffer, index:index}
+        console.log('parseOffer- cachedOffer:', cachedOffer)
+        return offerData       
+        
+        // return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
+        // totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, cachedOffer: cachedOffer, index:index}
     }
     // // https://horizon-testnet.stellar.org/accounts/GCLPAXUV7XWZNLJQIQ3723ZBA2WFQHEGBQ3TFDUPRL733FDM5HV7KPOO/offers
     // getOffer(account: string, limit: number, offet: number): Promise<any>{
@@ -302,7 +310,9 @@ export class StellarService {
                 // 6. Build and sign transaction with both source and destination keypairs
                 .setTimeout(180).build()
                 tx.sign(source)
-                console.log('submitTransaction')               
+                
+                // let xdr = tx.toXDR('base64')   
+                // console.log('submitTransaction xdr', xdr)            
                 this.horizon.submitTransaction(tx).then( resp => {
                     console.log('resp: ', resp);
                     resolve(resp.ledger)

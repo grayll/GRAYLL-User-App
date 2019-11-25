@@ -153,7 +153,7 @@
           <td>{{item.priceusd}}</td>
           <td>{{item.totalusd}}</td>
           <td>
-            <a href="javascript:void(0)" (click)='cancelOffer(item.cachedOffer, item.index)' class="purple-link">
+            <a href="javascript:void(0)" (click)='cancelOffer(item.cachedOffer, item.index, item.realAmount, item.assetType)' class="purple-link">
               <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
               <span class="ml-1 cancel text-danger">Cancel</span>
             </a>

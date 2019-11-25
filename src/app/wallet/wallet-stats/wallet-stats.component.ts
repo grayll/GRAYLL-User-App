@@ -53,6 +53,10 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   gryUsdValue: string;
   grzUsdValue: string;
 
+  maxAvailabeXLM: number
+  maxAvailabeGRX: number
+
+
   secretKey: string;
   isSecretKeyRevealed: boolean;
 
@@ -76,10 +80,11 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     private stellarService: StellarService,
     private authService: AuthService,
   ) {
-
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
+    console.log('userdata:', this.authService.userData)
+    console.log('wallet-OpenOrders', this.authService.userData.OpenOrders)
     this.federationAddress = this.authService.userData.Federation;
     this.stellarAddress = this.authService.userData.PublicKey;
     this.secretKey = '';
@@ -90,13 +95,18 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
         this.fillWalletData(res)
       })
-    }))
- 
+    })) 
   }
 
   fillWalletData(res){
-    this.totalXLM = res.xlm;
-    this.totalGRX = res.grx;
+    this.authService.userData.totalGRX = res.grx;//this.totalGRX
+    this.authService.userData.totalXLM = res.xlm;// this.totalXLM
+    this.totalXLM = this.authService.userData.totalXLM
+    this.totalGRX = this.authService.userData.totalGRX        
+    this.maxAvailabeXLM = this.authService.userData.totalXLM - 1.5 - 
+      this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM
+    this.maxAvailabeGRX = this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX
+ 
     this.xlmBalance =  this.totalXLM*this.xlmP
     this.grxBalance = this.totalGRX*this.grxP*this.xlmP    
     this.walletBalance = this.xlmBalance + this.grxBalance
@@ -105,16 +115,10 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.XLMValue = '' + (100 - +this.GRXValue)
     this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
     this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
-    
-    this.authService.userData.totalGRX = this.totalGRX
-    this.authService.userData.totalXLM = this.totalXLM
     this.authService.userData.xlmPrice = this.xlmP
     this.authService.userData.grxPrice = this.grxP
-    //this.xlmTradeValue = (+this.grxAmount)*(+this.grxPrice)
-
     this.authService.SetLocalUserData()     
   }
-
 
   ngOnInit() {
     this.observeRevealSecretKey();
@@ -140,30 +144,33 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.snotifyService.simple('The working session is expired. Please login again!'); 
       this.router.navigateByUrl('/login')
       return
-    }
-    
-    this.stellarService.decryptSecretKey(this.authService.hash, 
-      {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
-      key => {
-        if (key != ''){   
-          this.SecKey = key          
-          console.log('grxPrice:', this.grxPrice)
-          console.log('grxAmount:', this.grxAmount)
-          //let grxOfPrice = +this.grxPrice/this.xlmP
-          this.stellarService.buyOrder(this.stellarService.SecretBytesToString(this.SecKey), this.grxPrice, this.grxAmount).then( res => {
-           
-            let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
-              this.grxP, this.xlmP, this.stellarService.allOffers.length)
-              this.stellarService.allOffers.push(of)
-            this.snotifyService.simple('Buy order submitted successfully.'); 
-            this.authService.SetOpenOrder(1)
-          }).catch(e => {
-            console.log(e)
-          })
+    }    
+      
+    this.authService.GetSecretKey(null).then(SecKey => {       
+      console.log('grxPrice:', this.grxPrice)
+      console.log('grxAmount:', this.grxAmount)
+      //let grxOfPrice = +this.grxPrice/this.xlmP
+      this.stellarService.buyOrder(SecKey, this.grxPrice, this.grxAmount).then( res => {
+        if (res.offerResults[0].currentOffer){
+          let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
+            this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData)
+
+          this.stellarService.allOffers.push(of)
+          this.snotifyService.simple('Buy order submitted successfully.')
+          
+          if (this.authService.userData.OpenOrders){
+            this.authService.userData.OpenOrders +=1
+          } else {
+            this.authService.userData.OpenOrders = 1
+          }
+          this.authService.SetLocalUserData()
         } else {
-          console.log('got key')
+          this.snotifyService.simple('Buy order is matched.'); 
         }
-      })    
+      }).catch(e => {
+        console.log(e)
+      })        
+    })    
   }
 
   sellGrx(){   
@@ -172,27 +179,32 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl('/login')
       return
     } 
-   
-    this.stellarService.decryptSecretKey(this.authService.hash, 
-      {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
-      key => {
-        if (key != ''){   
-          this.SecKey = key
-          //let grxOfPrice = +this.grxPrice/this.xlmP
-          this.stellarService.sellOrder(this.stellarService.SecretBytesToString(this.SecKey), this.grxPrice, this.grxAmount).then( res => {
-            console.log(res)
-            let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
-              this.grxP, this.xlmP, this.stellarService.allOffers.length)
-              this.stellarService.allOffers.push(of)
-              this.authService.SetOpenOrder(1)
-            this.snotifyService.simple('Sell order submitted successfully.'); 
-          }).catch(e => {
-            console.log(e)
-          })
+    this.authService.GetSecretKey(null).then(SecKey => {     
+      //this.SecKey = SecKey
+      //let grxOfPrice = +this.grxPrice/this.xlmP
+      this.stellarService.sellOrder(SecKey, this.grxPrice, this.grxAmount).then( res => {
+        console.log(res)
+        if (res.offerResults[0].currentOffer){
+          let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
+            this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData)
+          this.stellarService.allOffers.push(of)
+          //this.authService.SetOpenOrder(1)
+          if (this.authService.userData.OpenOrders){
+            this.authService.userData.OpenOrders +=1
+          } else {
+            this.authService.userData.OpenOrders = 1
+          }
+          this.authService.SetLocalUserData()
+          this.snotifyService.simple('Sell order submitted successfully.'); 
         } else {
-          console.log('got key')
-        }
-      })
+          this.snotifyService.simple('Sell order is matched.'); 
+        }        
+      }).catch(e => {
+        console.log(e)
+      })        
+    }).catch( err => {
+      console.log(err)
+    })
   }
 
   copyFederationAddress() {
@@ -244,5 +256,36 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   swipeRight() {
     this.carouselWallet.prev();
   }
+
+// offerResults: Array(1)
+// 0:
+// amountBought: "402.8755023"
+// amountSold: "999.9999999"
+// currentOffer: undefined
+// effect: "manageOfferDeleted"
+// isFullyOpen: false
+// offersClaimed: Array(2)
+// 0:
+// amountBought: "999.9999999"
+// amountSold: "402.8755023"
+// assetBought: {type: "credit_alphanum4", assetCode: "GRXT", issuer: "GAKXWUADYNO67NQ6ET7PT2DSLE5QGGDTNZZRESXCWWYYA2UCLOYT7AKR"}
+// assetSold: {type: "native", assetCode: "XLM", issuer: undefined}
+// offerId: "2567143"
+// sellerId: "GDZFX4EN567WTLU7NLSHRQ2FRCEAM7ITTFM3WDRXYE7QGRGMW247CI6R"
+// __proto__: Object
+// 1:
+// amountBought: "0"
+// amountSold: "0"
+// assetBought: {type: "credit_alphanum4", assetCode: "GRXT", issuer: "GAKXWUADYNO67NQ6ET7PT2DSLE5QGGDTNZZRESXCWWYYA2UCLOYT7AKR"}
+// assetSold: {type: "native", assetCode: "XLM", issuer: undefined}
+// offerId: "1047396"
+// sellerId: "GDZFX4EN567WTLU7NLSHRQ2FRCEAM7ITTFM3WDRXYE7QGRGMW247CI6R"
+// __proto__: Object
+// length: 2
+// __proto__: Array(0)  
+// operationIndex: 0
+// wasImmediatelyDeleted: false
+// wasImmediatelyFilled: true
+// wasPartiallyFilled: false
 
 }

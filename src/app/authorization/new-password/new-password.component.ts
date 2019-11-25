@@ -100,7 +100,7 @@ export class NewPasswordComponent {
       { email: this.newPasswordForm.value['email']})             
     .subscribe(res => {  
       if ((res as any).errCode == environment.INVALID_PARAMS)  {
-        this.message = "Can not send reset password now. Please try again later!"
+        this.message = `Currently reset password can't be performed. Please try again later!`
         this.errorService.handleError(null, this.message)
         this.newPasswordForm.reset() 
       } else if((res as any).errCode == environment.EMAIL_NOT_EXIST ){
@@ -109,7 +109,7 @@ export class NewPasswordComponent {
         this.newPasswordForm.reset() 
       } else {   
         this.newPasswordForm.reset()  
-        this.message = 'We have sent password reset to your email!'
+        this.message = 'A password reset link has been sent to your email.'
         this.errorService.handleError(null, this.message);
       }
     },

@@ -34,32 +34,31 @@ export class XlmLoanPopupComponent implements OnInit {
 
   constructor(
     public popupService: PopupService,
-    private settingsService: SettingsService,
+    // private settingsService: SettingsService,
     private errorService: ErrorService,
-    private userService: UserService,
+    // private userService: UserService,
     private sharedService: SharedService,
     private authService: AuthService,
     private stellarService: StellarService,
     private http: HttpClient,
+
   ) {
-    this.user = this.userService.getUser();
+    //this.user = this.userService.getUser();
     this.stellarService.getAccountBalance(this.authService.userData.PublicKey, res =>{
       if (res.err){
         //this.errorService.handleError(null, 'Can not get the balance right now. Please try again later!')
         this.error = true;
       } else {
-        this.currentXLMBalance = res.xlm
+        this.currentXLMBalance = res.xlm - 1.5 - this.authService.GetOpenOrder()*0.5//res.xlm
         this.XLMBalanceS = this.currentXLMBalance.toString() + ' XLM'         
         this.XLMRemainS = (this.currentXLMBalance - this.XLMLoanValue).toString() + ' XLM' 
       }
-    })
-     
+    })     
   }
 
   ngOnInit() {
     this.popupService.open(this.modal);
-    if (this.authService.hash){
-      this.isHashCached = true
+    if (this.authService.hash){      
       this.password = this.authService.hash
     }
   }
@@ -68,45 +67,42 @@ export class XlmLoanPopupComponent implements OnInit {
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
+    if (this.currentXLMBalance - 1.50001 - this.authService.GetOpenOrder()*0.5 < 0){
+      this.errorService.handleError(null, "Please deposit your account to Pay off loan!")
+      return
+    }
     let loanerAddress =  environment.xlmLoanerAddress.toString()
     let loanAmount = this.XLMLoanValue.toString()
-    let asset = this.stellarService.nativeAsset
-   
-    this.stellarService.decryptSecretKey(this.password, 
-      {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
-      SecKey => {
-      if (SecKey != ''){
-        console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
-        if (this.authService.GetLoadPaidLedgerId()) {
-          console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
-          this.verifyTx(+this.authService.GetLoadPaidLedgerId())
-        } else {
-          console.log('sendAsset:', this.stellarService.SecretBytesToString(SecKey),
-            environment.xlmLoanerAddress,this.XLMLoanValue.toString(), asset)
-          
-          this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), loanerAddress, loanAmount, asset, '')
-          .then( ledger => {
-            if (ledger <= 0){
-              //this.errorService.handleError(null, 'Can not payoff Loan now. Please try again later!')
-              console.log('ledger <= 0')
-              this.error = true;
-              this.success = false;              
-            } else {
-              console.log('Set LoadPaidLedgerId:', ledger)
-              this.authService.SetLoanPaidLedgerId(ledger)
-              this.verifyTx(+ledger)    
-            }     
-          }).catch( e => {
-            //this.errorService.handleError(null, 'Can not execute XLM pay-off loaner now. Please try again later!')
-            console.log(e)
+    let asset = this.stellarService.nativeAsset   
+    
+    this.authService.GetSecretKey(this.password).then(SecKey => {      
+      console.log('SecKey:', SecKey)
+      console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
+      let loanPaidId = this.authService.GetLoadPaidLedgerId()
+      if (loanPaidId && +loanPaidId > 0) {
+        console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())          
+        this.verifyTx(+loanPaidId)
+      } else {          
+        this.stellarService.sendAsset(SecKey, loanerAddress, loanAmount, asset, '')
+        .then( ledger => {
+          if (ledger <= 0){            
+            console.log('ledger <= 0')
             this.error = true;
             this.success = false;
-          })
-        }          
-      } else {
-        console.log('Decryption failed')
-        //this.errorService.handleError(null, 'Can not execute XLM pay-off loaner now. Please try again later!')
-      }
+          } else {
+            console.log('Set LoadPaidLedgerId:', ledger)
+            this.authService.SetLoanPaidLedgerId(ledger)
+            this.verifyTx(+ledger)    
+          }     
+        }).catch( e => {          
+          console.log(e)
+          this.error = true;
+          this.success = false;
+        })
+      }               
+    }).catch(err => {
+      this.error = true;
+      this.success = false;
     })  
   }
 
@@ -122,7 +118,8 @@ export class XlmLoanPopupComponent implements OnInit {
     if (ledgerId > 0){
       this.verifyTx(ledgerId)
     } else {
-      console.log('')
+      this.error = true;
+      this.success = false;
     }
   }
 
@@ -139,8 +136,6 @@ export class XlmLoanPopupComponent implements OnInit {
         console.log('verify ledger exp: ', err)
         this.error = true;
         this.success = false;
-        //this.didShowErrorOnce = true;
-        //this.errorService.handleError(null, 'Can not execute XLM pay-off loaner now. Please try again later!')
       } 
     )    
   }

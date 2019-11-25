@@ -21,10 +21,38 @@ export class AuthService {
   // xlm loan paid ledger id
   loanPaidLedgerId: any
   openOrders: number
+  secretKey: any
+
+  GetSecretKey(pwd):Promise<any>{
+    return new Promise((resolve, reject) => {
+      if (this.secretKey){
+        resolve(this.secretKey)
+      } else {
+        let password = pwd
+        if (this.hash){
+          password = this.hash
+        }
+        
+        this.stellarService.decryptSecretKey(password, 
+          {Salt: this.userData.SecretKeySalt, EncryptedSecretKey:this.userData.EnSecretKey}, 
+          SecKey => {
+            if (SecKey != ''){
+              this.secretKey = this.stellarService.SecretBytesToString(SecKey)
+              resolve(this.secretKey)
+            } else {
+              reject('Invalid password')
+            }
+          })
+        }
+      })
+  }
 
   SetLoanPaidLedgerId(id){
     this.loanPaidLedgerId = id
     localStorage.setItem('loanPaidLedgerId', this.loanPaidLedgerId);   
+  }
+  RemoveLoanPaidLedgerId(){    
+    localStorage.removeItem('loanPaidLedgerId');   
   }
   GetLoadPaidLedgerId(){
     if (!this.loanPaidLedgerId){
@@ -45,11 +73,14 @@ export class AuthService {
   }
   GetOpenOrder():number{
     if (!this.openOrders){
+      console.log('GetOpenOrder ')
       this.openOrders = +localStorage.getItem('openOrders')
     }
     if (!this.openOrders){
+      console.log('GetOpenOrder 1')
       this.openOrders = 0
     }
+    console.log('GetOpenOrder - openOrders', this.openOrders)
     return this.openOrders
   }
   

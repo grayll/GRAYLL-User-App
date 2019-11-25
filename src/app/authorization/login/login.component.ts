@@ -150,7 +150,16 @@ export class LoginComponent {
                 this.authService.userData = (res as any).user
                 this.authService.userData.token = (res as any).token
                 this.authService.userData.tokenExpiredTime = (res as any).tokenExpiredTime
-                
+                if (!this.authService.userData.OpenOrders){
+                  this.authService.userData.OpenOrders = 0
+                }
+                if (!this.authService.userData.OpenOrdersXLM){
+                  this.authService.userData.OpenOrdersXLM = 0
+                }
+                if (!this.authService.userData.OpenOrdersGRX){
+                  this.authService.userData.OpenOrdersGRX = 0
+                }
+                console.log('login-OpenOrders', this.authService.userData.OpenOrders)
                 this.authService.hash = this.loginForm.value['password'];
                 this.authService.SetLocalUserData()
                 

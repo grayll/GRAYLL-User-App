@@ -118,7 +118,7 @@ export class HandleComponent implements OnInit {
     this.http.get(`api/v1/accounts/validatecode?mode=${mode}&oobCode=${actionCode}`)             
     .subscribe(response => {              
       //this.registerForm.reset() 
-      this.content = 'Your account is verified. Now you can login!'
+      this.content = 'Your account is verified. Now you can login to GRAYLL!'
       //this.errorService.handleError(null, this.content) 
     },
     error => {
@@ -151,7 +151,7 @@ export class HandleComponent implements OnInit {
     this.http.get(`api/v1/accounts/validatecode?mode=${mode}&oobCode=${actionCode}`)             
     .subscribe(res => {              
       //this.registerForm.reset() 
-      this.content = 'Your account is verified. Now you can login!'
+      this.content = 'Your account is verified. Now you can login to GRAYLL.'
       //this.errorService.handleError(null, this.content) 
       },
       error => {
@@ -209,7 +209,7 @@ export class HandleComponent implements OnInit {
         { oobCode: this.actionCode, newPassword:this.handleForm.value['password']})             
       .subscribe(res => {  
         if ((res as any).errCode == environment.SUCCESS)  {
-          this.message = "Your password is reset."
+          this.message = "Your password has been reset successfully."
           this.errorService.handleError(null, this.message)
           this.handleForm.reset() 
         } else if((res as any).errCode == environment.EMAIL_NOT_EXIST ){

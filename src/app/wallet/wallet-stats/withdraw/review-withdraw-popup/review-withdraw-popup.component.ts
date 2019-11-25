@@ -19,7 +19,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
   tfaEnable: boolean
   twoFaCode: string
   address: any
-  hashIsCached: any
+  //hashIsCached: any
 
   @ViewChild('content') modal;
   private subscriptions = new SubSink();
@@ -45,9 +45,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     if (this.authService.isTfaEnable()){
       this.tfaEnable = true
     }
-    if (this.authService.hash){
-      this.hashIsCached = true
-    }
+    // if (this.authService.hash){
+    //   this.hashIsCached = true
+    // }
     console.log('this.tfaEnable:', this.tfaEnable)
   }
 
@@ -95,22 +95,24 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     }      
   }
 
-  sendAsset(amount, asset, memo){
-    this.stellarService.decryptSecretKey(this.password, 
-      {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
-      SecKey => {
-      if (SecKey != ''){
+  sendAsset(amount, asset, memo){ 
+      this.authService.GetSecretKey(this.password).then(SecKey => {        
         if (this.tfaEnable && this.twoFaCode){
           this.authService.verifyTfaAuth(this.password, this.twoFaCode, 0)
           .subscribe(res => {           
             if ((res as any).valid === true ){                 
-              this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), this.withdrawModel.address, 
+              this.stellarService.sendAsset(SecKey, this.withdrawModel.address, 
               amount.toString(), asset, memo).then(ledger => {
                 if (ledger <= 0){
                   this.error()
                 } else {
                   this.popupService.close()
                   .then(() => {
+                    if (asset.code === 'XLM'){
+                      this.authService.userData.totalXLM -= amount
+                    } else {
+                      this.authService.userData.totalGRX -= amount
+                    }
                     setTimeout(() => {
                       this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
                     }, 50);
@@ -123,45 +125,47 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
             } else {        
               switch ((res as any).errCode){
                 case environment.TOKEN_INVALID:
+                    this.error()
                   //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
                   break;
                 case environment.INVALID_UNAME_PASSWORD:
+                    this.error()
                   //this.errorService.handleError(null, 'Your password is invalid. Please try again!')
                   break;
                 default:
+                    this.error()
                   //this.errorService.handleError(null, 'Can not enable Multisigature. Please try again later!')
                   break;
               }       
             }     
-            },
-            err => {
-              //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
-            })
-          } else if (!this.tfaEnable) {
-            console.log('sendAsset:', this.stellarService.SecretBytesToString(SecKey),
-            this.withdrawModel.address, amount.toString(), asset)
-            this.stellarService.sendAsset(this.stellarService.SecretBytesToString(SecKey), this.withdrawModel.address, 
-              amount.toString(), asset, memo)
-            .then(ledger => {
-              if (ledger <= 0){
-                this.error()
-              } else {
-                this.popupService.close()
-                .then(() => {
-                  setTimeout(() => {
-                    this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
-                  }, 50);
-                })
-              }
-            }).catch( e => {
+          },
+          err => {
+            //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
+          })
+        } else if (!this.tfaEnable) {
+          console.log('sendAsset:', SecKey,
+          this.withdrawModel.address, amount.toString(), asset)
+          this.stellarService.sendAsset(SecKey, this.withdrawModel.address, 
+            amount.toString(), asset, memo)
+          .then(ledger => {
+            if (ledger <= 0){
               this.error()
-              console.log('Send asset error: ', e)
-            })  
-          }
-        } else { // decrypt failed due to invalid password
-          this.error()
+            } else {
+              this.popupService.close()
+              .then(() => {
+                setTimeout(() => {
+                  this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
+                }, 50);
+              })
+            }
+          }).catch( e => {
+            this.error()
+            console.log('Send asset error: ', e)
+          }) 
         } 
-      }) 
+    }).catch( err => {
+      this.error()
+    })      
   }
 
   error() {

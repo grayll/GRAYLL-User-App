@@ -216,7 +216,7 @@
                   </div>
                   <div class="col">
                     <a class="purple-link" href="javascript:void(0)" (click)="populateMaxXLM()">
-                      Max Available XLM: {{totalXLM -1.5 - authService.GetOpenOrder()*0.5}}
+                      Max Available XLM: {{authService.userData.totalXLM - 1.5 - this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM}}
                     </a>
                   </div>
                 </div>
@@ -275,7 +275,7 @@
                   </div>
                   <div class="col">
                     <a class="purple-link" href="javascript:void(0)" (click)="populateMaxGRX()">
-                      Max Available GRX: {{totalGRX}}
+                      Max Available GRX: {{totalGRX - this.authService.userData.OpenOrdersGRX}}
                     </a>
                   </div>
                 </div>
@@ -497,7 +497,7 @@
                     </div>
                     <div class="col">
                       <a class="purple-link" href="javascript:void(0)" (click)="populateMaxXLM()">
-                        Max Available XLM: {{totalXLM -1.5 - authService.GetOpenOrder()}}
+                        Max Available XLM: {{authService.userData.totalXLM - 1.5 - this.authService.userData.OpenOrders*0.5}}
                       </a>
                     </div>
                   </div>
@@ -556,7 +556,7 @@
                     </div>
                     <div class="col">
                       <a class="purple-link" href="javascript:void(0)" (click)="populateMaxGRX()">
-                        Max Available GRX: {{totalGRX}}
+                        Max Available GRX: {{this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX}}
                       </a>
                     </div>
                   </div>

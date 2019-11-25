@@ -79,6 +79,7 @@ export class WithdrawPopupComponent implements OnInit {
 
     this.xlmPrice = this.authService.userData.xlmPrice
     this.grxPrice = this.authService.userData.grxPrice
+    this.authService.GetOpenOrder()
   }
 
   ngOnInit() {
@@ -96,7 +97,7 @@ export class WithdrawPopupComponent implements OnInit {
   }
 
   populateMaxXLM() {
-    this.XLMValue = (this.totalXLM - 1.5 - (+this.authService.GetOpenOrder())).toString()
+    this.XLMValue = (this.totalXLM - 1.5 - (+this.authService.userData.OpenOrders)).toString()
   }
 
   next() {
