@@ -126,7 +126,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
 
       let buying = this.parseAsset(of.buying);
       let selling = this.parseAsset(of.selling);
-      let cachedOffer
+      var cachedOffer
       let offerData
       if (type == 'SELL'){
         let grxXlmP = of.price_r.n/of.price_r.d
@@ -156,7 +156,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
           totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, 
           cachedOffer: cachedOffer, index:index, realAmount: +of.amount, assetType:'XLM'}
       }    
-      console.log('fillOrders- cachedOffer:', cachedOffer)  
+      console.log('fillOrders- cachedOffer:', cachedOffer, of.id)  
       return offerData      
     })  
     this.authService.userData.OpenOrdersGRX = totalOpenGRX    
@@ -256,15 +256,53 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     
   }
 
-  cancelOffer(offer, index, realAmount, assetType){
-    if (!this.authService.hash){
+  // cancelOffer(offer, index, realAmount, assetType){
+  //   if (!this.authService.hash){
+  //     this.router.navigateByUrl('/login')
+  //   }  
+  //   console.log('cancelOffer-offer:', offer)     
+  //   this.authService.GetSecretKey(null).then(SecKey => {      
+  //     this.stellarService.cancelOffer(this.account, SecKey, offer, this.authService.userData, realAmount, assetType).then(res=>
+  //       {               
+  //         this.stellarService.allOffers.splice(index, 1)
+  //         if (this.authService.userData.OpenOrders){
+  //           this.authService.userData.OpenOrders -=1
+  //         } else {
+  //           this.authService.userData.OpenOrders = 0
+  //         }
+  //         if (this.authService.userData.OpenOrders < 0){
+  //           this.authService.userData.OpenOrders = 0
+  //         }
+  //         this.authService.SetLocalUserData()    
+  //       }
+  //     ).catch(e => {
+  //       console.log('cancelOffer error:', e)
+  //       this.snotifyService.simple(`Currently the order can't be cancelled. Please try again later!`)
+  //     })
+  //   })  
+  // }
+  validateSession(){
+    if (this.authService.isTokenExpired()){
+      this.snotifyService.simple('The working session is expired. Please login again!'); 
       this.router.navigateByUrl('/login')
-    }  
-    console.log('cancelOffer-offer:', offer)       
+      return false
+    } 
+    if (!this.authService.hash){
+      this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
+      return false
+    }
+    return true
+  }
+
+  cancelOffer(item){
+    if(!this.validateSession()){
+      return
+    }
+    console.log('cancelOffer-cachedOffer:', item.cachedOffer)     
     this.authService.GetSecretKey(null).then(SecKey => {      
-      this.stellarService.cancelOffer(this.account, SecKey, offer, this.authService.userData, realAmount, assetType).then(res=>
+      this.stellarService.cancelOffer(this.account, SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType).then(res=>
         {               
-          this.stellarService.allOffers.splice(index, 1)
+          this.stellarService.allOffers.splice(item.index, 1)
           if (this.authService.userData.OpenOrders){
             this.authService.userData.OpenOrders -=1
           } else {
@@ -273,7 +311,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
           if (this.authService.userData.OpenOrders < 0){
             this.authService.userData.OpenOrders = 0
           }
-          this.authService.SetLocalUserData()          
+          this.authService.SetLocalUserData()    
         }
       ).catch(e => {
         console.log('cancelOffer error:', e)
@@ -301,9 +339,9 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     }
   }
   ngOnInit() {
-	this.setActiveTab();
+	  this.setActiveTab();
   }
-   onScrollOpenOrders() {
+  onScrollOpenOrders() {
     //this.populateOpenOrders();
   }
   
@@ -361,10 +399,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
             let grxXlmP = of.price_r.d/of.price_r.n
             let time = moment.utc(of.last_modified_time).local().format('DD/MM/YYYY HH:mm:ss')
             return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
-              totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, cachedOffer: cachedOffer, index:index}
-  
-            // return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
-            //     totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, cachedOffer: cachedOffer, index:index}
+              totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, 
+              cachedOffer: cachedOffer, index:index}             
           })       
           this.offers = this.stellarService.allOffers          
         })

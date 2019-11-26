@@ -147,13 +147,14 @@ export class StellarService {
     }
 
     buyOrder(accSeed: string, p: string, amount: string): Promise<any> {
+        console.log('buy: ', p, amount)
         return new Promise((resolve, reject) => {
             let source = StellarSdk.Keypair.fromSecret(accSeed);            
                 this.horizon.loadAccount(source.publicKey()).then(account => {                
                 // 3. Create a transaction builder
                 let tx = new StellarSdk.TransactionBuilder(account, 
                     {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
-
+            
                 // 4. Add CHANGE_TRUST operation to establish trustline
                 .addOperation(StellarSdk.Operation.manageBuyOffer({ 
                     buying: this.grxAsset, 
@@ -167,7 +168,8 @@ export class StellarService {
                 tx.sign(source)
                 
                 // 7. Submit transaction to network
-                console.log('submit tx')
+                let xdr = tx.toXDR('base64')   
+                console.log('submitTransaction xdr', xdr)     
                 this.horizon.submitTransaction(tx).then( res => {
                     resolve(res)
                 }).catch( err => {
@@ -190,8 +192,7 @@ export class StellarService {
         }
       }
       
-    parseOffer(of, grxP:number, xlmP:number,index: number, userData:any){
-        console.log('parseOffer-offer:', of)
+    parseOffer(of, grxP:number, xlmP:number,index: number, userData:any){        
         let type = 'BUY'
         let asset
         
@@ -204,7 +205,7 @@ export class StellarService {
         let time = moment().subtract(1, 'seconds').local().format('DD/MM/YYYY HH:mm:ss')
         let buying = this.parseAsset(of.buying);
         let selling = this.parseAsset(of.selling);
-        let cachedOffer
+        var cachedOffer
         let offerData
         if (type == 'SELL'){
             let grxXlmP = of.price.n/of.price.d
@@ -213,7 +214,7 @@ export class StellarService {
                 selling: selling,
                 amount: '0',
                 price: of.price,
-                offerId: of.id               
+                offerId: of.offerId               
             });
             userData.OpenOrdersGRX += +of.amount
             offerData = {time: time, type:type, asset:asset, amount:of.amount, xlmp: grxXlmP, 
@@ -226,14 +227,13 @@ export class StellarService {
                 selling: selling,
                 buyAmount: '0',
                 price: of.price,
-                offerId: of.id                
-            });
+                offerId: of.offerId                
+            });            
             userData.OpenOrdersXLM += +of.amount
             offerData = {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
               totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, 
               cachedOffer: cachedOffer, index:index, realAmount: +of.amount, assetType:'XLM'}
-        }
-        console.log('parseOffer- cachedOffer:', cachedOffer)
+        }       
         return offerData       
         
         // return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
@@ -311,8 +311,8 @@ export class StellarService {
                 .setTimeout(180).build()
                 tx.sign(source)
                 
-                // let xdr = tx.toXDR('base64')   
-                // console.log('submitTransaction xdr', xdr)            
+                let xdr = tx.toXDR('base64')   
+                console.log('submitTransaction xdr', xdr)            
                 this.horizon.submitTransaction(tx).then( resp => {
                     console.log('resp: ', resp);
                     resolve(resp.ledger)
@@ -368,9 +368,7 @@ export class StellarService {
         const recoveryPhrase = bip39.entropyToMnemonic(seed);
         scrypt(seed, userid, this.logN,
         this.blockSize, this.dkLen, this.interruptStep, (res) => {
-            const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);
-            console.log('pubkey:', keypair.publicKey())
-            console.log('seckey:', keypair.secret())
+            const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);            
             callback({keypair, recoveryPhrase})
         });       
     }

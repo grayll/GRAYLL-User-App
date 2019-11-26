@@ -3,17 +3,12 @@ import {faKey, faUser} from '@fortawesome/free-solid-svg-icons';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ErrorService} from '../../shared/error/error.service';
 import {Router} from '@angular/router';
-
 import { NgZone } from '@angular/core';
-
 import { AuthService } from "../../shared/services/auth.service"
 import { OnExecuteData, ReCaptchaV3Service } from 'ng-recaptcha';
 import { Subscription } from 'rxjs';
 import { HttpClient, HttpHeaders } from  "@angular/common/http";
-import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
-import { StellarService } from '../services/stellar-service';
 import axios from 'axios';
-import { NgxUiLoaderModule } from  'ngx-ui-loader';
 import { environment } from '../../../environments/environment';
 import { NotificationsService } from 'src/app/notifications/notifications.service';
 var naclutil = require('tweetnacl-util');

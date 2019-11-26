@@ -76,7 +76,6 @@ export class XlmLoanPopupComponent implements OnInit {
     let asset = this.stellarService.nativeAsset   
     
     this.authService.GetSecretKey(this.password).then(SecKey => {      
-      console.log('SecKey:', SecKey)
       console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
       let loanPaidId = this.authService.GetLoadPaidLedgerId()
       if (loanPaidId && +loanPaidId > 0) {

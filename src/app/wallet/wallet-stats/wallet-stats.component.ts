@@ -36,6 +36,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   XLMUsdValue: string;
   GRXUsdValue: string;
 
+  XLMValueForm:number
+  USDValueForm:number
+
   //xlmTradeValue: number
   grxTradeValue: number
 
@@ -52,6 +55,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   grzValue: string;
   gryUsdValue: string;
   grzUsdValue: string;
+
+ 
 
   maxAvailabeXLM: number
   maxAvailabeGRX: number
@@ -115,6 +120,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.XLMValue = '' + (100 - +this.GRXValue)
     this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
     this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
+
+    this.XLMValueForm = (+this.grxAmount)*(+this.grxPrice)
     this.authService.userData.xlmPrice = this.xlmP
     this.authService.userData.grxPrice = this.grxP
     this.authService.SetLocalUserData()     
@@ -140,24 +147,25 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
 
   buyGrx(){    
-    if (!this.authService.hash || this.authService.isTokenExpired()){
-      this.snotifyService.simple('The working session is expired. Please login again!'); 
-      this.router.navigateByUrl('/login')
+    if(!this.validateSession()){
       return
-    }    
-      
-    this.authService.GetSecretKey(null).then(SecKey => {       
-      console.log('grxPrice:', this.grxPrice)
-      console.log('grxAmount:', this.grxAmount)
-      //let grxOfPrice = +this.grxPrice/this.xlmP
+    }     
+    let maxAvailabeXLM = this.authService.userData.totalXLM - 1.50002 - 0.5 
+      - this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM
+
+    if (+this.grxAmount*+this.grxPrice >= maxAvailabeXLM && maxAvailabeXLM > 0){
+      console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
+      this.snotifyService.simple('Your fund is not enough for buy offer.')    
+      return
+    }
+    this.authService.GetSecretKey(null).then(SecKey => {     
       this.stellarService.buyOrder(SecKey, this.grxPrice, this.grxAmount).then( res => {
         if (res.offerResults[0].currentOffer){
           let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
             this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData)
 
           this.stellarService.allOffers.push(of)
-          this.snotifyService.simple('Buy order submitted successfully.')
-          
+          this.snotifyService.simple('Buy order submitted successfully.')          
           if (this.authService.userData.OpenOrders){
             this.authService.userData.OpenOrders +=1
           } else {
@@ -169,26 +177,41 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
         }
       }).catch(e => {
         console.log(e)
+        this.snotifyService.simple('Currently buy offer can not be performed. Please try again later!') 
       })        
     })    
   }
-
-  sellGrx(){   
-    if (!this.authService.hash || this.authService.isTokenExpired()){
+  validateSession(){
+    if (this.authService.isTokenExpired()){
       this.snotifyService.simple('The working session is expired. Please login again!'); 
       this.router.navigateByUrl('/login')
-      return
+      return false
     } 
-    this.authService.GetSecretKey(null).then(SecKey => {     
-      //this.SecKey = SecKey
-      //let grxOfPrice = +this.grxPrice/this.xlmP
-      this.stellarService.sellOrder(SecKey, this.grxPrice, this.grxAmount).then( res => {
-        console.log(res)
+    if (!this.authService.hash){
+      console.log('!this.authService.hash')
+      this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
+      return false
+    }  
+    return true  
+  }
+  sellGrx(){   
+    if(!this.validateSession()){
+      return
+    }  
+    let maxAvailabeXLM = this.authService.userData.totalXLM - 1.50002 - 0.5 
+      - this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM  
+    let maxAvailabeGRX = this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX
+    if (+this.grxAmount > maxAvailabeGRX || maxAvailabeXLM < 0){
+      console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
+      this.snotifyService.simple('Your fund is not enough for sell offer.')    
+      return
+    }
+    this.authService.GetSecretKey(null).then(SecKey => {      
+      this.stellarService.sellOrder(SecKey, this.grxPrice, this.grxAmount).then( res => {        
         if (res.offerResults[0].currentOffer){
           let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
             this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData)
-          this.stellarService.allOffers.push(of)
-          //this.authService.SetOpenOrder(1)
+          this.stellarService.allOffers.push(of)          
           if (this.authService.userData.OpenOrders){
             this.authService.userData.OpenOrders +=1
           } else {
@@ -201,6 +224,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
         }        
       }).catch(e => {
         console.log(e)
+        this.snotifyService.simple('Currently sell offer can not be performed. Please try again later!')    
       })        
     }).catch( err => {
       console.log(err)
@@ -230,19 +254,23 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   observeRevealSecretKey() {
     this.subs.add(this.settingsService.observeConfirmAuthority()
     .subscribe((secretKey) => {     
-      this.isSecretKeyRevealed = true;
-      
+      this.isSecretKeyRevealed = true;      
       this.secretKey = secretKey
     }));
   }
 
   populateMaxXLM() {
+    this.XLMValueForm = this.authService.userData.totalXLM - 1.50003 - 0.5 - this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM
+    this.grxPrice = this.bidPrice.toString()
+    this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(5)
     //this.XLMValue = (this.totalXLM - 1.5).toString();
     //(this.totalXLM - 1.5 - (+this.authService.GetOpenOrder())).toString()
   }
 
   populateMaxGRX() {
-    //this.GRXValue = this.totalGRX.toString();
+    this.grxAmount = (this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX).toFixed(7)
+    this.grxPrice = this.askPrice.toString()    
+    this.XLMValueForm = +this.grxAmount*+this.grxPrice
   }
 
   goToTop() {

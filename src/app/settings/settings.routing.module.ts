@@ -19,6 +19,7 @@ import {DisableWalletAppNotificationsSettingsComponent} from './notifications-se
 import {DisableAlgoAppNotificationsSettingsComponent} from './notifications-settings/disable-algo-app-notifications-settings/disable-algo-app-notifications-settings.component';
 import {RevealSecretKeyPopupComponent} from '../shared/popup/reveal-secret-key-popup/reveal-secret-key-popup.component';
 import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
+import {InputPasswordComponent} from '../shared/popup/input-password/input-password.component';
 
 const popupRoutes: Routes = [
   {
@@ -110,7 +111,12 @@ const popupRoutes: Routes = [
     path: 'xlm-loan',
     component: XlmLoanPopupComponent,
     outlet: 'popup'
-  }
+  },
+  {
+    path: 'input-password',
+    component: InputPasswordComponent,
+    outlet: 'popup'
+  },
 ];
 
 const routes: Routes = [
