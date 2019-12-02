@@ -364,7 +364,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     switch (id){
       case 'allOrders':
         this.account.offers().then( ofs => {  
-          console.log('account.offers():', ofs)      
+          //console.log('account.offers():', ofs)      
           this.stellarService.allOffers = ofs.records.map((of, index) => {
             let type = 'BUY'
             let asset = 'GRX'
@@ -408,7 +408,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
       case 'transfers':
         if (this.account){
           this.account.payments().then(pms => {
-            console.log('payments:', pms.records)
+            //console.log('payments:', pms.records)
             if (pms && pms.records.length > 0){
               this.payments = pms.records.filter(item => {
                 if (item.type === "payment"){
@@ -480,8 +480,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
                   asset = item.asset_code             
                 }               
                 return {time: time, op:op, id: item.id, amount: amount, account: account, asset: asset, url:url}
-              })
-              
+              })              
             }
           }).catch(e => {
             console.log(e)

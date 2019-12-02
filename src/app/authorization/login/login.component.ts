@@ -77,7 +77,7 @@ export class LoginComponent {
   validationMessages = {
     'email': {
       'required':      'Email is required.',
-      'pattern':         'Email must be a valid email'
+      'pattern':       'Email must be a valid email'
     },
     'password': {
       'required':      'Password is required.',
@@ -107,8 +107,6 @@ export class LoginComponent {
   public handleRecaptchaExecute(data): void {
     console.log('this.handleToken(token)', data)
   }
-
- 
 
   get f() { return this.loginForm.controls; }
 
