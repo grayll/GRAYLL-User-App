@@ -32,9 +32,10 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     private http: HttpClient,
   ) {
     // check tfa status
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
+
     this.http.post(`api/v1/users/getFieldInfo`, {tfa:'get', action:'reveal'})
     .subscribe(res => {
       if ((res as any).errCode == environment.SUCCESS){
@@ -80,7 +81,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     if (this.authService.hash){
       this.password = this.authService.hash
     } else {
-      this.authService.GetLocalUserData()
+     // this.authService.GetLocalUserData()
     }
   }
   submit() {

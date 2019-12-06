@@ -70,6 +70,20 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(){
     this.authService.RemoveSeedData()
+    if (this.authService.isActivated()){      
+      if (this.swPush.isEnabled && !this.isTokenSentToServer()){
+        console.log('activate-request subs')
+        this.requestSubNotifications()
+      } else {
+        console.log('activate-not request subs')
+      } 
+    }
+  }
+  isTokenSentToServer() {
+    return localStorage.getItem('sentToServer') === '1';
+  }
+  setTokenSentToServer(sent) {
+    localStorage.setItem('sentToServer', sent ? '1' : '0');
   }
   buildForm(): void {    
     this.frm = this.formBuilder.group({      
@@ -122,89 +136,60 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     this.onValueChanged()
 
     //if (!this.authService.GetSeedData(this.frm.value['password'])){
-      this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
-        console.log('phrase:', res.recoveryPhrase)  
-        this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
-          let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
-            enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
-                
-          this.http.post(`api/v1/users/validateaccount`, data)
-          .subscribe(resp => {
-            console.log(resp)
-            if ((resp as any).errCode === environment.SUCCESS){
-              // let seedData = {seed: res.recoveryPhrase, publicKey: res.keypair.publicKey(), secret: res.keypair.secret()}
-              // this.authService.SetSeedData(seedData, this.frm.value['password'])
-     
-              this.stellarService.trustAsset(res.keypair.secret()).then(
-                txd => {
-                  this.hideCloseButton = true;
-                  this.firstPopup = false;
-                  this.secretKey = res.keypair.secret()
-                  this.seed = res.recoveryPhrase  
-                  this.error = false;
-                  this.success = true;       
-                  this.authService.userData.PublicKey = res.keypair.publicKey()
-                  this.authService.SetLocalUserData() 
-                  this.authService.RemoveSeedData()
-                  if (this.swPush.isEnabled && !this.authService.userData.Subs){
-                    console.log('request subs')
-                    this.requestSubNotifications()
-                  } 
-                },
-                err => {
-                  console.log('err trust asset:', err)                 
-                  this.error = true;
-                  this.success = false;
-                }
-              ).catch(e => {
-                console.log('trustAsset.create error: ', e)
+    this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
+      console.log('phrase:', res.recoveryPhrase)  
+      this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
+        let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
+          enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
+              
+        this.http.post(`api/v1/users/validateaccount`, data)
+        .subscribe(resp => {
+          console.log(resp)
+          if ((resp as any).errCode === environment.SUCCESS){
+            // let seedData = {seed: res.recoveryPhrase, publicKey: res.keypair.publicKey(), secret: res.keypair.secret()}
+            // this.authService.SetSeedData(seedData, this.frm.value['password'])
+    
+            this.stellarService.trustAsset(res.keypair.secret()).then(
+              txd => {
+                this.hideCloseButton = true;
+                this.firstPopup = false;
+                this.secretKey = res.keypair.secret()
+                this.seed = res.recoveryPhrase  
+                this.error = false;
+                this.success = true;       
+                this.authService.userData.PublicKey = res.keypair.publicKey()
+                this.authService.SetLocalUserData() 
+                this.authService.RemoveSeedData()
+                // if (this.swPush.isEnabled && !this.authService.userData.Subs){
+                //   console.log('request subs')
+                //   this.requestSubNotifications()
+                // } 
+              },
+              err => {
+                console.log('err trust asset:', err)                 
                 this.error = true;
                 this.success = false;
-              })                                            
-            } else if ((resp as any).errCode === environment.INVALID_UNAME_PASSWORD){
-              this.frm.reset()
-              this.errorService.handleError(null, "Please input valid password.")
-            } else {
-              this.frm.reset()
-              this.errorService.handleError(null, "Can not activate account right now. Please try again later!")
-            }
-          },
-          err => {
-            console.log(err)
-            this.error = true;
-            this.success = false;
-          })
-        })       
-      }) 
-    // } else {    
-    //   let data = this.authService.GetSeedData()      
-    //   if (!data.secret){
-    //     this.authService.RemoveSeedData()        
-    //     return
-    //   }
-    //   this.stellarService.trustAsset(data.secret).then(
-    //     txd => {
-    //       this.hideCloseButton = true;
-    //       this.firstPopup = false;
-    //       this.secretKey = data.secret
-    //       this.seed = data.seed 
-    //       this.error = false;
-    //       this.success = true;       
-    //       this.authService.userData.PublicKey = data.publicKey
-    //       this.authService.SetLocalUserData() 
-    //       this.authService.RemoveSeedData()
-    //     },
-    //     err => {
-    //       console.log('err trust asset:', err)        
-    //       this.error = true;
-    //       this.success = false;
-    //     }
-    //   ).catch(e => {
-    //     console.log('trustAsset.create error: ', e)
-    //     this.error = true;
-    //     this.success = false;
-    //   })
-    // }        
+              }
+            ).catch(e => {
+              console.log('trustAsset.create error: ', e)
+              this.error = true;
+              this.success = false;
+            })                                            
+          } else if ((resp as any).errCode === environment.INVALID_UNAME_PASSWORD){
+            this.frm.reset()
+            this.errorService.handleError(null, "Please input valid password.")
+          } else {
+            this.frm.reset()
+            this.errorService.handleError(null, "Can not activate account right now. Please try again later!")
+          }
+        },
+        err => {
+          console.log(err)
+          this.error = true;
+          this.success = false;
+        })
+      })       
+    })         
   }  
  
 
@@ -221,20 +206,11 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
     this.swPush.requestSubscription({
         serverPublicKey: VAPID_PUBLIC_KEY
-    }).then(sub => { 
-      //https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription/getKey
-      // let p256dh = sub.getKey('p256dh');
-      // let auth = sub.getKey('auth');
-      // console.log('sub:',sub)
-
-      // console.log("p256dh-applicationServerKey:", p256dh)
-      // console.log("auth-applicationServerKey:", auth)
-
-      // let subs = { endpoint: sub.endpoint, keys:{p256dh: this.ToBase64(p256dh), auth: this.ToBase64(auth)}}
-      
+    }).then(sub => {       
       this.http.post(`api/v1/users/savesubcriber`, sub).subscribe(res => {
         if ((res as any).errCode == environment.SUCCESS){
           console.log("subs are saved")
+          this.setTokenSentToServer(true) 
         }
       },
       err => {

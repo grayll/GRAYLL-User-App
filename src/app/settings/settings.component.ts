@@ -56,9 +56,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.changeBackgroundColor(true);
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
   }
 
   ngOnDestroy(): void {

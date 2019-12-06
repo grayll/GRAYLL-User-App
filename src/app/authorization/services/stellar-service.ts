@@ -29,7 +29,7 @@ export class StellarService {
     prices: Subject<number[]>
     accountData: any;
     userAccount: any;
-    allOffers: any;
+    allOffers: any[];
 
     public constructor() {        
         this.horizon = new StellarSdk.Server(environment.horizon_url)  
@@ -240,59 +240,28 @@ export class StellarService {
         // totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, cachedOffer: cachedOffer, index:index}
     }
     // // https://horizon-testnet.stellar.org/accounts/GCLPAXUV7XWZNLJQIQ3723ZBA2WFQHEGBQ3TFDUPRL733FDM5HV7KPOO/offers
-    // getOffer(account: string, limit: number, offet: number): Promise<any>{
-    //     return new Promise( (resolve, reject) => {
-    //         axios.get(`${environment.horizon_url}/accounts/${account}/offers`).then( res => {
-
-    //         }).catch( e => {
-    //             console.log(e)
-    //             //reject(e)
-    //         })
-    //     })
-    // }
-    // getTrade(account: string, limit: number, offet: number): Promise<any>{
-    //     return new Promise( (resolve, reject) => {
-    //         // GCLPAXUV7XWZNLJQIQ3723ZBA2WFQHEGBQ3TFDUPRL733FDM5HV7KPOO
-    //         axios.get(`${environment.horizon_url}/accounts/${account}/trades`).then( res => {
-                
-    //         }).catch( e => {
-    //             console.log(e)
-    //             reject(e)
-    //         })
-    //     })
-    // }
-    // sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string) {
-    //     return new Promise((resolve, reject) => {
-    //        let source = StellarSdk.Keypair.fromSecret(accSeed);            
-    //        this.horizon.loadAccount(source.publicKey())
-    //        .then( account => {      
-    //            console.log('sendAsset- account:', account)                                        
-    //             let tx = new StellarSdk.TransactionBuilder(account, 
-    //                 {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})               
-    //             .addOperation(StellarSdk.Operation.payment({ 
-    //                 destination: dest,
-    //                 asset: asset,
-    //                 amount: amount,
-    //             }))
-    //             .addMemo(StellarSdk.Memo.text(memo))
-    //             // 6. Build and sign transaction with both source and destination keypairs
-    //             .setTimeout(180).build()
-    //             tx.sign(source)
-    //             console.log('submitTransaction')
-    //             let server =  new StellarSdk.Server(environment.horizon_url)  
-    //             try {
-    //                 server.submitTransaction(tx)
-    //               } catch (e) {
-    //                 console.log('submitTransaction ex:', e)
-    //                 console.log(e.response.data.extras);
-    //               }
-    //         })
-    //         .catch(function(error) {
-    //             console.log('loadAccount error: ', error);                
-                        
-    //         }) 
-    //     })     
-    // }
+    getOffer(account: string, limit: number, nextURL: string){
+        let url = `${environment.horizon_url}/accounts/${account}/offers?limit=${limit}&order=desc`
+        if (nextURL){
+            url = nextURL
+        }
+        return axios.get(url)       
+    }
+    getPayment(account: string, limit: number, nextURL: string){
+        let url = `${environment.horizon_url}/accounts/${account}/payments?limit=${limit}&order=desc`
+        if (nextURL){
+            url = nextURL
+        }
+        return axios.get(url)        
+    }
+    getTrade(account: string, limit: number, nextURL: string){
+        let url = `${environment.horizon_url}/accounts/${account}/trades?limit=${limit}&order=desc`
+        if (nextURL){
+            url = nextURL
+        }
+        return axios.get(url)       
+    }
+    
     sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string): Promise<any> {
         return new Promise((resolve, reject) => {
            let source = StellarSdk.Keypair.fromSecret(accSeed);            

@@ -24,8 +24,8 @@
   
     <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'allOrders'">
       <div class="col-md-2 col-xs">
-        <span *ngIf="offers" class="align-middle font-weight-bolder font-14">Open Orders ({{offers.length}})</span>
-        <span *ngIf="!offers" class="align-middle font-weight-bolder font-14">Open Orders ({{0}})</span>
+        <span *ngIf="this.stellarService.allOffers" class="align-middle font-weight-bolder font-14">Open Orders ({{this.stellarService.allOffers.length}})</span>
+        <span *ngIf="!this.stellarService.allOffers" class="align-middle font-weight-bolder font-14">Open Orders ({{0}})</span>
       </div>
       <div class="col" [routerLink]="['/wallet/overview', {outlets: {popup: 'cancel-active-orders'}}]" style="outline: none;">
         <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
@@ -137,11 +137,11 @@
       </thead>
   
       
-	<tbody *ngIf="offers"  class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollOpenOrders()" [scrollWindow]="false">
+	<tbody *ngIf="this.stellarService.allOffers"  class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollOpenOrders()" [scrollWindow]="false">
     <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
       <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
     </div>
-        <tr *ngFor="let item of offers">    
+        <tr *ngFor="let item of this.stellarService.allOffers">    
           <td>{{item.time}}</td>
           <td>{{item.type}}</td>
           

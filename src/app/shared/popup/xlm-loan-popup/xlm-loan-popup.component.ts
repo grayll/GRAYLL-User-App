@@ -19,7 +19,7 @@ export class XlmLoanPopupComponent implements OnInit {
 
   @ViewChild('content') modal;
   currentXLMBalance: number;
-  XLMLoanValue = 1.5;
+  XLMLoanValue = 1.50001;
 
   XLMBalanceS: string = '';
   XLMLoanS: string = this.XLMLoanValue.toString()+ ' XLM';
@@ -49,9 +49,9 @@ export class XlmLoanPopupComponent implements OnInit {
         //this.errorService.handleError(null, 'Can not get the balance right now. Please try again later!')
         this.error = true;
       } else {
-        this.currentXLMBalance = res.xlm - 1.5 - this.authService.GetOpenOrder()*0.5//res.xlm
+        this.currentXLMBalance = res.xlm - 1.5 - this.authService.GetOpenOrder()*0.5 - this.authService.userData.OpenOrdersXLM
         this.XLMBalanceS = this.currentXLMBalance.toString() + ' XLM'         
-        this.XLMRemainS = (this.currentXLMBalance - this.XLMLoanValue).toString() + ' XLM' 
+        this.XLMRemainS = this.currentXLMBalance - this.XLMLoanValue > 0 ? (this.currentXLMBalance - this.XLMLoanValue).toString() + ' XLM' : '0 XLM'
       }
     })     
   }
@@ -67,8 +67,8 @@ export class XlmLoanPopupComponent implements OnInit {
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    if (this.currentXLMBalance - 1.50001 - this.authService.GetOpenOrder()*0.5 < 0){
-      this.errorService.handleError(null, "Please deposit your account to Pay off loan!")
+    if (this.currentXLMBalance - 1.50001 < 0){
+      this.errorService.handleError(null, "Balance Insufficient! Please make a deposit to your account.")
       return
     }
     let loanerAddress =  environment.xlmLoanerAddress.toString()
@@ -110,9 +110,9 @@ export class XlmLoanPopupComponent implements OnInit {
     this.success = false;
     this.didShowErrorOnce = true;
 
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
     let ledgerId = +this.authService.GetLoadPaidLedgerId()
     if (ledgerId > 0){
       this.verifyTx(ledgerId)

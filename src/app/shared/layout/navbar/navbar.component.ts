@@ -4,6 +4,7 @@ import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWal
 import {NotificationsService} from '../../../notifications/notifications.service';
 import {AuthService} from 'src/app/shared/services/auth.service'
 import {SubSink} from 'subsink'
+import { SwUpdate, SwPush } from '@angular/service-worker';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -30,14 +31,35 @@ export class NavbarComponent implements OnDestroy {
     private router: Router,
     private ngZone:NgZone,
     public notificationsService: NotificationsService,
+    public push: SwPush,
   ) { 
-    this.subsink = new SubSink()
-    // if (this.authService.userData){
-    //   console.log('this.authService.userData.UrWallet: ', this.authService.userData.UrWallet)
-    //   this.walletNotices = this.authService.userData.UrWallet
-    //   this.algoNotices = this.authService.userData.UrAlgo
-    //   this.generalNotices = this.authService.userData.UrGeneral
-    // } 
+    this.subsink = new SubSink()    
+    if (!this.authService.userData){
+      console.log('NAV.GetLocalUserData()')
+      this.authService.GetLocalUserData()
+    }
+    console.log('navbar.subscribe')
+    push.messages.subscribe(msg => {
+      let data = (msg as any).notification
+      //console.log('navbar.subscribe-data1:', data)
+      if (data.type === 'wallet'){
+        this.walletNotices +=1
+        this.authService.userData.UrWallet += 1
+        console.log('navbar.subscribe:walletNotices:', this.walletNotices)
+        if (data.asset === 'XLM'){
+          let amount = +data.amount
+          this.authService.userData.totalXLM = (+this.authService.userData.totalXLM + amount).toFixed(7)
+        } else if( data.asset === 'GRX' || data.asset === 'GRXT'){
+          let amount = +data.amount
+          console.log('navbar.amount:', data.amount)
+          console.log('navbar.subscribe:totalGRX0:', this.authService.userData.totalGRX)
+          this.authService.userData.totalGRX = (+this.authService.userData.totalGRX + amount).toFixed(7)
+          console.log('navbar.subscribe:totalGRX1:', this.authService.userData.totalGRX)
+        }   
+        this.authService.SetLocalUserData()     
+      }
+    });
+    //push.notificationClicks.subscribe(click => console.log('WalletComponent-notification click', click));
     this.subsink.add(this.notificationsService.subsNumberNotices().subscribe(numberNotices => {
       // numberNotice number could be -/+
       if (!this.authService.userData){
@@ -55,7 +77,7 @@ export class NavbarComponent implements OnDestroy {
         this.generalNotices = this.generalNotices + numberNotices[2]
         this.authService.userData.UrGeneral = this.generalNotices
       }
-    }))
+    }))    
   }
 
   ngOnDestroy():void {

@@ -4,6 +4,7 @@ import {SharedService} from '../shared/shared.service';
 import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import {SnotifyService} from 'ng-snotify';
+//import { SwUpdate, SwPush } from '@angular/service-worker';
 
 @Component({
   selector: 'app-wallet',
@@ -19,11 +20,14 @@ export class WalletComponent implements OnInit, OnDestroy {
     public stellarService: StellarService,
     public authService: AuthService,
     private snotifyService: SnotifyService,
+    //updates: SwUpdate, push: SwPush
   ) {
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
-    console.log('getLoanPaid:', this.sharedService.getLoanPaid())
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
+    
+    
+    
     Promise.all([
       this.stellarService.getCurrentGrxPrice1(),
       this.stellarService.getCurrentXlmPrice1(),

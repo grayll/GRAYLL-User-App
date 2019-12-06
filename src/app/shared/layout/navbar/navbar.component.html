@@ -25,7 +25,7 @@
             <span class="d-inline d-md-none mr-2">Wallet</span>
             <fa-icon [icon]="faWallet" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
-              {{walletNotices}}
+              {{this.authService.userData.UrWallet}}
             </span>
           </a>
         </li>
@@ -42,7 +42,7 @@
             <span class="d-inline d-md-none mr-2">Notifications</span>
             <fa-icon [icon]="faBell" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
-              {{algoNotices + walletNotices + generalNotices}}
+              {{algoNotices + this.authService.userData.UrWallet + generalNotices}}
             </span>
           </a>
         </li>

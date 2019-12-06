@@ -60,9 +60,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.loadMobileNotificationContainers();
     }, 100);
 
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
   }
   
   private changeBackgroundColor(addClass: boolean) {
@@ -102,9 +102,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       e => {
         console.log(e)
       })
-      if (!this.authService.userData){
-        this.authService.GetLocalUserData()
-      }       
+      // if (!this.authService.userData){
+      //   this.authService.GetLocalUserData()
+      // }       
     }
   }
 

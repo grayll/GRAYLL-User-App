@@ -36,9 +36,9 @@ export class DataComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     private snotifyService: SnotifyService,
   ) {
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
     console.log('getLoanPaid:', this.sharedService.getLoanPaid())
     Promise.all([
       this.stellarService.getCurrentGrxPrice1(),

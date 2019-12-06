@@ -7,7 +7,7 @@ import { NgZone } from '@angular/core';
 import { AuthService } from "../../shared/services/auth.service"
 import { OnExecuteData, ReCaptchaV3Service } from 'ng-recaptcha';
 import { Subscription } from 'rxjs';
-import { HttpClient, HttpHeaders } from  "@angular/common/http";
+import { HttpClient } from  "@angular/common/http";
 import axios from 'axios';
 import { environment } from '../../../environments/environment';
 import { NotificationsService } from 'src/app/notifications/notifications.service';
@@ -46,7 +46,7 @@ export class LoginComponent {
 
   ngOnInit(): void {
     this.buildForm();    
-    console.log('Init of login: ', this.authService.GetLocalUserData())
+    //console.log('Init of login: ', this.authService.GetLocalUserData())
   }
 
   buildForm(): void {

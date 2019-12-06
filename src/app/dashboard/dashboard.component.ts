@@ -69,11 +69,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public stellarService: StellarService,
 
   ) {
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
     console.log('getLoanPaid:', this.sharedService.getLoanPaid())
     if (this.authService.isActivated()){
+      if (this.swPush.isEnabled && !this.isTokenSentToServer()){
+        console.log('request subs')
+        this.requestSubNotifications()
+      } 
       Promise.all([
         this.stellarService.getCurrentGrxPrice1(),
         this.stellarService.getCurrentXlmPrice1(),
@@ -100,9 +104,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if(!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if(!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
     this.changeBackgroundColor(true);
     if (!this.authService.isActivated()){
       console.log('not activated, show activate pop-up')
@@ -120,6 +124,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   }
 
+  isTokenSentToServer() {
+    return localStorage.getItem('sentToServer') === '1';
+  }
+  setTokenSentToServer(sent) {
+    localStorage.setItem('sentToServer', sent ? '1' : '0');
+  }
+
   ngOnDestroy(): void {
     this.authService.RemoveSeedData()
     this.changeBackgroundColor(false);
@@ -133,7 +144,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private showActivationPopup() {
     this.router.navigate([{outlets: {popup: 'activate-account'}}], {relativeTo: this.route});
   }
-
   
   //Its easy to navigate to page using angular router, btw (instead of window.open) but this is not solution in case PWA is not running already.
   //this.router.navigateByUrl(notpayload.notification.data.url)
@@ -141,21 +151,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
     this.swPush.requestSubscription({
         serverPublicKey: VAPID_PUBLIC_KEY
-    }).then(sub => { 
-      //https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription/getKey
-      // let p256dh = sub.getKey('p256dh');
-      // let auth = sub.getKey('auth');
-      // console.log('sub:',sub)
-
-      // console.log("p256dh-applicationServerKey:", p256dh)
-      // console.log("auth-applicationServerKey:", auth)
-
-      // let subs = { endpoint: sub.endpoint, keys:{p256dh: this.ToBase64(p256dh), auth: this.ToBase64(auth)}}
-      
+    }).then(sub => {       
       this.http.post(`api/v1/users/savesubcriber`, sub)
       .subscribe(res => {
         if ((res as any).errCode == environment.SUCCESS){
           console.log("subs are saved")
+          this.setTokenSentToServer(true) 
         }
       },
       err => {

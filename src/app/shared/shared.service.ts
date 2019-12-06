@@ -49,9 +49,9 @@ export class SharedService {
   }
 
   public getLoanPaid() { 
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
     if (this.authService.userData && !this.authService.userData.LoanPaidStatus){      
       return false
     } 

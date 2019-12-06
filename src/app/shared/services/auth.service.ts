@@ -32,6 +32,9 @@ export class AuthService {
         if (this.hash){
           password = this.hash
         }
+        if (!password){
+          return ''
+        }
         
         this.stellarService.decryptSecretKey(password, 
           {Salt: this.userData.SecretKeySalt, EncryptedSecretKey:this.userData.EnSecretKey}, 
@@ -84,7 +87,8 @@ export class AuthService {
     return this.openOrders
   }
   
-  GetLocalUserData():any {    
+  GetLocalUserData():any {
+    console.log('GetLocalUserData call')    
     if (!this.userData){
       let data = localStorage.getItem('grayll-user');
       if (data){

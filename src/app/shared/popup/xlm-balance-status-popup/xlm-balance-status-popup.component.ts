@@ -16,9 +16,9 @@ export class XlmBalanceStatusPopupComponent implements OnInit {
     public popupService: PopupService,
     public authService: AuthService,
   ) { 
-    if (!this.authService.userData){
-      this.authService.GetLocalUserData()
-    }
+    // if (!this.authService.userData){
+    //   this.authService.GetLocalUserData()
+    // }
   }
 
   ngOnInit() {
