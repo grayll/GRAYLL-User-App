@@ -1,8 +1,9 @@
-import {Component, NgZone, OnDestroy} from '@angular/core';
+import {Component, NgZone,Input, OnDestroy} from '@angular/core';
 import {Router} from '@angular/router';
 import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet} from '@fortawesome/free-solid-svg-icons';
 import {NotificationsService} from '../../../notifications/notifications.service';
 import {AuthService} from 'src/app/shared/services/auth.service'
+import { StellarService } from 'src/app/authorization/services/stellar-service'
 import {SubSink} from 'subsink'
 import { SwUpdate, SwPush } from '@angular/service-worker';
 @Component({
@@ -11,6 +12,8 @@ import { SwUpdate, SwPush } from '@angular/service-worker';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnDestroy {
+
+  @Input() isGetAccountData: boolean;
 
   isNavbarCollapsed = false;
   faPowerOff = faPowerOff;
@@ -32,6 +35,7 @@ export class NavbarComponent implements OnDestroy {
     private ngZone:NgZone,
     public notificationsService: NotificationsService,
     public push: SwPush,
+    public stellarService: StellarService,
   ) { 
     this.subsink = new SubSink()    
     if (!this.authService.userData){
@@ -39,6 +43,33 @@ export class NavbarComponent implements OnDestroy {
       this.authService.GetLocalUserData()
     }
     console.log('navbar.subscribe')
+    //if (this.isGetAccountData){
+      Promise.all([
+        this.stellarService.getCurrentGrxPrice1(),
+        this.stellarService.getCurrentXlmPrice1(),
+        this.stellarService.getAccountBalance(this.authService.userData.PublicKey)
+        .catch(err => {
+          // Notify internet connection.
+          //this.snotifyService.simple('Please check your internet connection.')
+          console.log(err)
+        })
+      ])
+      .then(([ grxPrice, xlmPrice, balances ]) => {         
+        this.authService.userData.totalGRX = (balances as any).grx;
+        this.authService.userData.totalXLM = (balances as any).xlm;
+        this.authService.userData.xlmPrice = xlmPrice
+        this.authService.userData.grxPrice = grxPrice
+  
+        console.log('NAV.this.authService.userData.xlmPrice:', this.authService.userData.xlmPrice)
+        console.log('NAV.totalGRX:', this.authService.userData.totalGRX)
+        console.log('NAV.totalXLM:', this.authService.userData.totalXLM)
+        // this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
+          
+        //   this.stellarService.publishPrices([this.xlmP, this.grxP, this.totalXLM, this.totalGRX])
+        // })
+      }) 
+    //}
+
     push.messages.subscribe(msg => {
       let data = (msg as any).notification
       //console.log('navbar.subscribe-data1:', data)

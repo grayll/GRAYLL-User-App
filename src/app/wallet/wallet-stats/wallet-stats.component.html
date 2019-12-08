@@ -12,7 +12,7 @@
           </div>
           <div class="d-inline-block text-white align-middle wallet-box">
             <span class="text-light font-16">Wallet Balance</span>
-            <h5 class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(2)}}</h5>
+            <h5 class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(2)}}</h5>
             <small>
               <a href="javascript:void(0)" class="white-link" [routerLink]="[{outlets: {popup: 'xlm-balance-status'}}]">
                 1.50 XLM Reserved (${{(1.5*xlmP).toFixed(2)}})
@@ -26,20 +26,20 @@
             <i class="text-purple font-16">
               <fa-icon [icon]="faCircle"></fa-icon>
             </i>
-            <span class="font-16"> {{calPercentGRX()}}% GRX</span>
+            <span class="font-16"> {{this.authService.calPercentGRX()}}% GRX</span>
             <br>
             <h5 class="p-font">
-              {{'$' + (this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(2)}}
+              {{'$' + (this.authService.grxInUsd().toFixed(2))}}
             </h5>
           </div>
           <div class="col text-right">
             <i class="text-sky font-16">
               <fa-icon [icon]="faCircle"></fa-icon>
             </i>
-            <span class="font-16"> {{calPercentXLM()}}% XLM</span>
+            <span class="font-16"> {{this.authService.calPercentXLM()}}% XLM</span>
             <br>
             <h5 class="mb-0 p-font">
-              {{'$' + (this.authService.userData.totalXLM*this.xlmP).toFixed(2)}}
+              {{'$' + (this.authService.xlmInUsd()).toFixed(2)}}
             </h5>
           </div>
         </div>
@@ -62,7 +62,7 @@
             </div>
             <div class="d-inline-block text-white align-middle wallet-box">
               <span class="text-light font-16" routerLink="/system/overview">Algo System Balance</span>
-              <h5 class="text-light font-weight-bolder">{{'$' + (this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(2)}}</h5>
+              <h5 class="text-light font-weight-bolder">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(2)}}</h5>
             </div>
           </div>
 
@@ -217,7 +217,7 @@
                   </div>
                   <div class="col">
                     <a class="purple-link" href="javascript:void(0)" (click)="populateMaxXLM()">
-                      Max Available XLM: {{(authService.userData.totalXLM - 1.5 - this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM).toFixed(5)}}
+                      Max Available XLM: {{(this.authService.getMaxAvailableXLM()).toFixed(5)}}
                     </a>
                   </div>
                 </div>
@@ -277,7 +277,7 @@
                   </div>
                   <div class="col">
                     <a class="purple-link" href="javascript:void(0)" (click)="populateMaxGRX()">
-                      Max Available GRX: {{(authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX).toFixed(5)}}
+                      Max Available GRX: {{(this.authService.getMaxAvailableGRX()).toFixed(5)}}
                     </a>
                   </div>
                 </div>
@@ -303,7 +303,7 @@
             </div>
             <div class="d-inline-block text-white align-middle wallet-box">
               <span class="text-light font-16">Wallet Balance</span>
-              <h5 class="text-light font-weight-bolder">{{'$' + (this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(2)}}</h5>
+              <h5 class="text-light font-weight-bolder">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(2)}}</h5>
             </div>
           </div>
 
@@ -312,20 +312,20 @@
               <i class="text-purple font-16">
                 <fa-icon [icon]="faCircle"></fa-icon>
               </i>
-              <span class="font-16"> {{calPercentGRX()}}% GRX</span>
+              <span class="font-16"> {{this.authService.calPercentGRX()}}% GRX</span>
               <br>
               <h5 class="p-font">
-               {{'$' + (this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(2)}}
+               {{'$' + (this.authService.grxInUsd().toFixed(2))}}
               </h5>
             </div>
             <div class="col text-right">
               <i class="text-sky font-16">
                 <fa-icon [icon]="faCircle"></fa-icon>
               </i>
-              <span class="font-16"> {{calPercentXLM()}}% XLM</span>
+              <span class="font-16"> {{this.authService.calPercentXLM()}}% XLM</span>
               <br>
               <h5 class="mb-0 p-font">
-                {{'$' + (this.authService.userData.totalXLM*this.xlmP).toFixed(2)}}
+                {{'$' + (this.authService.xlmInUsd().toFixed(2))}}
               </h5>
             </div>
           </div>
@@ -499,7 +499,7 @@
                     </div>
                     <div class="col">
                       <a class="purple-link" href="javascript:void(0)" (click)="populateMaxXLM()">
-                        Max Available XLM: {{(authService.userData.totalXLM - 1.5 - this.authService.userData.OpenOrders*0.5).toFixed(5)}}
+                        Max Available XLM: {{(this.authService.getMaxAvailableXLM()).toFixed(5)}}
                       </a>
                     </div>
                   </div>
@@ -558,7 +558,7 @@
                     </div>
                     <div class="col">
                       <a class="purple-link" href="javascript:void(0)" (click)="populateMaxGRX()">
-                        Max Available GRX: {{(this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX).toFixed(5)}}
+                        Max Available GRX: {{(this.authService.getMaxAvailableGRX()).toFixed(5)}}
                       </a>
                     </div>
                   </div>

@@ -342,7 +342,7 @@ export class StellarService {
         });       
     }
 
-    getAccountBalance(publicKey: string, cb){
+    getAccountBalance1(publicKey: string, cb){
         // this.horizon.accounts().accountId(publicKey).call()
         // .then( 
         this.horizon.loadAccount(publicKey).then(
@@ -366,6 +366,31 @@ export class StellarService {
                 console.log(err)
             }
         )
+    }
+    getAccountBalance(publicKey: string){        
+        return new Promise((resolve, reject) => {
+            this.horizon.loadAccount(publicKey).then(
+                res => {                                
+                    console.log(res);
+                    let xlm = 0
+                    let grx = 0
+                    res.balances.forEach(b => {
+                        if (b.asset_type === "credit_alphanum4" && b.asset_code === environment.ASSET){
+                            grx = b.balance
+                        } else if (b.asset_type === 'native'){
+                            xlm = b.balance
+                        }
+                    });
+                    console.log('balance:', xlm);               
+                    console.log('balance:', grx);               
+                    resolve({xlm:xlm, grx:grx})
+                },
+                err => {
+                    reject(err)
+                    console.log(err)
+                }
+            )
+        })
     }
     getBlFromAcc(account: any, cb){                    
         let xlm = 0

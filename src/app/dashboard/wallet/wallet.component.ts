@@ -47,32 +47,32 @@ export class WalletComponent implements OnDestroy  {
     ) 
   {
     this.subs = new SubSink()
-    this.subs.add(this.stellarService.observePrices().subscribe(values => {
-      this.xlmP = values[0]
-      this.grxP = values[1]
-      this.totalXLM = values[2]
-      this.totalGRX = values[3]
-      this.fillWalletData()
-    }))
+    // this.subs.add(this.stellarService.observePrices().subscribe(values => {
+    //   this.xlmP = values[0]
+    //   this.grxP = values[1]
+    //   this.totalXLM = values[2]
+    //   this.totalGRX = values[3]
+    //   this.fillWalletData()
+    // }))
    
   }
   
-  fillWalletData(){    
-    this.xlmBalance =  this.totalXLM*this.xlmP
-    this.grxBalance = this.totalGRX*this.grxP*this.xlmP    
-    this.walletBalance = this.xlmBalance + this.grxBalance
-    this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
-    this.GRXValue = '' + Math.round(this.grxBalance*100/this.walletBalance)
-    this.XLMValue = '' + (100 - +this.GRXValue)
-    this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
-    this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
+  // fillWalletData(){    
+  //   this.xlmBalance =  this.totalXLM*this.xlmP
+  //   this.grxBalance = this.totalGRX*this.grxP*this.xlmP    
+  //   this.walletBalance = this.xlmBalance + this.grxBalance
+  //   this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
+  //   this.GRXValue = '' + Math.round(this.grxBalance*100/this.walletBalance)
+  //   this.XLMValue = '' + (100 - +this.GRXValue)
+  //   this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
+  //   this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
     
-    this.authService.userData.totalGRX = this.totalGRX
-    this.authService.userData.totalXLM = this.totalXLM
-    this.authService.userData.xlmPrice = this.xlmP
-    this.authService.userData.grxPrice = this.grxP
-    this.authService.SetLocalUserData()     
-  }
+  //   // this.authService.userData.totalGRX = this.totalGRX
+  //   // this.authService.userData.totalXLM = this.totalXLM
+  //   // this.authService.userData.xlmPrice = this.xlmP
+  //   // this.authService.userData.grxPrice = this.grxP
+  //   // this.authService.SetLocalUserData()     
+  // }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }

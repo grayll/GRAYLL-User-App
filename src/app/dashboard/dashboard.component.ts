@@ -78,28 +78,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.log('request subs')
         this.requestSubNotifications()
       } 
-      Promise.all([
-        this.stellarService.getCurrentGrxPrice1(),
-        this.stellarService.getCurrentXlmPrice1(),
-        this.stellarService.getAccountData(this.authService.userData.PublicKey)
-        .catch(err => {
-          // Notify internet connection.
-          this.snotifyService.simple('Please check your internet connection.')
-          console.log(err)
-        })
-      ])
-      .then(([ grx, xlm, account ]) => {
-        console.log(grx, xlm)   
-        this.xlmP = +xlm
-        this.grxP = +grx
-        this.stellarService.userAccount = account;   
-        this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
-          //this.fillWalletData(res) 
-          this.totalXLM = res.xlm;
-          this.totalGRX = res.grx;  
-          this.stellarService.publishPrices([this.xlmP, this.grxP, this.totalXLM, this.totalGRX])
-        })
-      }) 
+      // Promise.all([
+      //   this.stellarService.getCurrentGrxPrice1(),
+      //   this.stellarService.getCurrentXlmPrice1(),
+      //   this.stellarService.getAccountData(this.authService.userData.PublicKey)
+      //   .catch(err => {
+      //     // Notify internet connection.
+      //     this.snotifyService.simple('Please check your internet connection.')
+      //     console.log(err)
+      //   })
+      // ])
+      // .then(([ grx, xlm, account ]) => {
+      //   console.log(grx, xlm)   
+      //   this.xlmP = +xlm
+      //   this.grxP = +grx
+      //   this.stellarService.userAccount = account;   
+      //   this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
+      //     //this.fillWalletData(res) 
+      //     this.totalXLM = res.xlm;
+      //     this.totalGRX = res.grx;  
+      //     this.stellarService.publishPrices([this.xlmP, this.grxP, this.totalXLM, this.totalGRX])
+      //   })
+      // }) 
     } 
   }
 
@@ -117,7 +117,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }  
     console.log('dashboard-OpenOrders', this.authService.userData.OpenOrders)
     this.authService.GetSecretKey(null).then(seckey => {
-      console.log('seckey:', seckey)
+      //console.log('seckey:', seckey)
     }).catch(err => {
       console.log('err:', err)
     })

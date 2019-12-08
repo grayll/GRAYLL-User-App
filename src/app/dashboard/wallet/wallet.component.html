@@ -4,7 +4,7 @@
       <div class="col-sm-12 col-md-6 text-center">
         <div class="css-bar css-bar-25 css-bar-xlg css-bar-purple">
           <div class="data-text">
-            <h1 class="success-rate font-light">{{GRXValue}}
+            <h1 class="success-rate font-light">{{this.authService.calPercentGRX()}}
               <span class="icon">%</span>
             </h1>
             <div class="rate-label font-15">GRX Asset Ratio</div>
@@ -20,7 +20,7 @@
               </div>
               <div class="d-inline-block text-white align-middle wallet-box">
                 <span routerLink="/wallet/overview" style="outline: none!important" class="text-light font-16">Wallet Balance</span>
-                <h5 routerLink="/wallet/overview" style="outline: none!important" class="text-light font-weight-bolder mb-0">{{this.walletValue}}</h5>
+                <h5 routerLink="/wallet/overview" style="outline: none!important" class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(2)}}</h5>
                 <small>
                   <a href="javascript:void(0)" class="navy-link" [routerLink]="[{outlets: {popup: 'xlm-balance-status'}}]">
                     1.50 XLM Reserved (${{(1.5*xlmP).toFixed(2)}})
@@ -33,20 +33,20 @@
                 <i class="text-purple font-16">
                   <fa-icon [icon]="faCircle"></fa-icon>
                 </i>
-                <span class="font-16"> {{GRXValue}}% GRX</span>
+                <span class="font-16"> {{this.authService.calPercentGRX()}}% GRX</span>
                 <br>
                 <p class="font-weight-bolder p-font">
-                  {{GRXUsdValue}}
+                  {{'$' + (this.authService.grxInUsd().toFixed(2))}}
                 </p>
               </div>
               <div class="col-6 text-right mt-3">
                 <i class="m-r-5 text-sky font-16">
                   <fa-icon [icon]="faCircle"></fa-icon>
                 </i>
-                <span class="font-16"> {{XLMValue}}% XLM</span>
+                <span class="font-16"> {{this.authService.calPercentXLM()}}% XLM</span>
                 <br>
                 <p class="m-b-0 font-weight-bolder p-font">
-                  {{XLMUsdValue}}
+                  {{'$' + (this.authService.xlmInUsd().toFixed(2))}}
                 </p>
               </div>
             </div>

@@ -91,17 +91,20 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     // console.log('wallet-OpenOrders', this.authService.userData.OpenOrders)
     // this.authService.userData.totalGRX = 1
     // this.authService.userData.totalXLM = 1
+    this.grxP = this.authService.userData.grxPrice
+    this.xlmP = this.authService.userData.xlmPrice
+
     this.federationAddress = this.authService.userData.Federation;
     this.stellarAddress = this.authService.userData.PublicKey;
     this.secretKey = '';
 
-    this.subs.add(this.stellarService.observePrices().subscribe(prices => {
-      this.grxP = prices[0]
-      this.xlmP = prices[1]      
-      this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
-        this.fillWalletData(res)
-      })
-    })) 
+    // this.subs.add(this.stellarService.observePrices().subscribe(prices => {
+    //   this.grxP = prices[0]
+    //   this.xlmP = prices[1]      
+    //   this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
+    //     this.fillWalletData(res)
+    //   })
+    // })) 
   }
 
   calPercentXLM(){
@@ -110,38 +113,38 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   calPercentGRX(){
     return 100 - Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
   }
-  fillWalletData(res){
-    this.authService.userData.totalGRX = res.grx;//this.totalGRX
-    this.authService.userData.totalXLM = res.xlm;// this.totalXLM
-    this.authService.userData.xlmPrice = this.xlmP
-    this.authService.userData.grxPrice = this.grxP
+  // fillWalletData(res){
+  //   this.authService.userData.totalGRX = res.grx;//this.totalGRX
+  //   this.authService.userData.totalXLM = res.xlm;// this.totalXLM
+  //   this.authService.userData.xlmPrice = this.xlmP
+  //   this.authService.userData.grxPrice = this.grxP
 
-    this.totalXLM = this.authService.userData.totalXLM
-    this.totalGRX = this.authService.userData.totalGRX        
-    // this.maxAvailabeXLM = this.authService.userData.totalXLM - 1.5 - 
-    //   this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM
-    // this.maxAvailabeGRX = this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX
+  //   this.totalXLM = this.authService.userData.totalXLM
+  //   this.totalGRX = this.authService.userData.totalGRX        
+  //   // this.maxAvailabeXLM = this.authService.userData.totalXLM - 1.5 - 
+  //   //   this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM
+  //   // this.maxAvailabeGRX = this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX
  
-    // this.xlmBalance =  this.totalXLM*this.xlmP
-    // this.grxBalance = this.totalGRX*this.grxP*this.xlmP    
-    // this.walletBalance = this.xlmBalance + this.grxBalance
-    //$ + (this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(7)
-    //this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
+  //   // this.xlmBalance =  this.totalXLM*this.xlmP
+  //   // this.grxBalance = this.totalGRX*this.grxP*this.xlmP    
+  //   // this.walletBalance = this.xlmBalance + this.grxBalance
+  //   //$ + (this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(7)
+  //   //this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
 
-    // 100 - Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
-    //this.GRXValue = '' + Math.round(this.grxBalance*100/this.walletBalance)
+  //   // 100 - Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
+  //   //this.GRXValue = '' + Math.round(this.grxBalance*100/this.walletBalance)
     
-    // Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
-    //this.XLMValue = '' + (100 - +this.GRXValue)
-    //'$' + (this.authService.userData.totalXLM*this.xlmP).toFixed(2)
-    //this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
-    // '$' + (this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(2)
-    //this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
+  //   // Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
+  //   //this.XLMValue = '' + (100 - +this.GRXValue)
+  //   //'$' + (this.authService.userData.totalXLM*this.xlmP).toFixed(2)
+  //   //this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
+  //   // '$' + (this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(2)
+  //   //this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
 
-   // this.XLMValueForm = (+this.grxAmount)*(+this.grxPrice)
+  //  // this.XLMValueForm = (+this.grxAmount)*(+this.grxPrice)
    
-    this.authService.SetLocalUserData()     
-  }
+  //   this.authService.SetLocalUserData()     
+  // }
 
   ngOnInit() {
     this.observeRevealSecretKey();
@@ -166,8 +169,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if(!this.validateSession()){
       return
     }     
-    let maxAvailabeXLM = this.authService.userData.totalXLM - 1.50001 - 0.5 
-      - this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM
+   
+    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - 0.5
 
     if (+this.grxAmount*+this.grxPrice >= maxAvailabeXLM && maxAvailabeXLM > 0){
       console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
@@ -183,7 +186,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           this.stellarService.allOffers.push(of)
           this.snotifyService.simple('Buy order submitted successfully.')          
           if (this.authService.userData.OpenOrders){
-            this.authService.userData.OpenOrders +=1
+            this.authService.userData.OpenOrders = +this.authService.userData.OpenOrders + 1
           } else {
             this.authService.userData.OpenOrders = 1
           }
@@ -214,9 +217,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if(!this.validateSession()){
       return
     }  
-    let maxAvailabeXLM = this.authService.userData.totalXLM - 1.50002 - 0.5 
-      - this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM  
-    let maxAvailabeGRX = this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX
+    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - 0.5
+    let maxAvailabeGRX = this.authService.getMaxAvailableGRX()
+
     if (+this.grxAmount > maxAvailabeGRX || maxAvailabeXLM < 0){
       console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
       this.snotifyService.simple('Your fund is not enough for sell offer.')    
@@ -276,15 +279,16 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
 
   populateMaxXLM() {
-    this.XLMValueForm = this.authService.userData.totalXLM - 1.50003 - 0.5 - this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM
+    
+    this.XLMValueForm = this.authService.getMaxAvailableXLM() - 0.5
     this.grxPrice = this.bidPrice.toString()
     this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(5)
-    //this.XLMValue = (this.totalXLM - 1.5).toString();
-    //(this.totalXLM - 1.5 - (+this.authService.GetOpenOrder())).toString()
+    
   }
 
   populateMaxGRX() {
-    this.grxAmount = (this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX).toFixed(7)
+    
+    this.grxAmount = this.authService.getMaxAvailableGRX().toString()
     this.grxPrice = this.askPrice.toString()    
     this.XLMValueForm = +this.grxAmount*+this.grxPrice
   }

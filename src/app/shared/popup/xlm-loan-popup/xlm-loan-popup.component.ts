@@ -44,7 +44,7 @@ export class XlmLoanPopupComponent implements OnInit {
 
   ) {
     //this.user = this.userService.getUser();
-    this.stellarService.getAccountBalance(this.authService.userData.PublicKey, res =>{
+    this.stellarService.getAccountBalance1(this.authService.userData.PublicKey, res =>{
       if (res.err){
         //this.errorService.handleError(null, 'Can not get the balance right now. Please try again later!')
         this.error = true;

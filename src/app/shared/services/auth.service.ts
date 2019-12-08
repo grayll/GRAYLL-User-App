@@ -223,6 +223,34 @@ export class AuthService {
     return null
   }
 
+  calPercentXLM(){
+    return Math.round(this.userData.totalXLM*this.userData.xlmPrice*100/(this.userData.totalXLM*this.userData.xlmPrice + 
+      this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice))
+  }
+  calPercentGRX(){
+    return 100 - Math.round(this.userData.totalXLM*this.userData.xlmPrice*100/(this.userData.totalXLM*this.userData.xlmPrice + 
+      this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice))
+  }
+  grxInUsd(){
+    return +this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice
+  }
+  xlmInUsd(){
+    return +this.userData.totalXLM*this.userData.xlmPrice
+  }
+  getMaxAvailableXLM(){
+    if (this.userData.OpenOrders && this.userData.OpenOrdersXLM){
+      return +this.userData.totalXLM - 1.50001 - +this.userData.OpenOrders*0.5 - +this.userData.OpenOrdersXLM
+    } else {
+      return +this.userData.totalXLM - 1.50001                     
+    }
+  }
+  getMaxAvailableGRX(){
+    if (this.userData.OpenOrdersGRX){
+      return (+this.userData.totalGRX - +this.userData.OpenOrdersGRX)
+    } else {
+      return +this.userData.totalGRX
+    }
+  }
   /* Setting up user data when sign in with username/password, 
   sign up with username/password and sign in with social auth  
   provider in Firestore database using AngularFirestore + AngularFirestoreDocument service */
