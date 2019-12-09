@@ -13,6 +13,8 @@ import { SwUpdate, SwPush } from '@angular/service-worker';
 })
 export class NavbarComponent implements OnDestroy {
 
+  
+
   @Input() isGetAccountData: boolean;
 
   isNavbarCollapsed = false;
@@ -59,18 +61,15 @@ export class NavbarComponent implements OnDestroy {
         this.authService.userData.totalXLM = (balances as any).xlm;
         this.authService.userData.xlmPrice = xlmPrice
         this.authService.userData.grxPrice = grxPrice
-  
+        this.authService.SetLocalUserData()
         console.log('NAV.this.authService.userData.xlmPrice:', this.authService.userData.xlmPrice)
         console.log('NAV.totalGRX:', this.authService.userData.totalGRX)
         console.log('NAV.totalXLM:', this.authService.userData.totalXLM)
-        // this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
-          
-        //   this.stellarService.publishPrices([this.xlmP, this.grxP, this.totalXLM, this.totalGRX])
-        // })
+        
       }) 
     //}
 
-    push.messages.subscribe(msg => {
+    this.subsink.add(push.messages.subscribe(msg => {
       let data = (msg as any).notification
       //console.log('navbar.subscribe-data1:', data)
       if (data.type === 'wallet'){
@@ -89,7 +88,7 @@ export class NavbarComponent implements OnDestroy {
         }   
         this.authService.SetLocalUserData()     
       }
-    });
+    }));
     //push.notificationClicks.subscribe(click => console.log('WalletComponent-notification click', click));
     this.subsink.add(this.notificationsService.subsNumberNotices().subscribe(numberNotices => {
       // numberNotice number could be -/+
@@ -108,7 +107,21 @@ export class NavbarComponent implements OnDestroy {
         this.generalNotices = this.generalNotices + numberNotices[2]
         this.authService.userData.UrGeneral = this.generalNotices
       }
-    }))    
+    })) 
+    
+    // var StellarSdk = require('stellar-sdk')
+    // var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+
+    // var paymentHandler = function (paymentResponse) {
+    //   console.log(paymentResponse);
+    // };
+
+    // var es = server.payments()
+    //   .forAccount("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ")
+    //   .cursor('now')
+    //   .stream({
+    //     onmessage: paymentHandler
+    //   })
   }
 
   ngOnDestroy():void {

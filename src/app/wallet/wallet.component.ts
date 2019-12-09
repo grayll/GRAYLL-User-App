@@ -34,7 +34,7 @@ export class WalletComponent implements OnInit, OnDestroy {
       this.stellarService.getAccountData(this.authService.userData.PublicKey)
       .catch(err => {
         // Notify internet connection.
-        this.snotifyService.simple('Please check your internet connection.')
+        this.snotifyService.simple('Please check your internet connection!')
         console.log(err)
       })
     ])

@@ -55,13 +55,13 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
           }
         ).catch(e => {
           console.log('cancelAllOffer error:', e)
-          this.snotifyService.simple('Some order could not be cancelled. Please try again later!')
+          this.snotifyService.simple('The order could not be cancelled! Please retry.')
         }) 
       } else {
-        this.snotifyService.simple('Please enter the valid password')
+        this.snotifyService.simple('Please enter a valid password!')
       }            
     }).catch( err => {
-      this.snotifyService.simple('Please enter the valid password')
+      this.snotifyService.simple('Please enter a valid password!')
     })
   }
 

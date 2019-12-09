@@ -157,10 +157,10 @@ export class NotificationsSettingsComponent implements OnDestroy {
   }
 
   private displaySettingsSavedToast() {
-    this.snotifyService.simple('Your settings are saved.');
+    this.snotifyService.simple('Your settings are saved!');
   }
   private displaySettingsFailToast() {
-    this.snotifyService.simple(`Currently this setting can't be updated. Please try again later!`);
+    this.snotifyService.simple(`The settings could not be updated! Please retry.`);
   }
   
   ngOnDestroy(): void {

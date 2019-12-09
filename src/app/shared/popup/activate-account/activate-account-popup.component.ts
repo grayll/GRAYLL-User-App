@@ -177,10 +177,10 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
             })                                            
           } else if ((resp as any).errCode === environment.INVALID_UNAME_PASSWORD){
             this.frm.reset()
-            this.errorService.handleError(null, "Please input valid password.")
+             this.errorService.handleError(null, "Please enter a valid password!")
           } else {
             this.frm.reset()
-            this.errorService.handleError(null, "Can not activate account right now. Please try again later!")
+            this.errorService.handleError(null, "The account could not be activated! Please retry.")
           }
         },
         err => {

@@ -35,19 +35,19 @@ export class ConfirmEmailComponent implements OnInit {
       let content = ''
       switch ((res as any).errCode){
         case 12:
-            content = "The email is not registered yet"           
+            content = "This email address is not registered yet."          
             break
         case 13:
-            content = "The email is verified"    
+            content = "The email address is verified."    
             break        
         default:
-            content = `The confirm email is sent to email ${this.email}`
+            content = `The confirmation email has been sent to ${this.email}`
             break
       }
       this.errorService.handleError(null, content)
     },
-    error => {               
-      this.errorService.handleError(null, `Currently the request can't be performed. Please try again later!`)     
+    error => {              
+      this.errorService.handleError(null, `The email verification request can't be completed! Please retry.`)    
     })
   }
 

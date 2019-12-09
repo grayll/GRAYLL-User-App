@@ -19,8 +19,6 @@ import { HttpClient } from '@angular/common/http';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
-  //user: UserModel;
-
   // Font Awesome Icons
   faWarning = faExclamationTriangle;
   xlmP: number

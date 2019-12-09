@@ -136,31 +136,31 @@ export class WithdrawPopupComponent implements OnInit {
 
   clientValidation(): boolean {
     if (!this.isValidAddress(this.recipient)) {
-      this.errorService.handleError(null, 'Please enter a valid Stellar Wallet or Federation Address.');
+      this.errorService.handleError(null, 'Please enter a valid Stellar Account or Federation Address!');
       return false;
     }
     if (this.selectedTabId === 'phone' && !this.phoneNumber || (this.phoneNumber && !this.isValidPhoneNumber(this.phoneNumber))) {
-      this.errorService.handleError(null, 'Please enter a valid phone number.');
+      this.errorService.handleError(null, 'Please enter a valid phone number!');
       return false;
     }
     if (this.selectedTabId === 'email' && !this.emailAddress) {
-      this.errorService.handleError(null, 'Please enter an email address.');
+      this.errorService.handleError(null, 'Please enter a valid email address!');
       return false;
     }
     if ((!this.GRXValue && !this.XLMValue) || (this.GRXValue && !this.isValidNumber(this.GRXValue))) {
-      this.errorService.handleError(null, 'Please enter a valid amount.');
+      this.errorService.handleError(null, 'Please enter a valid GRX amount!');
       return false;
     }
     if (this.selectedTabId !== 'wallet' && !this.memoMessage) {
-      this.errorService.handleError(null, 'Please enter a memo message.');
+      this.errorService.handleError(null, 'Please enter a memo message!');
       return false;
     }
     if ((!this.XLMValue && !this.GRXValue) || (this.XLMValue && !this.isValidNumber(this.XLMValue))) {
-      this.errorService.handleError(null, 'Please enter a valid amount.');
+      this.errorService.handleError(null, 'Please enter a valid XLM amount!');
       return false;
     }
     if (this.XLMValue && this.GRXValue) {
-      this.errorService.handleError(null, 'Please enter only GRX or only XLM value.');
+      this.errorService.handleError(null, 'Please only enter a GRX or XLM value!');
       return false;
     }
     return true;

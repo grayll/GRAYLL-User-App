@@ -48,7 +48,7 @@ export class DisableTwoFaComponent implements OnInit {
       return false;
     }
     if (!this.password || (this.password && !this.password.value)) {
-      this.errorService.handleError(null, 'Please enter account password.');
+      this.errorService.handleError(null, 'Please enter the 2FA code from your Authenticator App.');
       return false;
     }
     return true;
@@ -69,7 +69,7 @@ export class DisableTwoFaComponent implements OnInit {
         this.popupService.close()
         .then(() => {
           setTimeout(() => {
-            this.snotifyService.simple('Two-factor authentication disabled.');
+            this.snotifyService.simple('Two-factor authentication has now been disabled.');
             this.userService.enable2FA(false);
             this.settingsService.sendTwoFAEnabledToObserver(false);
           }, 50);
@@ -82,10 +82,10 @@ export class DisableTwoFaComponent implements OnInit {
             this.errorService.handleError(null, 'The password is invalid.');
             break;
           case environment.TOKEN_INVALID:
-              this.errorService.handleError(null, 'The onetime password is invalid.');
+              this.errorService.handleError(null, 'The 2FA code is invalid! Please retry.');
               break;
           default:
-              this.errorService.handleError(null, 'Can not disable TFA right now. Please try again later!');
+              this.errorService.handleError(null, 'Two-factor authentication could not be disabled! Please retry.');
               break;
         }        
       }

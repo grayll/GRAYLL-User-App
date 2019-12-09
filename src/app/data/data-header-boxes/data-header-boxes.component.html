@@ -24,11 +24,11 @@
               <h6 class="text-white font-weight-bolder">
                 XLM
               </h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0.08000</h6>
+              <h6 class="text-white font-weight-bolder mb-0">{{(+this.authService.userData.totalXLM).toFixed(7)}}</h6>
             </div>
             <div class="ml-auto text-right">
               <h6 class="text-white font-weight-bolder">Balance</h6>
-              <h6 class="text-white font-weight-bolder mb-0">$100,000,000,000.00</h6>
+              <h6 class="text-white font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd().toFixed(2))}}</h6>
             </div>
           </div>
         </div>
@@ -39,11 +39,11 @@
               <h6 class="text-white font-weight-bolder">
                 GRX
               </h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0.08000</h6>
+              <h6 class="text-white font-weight-bolder mb-0">{{(+this.authService.userData.totalGRX).toFixed(7)}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Balance</h6>
-              <h6 class="text-white font-weight-bolder mb-0">$100,000.00</h6>
+              <h6 class="text-white font-weight-bolder mb-0">{{'$' + (this.authService.grxInUsd().toFixed(2))}}</h6>
             </div>
           </div>
         </div>

@@ -174,7 +174,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
     if (+this.grxAmount*+this.grxPrice >= maxAvailabeXLM && maxAvailabeXLM > 0){
       console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
-      this.snotifyService.simple('Your fund is not enough for buy offer.')    
+      this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')    
       return
     }
     this.authService.GetSecretKey(null).then(SecKey => {     
@@ -192,17 +192,17 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           }
           this.authService.SetLocalUserData()
         } else {
-          this.snotifyService.simple('Buy order is matched.'); 
+          this.snotifyService.simple('Buy order has been matched and executed!'); 
         }
       }).catch(e => {
         console.log(e)
-        this.snotifyService.simple('Currently buy offer can not be performed. Please try again later!') 
+        this.snotifyService.simple('Buy order could not be submitted! Please retry!') 
       })        
     })    
   }
   validateSession(){
     if (this.authService.isTokenExpired()){
-      this.snotifyService.simple('The working session is expired. Please login again!'); 
+      this.snotifyService.simple('Your login session has expired! Please login again.'); 
       this.router.navigateByUrl('/login')
       return false
     } 
@@ -222,7 +222,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
     if (+this.grxAmount > maxAvailabeGRX || maxAvailabeXLM < 0){
       console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
-      this.snotifyService.simple('Your fund is not enough for sell offer.')    
+      this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')    
       return
     }
     this.authService.GetSecretKey(null).then(SecKey => {      
@@ -237,13 +237,13 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
             this.authService.userData.OpenOrders = 1
           }
           this.authService.SetLocalUserData()
-          this.snotifyService.simple('Sell order submitted successfully.'); 
+          this.snotifyService.simple('Sell order submitted successfully!'); 
         } else {
-          this.snotifyService.simple('Sell order is matched.'); 
+          this.snotifyService.simple('Sell order has been matched and executed!'); 
         }        
       }).catch(e => {
         console.log(e)
-        this.snotifyService.simple('Currently sell offer can not be performed. Please try again later!')    
+        this.snotifyService.simple('Sell order could not be submitted! Please retry.')    
       })        
     }).catch( err => {
       console.log(err)

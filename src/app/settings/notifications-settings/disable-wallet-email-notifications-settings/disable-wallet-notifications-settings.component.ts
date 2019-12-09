@@ -30,7 +30,7 @@ export class DisableWalletNotificationsSettingsComponent implements OnInit {
       this.authService.SetLocalUserData()
       this.popupService.close().then(() => {
         this.settingsService.sendWalletEmailNotificationsDisabled();
-        this.snotifyService.simple('E-mail wallet notifications disabled.');
+        this.snotifyService.simple('Wallet email notifications disabled.');
       });       
     }),
     err =>{      
@@ -39,6 +39,6 @@ export class DisableWalletNotificationsSettingsComponent implements OnInit {
   }
 
   private displaySettingsFailToast() {
-    this.snotifyService.simple('Can not change setting now. Please try again later!');
+    this.snotifyService.simple('The settings have not been updated! Please retry.');
   }
 }

@@ -45,7 +45,7 @@ export class EditFederationAddressComponent implements OnInit {
   get federation() { return this.form.get('federation'); }
   save() {
     if (this.form.invalid) {
-      this.snotifyService.simple('Federation address is invalid.');
+      this.snotifyService.simple('The federation address is invalid.');
       return
     }
     this.http.post(`api/v1/users/editfederation`, {federation: this.federation.value})
@@ -61,25 +61,25 @@ export class EditFederationAddressComponent implements OnInit {
         this.popupService.close()
         .then(() => {
           setTimeout(() => {
-            this.snotifyService.simple('Your federation address saved.');        
+            this.snotifyService.simple('Your federation address has been saved.');        
           }, 50);
         })         
       } else {
         switch ((res as any).errCode){
           case environment.INVALID_PARAMS:
-            this.snotifyService.simple('Please check you input federation address.');
+            this.snotifyService.simple('Please check the federation address entered.');
             break
           case environment.INTERNAL_ERROR:
-            this.snotifyService.simple(`Currently the federation address can't be updated. Please try again later!`);
+            this.snotifyService.simple(`The federation address could not been updated! Please retry.`);
             break
           case environment.INVALID_UNAME_PASSWORD:
-              this.snotifyService.simple('The federation address is already used by other user. Please choose another one.');
+              this.snotifyService.simple('The federation address is already in use! Please choose another one.');
               break
         }
       }
     },
     err => {
-      this.snotifyService.simple(`Currently the federation address can't be updated. Please try again later!`);
+      this.snotifyService.simple(`The federation address could not been updated! Please retry.`);
     })
   }
 

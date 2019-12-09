@@ -109,9 +109,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
                   this.popupService.close()
                   .then(() => {
                     if (asset.code === 'XLM'){
-                      this.authService.userData.totalXLM -= amount
+                      this.authService.userData.totalXLM = +this.authService.userData.totalXLM - amount
                     } else {
-                      this.authService.userData.totalGRX -= amount
+                      this.authService.userData.totalGRX = +this.authService.userData.totalGRX - amount
                     }
                     setTimeout(() => {
                       this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
@@ -126,21 +126,21 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
               switch ((res as any).errCode){
                 case environment.TOKEN_INVALID:
                     this.error()
-                  //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
+                  //this.errorService.handleError(null, '2FA code is invalid! Please retry.')
                   break;
                 case environment.INVALID_UNAME_PASSWORD:
                     this.error()
-                  //this.errorService.handleError(null, 'Your password is invalid. Please try again!')
+                  //this.errorService.handleError(null, 'Invalid username or password!')
                   break;
                 default:
                     this.error()
-                  //this.errorService.handleError(null, 'Can not enable Multisigature. Please try again later!')
+                  //this.errorService.handleError(null, 'Multisignature could not be enabled! Please retry.')
                   break;
               }       
             }     
           },
           err => {
-            //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
+            //this.errorService.handleError(null, '2FA code is invalid! Please retry.')
           })
         } else if (!this.tfaEnable) {
           console.log('sendAsset:', SecKey,

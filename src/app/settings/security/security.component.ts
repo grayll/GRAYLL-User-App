@@ -6,8 +6,6 @@ import {SettingsService} from '../settings.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import {UserModel} from '../../models/user.model';
 import {UserService} from '../../authorization/user.service';
-
-
 @Component({
   selector: 'app-security',
   templateUrl: './security.component.html',
@@ -78,20 +76,20 @@ export class SecurityComponent implements OnDestroy, OnInit {
     this.authService.userData.Setting.IpConfirm = this.isIPConfirmEnabled
     this.authService.UpdateSetting("IpConfirm", this.isIPConfirmEnabled).subscribe(res =>{
       if ((res as any).valid === true ){
-        this.saveSettings('Your settings are saved.');
+        this.saveSettings('Your settings are saved!');
       } else {
-        this.saveSettings('Can not save the settings now. Please try again later!');
+        this.saveSettings('Settings could not be saved! Please retry.');
       }      
     }),
     err =>{
-      this.saveSettings('Can not save the settings now. Please try again later!');
+      this.saveSettings('Settings could not be saved! Please retry.');
     }   
   }
 
   toggleMulSignature() {  
     if (!(this.authService.userData.Tfa && this.authService.userData.Tfa.Enable && 
       this.authService.userData.Tfa.Enable == true)){
-        this.saveSettings('Multisignature needs 2FA enable')
+        this.saveSettings('To enable multisignature transactions 2FA needs to enabled first.')
       return        
     } else {
       console.log('this.authService.userData:', this.authService.userData)
@@ -102,11 +100,11 @@ export class SecurityComponent implements OnDestroy, OnInit {
       if ((res as any).valid === true ){
         this.saveSettings('Your settings are saved.');
       } else {
-        this.saveSettings('Can not save the settings now. Please try again later!');
+        this.saveSettings('Settings could not be saved! Please retry.');
       }      
     }),
     err =>{
-      this.saveSettings('Can not save the settings now. Please try again later!');
+      this.saveSettings('Settings could not be saved! Please retry.');
     }
   }
 
@@ -115,7 +113,7 @@ export class SecurityComponent implements OnDestroy, OnInit {
   }
 
   private displaySettingsSavedToast() {
-    this.snotifyService.simple('Your settings are saved.');
+    this.snotifyService.simple('Your settings are saved!');
   }
 
   ngOnDestroy(): void {

@@ -30,7 +30,7 @@ export class DisableAlgoNotificationsSettingsComponent implements OnInit {
       this.authService.SetLocalUserData()
       this.popupService.close().then(() => {
         this.settingsService.sendAlgoEmailNotificationsDisabled();
-        this.snotifyService.simple('E-mail algo system notifications disabled.');
+        this.snotifyService.simple('Algorithmic System email notifications disabled.');
       });       
     }),
     err => {      
@@ -39,7 +39,7 @@ export class DisableAlgoNotificationsSettingsComponent implements OnInit {
   }
 
   private displaySettingsFailToast() {
-    this.snotifyService.simple('Can not change setting now. Please try again later!');
+    this.snotifyService.simple('The settings have not been updated! Please retry.');
   }
 
 }

@@ -76,11 +76,11 @@ export class LoginComponent {
 
   validationMessages = {
     'email': {
-      'required':      'Email is required.',
-      'pattern':       'Email must be a valid email'
+      'required':      'Email is required!',
+      'pattern':       'Email must be valid!'
     },
     'password': {
-      'required':      'Password is required.',
+      'required':      'Password is required!',
       'pattern':       'Password must include at least one letter, one number, one capital and one special character.',
       'minlength':     'Password must be at least 8 characters long.',
       'maxlength':     'Password cannot be more than 36 characters long.'
@@ -178,11 +178,11 @@ export class LoginComponent {
                   this.router.navigate(['/dashboard/overview'])
                 } 
               } else if ((res as any).errCode === environment.INVALID_UNAME_PASSWORD){
-                this.showError('Invalid user name or password.')                                 
+                this.showError('Invalid email or password!')                                 
               }  else if((res as any).errCode === environment.UNVERIFIED)  {    
-                this.showError('Please verify your email before login.')                                
+                this.showError('Please verify your email before logging in.')                                
               }  else if((res as any).errCode === environment.IP_CONFIRM) {    
-                this.showError('Please confirm your ip before login.')                                
+                this.showError('Please confirm your IP address via the link sent to your email.')                                
               } 
             },
             error => {              
@@ -204,7 +204,7 @@ export class LoginComponent {
 
   showError(msg:string){
     if (!msg){
-      this.errorService.handleError(null, 'Can not login, please try again later!');
+      this.errorService.handleError(null, 'Login attempt failed! Please retry.');
     } else {
       this.errorService.handleError(null, msg);
     }

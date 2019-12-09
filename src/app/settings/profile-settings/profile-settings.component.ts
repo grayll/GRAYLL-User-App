@@ -107,7 +107,7 @@ export class ProfileSettingsComponent implements OnDestroy {
         console.log("subs err:", err)
       })
     }),
-    err => console.error("Could not subscribe to notifications", err);
+    err => console.error("Could not subscribe to notifications!", err);
   }
 
   // Updates validation state on form changes.
@@ -153,7 +153,7 @@ export class ProfileSettingsComponent implements OnDestroy {
     },
     'email': {
       'required':      'Email is required.',
-      'email':         'Email must be a valid email'
+      'email':         'Email must be valid!'
     },
     'phone': {     
       'pattern':       'Phone must be number.',
@@ -216,20 +216,20 @@ export class ProfileSettingsComponent implements OnDestroy {
           this.authService.SetLocalUserData()     
           
           //this.profileForm.reset()   
-          this.snotifyService.simple('Your changes are saved.');
+          this.snotifyService.simple('Your changes have been saved.');
         } else {
           switch ((res as any).errCode){
             case environment.INVALID_PARAMS:
-              this.snotifyService.simple('The input data is invalid.');
+              this.snotifyService.simple('The data entered is invalid.');
               break
             case environment.INTERNAL_ERROR:
-              this.snotifyService.simple(`Currently the profile can't be updated. Please try again later!`);
+              this.snotifyService.simple(`The profile could not be updated! Please retry.`);
               break
           }
         }
       },
       err => {
-        this.snotifyService.simple(`Currently the profile can't be updated. Please try again later!`);
+        this.snotifyService.simple(`The profile could not be updated! Please retry.`);
       })   
   }
 

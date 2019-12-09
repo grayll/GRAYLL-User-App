@@ -74,16 +74,16 @@ export class ChangePhoneNumberComponent implements OnInit {
       .subscribe(res => {        
         if ((res as any).errCode === environment.SUCCESS){
           this.popupService.close().then(() => {
-            this.snotifyService.simple('Phone number is verified and saved.');
+            this.snotifyService.simple('Your phone number is verified and saved!');
           });
         } else if ((res as any).errCode === environment.PHONE_EXIST){
-          this.errorService.handleError(null, 'This number already registered.');
+          this.errorService.handleError(null, 'This phone number is already registered!');
         } else if ((res as any).errCode === environment.INTERNAL_ERROR){
-          this.errorService.handleError(null, 'Can not verify phone number now. Please try again later!');
+          this.errorService.handleError(null, 'Your phone number can’t be verified! Please retry.');
         } 
       },
       e => {
-        this.errorService.handleError(null, 'Can not verify phone number now. Please try again later!');
+        this.errorService.handleError(null, 'Your phone number can’t be verified! Please retry.');
       })
       // this.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
       //   'size': 'invisible',
@@ -103,7 +103,7 @@ export class ChangePhoneNumberComponent implements OnInit {
       //           }, 50);
       //         });
       //       } else {
-      //         this.errorService.handleError(null, 'Please enter valid phone number.');
+      //         this.errorService.handleError(null, 'Please enter a valid phone number!');
       //       }
       //     })            
       //   },

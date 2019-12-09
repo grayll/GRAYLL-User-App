@@ -16,29 +16,29 @@ export class WalletComponent implements OnDestroy  {
   faWallet = faWallet;
   faCircle = faCircle;
 
-  totalXLM: number;
-  totalGRX: number;
-  xlmBalance: number;
-  grxBalance: number;
-  walletValue: string;
-  walletBalance: number;
-  XLMValue: string;
-  GRXValue: string;
-  XLMUsdValue: string;
-  GRXUsdValue: string;
+  // totalXLM: number;
+  // totalGRX: number;
+  // xlmBalance: number;
+  // grxBalance: number;
+  // walletValue: string;
+  // walletBalance: number;
+  // XLMValue: string;
+  // GRXValue: string;
+  // XLMUsdValue: string;
+  // GRXUsdValue: string;
 
-  grxP: number
-  xlmP: number = 1
+  // grxP: number
+  // xlmP: number = 1
 
-  gryBalance: number;
-  grzBalance: number;
-  algoWalletValue: string;
-  algoWalletBalance: number;
-  gryValue: string;
-  grzValue: string;
-  gryUsdValue: string;
-  grzUsdValue: string;
-  subs: SubSink
+  // gryBalance: number;
+  // grzBalance: number;
+  // algoWalletValue: string;
+  // algoWalletBalance: number;
+  // gryValue: string;
+  // grzValue: string;
+  // gryUsdValue: string;
+  // grzUsdValue: string;
+  // subs: SubSink
 
   constructor ( 
       private stellarService: StellarService,
@@ -46,7 +46,7 @@ export class WalletComponent implements OnDestroy  {
       private snotifyService: SnotifyService,
     ) 
   {
-    this.subs = new SubSink()
+    //this.subs = new SubSink()
     // this.subs.add(this.stellarService.observePrices().subscribe(values => {
     //   this.xlmP = values[0]
     //   this.grxP = values[1]
@@ -74,7 +74,7 @@ export class WalletComponent implements OnDestroy  {
   //   // this.authService.SetLocalUserData()     
   // }
   ngOnDestroy(): void {
-    this.subs.unsubscribe();
+    //this.subs.unsubscribe();
   }
 }
 

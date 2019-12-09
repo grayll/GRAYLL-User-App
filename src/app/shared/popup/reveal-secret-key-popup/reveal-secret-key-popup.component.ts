@@ -44,13 +44,13 @@ export class RevealSecretKeyPopupComponent implements OnInit {
           this.secret = (res as any).secret;
         }        
       } else {
-        this.errorService.handleError(null, `Currently the request can't not be performed. Please try again later!`);
+        this.errorService.handleError(null, `The request could not be performed! Please retry.`);
       }
       console.log((res as any)) 
     },
     e => {
       console.log(e)
-      this.errorService.handleError(null, `Currently the request can't not be performed. Please try again later!`);
+      this.errorService.handleError(null, `The request could not be performed! Please retry.`);
     } )
   }
 
@@ -68,13 +68,13 @@ export class RevealSecretKeyPopupComponent implements OnInit {
         if ((res as any).errCode == environment.SUCCESS){
           //this.tfaEnable = (res as any).tfa;
         } else {
-          this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
+          this.errorService.handleError(null, 'The request could not be performed! Please retry.');
         } 
         console.log((res as any))        
       },
       e => {
         console.log(e)
-        this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
+        this.errorService.handleError(null, 'The request could not be performed! Please retry.');
       })
     }
 
@@ -102,19 +102,19 @@ export class RevealSecretKeyPopupComponent implements OnInit {
           } else {        
             switch ((res as any).errCode){
               case environment.TOKEN_INVALID:
-                this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
+                this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.')
                 break;
               case environment.INVALID_UNAME_PASSWORD:
-                this.errorService.handleError(null, 'Your password is invalid. Please try again!')
+                this.errorService.handleError(null, 'Your password is invalid! Please retry.')
                 break;
               default:
-                this.errorService.handleError(null, `Currently the request can't be performed. Please try again later!`)
+                this.errorService.handleError(null, `The request could not be performed! Please retry.`)
                 break;
             }       
           }     
           }),
           err => {
-            //this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
+            //this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.')
           }        
       } else {
         //send request token to email
@@ -132,7 +132,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
               }
             })
           } else if ((res as any).errCode == environment.INVALID_CODE) {
-            this.errorService.handleError(null, 'Please provide a valid token.');
+            this.errorService.handleError(null, 'Please enter a valid verification code!');
           } else {
             
           }
@@ -141,7 +141,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
         },
         e => {
           console.log(e)
-          this.errorService.handleError(null, 'Can not peform the request right now. Please try again later!');
+          this.errorService.handleError(null, 'The request could not be performed! Please retry.');
         })
       }
           
@@ -151,12 +151,12 @@ export class RevealSecretKeyPopupComponent implements OnInit {
 
   clientValidation(): boolean {
     if (!this.code || this.code === '') {
-      this.errorService.handleError(null, 'Please enter your ' + (this.tfaEnable ? '2FA code' : 'password') + '.');
+      this.errorService.handleError(null, 'Please enter your ' + (this.tfaEnable ? '2FA code' : 'password') + '!');
       return false;
     }
     if (!this.authService.hash){
       if (!this.password || this.password === '') {
-        this.errorService.handleError(null, 'Please enter your password.');
+        this.errorService.handleError(null, 'Please enter your password!');
         return false;
       }
     }

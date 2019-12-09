@@ -88,13 +88,13 @@ export class EnableTwoFaLastStepComponent implements OnInit {
   validationMessages = {        
     'backupKey':{
       'required':      'Backup key is required.',     
-      'maxlength':      'Backup key  must be 16 characters long',
-      'pattern':  'Backup key must be characters [A-Z0-9]'
+      'maxlength':      'Backup key must be 16 characters long.',
+      'pattern':  'Backup key must only contain characters A-Z and 0-9.'
     },
     'oneTimePassword':{
-      'required':      'oneTimePassword is required.',      
-      'maxlength':      'oneTimePassword  must be 6 characters long',
-      'pattern':        'oneTimePassword must be characters [A-Z0-9]'
+      'required':      '2FA code is required.',      
+      'maxlength':      '2FA code must be 6 characters long.',
+      'pattern':        '2FA code must only contain characters A-Z and 0-9.'
     },
     'password': {
       'required':      'Password is required.',
@@ -143,7 +143,7 @@ export class EnableTwoFaLastStepComponent implements OnInit {
     .subscribe(res => {
       console.log('EnableTFA-data: ', res)     
       if ((res as any).errCode === environment.SUCCESS){
-        console.log('Verification succesully ') 
+        console.log('Verification successful!') 
         this.authService.userData = userData
         this.authService.SetLocalUserData()
         this.authService.setTfa(true)
@@ -155,23 +155,23 @@ export class EnableTwoFaLastStepComponent implements OnInit {
         this.popupService.close()
         .then(() => {
           setTimeout(() => {
-            this.snotifyService.simple('Two-factor authentication enabled.');            
+            this.snotifyService.simple('Two-factor authentication enabled!');            
           }, 50);
         })
         .catch((error) => console.log(error));
       } else {
         switch ((res as any).errCode){
           case environment.TOKEN_INVALID:
-            this.errorService.handleError(null, 'Onetime password is invalid.')
+            this.errorService.handleError(null, '2FA code is invalid! Please retry.')
             break;
           case environment.INTERNAL_ERROR:
-              this.errorService.handleError(null, 'Can not enable TFA. Please try again later!')
+              this.errorService.handleError(null, 'Two-factor authentication could not be enabled! Please retry.')
               break;
           case environment.INVALID_UNAME_PASSWORD:
-              this.errorService.handleError(null, 'Your password is invalid.')
+              this.errorService.handleError(null, 'Invalid username or password!')
               break;
           default:
-              this.errorService.handleError(null, 'Can not enable TFA. Please try again later!')
+              this.errorService.handleError(null, 'Two-factor authentication could not be enabled! Please retry.')
               break;
 
         }
@@ -179,7 +179,7 @@ export class EnableTwoFaLastStepComponent implements OnInit {
       }     
     }),
     err => {
-      this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
+      this.errorService.handleError(null, '2FA code is invalid! Please retry.')
     }
   }
 }

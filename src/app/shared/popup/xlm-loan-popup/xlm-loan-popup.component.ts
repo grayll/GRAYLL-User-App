@@ -46,7 +46,7 @@ export class XlmLoanPopupComponent implements OnInit {
     //this.user = this.userService.getUser();
     this.stellarService.getAccountBalance1(this.authService.userData.PublicKey, res =>{
       if (res.err){
-        //this.errorService.handleError(null, 'Can not get the balance right now. Please try again later!')
+        //this.errorService.handleError(null, 'Your account balance could not be retrieved! Please retry.')
         this.error = true;
       } else {
         this.currentXLMBalance = res.xlm - 1.5 - this.authService.GetOpenOrder()*0.5 - this.authService.userData.OpenOrdersXLM
@@ -68,7 +68,7 @@ export class XlmLoanPopupComponent implements OnInit {
       this.authService.GetLocalUserData()
     }
     if (this.currentXLMBalance - 1.50001 < 0){
-      this.errorService.handleError(null, "Balance Insufficient! Please make a deposit to your account.")
+      this.errorService.handleError(null, "Please deposit a minimum of 2 XLM to your account to pay off your loan.")
       return
     }
     let loanerAddress =  environment.xlmLoanerAddress.toString()

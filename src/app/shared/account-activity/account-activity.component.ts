@@ -279,13 +279,13 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
   //       }
   //     ).catch(e => {
   //       console.log('cancelOffer error:', e)
-  //       this.snotifyService.simple(`Currently the order can't be cancelled. Please try again later!`)
+  //       this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
   //     })
   //   })  
   // }
   validateSession(){
     if (this.authService.isTokenExpired()){
-      this.snotifyService.simple('The working session is expired. Please login again!'); 
+      this.snotifyService.simple('Your session has expired! Please login again.'); 
       this.router.navigateByUrl('/login')
       return false
     } 
@@ -317,7 +317,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
         }
       ).catch(e => {
         console.log('cancelOffer error:', e)
-        this.snotifyService.simple(`Currently the order can't be cancelled. Please try again later!`)
+        this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
       })
     })  
   }

@@ -42,7 +42,7 @@ export class TwoFactorComponent {
 
   validationMessages = {        
     'code':{
-      'required':      'One time password is required.',
+      'required':      '2FA code from your Authenticator App is required.',
      
     },
     'dontAskForNext30Days':{
@@ -71,7 +71,7 @@ export class TwoFactorComponent {
 }
   private clientValidation() {
     if (this.formgrp.invalid) {
-      this.errorService.handleError(null, 'Please enter your code.');
+      this.errorService.handleError(null, 'Please enter the 2FA code from your Authenticator App.');
       return false;
     }
     return true;
@@ -83,7 +83,7 @@ export class TwoFactorComponent {
     this.errorService.clearError();
     let exp = 0
     if (this.dontAskForNext30Days){
-      console.log('Do not ask for 30 days')          
+      console.log('Do not ask for the next 30 days.')          
       let t = new Date().getTime();
       exp = t + 1000 * 60 * 60 * 24 * 30
     }
@@ -95,7 +95,7 @@ export class TwoFactorComponent {
       if ((res as any).valid === true ){
         this.router.navigate(['/settings/profile'])
         if (this.dontAskForNext30Days){
-          console.log('Do not ask for 30 days')          
+          console.log('Do not ask for the next 30 days.')          
           userData.Tfa.Expire = exp
           this.authService.userData = userData
           this.authService.SetLocalUserData()
@@ -104,11 +104,11 @@ export class TwoFactorComponent {
           console.log('set 30day tfa')
         }
       } else {
-        this.errorService.handleError(null, 'Your onetime password is invalid.');
+        this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.');
       }
     }),
     err => {
-      this.errorService.handleError(null, 'Your onetime password is invalid.');
+      this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.');
     }
     
   }

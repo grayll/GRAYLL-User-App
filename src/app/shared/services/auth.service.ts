@@ -224,12 +224,11 @@ export class AuthService {
   }
 
   calPercentXLM(){
-    return Math.round(this.userData.totalXLM*this.userData.xlmPrice*100/(this.userData.totalXLM*this.userData.xlmPrice + 
+    return Math.round(+this.userData.totalXLM*this.userData.xlmPrice*100/(+this.userData.totalXLM*this.userData.xlmPrice + 
       this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice))
   }
   calPercentGRX(){
-    return 100 - Math.round(this.userData.totalXLM*this.userData.xlmPrice*100/(this.userData.totalXLM*this.userData.xlmPrice + 
-      this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice))
+    return 100 - this.calPercentXLM()
   }
   grxInUsd(){
     return +this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice

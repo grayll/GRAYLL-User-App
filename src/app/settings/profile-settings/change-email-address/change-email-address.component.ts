@@ -56,11 +56,11 @@ export class ChangeEmailAddressComponent implements OnInit {
 
   private clientValidation(): boolean {
     if (!this.currentEmail.value || !this.newEmail.value || !this.confirmNewEmail.value) {
-      this.errorService.handleError(null, 'All fields are required.');
+      this.errorService.handleError(null, 'All fields are required!');
       return false;
     }
     if (!this.errorService.isEmailAddressValid(this.currentEmail.value)) {
-      this.errorService.handleError(null, 'Please enter a valid current email address.');
+      this.errorService.handleError(null, 'Please enter the email address currently registered.');
       return false;
     }
     if (!this.errorService.isEmailAddressValid(this.newEmail.value)) {
@@ -68,11 +68,11 @@ export class ChangeEmailAddressComponent implements OnInit {
       return false;
     }
     if (this.confirmNewEmail.value !== this.newEmail.value) {
-      this.errorService.handleError(null, 'Please correctly confirm your new email address.');
+      this.errorService.handleError(null, 'Please confirm your new email address.');
       return false;
     }
     if (this.password.invalid) {
-      this.errorService.handleError(null, 'Please enter valid password.');
+      this.errorService.handleError(null, 'The password entered is invalid! Please review and retry.');
       return false;
     }
     this.currentMail = this.currentEmail.value
@@ -88,20 +88,20 @@ export class ChangeEmailAddressComponent implements OnInit {
         console.log(res)          
         if ((res as any).errCode === environment.SUCCESS) {
           this.form.reset()   
-          this.errorService.handleError(null, `An email was sent to ${this.currentMail} to confirm change email request.`);
+          this.errorService.handleError(null, `An email was sent to ${this.currentMail} to confirm your change email address request.`);
         } else {
           switch ((res as any).errCode) {
             case environment.INVALID_UNAME_PASSWORD:
               this.form.reset()   
-              this.errorService.handleError(null, 'The email or password is invalid!')
+              this.errorService.handleError(null, 'The email or password entered is invalid!')
               break
             case environment.EMAIL_NOT_EXIST:
               this.form.reset()   
-              this.errorService.handleError(null, 'The provided email does not exist.')
+              this.errorService.handleError(null, 'The email entered does not exist!')
               break
             case environment.TOKEN_INVALID:
               this.form.reset()   
-              this.errorService.handleError(null, 'Invalid request.')
+              this.errorService.handleError(null, 'Invalid request!')
               break
           }
           
@@ -109,7 +109,7 @@ export class ChangeEmailAddressComponent implements OnInit {
       },
       error => {        
         console.log(error)                  
-        this.errorService.handleError(null, `Currently the email address can't be updated. Please try again later!`);
+        this.errorService.handleError(null, `The email address could not be updated! Please retry.`);
         this.form.reset()    
       })           
     }
@@ -117,7 +117,7 @@ export class ChangeEmailAddressComponent implements OnInit {
 
   onSaveSuccess() {
     this.popupService.close().then(() => {
-      this.snotifyService.simple('New Email address is updated.');
+      this.snotifyService.simple('The email address has been updated!');
     });
   }
 

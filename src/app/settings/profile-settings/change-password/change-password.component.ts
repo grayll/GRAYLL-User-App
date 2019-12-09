@@ -41,11 +41,11 @@ export class ChangePasswordComponent implements OnInit {
 
   private clientValidation(): boolean {
     if (!this.currentPassword.value || !this.newPassword.value || !this.confirmNewPassword.value) {
-      this.errorService.handleError(null, 'All fields are required.');
+      this.errorService.handleError(null, 'All fields are required!');
       return false;
     }
     if (this.confirmNewPassword.value !== this.newPassword.value) {
-      this.errorService.handleError(null, 'Please correctly confirm your new password.');
+      this.errorService.handleError(null, 'Please re-enter your new password correctly!');
       return false;
     }
     return true;
@@ -60,7 +60,7 @@ export class ChangePasswordComponent implements OnInit {
 
   onSaveSuccess() {
     this.popupService.close().then(() => {
-      this.snotifyService.simple('Account password saved.');
+      this.snotifyService.simple('New password has been saved!');
     });
   }
 

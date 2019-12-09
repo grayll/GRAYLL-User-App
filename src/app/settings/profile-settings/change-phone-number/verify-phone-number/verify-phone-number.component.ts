@@ -38,11 +38,11 @@ export class VerifyPhoneNumberComponent implements OnInit {
 
   clientValidation(): boolean {
     if (!this.code) {
-      this.errorService.handleError(null, 'Please enter a verification code');
+      this.errorService.handleError(null, 'Please enter the verification code sent to your phone.');
       return false;
     }
     if (this.code.length !== 6) {
-      this.errorService.handleError(null, 'Code needs to have 6 characters.');
+      this.errorService.handleError(null, 'The verification code needs to have 6 characters.');
       return false;
     }
     return true;
@@ -51,7 +51,7 @@ export class VerifyPhoneNumberComponent implements OnInit {
   sendAgain() {
     this.errorService.clearError();
     this.popupService.close().then(() => {
-      this.snotifyService.simple('Code has been send again.');
+      this.snotifyService.simple('The verification code has been resent.');
     });
   }
 
@@ -64,7 +64,7 @@ export class VerifyPhoneNumberComponent implements OnInit {
             if (res.data.valid === true){
               
               this.popupService.close().then(() => {
-                this.snotifyService.simple('Phone number confirmed.');
+                this.snotifyService.simple('The phone number has been confirmed.');
               });
               // this.sharedService.showModalOverview();
               // this.popupService.close().then(() => {
@@ -73,7 +73,7 @@ export class VerifyPhoneNumberComponent implements OnInit {
               //   }, 50);
               // });
             } else {
-              this.errorService.handleError(null, 'Please enter valid phone number.');
+              this.errorService.handleError(null, 'Please enter a valid phone number.');
             }
         })
      
