@@ -186,12 +186,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.isShowingAllSystemNotifications = !this.isShowingAllSystemNotifications;
   }
 
-  markAlgoNotificationAsRead(notification: AlgoNotificationModel) {
+  markAlgoNotificationAsRead(notification: any) {
     if (!notification.isRead) {
       notification.isRead = true;
-      this.notificationsService.decreaseNumberOfAllUnreadNotifications();
-      this.notificationsService.decreaseNumberOfUnreadAlgoNotifications();
-      this.notificationsService.publicNumberNotices([0,-1,0])
+      if (+this.authService.userData.UrAlgo - 1 >= 0){
+        this.authService.userData.UrAlgo = +this.authService.userData.UrAlgo - 1
+      }
     }
   }
 
@@ -201,9 +201,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
       // Save notice marked as read to list and update when component destroy
       this.readWalletNoticeIds.push(notification.id)
-      this.notificationsService.decreaseNumberOfAllUnreadNotifications();
-      this.notificationsService.decreaseNumberOfUnreadWalletNotifications();
-      this.notificationsService.publicNumberNotices([-1,0,0])
+      if (+this.authService.userData.UrWallet - 1 >= 0){
+        this.authService.userData.UrWallet = +this.authService.userData.UrWallet - 1
+      }      
     }
   }
 
@@ -211,9 +211,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (!notification.isRead) {
       notification.isRead = true;
       this.readGeneralNoticeIds.push(notification.id)
-      this.notificationsService.decreaseNumberOfAllUnreadNotifications();
-      this.notificationsService.decreaseNumberOfUnreadSystemNotifications();
-      this.notificationsService.publicNumberNotices([0,0,-1])
+      if (+this.authService.userData.UrGeneral - 1 >= 0){
+        this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral - 1
+      }
     }
   }
 

@@ -18,12 +18,12 @@ import { HttpClient } from '@angular/common/http';
 export class XlmLoanPopupComponent implements OnInit {
 
   @ViewChild('content') modal;
-  currentXLMBalance: number;
+ // currentXLMBalance: number;
   XLMLoanValue = 1.50001;
 
-  XLMBalanceS: string = '';
-  XLMLoanS: string = this.XLMLoanValue.toString()+ ' XLM';
-  XLMRemainS: string = '';
+  // XLMBalanceS: string = '';
+  // XLMLoanS: string = this.XLMLoanValue.toString()+ ' XLM';
+  // XLMRemainS: string = '';
 
   error: boolean;
   success: boolean;
@@ -33,10 +33,8 @@ export class XlmLoanPopupComponent implements OnInit {
   private user: UserModel;
 
   constructor(
-    public popupService: PopupService,
-    // private settingsService: SettingsService,
-    private errorService: ErrorService,
-    // private userService: UserService,
+    public popupService: PopupService,    
+    private errorService: ErrorService,    
     private sharedService: SharedService,
     private authService: AuthService,
     private stellarService: StellarService,
@@ -44,16 +42,9 @@ export class XlmLoanPopupComponent implements OnInit {
 
   ) {
     //this.user = this.userService.getUser();
-    this.stellarService.getAccountBalance1(this.authService.userData.PublicKey, res =>{
-      if (res.err){
-        //this.errorService.handleError(null, 'Your account balance could not be retrieved! Please retry.')
-        this.error = true;
-      } else {
-        this.currentXLMBalance = res.xlm - 1.5 - this.authService.GetOpenOrder()*0.5 - this.authService.userData.OpenOrdersXLM
-        this.XLMBalanceS = this.currentXLMBalance.toString() + ' XLM'         
-        this.XLMRemainS = this.currentXLMBalance - this.XLMLoanValue > 0 ? (this.currentXLMBalance - this.XLMLoanValue).toString() + ' XLM' : '0 XLM'
-      }
-    })     
+    //this.currentXLMBalance = this.authService.getMaxAvailableXLM()
+    //this.XLMBalanceS = this.currentXLMBalance.toString() + ' XLM'         
+    //this.XLMRemainS = this.currentXLMBalance - this.XLMLoanValue > 0 ? (this.currentXLMBalance - this.XLMLoanValue).toString() + ' XLM' : '0 XLM'    
   }
 
   ngOnInit() {
@@ -67,7 +58,7 @@ export class XlmLoanPopupComponent implements OnInit {
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    if (this.currentXLMBalance - 1.50001 < 0){
+    if (this.authService.getMaxAvailableXLM() - 1.50001 < 0){
       this.errorService.handleError(null, "Please deposit a minimum of 2 XLM to your account to pay off your loan.")
       return
     }
@@ -88,8 +79,9 @@ export class XlmLoanPopupComponent implements OnInit {
             console.log('ledger <= 0')
             this.error = true;
             this.success = false;
+            this.updateFund()
           } else {
-            console.log('Set LoadPaidLedgerId:', ledger)
+            //console.log('Set LoadPaidLedgerId:', ledger)
             this.authService.SetLoanPaidLedgerId(ledger)
             this.verifyTx(+ledger)    
           }     
@@ -104,7 +96,10 @@ export class XlmLoanPopupComponent implements OnInit {
       this.success = false;
     })  
   }
-
+  updateFund(){
+    this.authService.userData.totalXLM = +this.authService.userData.totalXLM - this.XLMLoanValue
+    this.authService.SetLocalUserData()
+  }
   retry() {
     this.error = false;
     this.success = false;
@@ -130,6 +125,7 @@ export class XlmLoanPopupComponent implements OnInit {
         this.error = false;
         this.success = true;
         this.sharedService.setLoanPaid(); 
+        this.updateFund()
       },
       err => {
         console.log('verify ledger exp: ', err)

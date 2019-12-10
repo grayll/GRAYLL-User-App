@@ -208,7 +208,7 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" [value]="(+grxAmount)*(+grxPrice)*xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*xlmP).toFixed(2)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -217,7 +217,7 @@
                   </div>
                   <div class="col">
                     <a class="purple-link" href="javascript:void(0)" (click)="populateMaxXLM()">
-                      Max Available XLM: {{(this.authService.getMaxAvailableXLM()).toFixed(5)}}
+                      Max Available XLM: {{(this.authService.getMaxAvailableXLM() - 0.5).toFixed(7)}}
                     </a>
                   </div>
                 </div>
@@ -268,7 +268,7 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" [value]="(+grxAmount)*(+grxPrice)*xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*xlmP).toFixed(2)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -277,7 +277,7 @@
                   </div>
                   <div class="col">
                     <a class="purple-link" href="javascript:void(0)" (click)="populateMaxGRX()">
-                      Max Available GRX: {{(this.authService.getMaxAvailableGRX()).toFixed(5)}}
+                      Max Available GRX: {{(this.authService.getMaxAvailableGRX()).toFixed(7)}}
                     </a>
                   </div>
                 </div>
@@ -490,7 +490,7 @@
                       <div class="input-group-prepend">
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
-                      <input type="text" [value]="(+grxAmount)*(+grxPrice)*xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*xlmP).toFixed(2)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">
@@ -499,7 +499,7 @@
                     </div>
                     <div class="col">
                       <a class="purple-link" href="javascript:void(0)" (click)="populateMaxXLM()">
-                        Max Available XLM: {{(this.authService.getMaxAvailableXLM()).toFixed(5)}}
+                        Max Available XLM: {{(this.authService.getMaxAvailableXLM()-0.5).toFixed(7)}}
                       </a>
                     </div>
                   </div>
@@ -549,7 +549,7 @@
                       <div class="input-group-prepend">
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
-                      <input type="text" [value]="(+grxAmount)*(+grxPrice)*xlmP" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*xlmP).toFixed(2)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">

@@ -90,24 +90,24 @@ export class NavbarComponent implements OnDestroy {
       }
     }));
     //push.notificationClicks.subscribe(click => console.log('WalletComponent-notification click', click));
-    this.subsink.add(this.notificationsService.subsNumberNotices().subscribe(numberNotices => {
-      // numberNotice number could be -/+
-      if (!this.authService.userData){
-        this.authService.GetLocalUserData()
-      }
-      if (this.walletNotices + numberNotices[0] >= 0){
-        this.walletNotices = this.walletNotices + numberNotices[0]        
-        this.authService.userData.UrWallet = this.walletNotices
-      }
-      if (this.algoNotices + numberNotices[1] >= 0){
-        this.algoNotices = this.algoNotices + numberNotices[1]
-        this.authService.userData.UrAlgo = this.algoNotices
-      }
-      if (this.generalNotices + numberNotices[2] >= 0){
-        this.generalNotices = this.generalNotices + numberNotices[2]
-        this.authService.userData.UrGeneral = this.generalNotices
-      }
-    })) 
+    // this.subsink.add(this.notificationsService.subsNumberNotices().subscribe(numberNotices => {
+    //   // numberNotice number could be -/+
+    //   // if (!this.authService.userData){
+    //   //   this.authService.GetLocalUserData()
+    //   // }
+    //   if (this.walletNotices + numberNotices[0] >= 0){
+    //     this.walletNotices = this.walletNotices + numberNotices[0]        
+    //     this.authService.userData.UrWallet = this.walletNotices
+    //   }
+    //   if (this.algoNotices + numberNotices[1] >= 0){
+    //     this.algoNotices = this.algoNotices + numberNotices[1]
+    //     this.authService.userData.UrAlgo = this.algoNotices
+    //   }
+    //   if (this.generalNotices + numberNotices[2] >= 0){
+    //     this.generalNotices = this.generalNotices + numberNotices[2]
+    //     this.authService.userData.UrGeneral = this.generalNotices
+    //   }
+    // })) 
     
     // var StellarSdk = require('stellar-sdk')
     // var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
@@ -122,6 +122,10 @@ export class NavbarComponent implements OnDestroy {
     //   .stream({
     //     onmessage: paymentHandler
     //   })
+  }
+
+  getAllUnreadNumber(){
+    return (+this.authService.userData.UrAlgo + +this.authService.userData.UrWallet + +this.authService.userData.UrGeneral)
   }
 
   ngOnDestroy():void {

@@ -172,7 +172,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
    
     let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - 0.5
 
-    if (+this.grxAmount*+this.grxPrice >= maxAvailabeXLM && maxAvailabeXLM > 0){
+    if (+this.grxAmount*+this.grxPrice >= maxAvailabeXLM || maxAvailabeXLM < 0){
       console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
       this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')    
       return
@@ -279,18 +279,21 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
 
   populateMaxXLM() {
-    
-    this.XLMValueForm = this.authService.getMaxAvailableXLM() - 0.5
-    this.grxPrice = this.bidPrice.toString()
-    this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(5)
-    
+    if (this.authService.getMaxAvailableXLM() - 0.5 > 0){
+      this.XLMValueForm = this.authService.getMaxAvailableXLM() - 0.5
+      this.grxPrice = this.bidPrice.toString()
+      this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(5)
+    } else {
+      this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')    
+    }    
   }
 
   populateMaxGRX() {
-    
-    this.grxAmount = this.authService.getMaxAvailableGRX().toString()
-    this.grxPrice = this.askPrice.toString()    
-    this.XLMValueForm = +this.grxAmount*+this.grxPrice
+    if (this.authService.getMaxAvailableGRX() > 0){
+      this.grxAmount = this.authService.getMaxAvailableGRX().toString()
+      this.grxPrice = this.askPrice.toString()    
+      this.XLMValueForm = +this.grxAmount*+this.grxPrice
+    }
   }
 
   goToTop() {

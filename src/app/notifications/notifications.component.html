@@ -43,7 +43,7 @@
                   <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.getNumberOfUnreadAlgoNotifications()}}
+                      {{this.authService.userData.UrAlgo}}
                     </span>
                   </a>
                 </div>
@@ -86,7 +86,7 @@
                   <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.getNumberOfUnreadWalletNotifications()}}
+                      {{this.authService.userData.UrWallet}}
                     </span>
                   </a>
                 </div>
@@ -129,7 +129,7 @@
                   <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.getNumberOfUnreadSystemNotifications()}}
+                      {{this.authService.userData.UrGeneral}}
                     </span>
                   </a>
                 </div>
@@ -181,7 +181,7 @@
                         <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                           <fa-icon [icon]="faBell" size="lg"></fa-icon>
                           <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.getNumberOfUnreadAlgoNotifications()}}
+                      {{this.authService.userData.UrAlgo}}
                     </span>
                         </a>
                       </div>
@@ -227,7 +227,7 @@
                         <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                           <fa-icon [icon]="faBell" size="lg"></fa-icon>
                           <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.getNumberOfUnreadWalletNotifications()}}
+                      {{this.authService.userData.UrWallet}}
                     </span>
                         </a>
                       </div>
@@ -273,7 +273,7 @@
                         <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                           <fa-icon [icon]="faBell" size="lg"></fa-icon>
                           <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.getNumberOfUnreadSystemNotifications()}}
+                      {{this.authService.userData.UrGeneral}}
                     </span>
                         </a>
                       </div>
