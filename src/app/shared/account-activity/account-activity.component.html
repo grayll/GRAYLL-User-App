@@ -57,10 +57,10 @@
       <div class="col-md-2 col-xs" *ngIf="showMoreDetails">
           <span *ngIf="payments" class="align-middle font-weight-bolder font-14">Transfers ({{payments.length}})</span>
           <span *ngIf="!payments" class="align-middle font-weight-bolder font-14">Transfers (0)</span><br>
-        <!-- <span class="text-light font-10 font-weight-bolder">Most Recent Transfers</span> -->
+          <span class="text-light font-10 font-weight-bolder">Most Recent Transfers</span>
       </div>
       <div class="col" *ngIf="showMoreDetails">
-        <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
+        <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview/wallet-activity/transfers">
           All Completed Transfers
         </a>
     </div>
@@ -91,12 +91,12 @@
       <div class="col-md-2 col-xs" *ngIf="showMoreDetails">
           <span *ngIf="operations" class="align-middle font-weight-bolder font-14">Network History ({{operations.length}})</span>
           <span *ngIf="!operations" class="align-middle font-weight-bolder font-14">Network History (0)</span><br>
-        <!-- <span class="text-light font-10 font-weight-bolder">Most Recent Network History</span> -->
+          <span class="text-light font-10 font-weight-bolder">Most Recent Network History</span>
       </div>
       <div class="col" *ngIf="showMoreDetails">
-        <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview">
-          Full Network History
-        </a>
+        <a href="javascript:void(0)" class="purple-link font-14" routerLink="/data/overview/wallet-activity/networkHistory">
+        	Full Network History
+      	</a>
     </div>
     <div class="col">
       <div class="row">
@@ -156,11 +156,7 @@
             <a href="javascript:void(0)" (click)='cancelOffer(item)' class="purple-link">
               <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
               <span class="ml-1 cancel text-danger">Cancel</span>
-            </a>
-            <!-- <a href="javascript:void(0)" (click)='cancelOffer(item.cachedOffer, item.index, item.realAmount, item.assetType)' class="purple-link">
-              <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
-              <span class="ml-1 cancel text-danger">Cancel</span>
-            </a> -->
+            </a>            
           </td>
       </tr>       
       </tbody>
@@ -240,7 +236,7 @@
      *ngIf="selectedTab.id === 'allOrders'" id="completedOrdersContainer">
   <hr class="m-0 py-2 w-100 mx-0 px-0" style="border-color: #fff;">
     <div class="col-md-2 col-xs pl-0">
-      <span *ngIf="trades" class="align-middle font-14 font-weight-bolder">Completed Orders ({{trades.length}})</span><br>
+      <span *ngIf="trades" class="align-middle font-14 font-weight-bolder">Completed Orders ({{trades.length}})</span>
       <span *ngIf="!trades" class="align-middle font-14 font-weight-bolder">Completed Orders (0)</span><br>
       <span class="text-light font-10 font-weight-bolder">Most Recent Completed Orders</span>
     </div>

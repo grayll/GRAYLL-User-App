@@ -53,8 +53,12 @@
 
           <ngb-tab title="GRAYLL Wallet Activity" id="wallet-activity">
             <ng-template ngbTabContent>
-              <app-account-activity [showAllCompletedOrders]="true" [showMoreDetails]="true">
-              </app-account-activity>
+              <!-- <app-account-activity [showAllCompletedOrders]="true" [showMoreDetails]="true">
+              </app-account-activity> -->
+              <app-account-activity
+              [scrollToCompletedOrders]="activeSubTabId !== 'transfers'"
+              [activeTabId]="activeSubTabId">
+            </app-account-activity>
             </ng-template>
           </ngb-tab>
           </ng-container>

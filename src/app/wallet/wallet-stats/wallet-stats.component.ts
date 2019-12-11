@@ -26,16 +26,16 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   faChartLine = faChartLine;
   federationAddress: string;
   stellarAddress: string;
-  totalXLM: number;
-  totalGRX: number;
-  xlmBalance: number;
-  grxBalance: number;
-  walletValue: string;
-  walletBalance: number;
-  XLMValue: string;
-  GRXValue: string;
-  XLMUsdValue: string;
-  GRXUsdValue: string;
+  // totalXLM: number;
+  // totalGRX: number;
+  // xlmBalance: number;
+  // grxBalance: number;
+  // walletValue: string;
+  // walletBalance: number;
+  // XLMValue: string;
+  // GRXValue: string;
+  // XLMUsdValue: string;
+  // GRXUsdValue: string;
 
   XLMValueForm:number
   USDValueForm:number
@@ -69,8 +69,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   // offers
   grxAmount: string = ''
   grxPrice: string = ''
-  grxXlmEqui: string = ''
-  grxUsdEqui: string = ''
+  // grxXlmEqui: string = ''
+  // grxUsdEqui: string = ''
   SecKey: string = ''
 
   askPrice: number = 0;
@@ -87,24 +87,13 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     public push: SwPush,
   ) {
-    // console.log('userdata:', this.authService.userData)
-    // console.log('wallet-OpenOrders', this.authService.userData.OpenOrders)
-    // this.authService.userData.totalGRX = 1
-    // this.authService.userData.totalXLM = 1
+    
     this.grxP = this.authService.userData.grxPrice
     this.xlmP = this.authService.userData.xlmPrice
 
     this.federationAddress = this.authService.userData.Federation;
     this.stellarAddress = this.authService.userData.PublicKey;
-    this.secretKey = '';
-
-    // this.subs.add(this.stellarService.observePrices().subscribe(prices => {
-    //   this.grxP = prices[0]
-    //   this.xlmP = prices[1]      
-    //   this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
-    //     this.fillWalletData(res)
-    //   })
-    // })) 
+    this.secretKey = '';   
   }
 
   calPercentXLM(){
@@ -113,39 +102,16 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   calPercentGRX(){
     return 100 - Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
   }
-  // fillWalletData(res){
-  //   this.authService.userData.totalGRX = res.grx;//this.totalGRX
-  //   this.authService.userData.totalXLM = res.xlm;// this.totalXLM
-  //   this.authService.userData.xlmPrice = this.xlmP
-  //   this.authService.userData.grxPrice = this.grxP
 
-  //   this.totalXLM = this.authService.userData.totalXLM
-  //   this.totalGRX = this.authService.userData.totalGRX        
-  //   // this.maxAvailabeXLM = this.authService.userData.totalXLM - 1.5 - 
-  //   //   this.authService.userData.OpenOrders*0.5 - this.authService.userData.OpenOrdersXLM
-  //   // this.maxAvailabeGRX = this.authService.userData.totalGRX - this.authService.userData.OpenOrdersGRX
- 
-  //   // this.xlmBalance =  this.totalXLM*this.xlmP
-  //   // this.grxBalance = this.totalGRX*this.grxP*this.xlmP    
-  //   // this.walletBalance = this.xlmBalance + this.grxBalance
-  //   //$ + (this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(7)
-  //   //this.walletValue = `$ ${this.walletBalance.toFixed(2)}`
+  getMaxXLMForTrade(){
 
-  //   // 100 - Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
-  //   //this.GRXValue = '' + Math.round(this.grxBalance*100/this.walletBalance)
-    
-  //   // Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
-  //   //this.XLMValue = '' + (100 - +this.GRXValue)
-  //   //'$' + (this.authService.userData.totalXLM*this.xlmP).toFixed(2)
-  //   //this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
-  //   // '$' + (this.authService.userData.totalGRX*this.grxP*this.xlmP).toFixed(2)
-  //   //this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
-
-  //  // this.XLMValueForm = (+this.grxAmount)*(+this.grxPrice)
-   
-  //   this.authService.SetLocalUserData()     
-  // }
-
+    if (this.authService.getMaxAvailableXLM() - 0.5 > 0){
+      return (this.authService.getMaxAvailableXLM() - 0.5).toFixed(7)
+    } else {
+      return '0'
+    }
+  }
+  
   ngOnInit() {
     this.observeRevealSecretKey();
 
@@ -168,8 +134,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   buyGrx(){    
     if(!this.validateSession()){
       return
-    }     
-   
+    }    
     let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - 0.5
 
     if (+this.grxAmount*+this.grxPrice >= maxAvailabeXLM || maxAvailabeXLM < 0){
