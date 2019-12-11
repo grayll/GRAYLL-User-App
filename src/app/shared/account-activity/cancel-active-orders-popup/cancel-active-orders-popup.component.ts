@@ -43,8 +43,7 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
         this.authService.hash = this.password
         let promises = []
         this.stellarService.allOffers.forEach(item => {
-          promises.push(this.stellarService.cancelOffer(this.stellarService.userAccount, 
-            SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType))
+          promises.push(this.stellarService.cancelOffer(SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType))
         });
 
         Promise.all(promises).then(()=> {
@@ -55,7 +54,11 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
           }
         ).catch(e => {
           console.log('cancelAllOffer error:', e)
-          this.snotifyService.simple('The order could not be cancelled! Please retry.')
+          if (e.toString().includes('status code 400')){
+            this.snotifyService.simple('Insufficient funds to cancel this order! Please add more funds to your account.')  
+          } else {
+            this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
+          }          
         }) 
       } else {
         this.snotifyService.simple('Please enter a valid password!')

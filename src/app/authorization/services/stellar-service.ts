@@ -29,7 +29,7 @@ export class StellarService {
     prices: Subject<number[]>
     accountData: any;
     userAccount: any;
-    allOffers: any[];
+    allOffers: any[] = [];
 
     public constructor() {        
         this.horizon = new StellarSdk.Server(environment.horizon_url)  
@@ -83,7 +83,7 @@ export class StellarService {
             return  StellarSdk.Networks.PUBLIC
         }
     }
-    cancelOffer(accountOld, accSeed: string, offer:any, userData:any, realAmount:any, assetType:string): Promise<any> {
+    cancelOffer(accSeed: string, offer:any, userData:any, realAmount:any, assetType:string): Promise<any> {
         return new Promise((resolve, reject) => {
             let source = StellarSdk.Keypair.fromSecret(accSeed); 
             this.horizon.loadAccount(source.publicKey()).then(account => { 
@@ -249,6 +249,13 @@ export class StellarService {
     }
     getPayment(account: string, limit: number, nextURL: string){
         let url = `${environment.horizon_url}/accounts/${account}/payments?limit=${limit}&order=desc`
+        if (nextURL){
+            url = nextURL
+        }
+        return axios.get(url)        
+    }
+    getNetworkHistory(account: string, limit: number, nextURL: string){
+        let url = `${environment.horizon_url}/accounts/${account}/operations?limit=${limit}&order=asc`
         if (nextURL){
             url = nextURL
         }

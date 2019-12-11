@@ -199,7 +199,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                     </div>
-                    <input [(ngModel)]="XLMValueForm" [value]="(+grxAmount)*(+grxPrice)" type="text" name="xlmValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                    <input [(ngModel)]="XLMValueForm" [value]="this.calXLMAmount()" type="text" name="xlmValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                     <!-- <input [value]="(+grxAmount)*(+grxPrice)" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value"> -->
                   </div>
                 </div>
@@ -259,7 +259,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                     </div>
-                    <input type="text" [(ngModel)]="XLMValueForm" [value]="(+grxAmount)*(+grxPrice)" name="xlmValueForm1" 
+                    <input type="text" [(ngModel)]="XLMValueForm" [value]="this.calGRXAmount()" name="xlmValueForm1" 
                     class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                   </div>
                 </div>
@@ -290,7 +290,7 @@
   </div>
 </div>
 
-<!-- Display ONLY on mobile -->
+<!-- MOBILE Display ONLY on mobile -->
 <div class="d-lg-none">
   <ngb-carousel id="carouselWallet" [interval]="0" [showNavigationIndicators]="false">
     <ng-template ngbSlide>
@@ -472,7 +472,7 @@
                         <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                       </span>
                       </div>
-                      <input type="text" name="grxprice" [(ngModel)]="grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
+                      <input type="text" name="grxprice" [(ngModel)]="grxPrice" (change)="this.calGRXAmount()" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
                     </div>
                   </div>
                   <div class="form-group">

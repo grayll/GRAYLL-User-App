@@ -73,39 +73,27 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     this.activityResult = new ActivityResult()
 
     Promise.all([
-      this.stellarService.getCurrentGrxPrice1(),
-      this.stellarService.getCurrentXlmPrice1(),
-      this.stellarService.getAccountData(this.authService.userData.PublicKey)
-      .catch(err => {
-        // Notify internet connection.
-        this.snotifyService.simple('Please check your internet connection.')
-        console.log(err)
-      })
-    ])
-    .then(([ grx, xlm, account ]) => {      
-      this.stellarService.userAccount = account;
-      this.stellarService.publishPrices([+grx,+xlm])     
-   // })
-     
-   // this.subs.add(this.stellarService.observePrices().subscribe(prices => {
-      this.grxP = +grx
-      this.xlmP = +xlm
-      //console.log('acc-activity received Prices:', prices)
-      this.account = this.stellarService.userAccount
-      this.stellarService.allOffers = null
-      this.trades = null
-      //if (!this.stellarService.allOffers || !this.trades){
-        Promise.all([
-          this.getAccountOrders(null, true),
-          this.getAccountTrades(null)
-        ]).then(([ofs, trades]) => {
-          // this.fillOrders(ofs)
-          // this.fillTrades(trades)
-        }).catch( err => {
-          console.log('Error get open order and trade:', err)
-        })   
-      //}             
+      this.getAccountOrders(null, true),
+      this.getAccountTrades(null)
+    ]).then(([ofs, trades]) => {
+      
+    }).catch( err => {
+      console.log('Error get open order and trade:', err)
+    }) 
+
+    this.grxP = +this.authService.userData.grxPrice
+    this.xlmP = +this.authService.userData.xlmPrice
+    this.stellarService.getAccountData(this.authService.userData.PublicKey)
+    .catch(err => {
+      // Notify internet connection.
+      this.snotifyService.simple('Please check your internet connection.')
+      console.log(err)
     })
+    
+    //this.account = this.stellarService.userAccount
+    this.stellarService.allOffers = null
+    this.trades = null    
+   
   }
 
   fillOrders(ofs) {  
@@ -254,35 +242,9 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
         console.log('invalid table name')
         return 
     }
-    this.sharedService.savePDF(columns, fields, data, fileName)        
-    
+    this.sharedService.savePDF(columns, fields, data, fileName)
   }
-
-  // cancelOffer(offer, index, realAmount, assetType){
-  //   if (!this.authService.hash){
-  //     this.router.navigateByUrl('/login')
-  //   }  
-  //   console.log('cancelOffer-offer:', offer)     
-  //   this.authService.GetSecretKey(null).then(SecKey => {      
-  //     this.stellarService.cancelOffer(this.account, SecKey, offer, this.authService.userData, realAmount, assetType).then(res=>
-  //       {               
-  //         this.stellarService.allOffers.splice(index, 1)
-  //         if (this.authService.userData.OpenOrders){
-  //           this.authService.userData.OpenOrders -=1
-  //         } else {
-  //           this.authService.userData.OpenOrders = 0
-  //         }
-  //         if (this.authService.userData.OpenOrders < 0){
-  //           this.authService.userData.OpenOrders = 0
-  //         }
-  //         this.authService.SetLocalUserData()    
-  //       }
-  //     ).catch(e => {
-  //       console.log('cancelOffer error:', e)
-  //       this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
-  //     })
-  //   })  
-  // }
+  
   validateSession(){
     if (this.authService.isTokenExpired()){
       this.snotifyService.simple('Your session has expired! Please login again.'); 
@@ -302,7 +264,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     }
     console.log('cancelOffer-cachedOffer:', item.cachedOffer)     
     this.authService.GetSecretKey(null).then(SecKey => {      
-      this.stellarService.cancelOffer(this.account, SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType).then(res=>
+      this.stellarService.cancelOffer(SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType).then(res=>
         {               
           this.stellarService.allOffers.splice(item.index, 1)
           if (this.authService.userData.OpenOrders){
@@ -317,7 +279,11 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
         }
       ).catch(e => {
         console.log('cancelOffer error:', e)
-        this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
+        if (e.toString().includes('status code 400')){
+          this.snotifyService.simple('Insufficient funds to cancel this order! Please add more funds to your account.')  
+        } else {
+          this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
+        }
       })
     })  
   }
@@ -434,54 +400,44 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     })
   }
 
+  getNetworkHistory(){
+    this.stellarService.getNetworkHistory(this.authService.userData.PublicKey, 5, null).then(ops => {
+      console.log('getNetworkHistory:', ops.data)
+      if (ops && ops.data._embedded.records.length > 0){
+        var records: any[] = ops.data._embedded.records.filter(item => {
+          if (item.type === 'create_account' || item.type === "change_trust" ){
+            return item
+          }
+        }).map( item => {
+          let time =  moment.utc(item.created_at).local().format('DD/MM/YYYY HH:mm:ss')
+          let op = ''
+          let amount = '-'
+          let account = '-'
+          let asset = 'XLM'
+          let url = 'https://stellar.expert/explorer/public/'
+          if (environment.horizon_url.includes('testnet')){
+            url = 'https://stellar.expert/explorer/testnet/'
+          }
+          url = url + 'search?term='+item.id
+          if (item.type === 'create_account'){
+            op = 'Credited'                  
+            amount = '+' + item.starting_balance
+          } 
+          if (item.type === "change_trust"){
+            op = 'Trustline Created'   
+            account = this.trimAddress(item.trustee)  
+            asset = item.asset_code             
+          }               
+          return {time: time, op:op, id: item.id, amount: amount, account: account, asset: asset, url:url}
+        })   
+      }
+      this.operations = records           
+    })
+  }
+
   trimAddress(pk){
     return pk.slice(0, 6) + '...' + pk.slice( pk.length-7, pk.length-1)
   }
-
-  // getAccountOrder(nextURL:string){
-  //   this.account.offers().then( ofs => {  
-  //     //console.log('account.offers():', ofs)      
-  //     this.stellarService.allOffers = ofs.records.map((of, index) => {
-  //       let type = 'BUY'
-  //       let asset = 'GRX'
-        
-  //       if (of.buying.asset_type == 'native'){
-  //         type = 'SELL'
-  //         asset = of.selling.asset_code
-  //       } else {
-  //         asset = of.buying.asset_code
-  //       }
-  //       let buying = this.parseAsset(of.buying);
-  //       let selling = this.parseAsset(of.selling);
-  //       let cachedOffer
-  //       if (type == 'SELL'){
-  //         cachedOffer = StellarSdk.Operation.manageSellOffer({
-  //           buying: buying,
-  //           selling: selling,
-  //           amount: '0',
-  //           price: of.price_r,
-  //           offerId: of.id,
-  //         });
-  //       } else {
-  //         cachedOffer = StellarSdk.Operation.manageBuyOffer({
-  //           buying: buying,
-  //           selling: selling,
-  //           buyAmount: '0',
-  //           price: of.price_r,
-  //           offerId: of.id,
-  //         });
-  //       }
-  //       //console.log('offer:', of)
-  //       let grxXlmP = of.price_r.d/of.price_r.n
-  //       let time = moment.utc(of.last_modified_time).local().format('DD/MM/YYYY HH:mm:ss')
-  //       return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
-  //         totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, 
-  //         cachedOffer: cachedOffer, index:index}             
-  //     })       
-  //     this.offers = this.stellarService.allOffers          
-  //   })
-  // }
-  
 
   getAccountOrders(nextURL, countOpenOrder:boolean) {  
     this.stellarService.getOffer(this.authService.userData.PublicKey, 20, nextURL).then(pms => {          
@@ -627,9 +583,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
         Promise.all([
           this.getAccountOrders(null, false),
           this.getAccountTrades(null)
-        ]).then(([ofs, trades]) => {
-          // this.fillOrders(ofs)
-          // this.fillTrades(trades)
+        ]).then(([ofs, trades]) => {          
         }).catch( err => {
           console.log('Error get open order and trade:', err)
         }) 
@@ -638,42 +592,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
         this.getAccountPayments(null)
         break;
       case 'networkHistory':
-        if (this.account){
-          this.account.operations().then(ops => {
-            console.log('op:', ops.records)
-            if (ops && ops.records.length > 0){
-              this.operations = ops.records.filter(item => {
-                if (item.type === 'create_account' || item.type === "change_trust" ){
-                  return item
-                }
-              }).map( item => {
-                let time =  moment.utc(item.created_at).local().format('DD/MM/YYYY HH:mm:ss')
-                let op = ''
-                let amount = '-'
-                let account = '-'
-                let asset = 'XLM'
-                let url = 'https://stellar.expert/explorer/public/'
-                if (environment.horizon_url.includes('testnet')){
-                  url = 'https://stellar.expert/explorer/testnet/'
-                }
-                url = url + 'search?term='+item.id
-                if (item.type === 'create_account'){
-                  op = 'Credited'                  
-                  amount = '+' + item.starting_balance
-                } 
-                if (item.type === "change_trust"){
-                  op = 'Trustline Created'   
-                  account = this.trimAddress(item.trustee)  
-                  asset = item.asset_code             
-                }               
-                return {time: time, op:op, id: item.id, amount: amount, account: account, asset: asset, url:url}
-              })              
-            }
-          }).catch(e => {
-            console.log(e)
-          })        
-        }
-        break;
+        this.getNetworkHistory()
+        break;      
     }
   }
 

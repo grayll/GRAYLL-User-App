@@ -26,16 +26,10 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   faChartLine = faChartLine;
   federationAddress: string;
   stellarAddress: string;
-  // totalXLM: number;
-  // totalGRX: number;
-  // xlmBalance: number;
-  // grxBalance: number;
-  // walletValue: string;
-  // walletBalance: number;
-  // XLMValue: string;
-  // GRXValue: string;
-  // XLMUsdValue: string;
-  // GRXUsdValue: string;
+  isPopulateMaxXLM: boolean = false
+  isPopulateMaxGRX: boolean = false
+
+  reservedTrade : number = 0.500011
 
   XLMValueForm:number
   USDValueForm:number
@@ -94,19 +88,21 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.federationAddress = this.authService.userData.Federation;
     this.stellarAddress = this.authService.userData.PublicKey;
     this.secretKey = '';   
+    if (!this.stellarService.allOffers){
+      this.stellarService.allOffers = []
+    }
   }
 
-  calPercentXLM(){
-    return Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
-  }
-  calPercentGRX(){
-    return 100 - Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
-  }
+  // calPercentXLM(){
+  //   return Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
+  // }
+  // calPercentGRX(){
+  //   return 100 - Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
+  // }
 
   getMaxXLMForTrade(){
-
-    if (this.authService.getMaxAvailableXLM() - 0.5 > 0){
-      return (this.authService.getMaxAvailableXLM() - 0.5).toFixed(7)
+    if (this.authService.getMaxAvailableXLM() - this.reservedTrade > 0){
+      return (this.authService.getMaxAvailableXLM() - this.reservedTrade).toFixed(7)
     } else {
       return '0'
     }
@@ -135,11 +131,11 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if(!this.validateSession()){
       return
     }    
-    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - 0.5
-
-    if (+this.grxAmount*+this.grxPrice >= maxAvailabeXLM || maxAvailabeXLM < 0){
+    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
+    if (+this.grxAmount*+this.grxPrice > maxAvailabeXLM || maxAvailabeXLM < 0){
       console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
-      this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')    
+      this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')
+      this.reInitVariables()    
       return
     }
     this.authService.GetSecretKey(null).then(SecKey => {     
@@ -161,7 +157,11 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
         }
       }).catch(e => {
         console.log(e)
-        this.snotifyService.simple('Buy order could not be submitted! Please retry!') 
+        if (e.toString().includes('status code 400')){
+          this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')  
+        } else {
+          this.snotifyService.simple('Buy order could not be submitted! Please retry!')
+        } 
       })        
     })    
   }
@@ -182,17 +182,19 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if(!this.validateSession()){
       return
     }  
-    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - 0.5
+    
+    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
     let maxAvailabeGRX = this.authService.getMaxAvailableGRX()
 
     if (+this.grxAmount > maxAvailabeGRX || maxAvailabeXLM < 0){
       console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
-      this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')    
+      this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')  
+      this.reInitVariables()  
       return
     }
     this.authService.GetSecretKey(null).then(SecKey => {      
       this.stellarService.sellOrder(SecKey, this.grxPrice, this.grxAmount).then( res => {        
-        if (res.offerResults[0].currentOffer){
+        if (res.offerResults[0].currentOffer){          
           let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
             this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData)
           this.stellarService.allOffers.push(of)          
@@ -205,10 +207,16 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           this.snotifyService.simple('Sell order submitted successfully!'); 
         } else {
           this.snotifyService.simple('Sell order has been matched and executed!'); 
-        }        
+        } 
+        this.reInitVariables()             
       }).catch(e => {
         console.log(e)
-        this.snotifyService.simple('Sell order could not be submitted! Please retry.')    
+        this.reInitVariables()
+        if (e.toString().includes('status code 400')){
+          this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')  
+        } else {
+          this.snotifyService.simple('Sell order could not be submitted! Please retry.')  
+        }  
       })        
     }).catch( err => {
       console.log(err)
@@ -242,12 +250,35 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.secretKey = secretKey
     }));
   }
-
+  reInitVariables(){
+    this.isPopulateMaxGRX = false
+    this.isPopulateMaxGRX = false     
+  }  
+  calGRXAmount(){
+    if (this.isPopulateMaxXLM && this.grxPrice){            
+      this.grxAmount = this.grxAmount = this.authService.getMaxAvailableGRX().toString()
+      console.log('this.calGRXAmount:', this.grxAmount)
+      return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
+    } else if(this.grxPrice) {
+      return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
+    }
+  }
+  calXLMAmount(){
+    if (this.isPopulateMaxGRX && this.grxPrice){     
+      this.XLMValueForm = +this.getMaxXLMForTrade()
+      this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7) 
+      console.log('this.grxAmount:', this.grxAmount)
+      return this.XLMValueForm
+    } else {
+      return (+this.grxAmount)*(+this.grxPrice)
+    }
+  }
   populateMaxXLM() {
-    if (this.authService.getMaxAvailableXLM() - 0.5 > 0){
-      this.XLMValueForm = this.authService.getMaxAvailableXLM() - 0.5
+    if (this.authService.getMaxAvailableXLM() - this.reservedTrade > 0){
+      this.isPopulateMaxXLM = true
+      this.XLMValueForm = this.authService.getMaxAvailableXLM() - this.reservedTrade
       this.grxPrice = this.bidPrice.toString()
-      this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(5)
+      this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7)
     } else {
       this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')    
     }    
@@ -255,9 +286,10 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
   populateMaxGRX() {
     if (this.authService.getMaxAvailableGRX() > 0){
+      this.isPopulateMaxGRX = true
       this.grxAmount = this.authService.getMaxAvailableGRX().toString()
       this.grxPrice = this.askPrice.toString()    
-      this.XLMValueForm = +this.grxAmount*+this.grxPrice
+      this.XLMValueForm = +(+this.grxAmount*+this.grxPrice).toFixed(7)
     }
   }
 
