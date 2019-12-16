@@ -93,13 +93,6 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     }
   }
 
-  // calPercentXLM(){
-  //   return Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
-  // }
-  // calPercentGRX(){
-  //   return 100 - Math.round(this.authService.userData.totalXLM*this.xlmP*100/(this.authService.userData.totalXLM*this.xlmP + this.authService.userData.totalGRX*this.grxP*this.xlmP))
-  // }
-
   getMaxXLMForTrade(){
     if (this.authService.getMaxAvailableXLM() - this.reservedTrade > 0){
       return (this.authService.getMaxAvailableXLM() - this.reservedTrade).toFixed(7)
@@ -110,17 +103,15 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   
   ngOnInit() {
     this.observeRevealSecretKey();
-
     // get ask, bid, last prices
     axios.get(environment.ask_bid_prices)
-      .then( res => {
-        this.askPrice = res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
-        this.bidPrice = res.data.bids[0].price_r.d/res.data.bids[0].price_r.n
-      })
-      .catch(e => {
-        console.log('can not get ask/bid price: ', e)
-      })
-
+    .then( res => {
+      this.askPrice = res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
+      this.bidPrice = res.data.bids[0].price_r.d/res.data.bids[0].price_r.n
+    })
+    .catch(e => {
+      console.log('can not get ask/bid price: ', e)
+    })
   }
 
   ngOnDestroy(): void {
@@ -152,7 +143,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
             this.authService.userData.OpenOrders = 1
           }
           this.authService.SetLocalUserData()
-        } else {
+        } else if (res.offerResults[0].offersClaimed) {
+          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)
           this.snotifyService.simple('Buy order has been matched and executed!'); 
         }
       }).catch(e => {
@@ -199,13 +191,14 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
             this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData)
           this.stellarService.allOffers.push(of)          
           if (this.authService.userData.OpenOrders){
-            this.authService.userData.OpenOrders +=1
+            this.authService.userData.OpenOrders = +this.authService.userData.OpenOrders +1
           } else {
             this.authService.userData.OpenOrders = 1
           }
           this.authService.SetLocalUserData()
           this.snotifyService.simple('Sell order submitted successfully!'); 
-        } else {
+        } else if (res.offerResults[0].offersClaimed) {
+          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed, this.grxPrice, this.xlmP, this.authService.userData)
           this.snotifyService.simple('Sell order has been matched and executed!'); 
         } 
         this.reInitVariables()             
@@ -253,27 +246,32 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   reInitVariables(){
     this.isPopulateMaxGRX = false
     this.isPopulateMaxGRX = false     
-  }  
-  calGRXAmount(){
-    if (this.isPopulateMaxXLM && this.grxPrice){            
-      this.grxAmount = this.grxAmount = this.authService.getMaxAvailableGRX().toString()
-      console.log('this.calGRXAmount:', this.grxAmount)
+  } 
+  onTabChange(id: string) {    
+    this.isPopulateMaxXLM = false
+    this.isPopulateMaxGRX = false
+    // switch (id){
+    // }
+  } 
+  calGRXAmount(){   
+    if (this.isPopulateMaxGRX && this.grxPrice){            
+      this.grxAmount = this.authService.getMaxAvailableGRX().toString()      
       return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
-    } else if(this.grxPrice) {
+    } else if(!this.isPopulateMaxGRX && this.grxPrice) {      
       return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
     }
   }
-  calXLMAmount(){
-    if (this.isPopulateMaxGRX && this.grxPrice){     
+  calXLMAmount(){     
+    if (this.isPopulateMaxXLM && this.grxPrice){     
       this.XLMValueForm = +this.getMaxXLMForTrade()
-      this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7) 
-      console.log('this.grxAmount:', this.grxAmount)
+      this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7)       
       return this.XLMValueForm
-    } else {
+    } else {      
       return (+this.grxAmount)*(+this.grxPrice)
     }
   }
   populateMaxXLM() {
+    this.isPopulateMaxGRX = false
     if (this.authService.getMaxAvailableXLM() - this.reservedTrade > 0){
       this.isPopulateMaxXLM = true
       this.XLMValueForm = this.authService.getMaxAvailableXLM() - this.reservedTrade
@@ -285,6 +283,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
 
   populateMaxGRX() {
+    this.isPopulateMaxXLM = false
     if (this.authService.getMaxAvailableGRX() > 0){
       this.isPopulateMaxGRX = true
       this.grxAmount = this.authService.getMaxAvailableGRX().toString()

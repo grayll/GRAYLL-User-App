@@ -30,27 +30,13 @@ export class StellarService {
     accountData: any;
     userAccount: any;
     allOffers: any[] = [];
+    trades: any[] = [];
 
     public constructor() {        
         this.horizon = new StellarSdk.Server(environment.horizon_url)  
         this.grxAsset = new StellarSdk.Asset(environment.ASSET, environment.ASSET_ISSUER)
         this.nativeAsset = StellarSdk.Asset.native()
     }
-
-        // public observeAccount(): Observable<Account> {
-    //     if (!this.account){
-    //         this.account = new Subject<Account>()
-    //     }
-    //     return this.account.asObservable()
-    // }
-
-    // public publishAccount(acc: Account):void{
-    //     if (!this.account){
-    //         this.account = new Subject<Account>()
-    //     }
-        
-    //     this.account.next(acc)
-    // }
 
     public observePrices(): Observable<number[]> {
         if (!this.prices){
@@ -191,7 +177,53 @@ export class StellarService {
           return new StellarSdk.Asset(asset.assetCode, issuer);
         }
       }
-      
+    parseClaimedOffer(offersClaimed, grxXlmP, xlmP, userData:any){
+        var time = moment().subtract(1, 'seconds').local().format('DD/MM/YYYY HH:mm:ss')
+        offersClaimed.forEach(item => {
+            // buy GRX sold XLM
+            if (+item.amountSold > 0 || +item.amountBought > 0){
+                let type = ''
+                let asset = 'GRX'
+                let amount = ''
+                let totalxlm = ''
+                if (item.assetSold.type === "native" ){                
+                    if (item.assetBought.type === environment.ASSET){
+                        userData.totalGRX = +userData.totalGRX + +item.amountBought
+                        type = 'BUY' 
+                        asset = item.assetBought.asset                
+                    }
+                    userData.totalXLM = +userData.totalXLM - +item.amountSold
+                    userData.totalGRX = +userData.totalGRX + +item.amountBought
+                    amount = item.amountBought
+                    totalxlm = item.amountSold
+                } else if(item.assetSold.assetCode && item.assetSold.assetCode === environment.ASSET) { // sell grx buy xlm
+                    if (item.assetBought.type === 'native'){                    
+                        type = 'SELL' 
+                    }
+                    userData.totalXLM = +userData.totalXLM + +item.amountBought
+                    userData.totalGRX = +userData.totalGRX - +item.amountSold
+                    amount = item.amountSold
+                    totalxlm = item.amountBought
+                }
+                let url = 'https://stellar.expert/explorer/public/'
+                if (environment.horizon_url.includes('testnet')){
+                url = 'https://stellar.expert/explorer/testnet/'
+                }
+                url = url+'ledger/'+item.offerId               
+
+                let trade = {time: time, type:type, asset:asset, amount:amount, filled:'100%', xlmp: grxXlmP, 
+                totalxlm: totalxlm, priceusd: grxXlmP*xlmP, totalusd: +totalxlm*xlmP, index:0, url:url}
+
+                this.trades.push(trade)
+
+                // amountBought: "999.9999999"
+                // amountSold: "402.8755023"
+                // assetBought: {type: "credit_alphanum4", assetCode: "GRXT", issuer: "GAKXWUADYNO67NQ6ET7PT2DSLE5QGGDTNZZRESXCWWYYA2UCLOYT7AKR"}
+                // assetSold: {type: "native", assetCode: "XLM", issuer: undefined}
+                // offerId: "2567143"
+            }            
+        })
+    } 
     parseOffer(of, grxP:number, xlmP:number,index: number, userData:any){        
         let type = 'BUY'
         let asset
@@ -216,7 +248,7 @@ export class StellarService {
                 price: of.price,
                 offerId: of.offerId               
             });
-            userData.OpenOrdersGRX += +of.amount
+            userData.OpenOrdersGRX = +userData.OpenOrdersGRX + +of.amount
             offerData = {time: time, type:type, asset:asset, amount:of.amount, xlmp: grxXlmP, 
               totalxlm: of.amount*grxXlmP, priceusd: grxXlmP*xlmP, totalusd: of.amount*grxXlmP*xlmP, 
               cachedOffer: cachedOffer, index:index,  realAmount: +of.amount, assetType:'GRX'}
@@ -229,7 +261,7 @@ export class StellarService {
                 price: of.price,
                 offerId: of.offerId                
             });            
-            userData.OpenOrdersXLM += +of.amount
+            userData.OpenOrdersXLM = +userData.OpenOrdersXLM + +of.amount
             offerData = {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
               totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, 
               cachedOffer: cachedOffer, index:index, realAmount: +of.amount, assetType:'XLM'}

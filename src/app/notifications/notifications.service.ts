@@ -24,10 +24,7 @@ export class NotificationsService {
 
   constructor() {
     this.resetNumberOfAllUnreadNotifications();
-    this.resetNumberOfAllGrayllSystemNotifications();
-    // this.numberOfUnreadAlgoNotifications = this.authService.userData.UrAlgo;
-    // this.numberOfUnreadWalletNotifications= this.authService.userData.UrWallet;
-    // this.numberOfUnreadSystemNotifications= this.authService.userData.UrGeneral;
+    this.resetNumberOfAllGrayllSystemNotifications();    
   }
 
   subsNumberNotices():Observable<number[]> {

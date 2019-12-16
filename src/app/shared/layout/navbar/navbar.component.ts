@@ -73,9 +73,9 @@ export class NavbarComponent implements OnDestroy {
       let data = (msg as any).notification
       //console.log('navbar.subscribe-data1:', data)
       if (data.type === 'wallet'){
-        this.walletNotices +=1
-        this.authService.userData.UrWallet += 1
-        console.log('navbar.subscribe:walletNotices:', this.walletNotices)
+        console.log('navbar.UrWallet:', this.authService.userData.UrWallet)       
+        this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
+        console.log('navbar.UrWallet1:', this.authService.userData.UrWallet)       
         if (data.asset === 'XLM'){
           let amount = +data.amount
           this.authService.userData.totalXLM = (+this.authService.userData.totalXLM + amount).toFixed(7)
@@ -85,9 +85,13 @@ export class NavbarComponent implements OnDestroy {
           console.log('navbar.subscribe:totalGRX0:', this.authService.userData.totalGRX)
           this.authService.userData.totalGRX = (+this.authService.userData.totalGRX + amount).toFixed(7)
           console.log('navbar.subscribe:totalGRX1:', this.authService.userData.totalGRX)
-        }   
-        this.authService.SetLocalUserData()     
+        }            
+      } else if (data.type === 'algo'){
+        this.authService.userData.UrAlgo = +this.authService.userData.UrAlgo + 1
+      } else if (data.type === 'general'){
+        this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral + 1
       }
+      this.authService.SetLocalUserData() 
     }));
     //push.notificationClicks.subscribe(click => console.log('WalletComponent-notification click', click));
     // this.subsink.add(this.notificationsService.subsNumberNotices().subscribe(numberNotices => {

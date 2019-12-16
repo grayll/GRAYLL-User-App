@@ -12,7 +12,9 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { environment } from 'src/environments/environment';
 import {ActivityResult} from './models/activity-results';
+
 var StellarSdk = require('stellar-sdk')
+
 
 @Component({
   selector: 'app-account-activity',
@@ -72,14 +74,20 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     this.selectedTab = this.activityTabs[0];
     this.activityResult = new ActivityResult()
 
-    Promise.all([
-      this.getAccountOrders(null, true),
-      this.getAccountTrades(null)
-    ]).then(([ofs, trades]) => {
+    this.stellarService.allOffers = null
+    this.stellarService.trades = null 
+
+    // Promise.all([
+    //   this.getAccountOrders(null, true),
+    //   this.getAccountTrades(null)
+    // ]).then(([ofs, trades]) => {
       
-    }).catch( err => {
-      console.log('Error get open order and trade:', err)
-    }) 
+    // }).catch( err => {
+    //   console.log('Error get open order and trade:', err)
+    // }) 
+    
+    this.getAccountOrders(null, true),
+    this.getAccountTrades(null)
 
     this.grxP = +this.authService.userData.grxPrice
     this.xlmP = +this.authService.userData.xlmPrice
@@ -91,115 +99,110 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     })
     
     //this.account = this.stellarService.userAccount
-    this.stellarService.allOffers = null
-    this.trades = null    
+       
    
   }
 
-  fillOrders(ofs) {  
-    console.log('offer:', ofs) 
-    if (ofs && ofs.records){
-      this.authService.userData.OpenOrders = ofs.records.length
-      this.authService.SetLocalUserData()
-    }
-    let totalOpenXLM = 0
-    let totalOpenGRX = 0
-    this.stellarService.allOffers = ofs.records.map((of, index) => {
-      let type = 'BUY'
-      let asset = 'GRX'
+  // fillOrders(ofs) {  
+  //   console.log('offer:', ofs) 
+  //   if (ofs && ofs.records){
+  //     this.authService.userData.OpenOrders = ofs.records.length
+  //     this.authService.SetLocalUserData()
+  //   }
+  //   let totalOpenXLM = 0
+  //   let totalOpenGRX = 0
+  //   this.stellarService.allOffers = ofs.records.map((of, index) => {
+  //     let type = 'BUY'
+  //     let asset = 'GRX'
       
-      if (of.buying.asset_type == 'native'){
-        type = 'SELL'
-        asset = of.selling.asset_code
-      } else {
-        asset = of.buying.asset_code
-      }
+  //     if (of.buying.asset_type == 'native'){
+  //       type = 'SELL'
+  //       asset = of.selling.asset_code
+  //     } else {
+  //       asset = of.buying.asset_code
+  //     }
       
-      let time = moment.utc(of.last_modified_time).local().format('DD/MM/YYYY HH:mm:ss')
+  //     let time = moment.utc(of.last_modified_time).local().format('DD/MM/YYYY HH:mm:ss')
 
-      let buying = this.parseAsset(of.buying);
-      let selling = this.parseAsset(of.selling);
-      var cachedOffer
-      let offerData
-      if (type == 'SELL'){
-        let grxXlmP = of.price_r.n/of.price_r.d
-        cachedOffer = StellarSdk.Operation.manageSellOffer({
-          buying: buying,
-          selling: selling,
-          amount: '0',
-          price: of.price_r,
-          offerId: of.id         
-        });
-        totalOpenGRX = totalOpenGRX + +of.amount
-        offerData = {time: time, type:type, asset:asset, amount:of.amount, xlmp: grxXlmP, 
-          totalxlm: of.amount*grxXlmP, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*grxXlmP*this.xlmP, 
-          cachedOffer: cachedOffer, index:index,  realAmount: +of.amount, assetType:'GRX',}
-      } else {
-        let grxXlmP = of.price_r.d/of.price_r.n
-        cachedOffer = StellarSdk.Operation.manageBuyOffer({
-          buying: buying,
-          selling: selling,
-          buyAmount: '0',
-          price: of.price_r,
-          offerId: of.id          
-        });
+  //     let buying = this.parseAsset(of.buying);
+  //     let selling = this.parseAsset(of.selling);
+  //     var cachedOffer
+  //     let offerData
+  //     if (type == 'SELL'){
+  //       let grxXlmP = of.price_r.n/of.price_r.d
+  //       cachedOffer = StellarSdk.Operation.manageSellOffer({
+  //         buying: buying,
+  //         selling: selling,
+  //         amount: '0',
+  //         price: of.price_r,
+  //         offerId: of.id         
+  //       });
+  //       totalOpenGRX = totalOpenGRX + +of.amount
+  //       offerData = {time: time, type:type, asset:asset, amount:of.amount, xlmp: grxXlmP, 
+  //         totalxlm: of.amount*grxXlmP, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*grxXlmP*this.xlmP, 
+  //         cachedOffer: cachedOffer, index:index,  realAmount: +of.amount, assetType:'GRX',}
+  //     } else {
+  //       let grxXlmP = of.price_r.d/of.price_r.n
+  //       cachedOffer = StellarSdk.Operation.manageBuyOffer({
+  //         buying: buying,
+  //         selling: selling,
+  //         buyAmount: '0',
+  //         price: of.price_r,
+  //         offerId: of.id          
+  //       });
         
-        totalOpenXLM += +of.amount
-        offerData = {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
-          totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, 
-          cachedOffer: cachedOffer, index:index, realAmount: +of.amount, assetType:'XLM'}
-      }    
-      console.log('fillOrders- cachedOffer:', cachedOffer, of.id)  
-      return offerData      
-    })  
-    this.authService.userData.OpenOrdersGRX = totalOpenGRX    
-    this.authService.userData.OpenOrdersXLM = totalOpenXLM 
-    this.offers = this.stellarService.allOffers  
-    //console.log('acc-activity:', this.authService.userData) 
-    this.authService.SetLocalUserData() 
-  }
+  //       totalOpenXLM += +of.amount
+  //       offerData = {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
+  //         totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, 
+  //         cachedOffer: cachedOffer, index:index, realAmount: +of.amount, assetType:'XLM'}
+  //     }    
+  //     console.log('fillOrders- cachedOffer:', cachedOffer, of.id)  
+  //     return offerData      
+  //   })  
+  //   this.authService.userData.OpenOrdersGRX = totalOpenGRX    
+  //   this.authService.userData.OpenOrdersXLM = totalOpenXLM 
+  //   this.offers = this.stellarService.allOffers  
+  //   //console.log('acc-activity:', this.authService.userData) 
+  //   this.authService.SetLocalUserData() 
+  // }
 
-  fillTrades(ofs) {  
-    console.log('account.trades():', ofs)      
-    this.trades = ofs.records.map((of, index) => {
-      let type = 'BUY'
-      let asset = of.counter_asset_code
-
-      if (of.counter_asset_code == environment.ASSET){
-
-      }
-
-      if (of.base_account === this.authService.userData.PublicKey){
-        if (of.base_is_seller === true){
-          type = 'SELL'
-        } else {             
-          type = 'BUY'
-        }            
-      } else {
-        if (of.base_is_seller === true){
-          type = 'SELL'
-        } else {
-          type = 'BUY'
-        }   
-      }          
+  // fillTrades(ofs) {  
+  //   console.log('account.trades():', ofs)      
+  //   this.stellarService.trades = ofs.records.map((of, index) => {
+  //     let type = 'BUY'
+  //     let asset = of.counter_asset_code
+  //     if (of.base_account === this.authService.userData.PublicKey){
+  //       if (of.base_is_seller === true){
+  //         type = 'SELL'
+  //       } else {             
+  //         type = 'BUY'
+  //       }            
+  //     } else {
+  //       if (of.base_is_seller === true){
+  //         type = 'SELL'
+  //       } else {
+  //         type = 'BUY'
+  //       }   
+  //     }          
       
-      let url = 'https://stellar.expert/explorer/public/'
-      if (environment.horizon_url.includes('testnet')){
-        url = 'https://stellar.expert/explorer/testnet/'
-      }
-      url = url+'ledger/'+of.counter_offer_id
-      // console.log('of.counter_offer_id:', of.counter_offer_id)
-      // console.log('of.base_offer_id:', of.base_offer_id)
-      let grxXlmP = of.price.d/of.price.n
-      let time = moment.utc(of.ledger_close_time).local().format('DD/MM/YYYY HH:mm:ss')
-      return {time: time, type:type, asset:asset, amount:of.counter_amount, filled:'100%', xlmp: grxXlmP, 
-        totalxlm: of.base_amount, priceusd: grxXlmP*this.xlmP, totalusd: of.base_amount*this.xlmP, index:index, url:url}
+  //     let url = 'https://stellar.expert/explorer/public/'
+  //     if (environment.horizon_url.includes('testnet')){
+  //       url = 'https://stellar.expert/explorer/testnet/'
+  //     }
+  //     url = url+'ledger/'+of.counter_offer_id
+  //     // console.log('of.counter_offer_id:', of.counter_offer_id)
+  //     // console.log('of.base_offer_id:', of.base_offer_id)
+  //     let grxXlmP = of.price.d/of.price.n
+  //     let time = moment.utc(of.ledger_close_time).local().format('DD/MM/YYYY HH:mm:ss')
+  //     return {time: time, type:type, asset:asset, amount:of.counter_amount, filled:'100%', xlmp: grxXlmP, 
+  //       totalxlm: of.base_amount, priceusd: grxXlmP*this.xlmP, totalusd: of.base_amount*this.xlmP, index:index, url:url}
     
-    })          
-  }  
+  //   })          
+  // }  
 
   downloadHistory(){
     console.log('this.selectedTab.id:', this.selectedTab.id)
+    
     switch(this.selectedTab.id){
       case 'allOrders':
         this.download('order')
@@ -224,7 +227,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
         fields = ['time','type','asset','amount', 'filled','xlmp','totalxlm','priceusd', 'totalusd', 'url']
         fileName = "OrderHistory.PDF"
         //data = this.offers            
-        data = this.stellarService.allOffers
+        //data = this.stellarService.allOffers
+        data = this.stellarService.trades
         break
       case "transfer":
         columns = ['Date',	'Counterparty',	'Asset', 'Issuer',	'Amount', 'Url']
@@ -343,7 +347,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
   }
 
   getAccountPayments(nextURL:string){
-    this.stellarService.getPayment(this.authService.userData.PublicKey, 10, nextURL).then(pms => {          
+    this.stellarService.getPayment(this.authService.userData.PublicKey, 20, nextURL).then(pms => {          
       if (pms && pms.data._embedded.records.length > 0){
         var records: any[] = pms.data._embedded.records.filter(item => {
           if (item.type === "payment"){
@@ -440,6 +444,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
   }
 
   getAccountOrders(nextURL, countOpenOrder:boolean) {  
+    console.log('start getAccountOrders:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
     this.stellarService.getOffer(this.authService.userData.PublicKey, 20, nextURL).then(pms => {          
       if (pms && pms.data._embedded.records.length > 0){   
         let totalOpenXLM = 0
@@ -499,7 +504,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
           this.authService.userData.OpenOrdersGRX = totalOpenGRX    
           this.authService.userData.OpenOrdersXLM = totalOpenXLM 
         }
-        this.offers = this.stellarService.allOffers 
+        //this.offers = this.stellarService.allOffers 
         if (this.stellarService.allOffers ){        
           this.stellarService.allOffers = this.stellarService.allOffers.concat(records)
         } else {
@@ -515,21 +520,20 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
       } else {
         this.activityResult.openOrderEmptyResultTimes += 1 
       }
-    })        
+      console.log('end getAccountOrders:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+    })
+            
   }
 
   getAccountTrades(nextURL) {  
-    this.stellarService.getTrade(this.authService.userData.PublicKey, 10, nextURL).then(pms => {          
+    console.log('start getAccountTrades:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+    this.stellarService.getTrade(this.authService.userData.PublicKey, 20, nextURL).then(pms => {          
       if (pms && pms.data._embedded.records.length > 0){  
-        let records =  pms.data._embedded.records.map((of, index) => {
-        //this.trades = ofs.records.map((of, index) => {
+       
+        let records =  pms.data._embedded.records.map((of, index) => {        
           let type = 'BUY'
           let asset = of.counter_asset_code
-
-          if (of.counter_asset_code == environment.ASSET){
-
-          }
-
+          
           if (of.base_account === this.authService.userData.PublicKey){
             if (of.base_is_seller === true){
               type = 'SELL'
@@ -549,19 +553,18 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
             url = 'https://stellar.expert/explorer/testnet/'
           }
           url = url+'ledger/'+of.counter_offer_id
-          // console.log('of.counter_offer_id:', of.counter_offer_id)
-          // console.log('of.base_offer_id:', of.base_offer_id)
+          
           let grxXlmP = of.price.d/of.price.n
           let time = moment.utc(of.ledger_close_time).local().format('DD/MM/YYYY HH:mm:ss')
           return {time: time, type:type, asset:asset, amount:of.counter_amount, filled:'100%', xlmp: grxXlmP, 
             totalxlm: of.base_amount, priceusd: grxXlmP*this.xlmP, totalusd: of.base_amount*this.xlmP, index:index, url:url}
         })  
         
-        if (this.trades){
-          this.trades = this.trades.concat(records)
+        if (this.stellarService.trades){
+          this.stellarService.trades = this.trades.stellarService.concat(records)
           this.activityResult.completedOrderEmptyResultTimes = 0 
         } else {
-          this.trades = records
+          this.stellarService.trades = records
         }      
         if (pms.data._links.next.href){
           this.activityResult.completedOrderNextURL = pms.data._links.next.href
@@ -569,7 +572,9 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
       } else {
         this.activityResult.completedOrderEmptyResultTimes += 1
       }    
-    })          
+      console.log('end getAccountTrades:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))    
+    }) 
+         
   }  
   
   //allOrders, transfers, networkHistory 
@@ -579,14 +584,18 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     switch (id){
       case 'allOrders':
         this.stellarService.allOffers = null
-        this.trades = null
-        Promise.all([
-          this.getAccountOrders(null, false),
-          this.getAccountTrades(null)
-        ]).then(([ofs, trades]) => {          
-        }).catch( err => {
-          console.log('Error get open order and trade:', err)
-        }) 
+        this.stellarService.trades = null
+        this.getAccountOrders(null, false),
+        this.getAccountTrades(null)
+        // console.log('start Promise.all:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+        // Promise.all([          
+        //   this.getAccountOrders(null, false),
+        //   this.getAccountTrades(null)
+        // ]).then(([ofs, trades]) => {
+        //   console.log('end Promise.all:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))          
+        // }).catch( err => {
+        //   console.log('Error get open order and trade:', err)
+        // }) 
         break;
       case 'transfers':
         this.getAccountPayments(null)

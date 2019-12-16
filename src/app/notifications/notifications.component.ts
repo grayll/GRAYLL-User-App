@@ -50,8 +50,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private http: HttpClient,
   ) {
-    // Get notices from serve
-    this.populateNotifications();
+    // Get notices from server
+    this.populateNotifications(0, "all");
   }
 
   ngOnInit() {
@@ -108,15 +108,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private populateNotifications() {
-    this.http.post(`api/v1/users/notices`, {})
+  private populateNotifications(cursor:number, noticeType:string) {
+    this.http.post(`api/v1/users/notices`, {limit:100, cursor:cursor, noticeType:noticeType})
     .subscribe(res => {      
       let url = 'https://stellar.expert/explorer/public/'
       if (environment.horizon_url.includes('testnet')){
         url = 'https://stellar.expert/explorer/testnet/'
       }
       url = url + 'search?term='
-      this.walletNotificationsToShow = (res as any).notices.filter(item => item.type =='wallet').map(item => {
+      this.walletNotificationsToShow = (res as any).wallets.map(item => {
         let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
         item.time = time
         item.url = url + item.txId 
@@ -124,7 +124,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       })
       this.walletNotifications = this.walletNotificationsToShow
 
-      this.systemNotifications = (res as any).notices.filter(item => item.type =='general').map(item => {
+      this.systemNotifications = (res as any).generals.map(item => {
         let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
         item.time = time
         //item.url = url + item.txId 
@@ -132,32 +132,30 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       })
       this.systemNotificationsToShow = this.systemNotifications
 
-      this.algoNotifications = (res as any).notices.filter(item => item.type =='algo').map(item => {
+      this.algoNotifications = (res as any).algos.map(item => {
         let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
         item.time = time
         item.url = url + item.txId 
         return item
       })
       this.algoNotificationsToShow = this.algoNotifications
-
-      this.populateNumberOfUnreadNotifications();
-
+      //this.populateNumberOfUnreadNotifications();
     },
     e => {
       console.log(e)
     })
   }
 
-  populateNumberOfUnreadNotifications() {
-    this.notificationsService.resetNumberOfAllUnreadNotifications();
-    const algoUnread = this.algoNotifications.filter((n) => !n.isRead).length;
-    const walletUnread = this.walletNotifications.filter((n) => !n.isRead).length;
-    const systemUnread = this.systemNotifications.filter((n) => !n.isRead).length;
-    this.notificationsService.increaseNumberOfAllUnreadNotificationsBy(algoUnread + walletUnread + systemUnread);
-    this.notificationsService.setNumberOfUnreadAlgoNotifications(algoUnread);
-    this.notificationsService.setNumberOfUnreadWalletNotifications(walletUnread);
-    this.notificationsService.setNumberOfUnreadSystemNotifications(systemUnread);
-  }
+  // populateNumberOfUnreadNotifications() {
+  //   this.notificationsService.resetNumberOfAllUnreadNotifications();
+  //   const algoUnread = this.algoNotifications.filter((n) => !n.isRead).length;
+  //   const walletUnread = this.walletNotifications.filter((n) => !n.isRead).length;
+  //   const systemUnread = this.systemNotifications.filter((n) => !n.isRead).length;
+  //   this.notificationsService.increaseNumberOfAllUnreadNotificationsBy(algoUnread + walletUnread + systemUnread);
+  //   this.notificationsService.setNumberOfUnreadAlgoNotifications(algoUnread);
+  //   this.notificationsService.setNumberOfUnreadWalletNotifications(walletUnread);
+  //   this.notificationsService.setNumberOfUnreadSystemNotifications(systemUnread);
+  // }
 
   filterReadAlgoNotifications() {
     if (this.isShowingAllAlgoNotifications) {
@@ -198,7 +196,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   markWalletNotificationAsRead(notification: any) {
     if (!notification.isRead) {
       notification.isRead = true;
-
       // Save notice marked as read to list and update when component destroy
       this.readWalletNoticeIds.push(notification.id)
       if (+this.authService.userData.UrWallet - 1 >= 0){

@@ -5,6 +5,7 @@ import {UserService} from '../authorization/user.service';
 import { AuthService } from './services/auth.service';
 import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
+//var fontref = require('src/app/jspdf/Nunito-Regular-normal.js')
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,15 @@ export class SharedService {
   }
 
   savePDF(columns, fields, data:any, fileName: string) {
-    var doc = new jsPDF({orientation: 'landscape'});    
+    var doc = new jsPDF({orientation: 'landscape'});   
+    // fontref;                             // 'run' .js to load font
+
+    // doc.getFontList();                   // contains a key-value pair for CustomFont
+    // console.log(doc.getFontList())
+    // doc.setFont("Nunito");           // set font
+    // doc.setFontType("normal");        
+    // doc.setFontSize(7)
+    
     var rows = [];
     data.forEach(item => {
       let fieldData = []
