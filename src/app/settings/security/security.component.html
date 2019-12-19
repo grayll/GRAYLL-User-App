@@ -13,10 +13,10 @@
           Read more about 2FA
         </a>
       </div>
-      <div *ngIf="!is2FAEnabled" class="col d-flex justify-content-center align-items-center">
+      <div *ngIf="!this.authService.userInfo.Tfa" class="col d-flex justify-content-center align-items-center">
         <button [routerLink]="[{outlets: {popup: 'google-authenticator'}}]" class="btn btn-purple text-center">Enable</button>
       </div>
-      <div *ngIf="is2FAEnabled" class="col d-flex justify-content-center align-items-center">
+      <div *ngIf="this.authService.userInfo.Tfa" class="col d-flex justify-content-center align-items-center">
         <button [routerLink]="[{outlets: {popup: 'disable-two-fa'}}]" class="btn btn-yellow text-center">Disable</button>
       </div>
     </div>
@@ -30,10 +30,10 @@
         <p class="lead">IP Address Confirmation</p>
         <p>If enabled, logins from new IP addresses will require email confirmation.</p>
       </div>
-      <div *ngIf="!isIPConfirmEnabled" class="col d-flex justify-content-center align-items-center">
+      <div *ngIf="!this.authService.userInfo.Setting.IpConfirm" class="col d-flex justify-content-center align-items-center">
         <button (click)="toggleIPConfirm()" class="btn btn-purple text-center">Enable</button>
       </div>
-      <div *ngIf="isIPConfirmEnabled" class="col d-flex justify-content-center align-items-center">
+      <div *ngIf="this.authService.userInfo.Setting.IpConfirm" class="col d-flex justify-content-center align-items-center">
         <button (click)="toggleIPConfirm()" class="btn btn-yellow text-center">Disable</button>
       </div>
     </div>
@@ -50,11 +50,11 @@
           option.
         </p>
       </div>
-      <div *ngIf="!isMultisignatureEnabled" class="col d-flex justify-content-center align-items-center">
-        <button [routerLink]="[{outlets: {popup: 'enable-multisignature'}}]" class="btn btn-purple text-center">Enable</button>
+      <div *ngIf="!this.authService.userInfo.Setting.MulSignature" class="col d-flex justify-content-center align-items-center">
+        <button  (click)="toggleMulSignature()" class="btn btn-purple text-center">Enable</button>
       </div>
-      <div *ngIf="isMultisignatureEnabled" class="col d-flex justify-content-center align-items-center">
-        <button [routerLink]="[{outlets: {popup: 'disable-multisignature'}}]" class="btn btn-yellow text-center">Disable</button>
+      <div *ngIf="this.authService.userInfo.Setting.MulSignature" class="col d-flex justify-content-center align-items-center">
+        <button (click)="toggleMulSignature()" class="btn btn-yellow text-center">Disable</button>
       </div>
     </div>
   </div>

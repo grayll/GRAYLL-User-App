@@ -147,11 +147,12 @@ export class EnableTwoFaLastStepComponent implements OnInit {
         this.authService.userData = userData
         this.authService.SetLocalUserData()
         this.authService.setTfa(true)
-        this.authService.userData.Tfa.Enable = true
+        //this.authService.userData.Tfa.Enable = true
         
         console.log('userData: verifyTfaAuth: ', this.authService.userData)
-        this.settingsService.sendTwoFAEnabledToObserver(true);
-        this.userService.enable2FA(true);
+        this.authService.userInfo.Tfa = true
+        // this.settingsService.sendTwoFAEnabledToObserver(true);
+        // this.userService.enable2FA(true);
         this.popupService.close()
         .then(() => {
           setTimeout(() => {

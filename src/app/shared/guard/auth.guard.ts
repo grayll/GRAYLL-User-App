@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
     if (this.authService.isTokenExpired()){
       this.snotifyService.simple('Your login session has expired! Please login again.')
       this.router.navigate(['/login'])
-      //return false
+      return false
     }
     if(!this.authService.GetLocalUserData()) {
       console.log("authService.isLoggedIn:false")

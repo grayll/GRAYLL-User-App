@@ -25,7 +25,17 @@
         </div>
 
         <!-- Chart -->
-        <div id="main-chart-graph"></div>
+        <!-- <div id="main-chart-graph"></div> -->
+        <div style="display: block;">
+          <canvas  baseChart width="340" height="340"
+            [datasets]="lineChartData"
+            [options]="lineChartOptions"
+            [colors]="lineChartColors"
+            [legend]="lineChartLegend"
+            [chartType]="lineChartType"
+            >
+          </canvas>
+        </div>
       </div>
     </div>
   </div>

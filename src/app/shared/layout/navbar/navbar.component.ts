@@ -6,6 +6,9 @@ import {AuthService} from 'src/app/shared/services/auth.service'
 import { StellarService } from 'src/app/authorization/services/stellar-service'
 import {SubSink} from 'subsink'
 import { SwUpdate, SwPush } from '@angular/service-worker';
+import { HttpClient } from '@angular/common/http';
+import { UserInfo, Setting } from 'src/app/models/user.model'
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -38,7 +41,55 @@ export class NavbarComponent implements OnDestroy {
     public notificationsService: NotificationsService,
     public push: SwPush,
     public stellarService: StellarService,
-  ) { 
+    private http: HttpClient,
+  ) {
+    // Get basic data
+    if (!this.authService.userInfo){
+      this.http.post(`api/v1/users/getUserInfo`, {})
+      .subscribe(res => {
+        let data = (res as any)
+        console.log('getUserInfo-userInfo:', data) 
+        if (data.errCode == environment.SUCCESS){   
+          let setting = new Setting(data.Setting.AppAlgo,
+            data.Setting.AppGeneral,
+            data.Setting.AppWallet,
+            data.Setting.IpConfirm,
+            data.Setting.MailAlgo,
+            data.Setting.MailGeneral,
+            data.Setting.MailWallet,
+            data.Setting.MulSignature)     
+          this.authService.userInfo = new UserInfo(data.Uid, data.EnSecretKey, data.SecretKeySalt, data.LoanPaidStatus, data.Tfa, data.Expire, setting)
+        } else {
+          console.log('getUserInfo-userInfo failed') 
+        }     
+      },
+      e => {
+        //re-try
+        console.log(e)
+        this.http.post(`api/v1/users/getUserInfo`, {})
+        .subscribe(res => {
+          let data = (res as any)
+          let setting = new Setting(data.Setting.AppAlgo,
+            data.Setting.AppGeneral,
+            data.Setting.AppWallet,
+            data.Setting.IpConfirm,
+            data.Setting.MailAlgo,
+            data.Setting.MailGeneral,
+            data.Setting.MailWallet,
+            data.Setting.MulSignature) 
+          console.log('getUserInfo-userInfo:', data) 
+          if (data.errCode == environment.SUCCESS){        
+            this.authService.userInfo = new UserInfo(data.Uid, data.EnSecretKey, data.SecretKeySalt, data.LoanPaidStatus, data.TfaEnable, data.Expire, setting)
+          } else {
+            //this.errorService.handleError(null, `The request could not be performed! Please retry.`);
+          }        
+        },
+        e => {
+          console.log(e)        
+        })
+      })
+    }
+
     this.subsink = new SubSink()    
     if (!this.authService.userData){
       console.log('NAV.GetLocalUserData()')
@@ -93,39 +144,7 @@ export class NavbarComponent implements OnDestroy {
       }
       this.authService.SetLocalUserData() 
     }));
-    //push.notificationClicks.subscribe(click => console.log('WalletComponent-notification click', click));
-    // this.subsink.add(this.notificationsService.subsNumberNotices().subscribe(numberNotices => {
-    //   // numberNotice number could be -/+
-    //   // if (!this.authService.userData){
-    //   //   this.authService.GetLocalUserData()
-    //   // }
-    //   if (this.walletNotices + numberNotices[0] >= 0){
-    //     this.walletNotices = this.walletNotices + numberNotices[0]        
-    //     this.authService.userData.UrWallet = this.walletNotices
-    //   }
-    //   if (this.algoNotices + numberNotices[1] >= 0){
-    //     this.algoNotices = this.algoNotices + numberNotices[1]
-    //     this.authService.userData.UrAlgo = this.algoNotices
-    //   }
-    //   if (this.generalNotices + numberNotices[2] >= 0){
-    //     this.generalNotices = this.generalNotices + numberNotices[2]
-    //     this.authService.userData.UrGeneral = this.generalNotices
-    //   }
-    // })) 
     
-    // var StellarSdk = require('stellar-sdk')
-    // var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-
-    // var paymentHandler = function (paymentResponse) {
-    //   console.log(paymentResponse);
-    // };
-
-    // var es = server.payments()
-    //   .forAccount("GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ")
-    //   .cursor('now')
-    //   .stream({
-    //     onmessage: paymentHandler
-    //   })
   }
 
   getAllUnreadNumber(){

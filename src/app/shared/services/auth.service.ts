@@ -8,6 +8,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { AngularFireAuth } from "angularfire2/auth";
 import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { createHash } from 'crypto';
+import { UserInfo } from 'src/app/models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,7 @@ export class AuthService {
   loanPaidLedgerId: any
   openOrders: number
   secretKey: any
+  userInfo: UserInfo
 
   GetSecretKey(pwd):Promise<any>{
     return new Promise((resolve, reject) => {
@@ -43,7 +45,7 @@ export class AuthService {
               this.secretKey = this.stellarService.SecretBytesToString(SecKey)
               resolve(this.secretKey)
             } else {
-              reject('Invalid password')
+              reject('')
             }
           })
         }

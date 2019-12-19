@@ -191,9 +191,7 @@ export class ProfileSettingsComponent implements OnDestroy {
       hasChange = true
       console.log('change lname')
     }
-    // if (this.profileForm.value['phone'] && this.profileForm.value['phone'] != ''){      
-    //   hasChange = true
-    // }
+  
     tmp.name = this.profileForm.value['first_name']
     tmp.lname = this.profileForm.value['last_name']
     console.log('tmp: ', tmp)

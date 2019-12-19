@@ -22,7 +22,7 @@ export class DisableMultisignatureComponent implements OnInit {
   constructor(
     public popupService: PopupService,
     private snotifyService: SnotifyService,
-    private settingsService: SettingsService,
+    
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
@@ -93,11 +93,15 @@ export class DisableMultisignatureComponent implements OnInit {
   };
 
   disable() {
-    if (!(this.authService.userData.Tfa && this.authService.userData.Tfa.Enable && 
-        this.authService.userData.Tfa.Enable == true)){
-      this.errorService.handleError(null, 'Disable multi-signature needs 2FA enable')
-      return        
-    }
+    // if (!(this.authService.userInfo.TfaEnable && this.authService.userInfo.TfaEnable === true)){
+    //   this.errorService.handleError(null, 'Disable multi-signature needs 2FA enable')
+    //   return        
+    // }
+    // if (!(this.authService.userData.Tfa && this.authService.userData.Tfa.Enable && 
+    //     this.authService.userData.Tfa.Enable == true)){
+    //   this.errorService.handleError(null, 'Disable multi-signature needs 2FA enable')
+    //   return        
+    // }
     this.errorService.clearError()
     if (!this.onValueChanged()){
       this.errorService.handleError(null, this.errMsg)
@@ -111,13 +115,14 @@ export class DisableMultisignatureComponent implements OnInit {
     this.authService.verifyTfaAuth(this.disableMulSigForm.value['oneTimePassword'],  
       this.disableMulSigForm.value['password'], 0).subscribe(res => {           
       if ((res as any).valid === true ){       
-        this.authService.userData.Setting.MulSignature = true
+        
         this.authService.UpdateSetting("MulSignature", true).subscribe(res =>{
+          this.authService.userInfo.Setting.MulSignature = true
           this.popupService.close()
           .then(() => {
             setTimeout(() => {
               this.snotifyService.simple('Multisignature transactions enabled.');
-              this.settingsService.sendMultisignatureEnabledToObserver(true);
+              //this.settingsService.sendMultisignatureEnabledToObserver(true);
             }, 50);
           })
         }),
@@ -127,10 +132,10 @@ export class DisableMultisignatureComponent implements OnInit {
       } else {        
        switch ((res as any).errCode){
         case environment.TOKEN_INVALID:
-          this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
+          this.errorService.handleError(null, 'Your one-time password is invalid. Please retry.')
           break;
         case environment.INVALID_UNAME_PASSWORD:
-          this.errorService.handleError(null, 'Your password is invalid. Please try again!')
+          this.errorService.handleError(null, 'Your password is invalid. Please retry.')
           break;
         default:
           this.errorService.handleError(null, 'Can not enable Multisigature. Please try again later!')
@@ -139,7 +144,7 @@ export class DisableMultisignatureComponent implements OnInit {
       }     
     }),
     err => {
-      this.errorService.handleError(null, 'Your one-time password is invalid. Please try again!')
+      this.errorService.handleError(null, 'Your one-time password is invalid. Please retry.')
     }
   }   
 

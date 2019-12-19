@@ -13,7 +13,7 @@ import { environment } from '../../../environments/environment';
 import { NotificationsService } from 'src/app/notifications/notifications.service';
 var naclutil = require('tweetnacl-util');
 import * as moment from 'moment'
-
+import { UserInfo, Setting } from 'src/app/models/user.model'
 
 
 @Component({
@@ -137,12 +137,27 @@ export class LoginComponent {
             console.log('login start:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))     
             this.http.post(`api/v1/accounts/login`, 
               {email:this.loginForm.value['email'], password: this.loginForm.value['password']})                
-            .subscribe(res => {                
-              if ((res as any).errCode === environment.SUCCESS) {
+            .subscribe(res => {  
+              let data =  (res as any)             
+              if (data.errCode === environment.SUCCESS) {
                 console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                this.authService.userData = (res as any).user
-                this.authService.userData.token = (res as any).token
-                this.authService.userData.tokenExpiredTime = (res as any).tokenExpiredTime
+
+                let setting = new Setting(data.userBasicInfo.Setting.AppAlgo,
+                  data.userBasicInfo.Setting.AppGeneral,
+                  data.userBasicInfo.Setting.AppWallet,
+                  data.userBasicInfo.Setting.IpConfirm,
+                  data.userBasicInfo.Setting.MailAlgo,
+                  data.userBasicInfo.Setting.MailGeneral,
+                  data.userBasicInfo.Setting.MailWallet,
+                  data.userBasicInfo.Setting.MulSignature)     
+                this.authService.userInfo = new UserInfo(data.userBasicInfo.Uid, data.userBasicInfo.EnSecretKey, data.userBasicInfo.SecretKeySalt, 
+                  data.userBasicInfo.LoanPaidStatus, data.userBasicInfo.Tfa, data.userBasicInfo.Expire, setting)
+
+                  console.log('this.authService.userInfo:',this.authService.userInfo)
+
+                this.authService.userData = data.user
+                this.authService.userData.token = data.token
+                this.authService.userData.tokenExpiredTime = data.tokenExpiredTime
                 if (!this.authService.userData.OpenOrders){
                   this.authService.userData.OpenOrders = 0
                 }
@@ -156,20 +171,18 @@ export class LoginComponent {
                 this.authService.hash = this.loginForm.value['password'];
                 this.authService.SetLocalUserData()
                 
-                this.notificationsService.publicNumberNotices([this.authService.userData.UrWallet,
-                  this.authService.userData.UrAlgo, this.authService.userData.UrGeneral])
+                // this.notificationsService.publicNumberNotices([this.authService.userData.UrWallet,
+                //   this.authService.userData.UrAlgo, this.authService.userData.UrGeneral])
                 
                 //store on local storage
-                if (this.authService.userData.Tfa && this.authService.userData.Tfa.Enable 
-                  && this.authService.userData.Tfa.Enable === true){
+                if (this.authService.userInfo.Tfa){
                     //let d = new Date();
-                    let t = new Date().getTime();
-                    let tfaData = this.authService.GetLocalTfa(this.authService.userData.Uid)
+                    let curTime = new Date().getTime();
+                    let tfaData = this.authService.GetLocalTfa(this.authService.userInfo.Uid)
                     console.log('Expire:', tfaData)
                     console.log('userData tfa:', this.authService.userData.Tfa)
-                    if (this.authService.userData.Tfa.Expire && t <= this.authService.userData.Tfa.Expire && 
-                        tfaData && tfaData.Expire && 
-                        tfaData.Expire === this.authService.userData.Tfa.Expire){                      
+                    if (tfaData && tfaData.Expire && this.authService.userInfo.Expire > 0 && curTime <= this.authService.userInfo.Expire &&                          
+                        tfaData.Expire === this.authService.userInfo.Expire){                      
                       this.router.navigate(['/dashboard/overview'])
                     } else {
                       this.router.navigate(['/login/two-factor'])

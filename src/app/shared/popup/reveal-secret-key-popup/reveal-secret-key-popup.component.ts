@@ -36,22 +36,24 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     //   this.authService.GetLocalUserData()
     // }
 
-    this.http.post(`api/v1/users/getFieldInfo`, {tfa:'get', action:'reveal'})
-    .subscribe(res => {
-      if ((res as any).errCode == environment.SUCCESS){
-        this.tfaEnable = (res as any).tfa;
-        if (this.tfaEnable){
-          this.secret = (res as any).secret;
-        }        
-      } else {
-        this.errorService.handleError(null, `The request could not be performed! Please retry.`);
-      }
-      console.log((res as any)) 
-    },
-    e => {
-      console.log(e)
-      this.errorService.handleError(null, `The request could not be performed! Please retry.`);
-    } )
+    this.tfaEnable = this.authService.userInfo.Tfa
+
+    // this.http.post(`api/v1/users/getFieldInfo`, {tfa:'get', action:'reveal'})
+    // .subscribe(res => {
+    //   if ((res as any).errCode == environment.SUCCESS){
+    //     this.tfaEnable = (res as any).tfa;
+    //     if (this.tfaEnable){
+    //       this.secret = (res as any).secret;
+    //     }        
+    //   } else {
+    //     this.errorService.handleError(null, `The request could not be performed! Please retry.`);
+    //   }
+    //   console.log((res as any)) 
+    // },
+    // e => {
+    //   console.log(e)
+    //   this.errorService.handleError(null, `The request could not be performed! Please retry.`);
+    // } )
   }
 
   ngOnInit() {

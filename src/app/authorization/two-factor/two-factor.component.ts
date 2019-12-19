@@ -88,18 +88,18 @@ export class TwoFactorComponent {
       exp = t + 1000 * 60 * 60 * 24 * 30
     }
 
-    let userData = this.authService.userData
-    this.authService.verifyTfaAuth(this.code, userData.Tfa.Secret, exp)
+    //let userData = this.authService.userData
+    this.authService.verifyTfaAuth(this.code, this.authService.userData.Tfa.Secret, exp)
     .subscribe(res => {
       console.log('verifyTfaAuth-data: ', res)     
       if ((res as any).valid === true ){
         this.router.navigate(['/settings/profile'])
         if (this.dontAskForNext30Days){
           console.log('Do not ask for the next 30 days.')          
-          userData.Tfa.Expire = exp
-          this.authService.userData = userData
-          this.authService.SetLocalUserData()
-          this.authService.SetLocalTfa(this.authService.userData.Uid, {Expire:exp})
+          this.authService.userInfo.Expire = exp
+          // this.authService.userData = userData
+          // this.authService.SetLocalUserData()
+          this.authService.SetLocalTfa(this.authService.userInfo.Uid, {Expire:exp})
           //this.authService.updateTfaData(userData)
           console.log('set 30day tfa')
         }
