@@ -39,7 +39,7 @@ export class DataComponent implements OnInit, OnDestroy {
     // if (!this.authService.userData){
     //   this.authService.GetLocalUserData()
     // }
-    console.log('getLoanPaid:', this.sharedService.getLoanPaid())
+    //console.log('getLoanPaid:', this.sharedService.getLoanPaid())
     Promise.all([
       this.stellarService.getCurrentGrxPrice1(),
       this.stellarService.getCurrentXlmPrice1(),

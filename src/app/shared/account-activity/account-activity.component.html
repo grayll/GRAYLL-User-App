@@ -25,7 +25,7 @@
     <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'allOrders'">
       <div class="col-md-2 col-xs">
         <span *ngIf="this.stellarService.allOffers" class="align-middle font-weight-bolder font-14">Open Orders ({{this.stellarService.allOffers.length}})</span>
-        <span *ngIf="!this.stellarService.allOffers" class="align-middle font-weight-bolder font-14">Open Orders ({{0}})</span>
+        <span *ngIf="!this.stellarService.allOffers" class="align-middle font-weight-bolder font-14">Open Orders (0)</span>
       </div>
       <div class="col" [routerLink]="['/wallet/overview', {outlets: {popup: 'cancel-active-orders'}}]" style="outline: none;">
         <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
@@ -236,8 +236,8 @@
      *ngIf="selectedTab.id === 'allOrders'" id="completedOrdersContainer">
   <hr class="m-0 py-2 w-100 mx-0 px-0" style="border-color: #fff;">
     <div class="col-md-2 col-xs pl-0">
-      <span *ngIf="trades" class="align-middle font-14 font-weight-bolder">Completed Orders ({{trades.length}})</span>
-      <span *ngIf="!trades" class="align-middle font-14 font-weight-bolder">Completed Orders (0)</span><br>
+      <span *ngIf="this.stellarService.trades" class="align-middle font-14 font-weight-bolder">Completed Orders ({{this.stellarService.trades.length}})</span>
+      <span *ngIf="!this.stellarService.trades" class="align-middle font-14 font-weight-bolder">Completed Orders (0)</span><br>
       <span class="text-light font-10 font-weight-bolder">Most Recent Completed Orders</span>
     </div>
     <div class="col">

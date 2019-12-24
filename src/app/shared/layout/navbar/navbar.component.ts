@@ -1,4 +1,4 @@
-import {Component, NgZone,Input, OnDestroy} from '@angular/core';
+import {Component, NgZone,Input, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet} from '@fortawesome/free-solid-svg-icons';
 import {NotificationsService} from '../../../notifications/notifications.service';
@@ -9,12 +9,14 @@ import { SwUpdate, SwPush } from '@angular/service-worker';
 import { HttpClient } from '@angular/common/http';
 import { UserInfo, Setting } from 'src/app/models/user.model'
 import { environment } from 'src/environments/environment';
+var StellarSdk = require('stellar-sdk');
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnDestroy {
+export class NavbarComponent implements OnDestroy, OnInit {
 
   
 
@@ -47,18 +49,11 @@ export class NavbarComponent implements OnDestroy {
     if (!this.authService.userInfo){
       this.http.post(`api/v1/users/getUserInfo`, {})
       .subscribe(res => {
-        let data = (res as any)
-        console.log('getUserInfo-userInfo:', data) 
+        let data = (res as any)        
         if (data.errCode == environment.SUCCESS){   
-          let setting = new Setting(data.Setting.AppAlgo,
-            data.Setting.AppGeneral,
-            data.Setting.AppWallet,
-            data.Setting.IpConfirm,
-            data.Setting.MailAlgo,
-            data.Setting.MailGeneral,
-            data.Setting.MailWallet,
-            data.Setting.MulSignature)     
-          this.authService.userInfo = new UserInfo(data.Uid, data.EnSecretKey, data.SecretKeySalt, data.LoanPaidStatus, data.Tfa, data.Expire, setting)
+          this.authService.ParseUserInfo(data)
+          console.log('getUserInfo-userInfo:', this.authService.userInfo) 
+          
         } else {
           console.log('getUserInfo-userInfo failed') 
         }     
@@ -68,18 +63,9 @@ export class NavbarComponent implements OnDestroy {
         console.log(e)
         this.http.post(`api/v1/users/getUserInfo`, {})
         .subscribe(res => {
-          let data = (res as any)
-          let setting = new Setting(data.Setting.AppAlgo,
-            data.Setting.AppGeneral,
-            data.Setting.AppWallet,
-            data.Setting.IpConfirm,
-            data.Setting.MailAlgo,
-            data.Setting.MailGeneral,
-            data.Setting.MailWallet,
-            data.Setting.MulSignature) 
-          console.log('getUserInfo-userInfo:', data) 
-          if (data.errCode == environment.SUCCESS){        
-            this.authService.userInfo = new UserInfo(data.Uid, data.EnSecretKey, data.SecretKeySalt, data.LoanPaidStatus, data.TfaEnable, data.Expire, setting)
+          let data = (res as any)          
+          if (data.errCode == environment.SUCCESS){            
+            this.authService.ParseUserInfo(data)
           } else {
             //this.errorService.handleError(null, `The request could not be performed! Please retry.`);
           }        
@@ -145,6 +131,33 @@ export class NavbarComponent implements OnDestroy {
       this.authService.SetLocalUserData() 
     }));
     
+    // streaming trade
+    let  server = new StellarSdk.Server('https://horizon.stellar.org');
+    server.payments()
+    .forAccount(this.authService.userInfo.PublicKey)
+    .cursor('now')
+    .stream({
+      onmessage: function (message) {
+        console.log('transactions:', message);
+      }
+    });
+
+    server.trades().cursor('now').stream({
+      onmessage: function (message) {
+        console.log('trade:', message);
+        //base_asset_type=native&counter_asset_type=credit_alphanum4&counter_asset_code=USD&counter_asset_issuer=GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX&order=desc&limit=1',
+        if (message.base_asset_type==='native' && message.counter_asset_code==='USD' && message.counter_asset_issuer==='GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX'){
+          this.authService.userData.xlmPrice = message.price.n/message.price.d
+          console.log('trade usd:', this.authService.userData.xlmPrice);
+        }
+      }
+    })
+   
+    
+  }
+
+  ngOnInit(){
+     
   }
 
   getAllUnreadNumber(){

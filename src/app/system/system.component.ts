@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
 import {SharedService} from '../shared/shared.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 @Component({
   selector: 'app-system',
@@ -15,7 +16,8 @@ export class SystemComponent implements OnInit, OnDestroy {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    public sharedService: SharedService
+    public sharedService: SharedService,
+    private authService: AuthService,
   ) {
     this.loadDataFromRoute();
   }

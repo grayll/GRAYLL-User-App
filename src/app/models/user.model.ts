@@ -13,10 +13,11 @@ export class UserInfo {
     public Uid: string,
     public EnSecretKey: string,
     public SecretKeySalt: string,
-    public LoanPaidStatus: string,
+    public LoanPaidStatus: number,
     public Tfa: boolean,
     public Expire:number,
     public Setting?:Setting,
+    public PublicKey?:string,
     ) 
   {
     

@@ -18,7 +18,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
 
   @ViewChild('content') modal;
   didContinue: boolean;
-  tfaEnable: boolean = false;
+ // tfaEnable: boolean = false;
   code: string;
   secret: string;
   password: string;
@@ -36,7 +36,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     //   this.authService.GetLocalUserData()
     // }
 
-    this.tfaEnable = this.authService.userInfo.Tfa
+   // this.tfaEnable = this.authService.userInfo.Tfa
 
     // this.http.post(`api/v1/users/getFieldInfo`, {tfa:'get', action:'reveal'})
     // .subscribe(res => {
@@ -63,7 +63,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
   continueReveal(){
     this.didContinue = true
     
-    if (!this.tfaEnable){
+    if (!this.authService.userInfo.Tfa){
       //send request token to email
       this.http.post(`api/v1/users/sendRevealSecretToken`, {})
       .subscribe(res => {
@@ -83,17 +83,18 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     if (this.authService.hash){
       this.password = this.authService.hash
     } else {
-     // this.authService.GetLocalUserData()
+      this.password = ''
     }
   }
   submit() {
     this.errorService.clearError();
     if (this.clientValidation()) {
-      if (this.tfaEnable){
-        this.authService.verifyTfaAuth(this.code, this.secret, 0).subscribe(res => {           
+      if (this.authService.userInfo.Tfa){
+        console.log(this.code, this.secret)
+        this.authService.verifyTfaAuth(this.code, this.password, 0).subscribe(res => {           
           if ((res as any).valid === true ){                 
             this.stellarService.decryptSecretKey(this.password, 
-              {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
+              {Salt: this.authService.userInfo.SecretKeySalt, EncryptedSecretKey:this.authService.userInfo.EnSecretKey}, 
               SecKey => {
               if (SecKey != ''){
                 this.popupService.close().then(() => {
@@ -123,9 +124,9 @@ export class RevealSecretKeyPopupComponent implements OnInit {
         
         this.http.post(`api/v1/users/verifyRevealSecretToken`, {token:this.code})
         .subscribe(res => {
-          if ((res as any).errCode == environment.SUCCESS){
+          if ((res as any).errCode == environment.SUCCESS){            
             this.stellarService.decryptSecretKey(this.password, 
-              {Salt: this.authService.userData.SecretKeySalt, EncryptedSecretKey:this.authService.userData.EnSecretKey}, 
+              {Salt: this.authService.userInfo.SecretKeySalt, EncryptedSecretKey:this.authService.userInfo.EnSecretKey}, 
               SecKey => {
               if (SecKey != ''){               
                 this.popupService.close().then(() => {
@@ -153,7 +154,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
 
   clientValidation(): boolean {
     if (!this.code || this.code === '') {
-      this.errorService.handleError(null, 'Please enter your ' + (this.tfaEnable ? '2FA code' : 'password') + '!');
+      this.errorService.handleError(null, 'Please enter your ' + (this.authService.userInfo.Tfa ? '2FA code' : 'password') + '!');
       return false;
     }
     if (!this.authService.hash){

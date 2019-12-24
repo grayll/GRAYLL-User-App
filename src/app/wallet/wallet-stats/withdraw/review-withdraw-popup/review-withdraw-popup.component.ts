@@ -41,14 +41,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     this.popupService.open(this.modal);
     this.withdrawModel = this.sharedService.getWithdrawModel();
     
-    console.log('this.tfaEnable:', this.tfaEnable)
-    if (this.authService.isTfaEnable()){
-      this.tfaEnable = true
-    }
-    // if (this.authService.hash){
-    //   this.hashIsCached = true
-    // }
-    console.log('this.tfaEnable:', this.tfaEnable)
+    this.tfaEnable = this.authService.userInfo.Tfa
   }
 
   back() {

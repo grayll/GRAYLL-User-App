@@ -32,23 +32,23 @@ export class NotificationsSettingsComponent implements OnDestroy {
     this.observeAlgoEmailNotificationsDisabled();
     this.observeAlgoAppNotificationsDisabled();
 
-    if (this.authService.userData.Setting.AppGeneral && this.authService.userData.Setting.AppGeneral == true){
+    if (this.authService.userInfo.Setting.AppGeneral && this.authService.userInfo.Setting.AppGeneral == true){
       this.isGeneralAppEnabled = true
     }
-    if (this.authService.userData.Setting.AppWallet && this.authService.userData.Setting.AppWallet == true){
+    if (this.authService.userInfo.Setting.AppWallet && this.authService.userInfo.Setting.AppWallet == true){
       this.isWalletAppEnabled = true
     }
-    if (this.authService.userData.Setting.AppAlgo && this.authService.userData.Setting.AppAlgo == true){
+    if (this.authService.userInfo.Setting.AppAlgo && this.authService.userInfo.Setting.AppAlgo == true){
       this.isAlgoAppEnabled = true
     }
 
-    if (this.authService.userData.Setting.MailGeneral && this.authService.userData.Setting.MailGeneral == true){
+    if (this.authService.userInfo.Setting.MailGeneral && this.authService.userInfo.Setting.MailGeneral == true){
       this.isGeneralEmailEnabled = true
     }
-    if (this.authService.userData.Setting.MailWallet && this.authService.userData.Setting.MailWallet == true){
+    if (this.authService.userInfo.Setting.MailWallet && this.authService.userInfo.Setting.MailWallet == true){
       this.isWalletEmailEnabled = true
     }
-    if (this.authService.userData.Setting.MailAlgo && this.authService.userData.Setting.MailAlgo == true){
+    if (this.authService.userInfo.Setting.MailAlgo && this.authService.userInfo.Setting.MailAlgo == true){
       this.isAlgoEmailEnabled = true
     }
     
@@ -84,7 +84,7 @@ export class NotificationsSettingsComponent implements OnDestroy {
 
   toggleGeneralEmail() {   
     this.authService.UpdateSetting("MailGeneral", !this.isGeneralEmailEnabled).subscribe(res =>{
-      this.authService.userData.Setting.MailGeneral = !this.isGeneralEmailEnabled
+      this.authService.userInfo.Setting.MailGeneral = !this.isGeneralEmailEnabled
       this.isGeneralEmailEnabled = !this.isGeneralEmailEnabled;
       this.authService.SetLocalUserData()
       this.saveSettings();   
@@ -96,7 +96,7 @@ export class NotificationsSettingsComponent implements OnDestroy {
 
   toggleGeneralApp() {    
     this.authService.UpdateSetting("AppGeneral", !this.isGeneralAppEnabled).subscribe(res =>{
-      this.authService.userData.Setting.AppGeneral = !this.isGeneralAppEnabled
+      this.authService.userInfo.Setting.AppGeneral = !this.isGeneralAppEnabled
       this.isGeneralAppEnabled = !this.isGeneralAppEnabled;
       this.authService.SetLocalUserData()
       this.saveSettings();   
@@ -109,7 +109,7 @@ export class NotificationsSettingsComponent implements OnDestroy {
 
   enableWalletEmailNotifications() {
     this.authService.UpdateSetting("MailWallet", true).subscribe(res =>{
-      this.authService.userData.Setting.MailWallet = true
+      this.authService.userInfo.Setting.MailWallet = true
       this.isWalletEmailEnabled = true;
       this.authService.SetLocalUserData()
       this.saveSettings();   
@@ -120,7 +120,7 @@ export class NotificationsSettingsComponent implements OnDestroy {
 
   enableAlgoEmailNotifications() {   
     this.authService.UpdateSetting("MailAlgo", true).subscribe(res =>{
-      this.authService.userData.Setting.MailAlgo = true
+      this.authService.userInfo.Setting.MailAlgo = true
       this.isAlgoEmailEnabled = true;
       this.authService.SetLocalUserData()
       this.saveSettings();   
@@ -131,7 +131,7 @@ export class NotificationsSettingsComponent implements OnDestroy {
 
   enableWalletAppNotifications() {   
     this.authService.UpdateSetting("AppWallet", true).subscribe(res =>{
-      this.authService.userData.Setting.AppWallet = true
+      this.authService.userInfo.Setting.AppWallet = true
       this.isWalletAppEnabled = true;
       this.authService.SetLocalUserData()
       this.saveSettings();   
@@ -143,7 +143,7 @@ export class NotificationsSettingsComponent implements OnDestroy {
   enableAlgoAppNotifications() {  
 
     this.authService.UpdateSetting("AppAlgo", true).subscribe(res =>{
-      this.authService.userData.Setting.AppAlgo = true
+      this.authService.userInfo.Setting.AppAlgo = true
       this.isAlgoAppEnabled = true;
       this.authService.SetLocalUserData()
       this.saveSettings();   

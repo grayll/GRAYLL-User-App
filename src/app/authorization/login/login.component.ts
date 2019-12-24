@@ -142,16 +142,18 @@ export class LoginComponent {
               if (data.errCode === environment.SUCCESS) {
                 console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
 
-                let setting = new Setting(data.userBasicInfo.Setting.AppAlgo,
-                  data.userBasicInfo.Setting.AppGeneral,
-                  data.userBasicInfo.Setting.AppWallet,
-                  data.userBasicInfo.Setting.IpConfirm,
-                  data.userBasicInfo.Setting.MailAlgo,
-                  data.userBasicInfo.Setting.MailGeneral,
-                  data.userBasicInfo.Setting.MailWallet,
-                  data.userBasicInfo.Setting.MulSignature)     
-                this.authService.userInfo = new UserInfo(data.userBasicInfo.Uid, data.userBasicInfo.EnSecretKey, data.userBasicInfo.SecretKeySalt, 
-                  data.userBasicInfo.LoanPaidStatus, data.userBasicInfo.Tfa, data.userBasicInfo.Expire, setting)
+                // let setting = new Setting(data.userBasicInfo.Setting.AppAlgo,
+                //   data.userBasicInfo.Setting.AppGeneral,
+                //   data.userBasicInfo.Setting.AppWallet,
+                //   data.userBasicInfo.Setting.IpConfirm,
+                //   data.userBasicInfo.Setting.MailAlgo,
+                //   data.userBasicInfo.Setting.MailGeneral,
+                //   data.userBasicInfo.Setting.MailWallet,
+                //   data.userBasicInfo.Setting.MulSignature)     
+                // this.authService.userInfo = new UserInfo(data.userBasicInfo.Uid, data.userBasicInfo.EnSecretKey, data.userBasicInfo.SecretKeySalt, 
+                //   data.userBasicInfo.LoanPaidStatus, data.userBasicInfo.Tfa, data.userBasicInfo.Expire, setting)
+
+                  this.authService.ParseUserInfo(data.userBasicInfo)
 
                   console.log('this.authService.userInfo:',this.authService.userInfo)
 
@@ -170,17 +172,12 @@ export class LoginComponent {
                 console.log('login-OpenOrders', this.authService.userData.OpenOrders)
                 this.authService.hash = this.loginForm.value['password'];
                 this.authService.SetLocalUserData()
-                
-                // this.notificationsService.publicNumberNotices([this.authService.userData.UrWallet,
-                //   this.authService.userData.UrAlgo, this.authService.userData.UrGeneral])
-                
+                               
                 //store on local storage
                 if (this.authService.userInfo.Tfa){
                     //let d = new Date();
                     let curTime = new Date().getTime();
-                    let tfaData = this.authService.GetLocalTfa(this.authService.userInfo.Uid)
-                    console.log('Expire:', tfaData)
-                    console.log('userData tfa:', this.authService.userData.Tfa)
+                    let tfaData = this.authService.GetLocalTfa(this.authService.userInfo.Uid)                    
                     if (tfaData && tfaData.Expire && this.authService.userInfo.Expire > 0 && curTime <= this.authService.userInfo.Expire &&                          
                         tfaData.Expire === this.authService.userInfo.Expire){                      
                       this.router.navigate(['/dashboard/overview'])

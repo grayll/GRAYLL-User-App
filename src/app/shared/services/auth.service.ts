@@ -8,7 +8,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { AngularFireAuth } from "angularfire2/auth";
 import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { createHash } from 'crypto';
-import { UserInfo } from 'src/app/models/user.model';
+import { UserInfo, Setting } from 'src/app/models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +39,7 @@ export class AuthService {
         }
         
         this.stellarService.decryptSecretKey(password, 
-          {Salt: this.userData.SecretKeySalt, EncryptedSecretKey:this.userData.EnSecretKey}, 
+          {Salt: this.userInfo.SecretKeySalt, EncryptedSecretKey:this.userInfo.EnSecretKey}, 
           SecKey => {
             if (SecKey != ''){
               this.secretKey = this.stellarService.SecretBytesToString(SecKey)
@@ -50,6 +50,20 @@ export class AuthService {
           })
         }
       })
+  }
+
+  ParseUserInfo(data):UserInfo {
+    let setting = new Setting(data.Setting.AppAlgo,
+      data.Setting.AppGeneral,
+      data.Setting.AppWallet,
+      data.Setting.IpConfirm,
+      data.Setting.MailAlgo,
+      data.Setting.MailGeneral,
+      data.Setting.MailWallet,
+      data.Setting.MulSignature)     
+    this.userInfo = new UserInfo(data.Uid, data.EnSecretKey, data.SecretKeySalt, 
+      data.LoanPaidStatus, data.Tfa, data.Expire, setting, data.PublicKey)
+      return this.userInfo
   }
 
   SetLoanPaidLedgerId(id){

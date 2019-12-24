@@ -8,7 +8,7 @@
             <h6 class="card-subtitle text-light">GRAYLL Perfomance</h6>
           </div>
           <div class="col-lg-4 col-md-12 text-lg-center text-md-center text-sm-left text-xs-left align-self-center">
-            <h6 class="mt-2">00:00 | 12 JUL 2019</h6>
+            <h6 class="mt-2">{{today}}</h6>
           </div>
           <div class="col-lg-2 col-md-12 align-self-center">
             <button class="btn btn-purple btn-sm" (click)="scrollToOpenAlgoPositionForm()">Open Algo Position</button>
@@ -19,7 +19,8 @@
                        [searchable]="false"
                        [clearable]="false"
                        bindLabel="name"
-                       [(ngModel)]="selectedTimespan">
+                       [(ngModel)]="selectedTimespan"
+                       (change)="onChange($event)">
             </ng-select>
           </div>
         </div>

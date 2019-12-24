@@ -5,7 +5,7 @@
   <div class="page-wrapper h-100">
     <div class="container-fluid pt-0">
 
-      <div *ngIf="!sharedService.getLoanPaid(); else loanPaid">
+      <div *ngIf="authService.userInfo && authService.userInfo.LoanPaidStatus === 1; else loanPaid">
 
         <h4 class="text-light pt-3 pb-1">
           Notifications

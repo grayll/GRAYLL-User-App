@@ -124,7 +124,8 @@ export class XlmLoanPopupComponent implements OnInit {
         console.log(resp)
         this.error = false;
         this.success = true;
-        this.sharedService.setLoanPaid(); 
+        this.authService.userInfo.LoanPaidStatus = 2
+        //this.sharedService.setLoanPaid(); 
         this.updateFund()
       },
       err => {

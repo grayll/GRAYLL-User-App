@@ -6,8 +6,9 @@ import { Component, ViewChild } from '@angular/core';
 import { ChartOptions } from 'chart.js';
 import { BaseChartDirective} from 'ng2-charts';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
-import { DataModel, TimePrice, PriceData } from './data-model';
+import { TimePrice, PriceData } from './data-model';
 import { Subscription } from 'rxjs';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-main-chart',
@@ -18,123 +19,101 @@ export class MainChartComponent {
 
   isFirstLoad:boolean = true
   subs: Subscription[] = [];
-
-  dataModels: DataModel[] = [
-    {currency: 'GRZ', current: null, color: '#40278C'},
-    {currency: 'EUR', current: null, color: '#03F4FC'},
-    {currency: 'JPY', current: null, color: '#FFC0CB'},
-    {currency: 'GBP', current: null, color: '#900C3F'},
-    {currency: 'CHF', current: null, color: '#FFA700'},
-  ];
+  today: String
   @ViewChild(BaseChartDirective) chart: BaseChartDirective;
   timespanFilter = [
     {
-      id: 1,
+      id: 5,
+      frame:"frame_05m",
       name: '5 Minutes'
     },
     {
-      id: 2,
+      id: 15,
+      frame:"frame_15m",
       name: '15 Minutes'
     },
     {
-      id: 3,
+      id: 30,
+      frame:"frame_30m",
       name: '30 Minutes'
     },
     {
-      id: 4,
+      id: 60,
+      frame:"frame_01h",
       name: '1 Hours'
     },
     {
-      id: 5,
+      id: 240,
+      frame:"frame_04h",
       name: '4 Hours'
     },
     {
-      id: 6,
+      id: 1440,
+      frame:"frame_01d",
       name: '1 Day'
     }
   ];
 
-  selectedTimespan: {id: number, name: string} = this.timespanFilter[2];
+  selectedTimespan: {id: number, frame:string, name: string} = this.timespanFilter[0];
+  public onChange(value: any) {
+    console.log(this.selectedTimespan)
+    this.getFrameData()
+  }
+  
+  getFrameData(){
+    this.dataService.getFramesData(288, "grxusd,gryusd,grzusd", this.selectedTimespan.frame).subscribe(data => {      
+      console.log(data)
+      if (data.res.grxusd && data.res.grxusd[0]){ 
+        console.log('grx')
+        let timeFrame:TimePrice[] = [] 
+        data.res.grxusd.forEach(p => {
+          let np = {t: new Date(p.ts*1000), y:p.price}   
+          timeFrame.push(np)
+        });
+        this.lineChartData[0].data  = timeFrame        
+      }   
 
-  ngAfterViewInit() {
+      if (data.res.gryusd && data.res.gryusd[0]){ 
+        console.log('gry')
+        let timeFrame:TimePrice[] = [] 
+        data.res.gryusd.forEach(p => {
+          let np = {t: new Date(p.ts*1000), y:p.price}   
+          timeFrame.push(np)
+        });
+        this.lineChartData[1].data  = timeFrame        
+      } 
+
+      if (data.res.grzusd && data.res.grzusd[0]){ 
+        console.log('grz')
+        let timeFrame:TimePrice[] = [] 
+        data.res.grzusd.forEach(p => {
+          let np = {t: new Date(p.ts*1000), y:p.price}   
+          timeFrame.push(np)
+        });
+        this.lineChartData[2].data  = timeFrame        
+      }       
+    })
   }
 
   constructor(
     private router: Router,
     private dataService: ChartDataService
   ) {
-    this.subs.forEach(sub => sub.unsubscribe());
-    // After first load, will register with time frame change and coin index change
-    this.subs.push(this.dataService.timeFrameChanged$.subscribe(frameIndex => {
-      this.dataService.frameIndex = frameIndex
-              
-      let frame =  this.dataService.getFrameName(this.dataService.frameIndex)    
-      let coin = this.dataService.getCoinDocName(this.dataService.coinIndex)
-      
-      this.subs.push(this.dataService.getFramesData(288, "grzusd", frame).subscribe(data => {      
-        
-        if (data.grzusd && data.grzusd[0]){ 
-          let grayPrices:TimePrice[] = [] 
-          data.grzusd.forEach(p => {
-            let np = {t: new Date(p.ts*1000), y:p.price}   
-            grayPrices.push(np)
-          });
-          this.lineChartData[0].data  = grayPrices        
-        }   
-        
-      }))
-      this.subs.push(this.dataService.getFramesData(288, coin, frame).subscribe(data => {      
-        
-        if (data[coin] && data[coin][0]){
-          let coinPrices:TimePrice[] = []
-          
-            data[coin].forEach(p => {
-            let np = {t: new Date(p.ts*1000), y:p.price}   
-            coinPrices.push(np)
-          });
-          this.lineChartData[1].data  = coinPrices
-          this.lineChartData[1].backgroundColor = this.dataModels[this.dataService.coinIndex].color;
-          this.lineChartData[1].borderColor = this.dataModels[this.dataService.coinIndex].color;
-          this.lineChartData[1].label = this.dataModels[this.dataService.coinIndex].currency;
-              
-        }    
-      }))  
-      this.isFirstLoad = false
-      //this.RunSubcribeFrameData()    
-    }));
-    this.subs.push(this.dataService.coinChanged$.subscribe(index => { 
-      this.dataService.coinIndex = index 
-      if (!this.isFirstLoad) {
-        //this.subs.forEach(sub => sub.unsubscribe()) 
-        let coin = this.dataService.getCoinDocName(this.dataService.coinIndex)
-        let frame =  this.dataService.getFrameName(this.dataService.frameIndex)            
-        
-        this.dataService.getFramesData(288, coin, frame).subscribe(data => {      
-          //console.log('TRADECHART - getFramesData- coin, frame:', coin, frame)  
-          if (data[coin] && data[coin][0]){
-            let coinPrices:TimePrice[] = []
-            
-              data[coin].forEach(p => {
-              let np = {t: new Date(p.ts*1000), y:p.price}   
-              coinPrices.push(np)
-            });
-            this.lineChartData[1].data  = coinPrices
-            this.lineChartData[1].backgroundColor = this.dataModels[this.dataService.coinIndex].color;
-            this.lineChartData[1].borderColor = this.dataModels[this.dataService.coinIndex].color;
-            this.lineChartData[1].label = this.dataModels[this.dataService.coinIndex].currency;
-                  
-          }    
-        })         
-      }
-    })); 
+    this.today = moment(new Date()).format('H:mm | D MMM YYYY')
+    // After first load, will register with time frame change
+    //Chart.defaults.scale.gridLines.display = false;
+    this.getFrameData()    
+  }
 
-    this.lineChartData[1].backgroundColor = this.dataModels[this.dataService.coinIndex].color;
-    this.lineChartData[1].borderColor = this.dataModels[this.dataService.coinIndex].color;
-    this.lineChartData[1].label = this.dataModels[this.dataService.coinIndex].currency;
+  ngOnInit() {
+    setInterval( () => { 
+           this.today = moment(new Date()).format('h:mm | D MMM YYYY')
+    }, 60000);
   }
 
   
- 
+  ngAfterViewInit() {
+  }
 
  
 // RunSubcribeFrameData(){
@@ -174,36 +153,49 @@ ConvertToTimePrice(priceData: PriceData){
 ConvertToMap(timePrice:TimePrice){
   return {t:timePrice.t, y:timePrice.y}
 }
-
+//pattern: ['#ff821c', '#40c4ff', '#1240c2'] 
 public lineChartData =  [
   {
-    label: 'GRZ',
-    backgroundColor: '#43278C',
-    borderColor: '#43278C',
+    label: 'grx',
+    backgroundColor: '#1240c2',
+    borderColor: '#1240c2',
     data: [],
     type: 'line',
     pointRadius: 0,
     fill: false,
     lineTension: 0,
-    borderWidth: 2
+    borderWidth: 1
   },
   {
-    label: 'BTC',
-    backgroundColor: '#03F4FC',
-    borderColor: '#03F4FC',
+    label: 'gry',
+    backgroundColor: '#40c4ff',
+    borderColor: '#40c4ff',
     data: [],
     type: 'line',
     pointRadius: 0,
     fill: false,
     lineTension: 0,
-    borderWidth: 2,
+    borderWidth: 1,
     yAxisID: 'id-right',
+  },
+  {
+    label: 'grz',
+    backgroundColor: '#ff821c',
+    borderColor: '#ff821c',
+    data: [],
+    type: 'line',
+    pointRadius: 0,
+    fill: false,
+    lineTension: 0,
+    borderWidth: 1,
+    yAxisID: 'id-right1',
   }
 ];
 
 
 public lineChartOptions: (ChartOptions & { annotation: any }) = {
   responsive: true,
+  //showLines: false,
   maintainAspectRatio: false,
     scales: {
       xAxes: [
@@ -219,17 +211,30 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
         ticks: {
           source: 'data',
           autoSkip: true
+        },
+        gridLines: {
+          drawBorder: true,
+          //display: false
         }
       }],
       yAxes: [
         {
           id: 'id-left',
           position: 'left',
+          // gridLines: {
+          //   drawBorder: true,
+          //   display: false
+          // }          
         },
         {
           id: 'id-right',
           position: 'right',
-          display: false
+          display: false,          
+        },
+        {
+          id: 'id-right1',
+          position: 'right',
+          display: false,          
         }
       ]
     },
@@ -238,7 +243,7 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
       mode: 'nearest',
       callbacks: {
         label: function(tooltipItem, myData) {            
-          return tooltipItem.yLabel + ':' + tooltipItem.xLabel as string;
+          return (+tooltipItem.yLabel.toString()).toFixed(9) + ':' + tooltipItem.xLabel as string;
         }
       }
     },
@@ -246,95 +251,21 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
     }
   };
 
-public lineChartLegend = true;
-public lineChartType = 'bar';
-public lineChartColors = [];
-public lineChartPlugins = [pluginAnnotations];  
+  public lineChartLegend = true;
+  public lineChartType = 'bar';
+  public lineChartColors = [];
+  public lineChartPlugins = [pluginAnnotations];  
 
-ngOnDestroy(){  
-  this.subs.forEach(sub => sub.unsubscribe());
-}
-
-//   data: {
-//     x: 'x',
-//     columns: [
-//         ['x', 30, 50, 100, 230, 300, 310],
-//         ['data1', 30, 200, 100, 400, 150, 250],
-//         ['data2', 130, 300, 200, 300, 250, 450]
-//     ]
-// }
-  // ngAfterViewInit() {
-  //   const chart = c3.generate({
-  //     bindto: '#main-chart-graph',
-  //     data: {
-  //       xs: {
-  //         'grx'
-  //       },
-  //       columns: [
-  //         ['grx', 0.01, 0.014, 0.016, 0.023, 0.033, 0.045, 0.06, 0.5, 1],
-  //         ['gry', 0.01, 0.02, 0.03, 0.04, 0.02, 0.056, 0.1, 0.8, 1.2],
-  //         ['grz', 0.01, 0.011, 0.015, 0.017, 0.02, 0.03, 0.04, 0.021, 0.05]
-  //       ],
-  //       axes: {
-  //         grx: 'y',
-  //         gry: 'y1',
-  //         grz: 'y2'
-  //       },
-  //       type: 'area-spline',
-  //       // groups: [['grx', 'gry', 'grz']]
-  //     },
-  //     axis: {
-  //       y: {
-  //         show: true,
-  //         tick: {
-  //           count: 0,
-  //           outer: false
-  //         }
-  //       },
-  //       y1: {
-  //         show: false,
-  //         tick: {
-  //           count: 0,
-  //           outer: false
-  //         }
-  //       },
-  //       y2: {
-  //         show: false,
-  //         tick: {
-  //           count: 0,
-  //           outer: false
-  //         }
-  //       },
-  //       x: {
-  //         show: false
-  //       }
-  //     },
-  //     padding: {
-  //       top: 20,
-  //       right: 10,
-  //       bottom: 0,
-  //       left: 30
-  //     },
-  //     point: {
-  //       r: 2
-  //     },
-  //     legend: {
-  //       hide: true
-  //     },
-  //     color: {
-  //       pattern: ['#ff821c', '#40c4ff', '#1240c2']
-  //     }
-  //   });
-  // }
-
-
-  // scrollToOpenAlgoPositionForm() {
-  //   const el = document.getElementById('algoPositionForm');
-  //   if (el) {
-  //     el.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
-  //   } else {
-  //     this.router.navigate(['/system/overview']);
-  //   }
-  // }
+  ngOnDestroy(){  
+    this.subs.forEach(sub => sub.unsubscribe());
+  }
+  scrollToOpenAlgoPositionForm() {
+    const el = document.getElementById('algoPositionForm');
+    if (el) {
+      el.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+    } else {
+      this.router.navigate(['/system/overview']);
+    }
+  }
 
 }

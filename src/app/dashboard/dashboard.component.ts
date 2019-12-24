@@ -28,34 +28,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   totalGRY: number
   totalGRZ: number
 
-  // constructor(
-  //   public sharedService: SharedService,
-  //   public stellarService: StellarService,
-  //   public authService: AuthService,
-  //   private snotifyService: SnotifyService,
-  // ) {
-  //   if (!this.authService.userData){
-  //     this.authService.GetLocalUserData()
-  //   }
-  //   console.log('getLoanPaid:', this.sharedService.getLoanPaid())
-  //   Promise.all([
-  //     this.stellarService.getCurrentGrxPrice1(),
-  //     this.stellarService.getCurrentXlmPrice1(),
-  //     this.stellarService.getAccountData(this.authService.userData.PublicKey)
-  //     .catch(err => {
-  //       // Notify internet connection.
-  //       this.snotifyService.simple('Please check your internet connection.')
-  //       console.log(err)
-  //     })
-  //   ])
-  //   .then(([ grx, xlm, account ]) => {
-  //     console.log(grx, xlm)      
-  //     this.stellarService.userAccount = account;
-  //     this.stellarService.publishPrices([+grx,+xlm])
-      
-  //   })
-  //  }
-
   constructor(
     private swPush: SwPush,
     private http: HttpClient,
@@ -70,34 +42,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // if (!this.authService.userData){
     //   this.authService.GetLocalUserData()
     // }
-    console.log('getLoanPaid:', this.sharedService.getLoanPaid())
+    //console.log('getLoanPaid:', this.sharedService.getLoanPaid())
     if (this.authService.isActivated()){
       if (this.swPush.isEnabled && !this.isTokenSentToServer()){
         console.log('request subs')
         this.requestSubNotifications()
       } 
-      // Promise.all([
-      //   this.stellarService.getCurrentGrxPrice1(),
-      //   this.stellarService.getCurrentXlmPrice1(),
-      //   this.stellarService.getAccountData(this.authService.userData.PublicKey)
-      //   .catch(err => {
-      //     // Notify internet connection.
-      //     this.snotifyService.simple('Please check your internet connection.')
-      //     console.log(err)
-      //   })
-      // ])
-      // .then(([ grx, xlm, account ]) => {
-      //   console.log(grx, xlm)   
-      //   this.xlmP = +xlm
-      //   this.grxP = +grx
-      //   this.stellarService.userAccount = account;   
-      //   this.stellarService.getBlFromAcc(this.stellarService.userAccount, res => {
-      //     //this.fillWalletData(res) 
-      //     this.totalXLM = res.xlm;
-      //     this.totalGRX = res.grx;  
-      //     this.stellarService.publishPrices([this.xlmP, this.grxP, this.totalXLM, this.totalGRX])
-      //   })
-      // }) 
     } 
   }
 

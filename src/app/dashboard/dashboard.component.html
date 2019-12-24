@@ -6,7 +6,7 @@
   <div class="page-wrapper">
     <div class="container-fluid pt-0">
 
-      <div *ngIf="!sharedService.getLoanPaid(); else loanPaid">
+      <div *ngIf="authService.userInfo && authService.userInfo.LoanPaidStatus === 1; else loanPaid">
         <!-- Display on mobile -->
         <div class="alert justify-content-between alert-warning d-lg-none loan-unpaid-mobile" role="alert">
           <div style="display: inline;">
