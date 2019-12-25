@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, Inject} from '@angular/core';
 import {PopupService} from '../../shared/popup/popup.service';
 import {SnotifyService} from 'ng-snotify';
 import { environment } from 'src/environments/environment';
@@ -9,6 +9,7 @@ import {ErrorService} from '../../shared/error/error.service';
 import axios from 'axios'
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import FormPersistence from 'form-persistence';
 
 @Component({
   selector: 'app-edit-federation-address',
@@ -25,10 +26,11 @@ export class EditFederationAddressComponent implements OnInit {
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private setting: SettingsService,
-    private http: HttpClient,
+    private http: HttpClient,    
   ) { 
     this.initializeForm()
-    
+    // let form = document.getElementById('frm-fed');
+    // FormPersistence.persist(form)
   }
 
   private initializeForm() {
@@ -41,6 +43,9 @@ export class EditFederationAddressComponent implements OnInit {
   }
   ngOnInit() {
     this.popupService.open(this.modal);
+    //let form = this.document.getElementById("frm-fed");
+    // console.log('form:', this.modal)
+    // FormPersistence.persist(this.modal)  
   }
   get federation() { return this.form.get('federation'); }
   save() {
@@ -81,6 +86,5 @@ export class EditFederationAddressComponent implements OnInit {
     err => {
       this.snotifyService.simple(`The federation address could not been updated! Please retry.`);
     })
-  }
-
+  }  
 }

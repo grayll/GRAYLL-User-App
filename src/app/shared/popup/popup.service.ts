@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Router} from '@angular/router';
 import {NgbModal, NgbModalOptions} from '@ng-bootstrap/ng-bootstrap';
 import {SharedService} from '../shared.service';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +16,28 @@ export class PopupService {
 
   public isOpen:boolean = false
 
+  validationResult: Subject<boolean>
+
   constructor(
     private modalService: NgbModal,
     private router: Router,
     private sharedService: SharedService
   ) { }
+
+  public observeValidation(): Observable<boolean> {
+    if (!this.validationResult){
+      this.validationResult = new Subject<boolean>()
+    }
+    return this.validationResult.asObservable()
+  }
+
+  public pushValidation(res:boolean){
+    if (!this.validationResult){
+      this.validationResult = new Subject<boolean>()
+    }
+
+    this.validationResult.next(res)
+  }
 
   public open(modal) {
     this.isOpen = true

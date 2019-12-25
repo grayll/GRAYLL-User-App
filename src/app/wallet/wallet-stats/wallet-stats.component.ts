@@ -11,6 +11,7 @@ import { AuthService } from "../../shared/services/auth.service"
 import { environment } from 'src/environments/environment'
 import axios from 'axios'
 import { SwUpdate, SwPush } from '@angular/service-worker';
+import {PopupService} from 'src/app/shared/popup/popup.service';
 
 @Component({
   selector: 'app-wallet-stats',
@@ -39,6 +40,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
   grxP: number
   xlmP: number = 1
+  action: string = ''
 
   // totalXLM: number;
   // totalGRX: number;
@@ -51,11 +53,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   gryUsdValue: string;
   grzUsdValue: string;
 
- 
-
   maxAvailabeXLM: number
   maxAvailabeGRX: number
-
 
   secretKey: string;
   isSecretKeyRevealed: boolean;
@@ -80,6 +79,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     private stellarService: StellarService,
     private authService: AuthService,
     public push: SwPush,
+    public popupService: PopupService,
   ) {
     
     this.grxP = this.authService.userData.grxPrice
@@ -91,6 +91,16 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if (!this.stellarService.allOffers){
       this.stellarService.allOffers = []
     }
+    console.log('this.stellarService.allOffers:', this.stellarService.allOffers)
+    this.subs.add(this.popupService.observeValidation().subscribe(valid => {
+      if (valid){
+        if (this.action === 'buy'){
+          this.executeBuy()
+        } else if (this.action === 'sell'){
+          this.executeSell()
+        }
+      }
+    }))    
   }
 
   getMaxXLMForTrade(){
@@ -117,36 +127,43 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
-
-  buyGrx(){    
-    if(!this.validateSession()){
+  executeBuy(){
+    if (!this.validateBuyAbility()){
       return
-    }    
-    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
-    if (+this.grxAmount*+this.grxPrice > maxAvailabeXLM || maxAvailabeXLM < 0){
-      console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
-      this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')
-      this.reInitVariables()    
-      return
-    }
-    this.authService.GetSecretKey(null).then(SecKey => {     
+    } 
+    this.authService.GetSecretKey(null).then(SecKey => {    
+      console.log('this.stellarService.allOffers:', this.stellarService.allOffers) 
       this.stellarService.buyOrder(SecKey, this.grxPrice, this.grxAmount).then( res => {
+        if (!this.stellarService.allOffers){
+          this.stellarService.allOffers = []
+        }
+        let matchType = 0
+        let msg = 'Buy order submitted successfully.'
         if (res.offerResults[0].currentOffer){
+          console.log('res.offerResults[0].currentOffer', res.offerResults[0].currentOffer)
           let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
             this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData)
 
-          this.stellarService.allOffers.push(of)
-          this.snotifyService.simple('Buy order submitted successfully.')          
+          this.stellarService.allOffers.push(of)                   
           if (this.authService.userData.OpenOrders){
             this.authService.userData.OpenOrders = +this.authService.userData.OpenOrders + 1
           } else {
             this.authService.userData.OpenOrders = 1
           }
           this.authService.SetLocalUserData()
-        } else if (res.offerResults[0].offersClaimed) {
-          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)
-          this.snotifyService.simple('Buy order has been matched and executed!'); 
+          matchType += 1
+        } 
+        if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {
+          console.log('res.offerResults', res.offerResults)
+          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)          
+          matchType += 2
         }
+        if (matchType == 3){
+          msg = 'Buy order has been partially matched and executed!'
+        } else if (matchType == 2){
+          msg = 'Buy order has been matched and executed!'
+        }
+        this.snotifyService.simple(msg); 
       }).catch(e => {
         console.log(e)
         if (e.toString().includes('status code 400')){
@@ -155,7 +172,28 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           this.snotifyService.simple('Buy order could not be submitted! Please retry!')
         } 
       })        
-    })    
+    })  
+  }
+  buyGrx(){    
+    this.action = 'buy'
+    if(!this.validateSession()){
+      return
+    } 
+    if (!this.validateBuyAbility()){
+      return
+    } 
+    this.executeBuy()  
+    this.action = ''  
+  }
+  validateBuyAbility(){
+    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
+    if (+this.grxAmount*+this.grxPrice > maxAvailabeXLM || maxAvailabeXLM < 0){
+      console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
+      this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')
+      this.reInitVariables()    
+      return false
+    }
+    return true
   }
   validateSession(){
     if (this.authService.isTokenExpired()){
@@ -163,33 +201,25 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl('/login')
       return false
     } 
-    if (!this.authService.hash){
+    if (!this.authService.hash || this.authService.userInfo.Setting.MulSignature){
       console.log('!this.authService.hash')
       this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
       return false
     }  
     return true  
   }
-  sellGrx(){   
-    if(!this.validateSession()){
-      return
-    }  
-    
-    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
-    let maxAvailabeGRX = this.authService.getMaxAvailableGRX()
-
-    if (+this.grxAmount > maxAvailabeGRX || maxAvailabeXLM < 0){
-      console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
-      this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')  
-      this.reInitVariables()  
+  executeSell(){
+    if (!this.validateSellAbility()){
       return
     }
     this.authService.GetSecretKey(null).then(SecKey => {      
-      this.stellarService.sellOrder(SecKey, this.grxPrice, this.grxAmount).then( res => {        
+      this.stellarService.sellOrder(SecKey, this.grxPrice, this.grxAmount).then( res => {    
+        let matchType = 0
+        let msg = 'Buy order submitted successfully.'    
         if (res.offerResults[0].currentOffer){          
           let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
             this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData)
-          this.stellarService.allOffers.push(of)          
+          this.stellarService.allOffers.unshift(of)          
           if (this.authService.userData.OpenOrders){
             this.authService.userData.OpenOrders = +this.authService.userData.OpenOrders +1
           } else {
@@ -197,10 +227,21 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           }
           this.authService.SetLocalUserData()
           this.snotifyService.simple('Sell order submitted successfully!'); 
-        } else if (res.offerResults[0].offersClaimed) {
-          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed, this.grxPrice, this.xlmP, this.authService.userData)
-          this.snotifyService.simple('Sell order has been matched and executed!'); 
+          matchType += 1
         } 
+        if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {
+          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed, this.grxPrice, this.xlmP, this.authService.userData)         
+          matchType += 2
+        } 
+
+        if (matchType == 3){
+          msg = 'Sell order has been partially matched and executed!'
+        } else if (matchType == 2){
+          msg = 'Sell order has been matched and executed!'
+        }
+
+        this.snotifyService.simple(msg); 
+
         this.reInitVariables()             
       }).catch(e => {
         console.log(e)
@@ -214,6 +255,30 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     }).catch( err => {
       console.log(err)
     })
+  }
+  validateSellAbility(){
+    let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
+    let maxAvailabeGRX = this.authService.getMaxAvailableGRX()
+
+    if (+this.grxAmount > maxAvailabeGRX || maxAvailabeXLM < 0){
+      console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
+      this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')  
+      this.reInitVariables()  
+      return false
+    }
+    return true
+  }
+  sellGrx(){
+    this.action = 'sell'   
+    if(!this.validateSession()){
+      return
+    }  
+    if (!this.validateSellAbility()){
+      return
+    }
+    
+    this.executeSell()
+    this.action = ''    
   }
 
   copyFederationAddress() {

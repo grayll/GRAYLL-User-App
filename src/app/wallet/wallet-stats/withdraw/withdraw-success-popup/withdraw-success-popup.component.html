@@ -19,10 +19,10 @@
     <div class="row text-center">
       <div class="col">
         <p class="text-purple lead mb-2">
-          <span *ngIf="withdrawModel.xlmAmount">
+          <span *ngIf="withdrawModel && withdrawModel.xlmAmount">
             {{withdrawModel.xlmAmount}} XLM
           </span>
-          <span *ngIf="withdrawModel.grxAmount">
+          <span *ngIf="withdrawModel && withdrawModel.grxAmount">
             {{withdrawModel.grxAmount}} GRX
           </span>
         </p>
@@ -31,9 +31,9 @@
 
     <div class="row text-center">
       <div class="col">
-        <p class="text-purple" *ngIf="withdrawModel.address" style="font-size: 90%">{{withdrawModel.address}}</p>
-        <p class="text-purple" *ngIf="withdrawModel.emailAddress">{{withdrawModel.emailAddress}}</p>
-        <p class="text-purple" *ngIf="withdrawModel.phoneNumber">{{withdrawModel.phoneNumber}}</p>
+        <p class="text-purple" *ngIf="withdrawModel && withdrawModel.address" style="font-size: 90%">{{withdrawModel.address}}</p>
+        <p class="text-purple" *ngIf="withdrawModel && withdrawModel.emailAddress">{{withdrawModel.emailAddress}}</p>
+        <p class="text-purple" *ngIf="withdrawModel && withdrawModel.phoneNumber">{{withdrawModel.phoneNumber}}</p>
       </div>
     </div>
 

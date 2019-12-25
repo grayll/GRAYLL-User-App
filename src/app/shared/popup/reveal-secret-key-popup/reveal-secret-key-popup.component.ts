@@ -151,7 +151,6 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     }
   }
   
-
   clientValidation(): boolean {
     if (!this.code || this.code === '') {
       this.errorService.handleError(null, 'Please enter your ' + (this.authService.userInfo.Tfa ? '2FA code' : 'password') + '!');

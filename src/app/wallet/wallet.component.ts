@@ -15,6 +15,8 @@ export class WalletComponent implements OnInit, OnDestroy {
 
   faWarning = faExclamationTriangle;
 
+  shouldReload:boolean 
+
   constructor(
     public sharedService: SharedService,
     public stellarService: StellarService,
@@ -22,12 +24,8 @@ export class WalletComponent implements OnInit, OnDestroy {
     private snotifyService: SnotifyService,
     //updates: SwUpdate, push: SwPush
   ) {
-    // if (!this.authService.userData){
-    //   this.authService.GetLocalUserData()
-    // }
-    
-    
-    
+       
+    this.shouldReload = false    
     Promise.all([
       this.stellarService.getCurrentGrxPrice1(),
       this.stellarService.getCurrentXlmPrice1(),
@@ -43,6 +41,13 @@ export class WalletComponent implements OnInit, OnDestroy {
       this.stellarService.userAccount = account;
       this.stellarService.publishPrices([+grx,+xlm])
       
+    })
+
+    this.authService.subShouldReload().subscribe(s => {
+      if (s === true){
+        console.log('update should reload', s)
+        this.shouldReload = true
+      }
     })
    }
 

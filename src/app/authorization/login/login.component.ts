@@ -141,21 +141,8 @@ export class LoginComponent {
               let data =  (res as any)             
               if (data.errCode === environment.SUCCESS) {
                 console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-
-                // let setting = new Setting(data.userBasicInfo.Setting.AppAlgo,
-                //   data.userBasicInfo.Setting.AppGeneral,
-                //   data.userBasicInfo.Setting.AppWallet,
-                //   data.userBasicInfo.Setting.IpConfirm,
-                //   data.userBasicInfo.Setting.MailAlgo,
-                //   data.userBasicInfo.Setting.MailGeneral,
-                //   data.userBasicInfo.Setting.MailWallet,
-                //   data.userBasicInfo.Setting.MulSignature)     
-                // this.authService.userInfo = new UserInfo(data.userBasicInfo.Uid, data.userBasicInfo.EnSecretKey, data.userBasicInfo.SecretKeySalt, 
-                //   data.userBasicInfo.LoanPaidStatus, data.userBasicInfo.Tfa, data.userBasicInfo.Expire, setting)
-
-                  this.authService.ParseUserInfo(data.userBasicInfo)
-
-                  console.log('this.authService.userInfo:',this.authService.userInfo)
+                this.authService.ParseUserInfo(data.userBasicInfo)
+                console.log('this.authService.userInfo:',this.authService.userInfo)
 
                 this.authService.userData = data.user
                 this.authService.userData.token = data.token

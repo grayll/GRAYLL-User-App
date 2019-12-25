@@ -39,36 +39,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public stellarService: StellarService,
 
   ) {
-    // if (!this.authService.userData){
-    //   this.authService.GetLocalUserData()
-    // }
-    //console.log('getLoanPaid:', this.sharedService.getLoanPaid())
-    if (this.authService.isActivated()){
-      if (this.swPush.isEnabled && !this.isTokenSentToServer()){
-        console.log('request subs')
-        this.requestSubNotifications()
-      } 
-    } 
+    
+    this.authService.getUserInfoMsg().subscribe(userInfo => {
+      if (!this.authService.isActivated()){      
+        this.showActivationPopup();
+      } else {   
+        console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
+        console.log('this.authService.userData:', this.authService.userData)           
+      }  
+    })   
   }
 
   ngOnInit(): void {
-    // if(!this.authService.userData){
-    //   this.authService.GetLocalUserData()
-    // }
-    this.changeBackgroundColor(true);
-    if (!this.authService.isActivated()){
-      console.log('not activated, show activate pop-up')
-      this.showActivationPopup();
-    } else {   
-      console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
-      console.log('this.authService.userData:', this.authService.userData)           
-    }  
+   
+    this.changeBackgroundColor(true);    
     console.log('dashboard-OpenOrders', this.authService.userData.OpenOrders)
     this.authService.GetSecretKey(null).then(seckey => {
       //console.log('seckey:', seckey)
     }).catch(err => {
       console.log('err:', err)
     })
+
+    if (this.authService.isActivated()){
+      if (this.swPush.isEnabled && !this.isTokenSentToServer()){
+        console.log('request subs')
+        this.requestSubNotifications()
+      } 
+    } 
 
   }
 

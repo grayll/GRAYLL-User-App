@@ -39,13 +39,13 @@
       </div>      
     </div>
     <br>
-    <div *ngIf="!tfaEnable || (tfaEnable && !authService.hash)"  class="row">
+    <div *ngIf="!multiSigEnable || (multiSigEnable && !authService.hash)"  class="row">
       <div class="col-md-12">
         <input type="password"  [(ngModel)]="password" class="fixed-input-height text-light form-control form-control-no-border bg-purple" style="height: 46px"
                    placeholder="Password">
       </div>
     </div>
-    <div *ngIf="tfaEnable" class="row">
+    <div *ngIf="multiSigEnable" class="row">
       <div class="col-md-12">
         <input type="text"  [(ngModel)]="twoFaCode" class="fixed-input-height text-light form-control form-control-no-border bg-purple" style="height: 46px"
                    placeholder="One-time password">

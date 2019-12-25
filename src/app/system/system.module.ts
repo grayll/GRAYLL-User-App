@@ -24,6 +24,7 @@ import {UnreadNotificationsComponent} from './system-header-boxes/unread-notific
     UnreadNotificationsComponent
   ],
   imports: [
+    NgModule,
     CommonModule,
     SystemRoutingModule,
     SharedModule,

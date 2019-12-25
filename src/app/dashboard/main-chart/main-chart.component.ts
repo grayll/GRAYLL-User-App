@@ -156,7 +156,7 @@ ConvertToMap(timePrice:TimePrice){
 //pattern: ['#ff821c', '#40c4ff', '#1240c2'] 
 public lineChartData =  [
   {
-    label: 'grx',
+    label: 'GRX',
     backgroundColor: '#1240c2',
     borderColor: '#1240c2',
     data: [],
@@ -167,7 +167,7 @@ public lineChartData =  [
     borderWidth: 1
   },
   {
-    label: 'gry',
+    label: 'GRY',
     backgroundColor: '#40c4ff',
     borderColor: '#40c4ff',
     data: [],
@@ -179,7 +179,7 @@ public lineChartData =  [
     yAxisID: 'id-right',
   },
   {
-    label: 'grz',
+    label: 'GRZ',
     backgroundColor: '#ff821c',
     borderColor: '#ff821c',
     data: [],

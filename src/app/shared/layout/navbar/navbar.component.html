@@ -14,8 +14,11 @@
           <a href="javascript:void(0)" class="nav-link" routerLink="/system/overview" alt="ALGO SYSTEM">
             <span class="d-inline d-md-none mr-2">Algo System</span>
             <fa-icon [icon]="faChartLine" size="lg"></fa-icon>
-            <span class="badge bg-yellow text-light badge-number">
+            <span *ngIf="this.authService.userData && this.authService.userData.UrAlgo" class="badge bg-yellow text-light badge-number">
               {{this.authService.userData.UrAlgo}}
+            </span>
+            <span *ngIf="!this.authService.userData || !this.authService.userData.UrAlgo" class="badge bg-yellow text-light badge-number">
+              0
             </span>
           </a>
         </li>
@@ -24,8 +27,11 @@
           <a href="javascript:void(0)" class="nav-link" routerLink="/wallet/overview" alt="WALLET">
             <span class="d-inline d-md-none mr-2">Wallet</span>
             <fa-icon [icon]="faWallet" size="lg"></fa-icon>
-            <span class="badge bg-yellow text-light badge-number">
+            <span *ngIf="this.authService.userData && this.authService.userData.UrWallet" class="badge bg-yellow text-light badge-number">
               {{this.authService.userData.UrWallet}}
+            </span>
+            <span *ngIf="!this.authService.userData || !this.authService.userData.UrWallet" class="badge bg-yellow text-light badge-number">
+              0
             </span>
           </a>
         </li>

@@ -3,12 +3,12 @@
   <div class="modal-body">
     <div class="row my-2 d-flex align-items-center justify-content-center">
       <div class="col">
-        <form [formGroup]="form">
+        <form [formGroup]="form" id="frm-fed">
           <div class="form-group">
             <label class="text-purple" for="alias">
               Choose a short alias for your Stellar Network Address
             </label>
-            <input type="text" formControlName="federation"  class="form-control form-control-no-border" placeholder="">
+            <input type="text" id="fed" formControlName="federation"  class="form-control form-control-no-border" placeholder="">
           </div>
         </form>
       </div>

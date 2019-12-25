@@ -16,7 +16,7 @@ import { environment } from 'src/environments/environment'
 export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
 
   password: string
-  tfaEnable: boolean
+  multiSigEnable: boolean
   twoFaCode: string
   address: any
   //hashIsCached: any
@@ -41,7 +41,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     this.popupService.open(this.modal);
     this.withdrawModel = this.sharedService.getWithdrawModel();
     
-    this.tfaEnable = this.authService.userInfo.Tfa
+    this.multiSigEnable = this.authService.userInfo.Setting.MulSignature
   }
 
   back() {
@@ -90,7 +90,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
 
   sendAsset(amount, asset, memo){ 
       this.authService.GetSecretKey(this.password).then(SecKey => {        
-        if (this.tfaEnable && this.twoFaCode){
+        if (this.multiSigEnable && this.twoFaCode){
           this.authService.verifyTfaAuth(this.password, this.twoFaCode, 0)
           .subscribe(res => {           
             if ((res as any).valid === true ){                 
@@ -135,9 +135,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
           err => {
             //this.errorService.handleError(null, '2FA code is invalid! Please retry.')
           })
-        } else if (!this.tfaEnable) {
-          console.log('sendAsset:', SecKey,
-          this.withdrawModel.address, amount.toString(), asset)
+        } else if (!this.multiSigEnable) {
+          // console.log('sendAsset:', SecKey,
+          // this.withdrawModel.address, amount.toString(), asset)
           this.stellarService.sendAsset(SecKey, this.withdrawModel.address, 
             amount.toString(), asset, memo)
           .then(ledger => {

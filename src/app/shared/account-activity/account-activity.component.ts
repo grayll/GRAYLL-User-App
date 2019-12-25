@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, OnDestroy} from '@angular/core';
+import {Component, Input, OnInit, OnDestroy, ChangeDetectionStrategy, OnChanges} from '@angular/core';
 import {faArrowAltCircleDown, faCopy, faInfoCircle, faSearch, faTimesCircle} from '@fortawesome/free-solid-svg-icons';
 import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { environment } from 'src/environments/environment';
 import {ActivityResult} from './models/activity-results';
+import {PopupService} from 'src/app/shared/popup/popup.service';
 
 var StellarSdk = require('stellar-sdk')
 
@@ -19,14 +20,16 @@ var StellarSdk = require('stellar-sdk')
 @Component({
   selector: 'app-account-activity',
   templateUrl: './account-activity.component.html',
-  styleUrls: ['./account-activity.component.scss']
+  styleUrls: ['./account-activity.component.scss'],
+  //changeDetection: ChangeDetectionStrategy.OnPush, 
 })
-export class AccountActivityComponent implements OnInit, OnDestroy {
+export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
 
   @Input() showMoreDetails: boolean;
   @Input() activeTabId: string;
   @Input() showAllCompletedOrders: boolean;
   @Input() scrollToCompletedOrders: boolean;
+  @Input() shouldReload: boolean;
 
   selectedTab: {id: string, name: string};
   activityTabs = [
@@ -60,6 +63,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
   faCopy = faCopy;
   faSearch = faSearch;
   activityResult: ActivityResult
+  item: any
 
   constructor(
     private clipboardService: ClipboardService,
@@ -68,6 +72,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private sharedService:SharedService,
+    private popupService: PopupService,
   ) {
     console.log('constructor-account activity')
     this.subs = new SubSink()
@@ -77,17 +82,17 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     this.stellarService.allOffers = null
     this.stellarService.trades = null 
 
-    // Promise.all([
-    //   this.getAccountOrders(null, true),
-    //   this.getAccountTrades(null)
-    // ]).then(([ofs, trades]) => {
+    Promise.all([
+      this.getAccountOrders(null, true),
+      this.getAccountTrades(null)
+    ]).then(([ofs, trades]) => {
       
-    // }).catch( err => {
-    //   console.log('Error get open order and trade:', err)
-    // }) 
+    }).catch( err => {
+      console.log('Error get open order and trade:', err)
+    }) 
     
-    this.getAccountOrders(null, true),
-    this.getAccountTrades(null)
+    // this.getAccountOrders(null, true),
+    // this.getAccountTrades(null)
 
     this.grxP = +this.authService.userData.grxPrice
     this.xlmP = +this.authService.userData.xlmPrice
@@ -97,8 +102,35 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
       this.snotifyService.simple('Please check your internet connection.')
       console.log(err)
     })
-  }
 
+    this.popupService.observeValidation().subscribe(valid => {
+      if (valid){//cancel
+        if (this.item){
+          this.cancelCurrentOffer(this.item)    
+        }
+      }
+    })
+  }
+  ngOnChanges() {
+    
+    console.log('change:', this.shouldReload);
+    if (this.shouldReload){
+      this.stellarService.allOffers = null
+      this.stellarService.trades = null 
+      Promise.all([
+        this.getAccountOrders(null, true),
+        this.getAccountTrades(null)
+      ]).then(([ofs, trades]) => {
+        
+      }).catch( err => {
+        console.log('Error get open order and trade:', err)
+      })   
+
+      this.grxP = +this.authService.userData.grxPrice
+      this.xlmP = +this.authService.userData.xlmPrice
+      this.shouldReload = false
+    }
+  }
   downloadHistory(){
     console.log('this.selectedTab.id:', this.selectedTab.id)
     
@@ -148,24 +180,43 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
     this.sharedService.savePDF(columns, fields, data, fileName)
   }
   
+  // validateSession(){
+  //   if (this.authService.isTokenExpired()){
+  //     this.snotifyService.simple('Your session has expired! Please login again.'); 
+  //     this.router.navigateByUrl('/login')
+  //     return false
+  //   } 
+  //   if (!this.authService.hash){
+  //     this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
+  //     return false
+  //   }
+  //   return true
+  // }
+
   validateSession(){
     if (this.authService.isTokenExpired()){
-      this.snotifyService.simple('Your session has expired! Please login again.'); 
+      this.snotifyService.simple('Your login session has expired! Please login again.'); 
       this.router.navigateByUrl('/login')
       return false
     } 
-    if (!this.authService.hash){
+    if (!this.authService.hash || this.authService.userInfo.Setting.MulSignature){     
       this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
       return false
-    }
-    return true
+    }  
+    return true  
   }
 
-  cancelOffer(item){
+  cancelOffer(item){  
+    this.item = item 
     if(!this.validateSession()){
       return
-    }
-    console.log('cancelOffer-cachedOffer:', item.cachedOffer)     
+    }    
+    console.log('cancelOffer-cachedOffer:', item.cachedOffer) 
+    this.cancelCurrentOffer(this.item)    
+      
+  }
+
+  cancelCurrentOffer(item){
     this.authService.GetSecretKey(null).then(SecKey => {      
       this.stellarService.cancelOffer(SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType).then(res=>
         {               
@@ -188,7 +239,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
           this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
         }
       })
-    })  
+    })
   }
 
   parseAsset(asset) {
@@ -460,7 +511,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy {
         })  
         
         if (this.stellarService.trades){
-          this.stellarService.trades = this.trades.stellarService.concat(records)
+          this.stellarService.trades = this.stellarService.trades.concat(records)
           this.activityResult.completedOrderEmptyResultTimes = 0 
         } else {
           this.stellarService.trades = records

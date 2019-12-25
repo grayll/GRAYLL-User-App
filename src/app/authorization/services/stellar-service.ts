@@ -36,6 +36,9 @@ export class StellarService {
         this.horizon = new StellarSdk.Server(environment.horizon_url)  
         this.grxAsset = new StellarSdk.Asset(environment.ASSET, environment.ASSET_ISSUER)
         this.nativeAsset = StellarSdk.Asset.native()
+        if (!this.allOffers){
+            this.allOffers = []
+        }
     }
 
     public observePrices(): Observable<number[]> {
@@ -191,6 +194,8 @@ export class StellarService {
                         userData.totalGRX = +userData.totalGRX + +item.amountBought
                         type = 'BUY' 
                         asset = item.assetBought.asset                
+                    } else {
+                        type = 'SELL' 
                     }
                     userData.totalXLM = +userData.totalXLM - +item.amountSold
                     userData.totalGRX = +userData.totalGRX + +item.amountBought
@@ -199,6 +204,8 @@ export class StellarService {
                 } else if(item.assetSold.assetCode && item.assetSold.assetCode === environment.ASSET) { // sell grx buy xlm
                     if (item.assetBought.type === 'native'){                    
                         type = 'SELL' 
+                    } else {
+                        type = 'BUY'
                     }
                     userData.totalXLM = +userData.totalXLM + +item.amountBought
                     userData.totalGRX = +userData.totalGRX - +item.amountSold
@@ -207,14 +214,14 @@ export class StellarService {
                 }
                 let url = 'https://stellar.expert/explorer/public/'
                 if (environment.horizon_url.includes('testnet')){
-                url = 'https://stellar.expert/explorer/testnet/'
+                    url = 'https://stellar.expert/explorer/testnet/'
                 }
                 url = url+'ledger/'+item.offerId               
 
                 let trade = {time: time, type:type, asset:asset, amount:amount, filled:'100%', xlmp: grxXlmP, 
                 totalxlm: totalxlm, priceusd: grxXlmP*xlmP, totalusd: +totalxlm*xlmP, index:0, url:url}
 
-                this.trades.push(trade)
+                this.trades.unshift(trade)
 
                 // amountBought: "999.9999999"
                 // amountSold: "402.8755023"
@@ -385,8 +392,8 @@ export class StellarService {
         // this.horizon.accounts().accountId(publicKey).call()
         // .then( 
         this.horizon.loadAccount(publicKey).then(
-            res => {                                
-                console.log(res);
+            res => {                               
+                
                 let xlm = 0
                 let grx = 0
                 res.balances.forEach(b => {
@@ -409,8 +416,7 @@ export class StellarService {
     getAccountBalance(publicKey: string){        
         return new Promise((resolve, reject) => {
             this.horizon.loadAccount(publicKey).then(
-                res => {                                
-                    console.log(res);
+                res => {                    
                     let xlm = 0
                     let grx = 0
                     res.balances.forEach(b => {

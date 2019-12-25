@@ -1,15 +1,16 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { StellarService } from '../../authorization/services/stellar-service';
 import {SubSink} from 'subsink';
 import { AuthService } from "../../shared/services/auth.service"
 import { HttpClient } from  '@angular/common/http';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-header-boxes',
   templateUrl: './header-boxes.component.html',
   styleUrls: ['./header-boxes.component.css']
 })
-export class HeaderBoxesComponent  implements OnDestroy  {
+export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
   
   grxdb:any
   grydb:any
@@ -19,7 +20,21 @@ export class HeaderBoxesComponent  implements OnDestroy  {
     private stellarService: StellarService,
     private authService: AuthService,
     private http: HttpClient,
-  ) {
+  ) {    
+    this.getDashBoardData()     
+  }
+  
+  ngOnInit(){
+    interval(60*60*60).subscribe(()=> {
+      console.log('get dbdata')
+      this.getDashBoardData()
+    })
+  }
+  ngOnDestroy(){
+    //this.subs.unsubscribe()
+  }
+
+  getDashBoardData(){
     this.http.post("api/v1/users/GetDashBoardInfo",
     {
       "coins":"grxusd,gryusd,grzusd"
@@ -41,8 +56,5 @@ export class HeaderBoxesComponent  implements OnDestroy  {
         console.log(e)
       }
     )
-  }
-  ngOnDestroy(){
-    //this.subs.unsubscribe()
   }
 }

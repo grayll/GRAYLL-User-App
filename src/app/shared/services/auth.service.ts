@@ -3,7 +3,7 @@ import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firest
 import { Router } from "@angular/router";
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 
 import { AngularFireAuth } from "angularfire2/auth";
 import { StellarService } from 'src/app/authorization/services/stellar-service';
@@ -24,7 +24,38 @@ export class AuthService {
   openOrders: number
   secretKey: any
   userInfo: UserInfo
+  
+  userInfoMsg: Subject<UserInfo>
+  shouldReload:Subject<boolean>
 
+  subShouldReload(){
+    if (!this.shouldReload){
+      this.shouldReload = new Subject()
+    }
+    return this.shouldReload.asObservable()
+  }
+
+  pushShouldReload(shouldReload){
+    if (!this.shouldReload){
+      this.shouldReload = new Subject()
+    }
+    this.shouldReload.next(shouldReload)
+  }
+
+  getUserInfoMsg(){
+    if (!this.userInfoMsg){
+      this.userInfoMsg = new Subject()
+    }
+    return this.userInfoMsg.asObservable()
+  }
+
+  pushUserInfoMsg(userInfo:UserInfo){
+    if (!this.userInfoMsg){
+      this.userInfoMsg = new Subject()
+    }
+    this.userInfoMsg.next(userInfo)
+  }
+  
   GetSecretKey(pwd):Promise<any>{
     return new Promise((resolve, reject) => {
       if (this.secretKey){
@@ -128,6 +159,7 @@ export class AuthService {
     return this.tfa$.next(value)
   }
 
+
   constructor(
     
     public router: Router,  
@@ -139,8 +171,9 @@ export class AuthService {
   }
   
   isActivated() : boolean {    
-    //let seedData = this.GetSeedData()    
-    if (!this.userData.PublicKey || (this.userData.PublicKey && this.userData.PublicKey.trim().length === 0)){      
+    console.log(this.userInfo)   
+
+    if (!this.userInfo.PublicKey || (this.userInfo.PublicKey && this.userInfo.PublicKey.trim().length === 0)){      
       return false
     }
     // } else if (seedData){
