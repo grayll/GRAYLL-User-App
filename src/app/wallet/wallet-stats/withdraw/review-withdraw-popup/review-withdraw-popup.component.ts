@@ -44,6 +44,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     this.multiSigEnable = this.authService.userInfo.Setting.MulSignature
   }
 
+  
   back() {
     this.sharedService.showModalOverview();
     this.popupService.close()

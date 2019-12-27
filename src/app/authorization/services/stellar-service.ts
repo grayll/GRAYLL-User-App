@@ -141,6 +141,7 @@ export class StellarService {
             let source = StellarSdk.Keypair.fromSecret(accSeed);            
                 this.horizon.loadAccount(source.publicKey()).then(account => {                
                 // 3. Create a transaction builder
+                console.log('buy:', account)
                 let tx = new StellarSdk.TransactionBuilder(account, 
                     {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
             
@@ -160,6 +161,7 @@ export class StellarService {
                 let xdr = tx.toXDR('base64')   
                 console.log('submitTransaction xdr', xdr)     
                 this.horizon.submitTransaction(tx).then( res => {
+                    console.log('buy1:', account)
                     resolve(res)
                 }).catch( err => {
                     console.log('buyOrder: ', err)
@@ -415,8 +417,9 @@ export class StellarService {
     }
     getAccountBalance(publicKey: string){        
         return new Promise((resolve, reject) => {
-            this.horizon.loadAccount(publicKey).then(
-                res => {                    
+            this.horizon.loadAccount(publicKey).then(                
+                res => {    
+                    console.log(res)                
                     let xlm = 0
                     let grx = 0
                     res.balances.forEach(b => {

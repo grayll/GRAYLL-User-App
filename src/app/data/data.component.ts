@@ -28,6 +28,7 @@ export class DataComponent implements OnInit, OnDestroy {
   faWarning = faExclamationTriangle;
   activeTabId: string;
   activeSubTabId: string;
+  pageId: string
 
   constructor(
     public sharedService: SharedService,
@@ -36,10 +37,7 @@ export class DataComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     private snotifyService: SnotifyService,
   ) {
-    // if (!this.authService.userData){
-    //   this.authService.GetLocalUserData()
-    // }
-    //console.log('getLoanPaid:', this.sharedService.getLoanPaid())
+    this.pageId = "data"
     Promise.all([
       this.stellarService.getCurrentGrxPrice1(),
       this.stellarService.getCurrentXlmPrice1(),

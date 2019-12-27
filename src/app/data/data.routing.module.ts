@@ -2,6 +2,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {DataComponent} from './data.component';
 import {NgModule} from '@angular/core';
 import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
+import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
 
 const popupRoutes: Routes = [
   {
@@ -47,7 +48,12 @@ const routes: Routes = [
       tab: 'wallet-activity',
       subTab: 'networkHistory'
     }
-  }
+  },
+  {
+    path: 'confirm-password',
+    component: ConfirmPasswordComponent,
+    outlet: 'popup'
+  },
 ];
 
 @NgModule({

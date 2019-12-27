@@ -97,7 +97,15 @@ export class WithdrawPopupComponent implements OnInit {
   }
 
   populateMaxXLM() {
-    this.XLMValue = (this.totalXLM - 1.5 - (+this.authService.userData.OpenOrders)).toString()
+    //this.XLMValue = (this.totalXLM - 1.5 - (+this.authService.userData.OpenOrders)).toString()
+    this.XLMValue = this.authService.getMaxAvailableXLM().toFixed(7)
+  }
+  getMaxXLMForTrade(){
+    if (this.authService.getMaxAvailableXLM() - 0.500011 > 0){
+      return (this.authService.getMaxAvailableXLM() - 0.500011).toFixed(7)
+    } else {
+      return '0'
+    }
   }
 
   next() {
@@ -135,7 +143,7 @@ export class WithdrawPopupComponent implements OnInit {
   }
 
   clientValidation(): boolean {
-    if (!this.isValidAddress(this.recipient)) {
+    if (!this.recipient || !this.isValidAddress(this.recipient)) {
       this.errorService.handleError(null, 'Please enter a valid Stellar Account or Federation Address!');
       return false;
     }
@@ -159,10 +167,14 @@ export class WithdrawPopupComponent implements OnInit {
       this.errorService.handleError(null, 'Please enter a valid XLM amount!');
       return false;
     }
-    if (this.XLMValue && this.GRXValue) {
-      this.errorService.handleError(null, 'Please only enter a GRX or XLM value!');
+    if ((this.XLMValue && +this.XLMValue > this.authService.getMaxAvailableXLM()) || (this.GRXValue && +this.GRXValue > this.authService.getMaxAvailableGRX())) {
+      this.errorService.handleError(null, 'The withdraw amount exceeds the max available of account.');
       return false;
     }
+    // if (this.XLMValue && this.GRXValue) {
+    //   this.errorService.handleError(null, 'Please only enter a GRX or XLM value!');
+    //   return false;
+    // }
     return true;
   }
 

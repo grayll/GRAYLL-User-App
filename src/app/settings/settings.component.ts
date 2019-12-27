@@ -20,6 +20,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   faWarning = faExclamationTriangle;
 
   activeTabId = 'Profile';
+  pageId: string
 
   navigationSettingPages = [
     {
@@ -52,7 +53,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
   constructor(
     public sharedService: SharedService,
     private authService: AuthService,
-  ) {}
+  ) {
+    this.pageId = "setting"
+  }
 
   ngOnInit(): void {
     this.changeBackgroundColor(true);

@@ -1,4 +1,5 @@
-import {NgModule} from '@angular/core';
+//import {NgModule} from '@angular/core';
+import { NgModule } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {SystemComponent} from './system.component';
 import {SystemRoutingModule} from './system.routing.module';
@@ -24,7 +25,7 @@ import {UnreadNotificationsComponent} from './system-header-boxes/unread-notific
     UnreadNotificationsComponent
   ],
   imports: [
-    NgModule,
+    //NgModule,
     CommonModule,
     SystemRoutingModule,
     SharedModule,
@@ -36,4 +37,5 @@ import {UnreadNotificationsComponent} from './system-header-boxes/unread-notific
     NgbCarouselModule
   ]
 })
+
 export class SystemModule { }

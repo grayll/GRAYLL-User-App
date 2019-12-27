@@ -43,6 +43,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   faWarning = faExclamationTriangle;
   faBell = faBell;
   faSearch = faSearch;
+  pageId: string
 
   constructor(
     public notificationsService: NotificationsService,
@@ -51,6 +52,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private http: HttpClient,
   ) {
     // Get notices from server
+    this.pageId = "notification"
     this.populateNotifications(0, "all");
   }
 

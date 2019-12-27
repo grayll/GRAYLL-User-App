@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   totalGRX: number
   totalGRY: number
   totalGRZ: number
+  pageId: string
 
   constructor(
     private swPush: SwPush,
@@ -39,14 +40,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public stellarService: StellarService,
 
   ) {
-    
+    this.pageId = "dashboard"
     this.authService.getUserInfoMsg().subscribe(userInfo => {
       if (!this.authService.isActivated()){      
         this.showActivationPopup();
       } else {   
         console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
-        console.log('this.authService.userData:', this.authService.userData)           
-      }  
+        console.log('this.authService.userData:', this.authService.userData)
+        
+        if (this.swPush.isEnabled && !this.isTokenSentToServer()){
+          console.log('request subs')
+          this.requestSubNotifications()
+        } 
+      }
     })   
   }
 
@@ -60,12 +66,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       console.log('err:', err)
     })
 
-    if (this.authService.isActivated()){
-      if (this.swPush.isEnabled && !this.isTokenSentToServer()){
-        console.log('request subs')
-        this.requestSubNotifications()
-      } 
-    } 
+    // if (this.authService.isActivated()){
+    //   if (this.swPush.isEnabled && !this.isTokenSentToServer()){
+    //     console.log('request subs')
+    //     this.requestSubNotifications()
+    //   } 
+    // } 
 
   }
 

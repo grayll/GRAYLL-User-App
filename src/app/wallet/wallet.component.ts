@@ -14,8 +14,8 @@ import {SnotifyService} from 'ng-snotify';
 export class WalletComponent implements OnInit, OnDestroy {
 
   faWarning = faExclamationTriangle;
-
   shouldReload:boolean 
+  pageId: string
 
   constructor(
     public sharedService: SharedService,
@@ -24,7 +24,7 @@ export class WalletComponent implements OnInit, OnDestroy {
     private snotifyService: SnotifyService,
     //updates: SwUpdate, push: SwPush
   ) {
-       
+    this.pageId = "wallet"  
     this.shouldReload = false    
     Promise.all([
       this.stellarService.getCurrentGrxPrice1(),

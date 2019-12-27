@@ -1,6 +1,6 @@
 <router-outlet name="popup"></router-outlet>
 
-<app-navbar></app-navbar>
+<app-navbar [ComId]="pageId"></app-navbar>
 <div class="main-wrapper">
   <div class="page-wrapper h-100">
     <div class="container-fluid pt-0">
@@ -11,7 +11,7 @@
           Notifications
         </h4>
 
-        <!-- Display on larger devices -->
+        <!-- Display on larger devices -->n    
         <div class="alert alert-warning loan-unpaid justify-content-between d-none d-lg-flex" role="alert">
           <div style="display: inline;">
             <fa-icon [icon]="faWarning" class="text-purple" [fixedWidth]="true"></fa-icon>

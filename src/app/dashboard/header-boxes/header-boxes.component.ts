@@ -15,23 +15,26 @@ export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
   grxdb:any
   grydb:any
   grzdb:any
+  timer:any
+  subSink: SubSink
 
   constructor(
     private stellarService: StellarService,
     private authService: AuthService,
     private http: HttpClient,
   ) {    
+    this.subSink = new SubSink()
     this.getDashBoardData()     
   }
   
   ngOnInit(){
-    interval(60*60*60).subscribe(()=> {
+    this.subSink.add(interval(60*60*60).subscribe(()=> {
       console.log('get dbdata')
       this.getDashBoardData()
-    })
+    }))
   }
   ngOnDestroy(){
-    //this.subs.unsubscribe()
+    this.subSink.unsubscribe()    
   }
 
   getDashBoardData(){

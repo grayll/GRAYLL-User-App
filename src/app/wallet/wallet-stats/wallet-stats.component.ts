@@ -226,7 +226,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
             this.authService.userData.OpenOrders = 1
           }
           this.authService.SetLocalUserData()
-          this.snotifyService.simple('Sell order submitted successfully!'); 
+          //this.snotifyService.simple('Sell order submitted successfully!'); 
           matchType += 1
         } 
         if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {

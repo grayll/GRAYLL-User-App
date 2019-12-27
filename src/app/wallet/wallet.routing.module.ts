@@ -11,6 +11,7 @@ import {RevealSecretKeyPopupComponent} from '../shared/popup/reveal-secret-key-p
 import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
 import {XlmBalanceStatusPopupComponent} from '../shared/popup/xlm-balance-status-popup/xlm-balance-status-popup.component';
 import {InputPasswordComponent} from '../shared/popup/input-password/input-password.component';
+import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
 const popupRoutes: Routes = [
   {
     path: 'deposit',
@@ -60,6 +61,11 @@ const popupRoutes: Routes = [
   {
     path: 'input-password',
     component: InputPasswordComponent,
+    outlet: 'popup'
+  },
+  {
+    path: 'confirm-password',
+    component: ConfirmPasswordComponent,
     outlet: 'popup'
   },
 ];

@@ -59,6 +59,7 @@
     "ng4-loading-spinner": "^1.2.3",
     "ngx-clipboard": "^12.2.0",
     "ngx-countdown": "^3.2.0",
+    "ngx-device-detector": "^1.3.20",
     "ngx-flag-icon-css": "^1.0.1",
     "ngx-infinite-scroll": "^8.0.1",
     "ngx-password-toggle": "^1.0.3",

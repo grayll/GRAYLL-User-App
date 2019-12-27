@@ -103,13 +103,13 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       console.log(err)
     })
 
-    this.popupService.observeValidation().subscribe(valid => {
+    this.subs.add(this.popupService.observeValidation().subscribe(valid => {
       if (valid){//cancel
         if (this.item){
           this.cancelCurrentOffer(this.item)    
         }
       }
-    })
+    }))
   }
   ngOnChanges() {
     

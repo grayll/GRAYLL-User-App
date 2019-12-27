@@ -41,7 +41,7 @@
                       <span class="text-purple">*0 GRX are reserved in your wallet by the Stellar Network.</span>
                       <br>
                       <a href="javascript:void(0)" class="purple-link" (click)="populateMaxGRX()">
-                        Max Available GRX: {{authService.userData.totalGRX}}
+                        Max Available GRX: {{(this.authService.getMaxAvailableGRX()).toFixed(7)}}
                       </a>
                     </div>
                     <div class="form-group">
@@ -69,7 +69,7 @@
                       <span class="text-purple">*1.5 XLM are reserved in your wallet by the Stellar Network.</span>
                       <br>
                       <a href="javascript:void(0)" class="purple-link" (click)="populateMaxXLM()">
-                        Max Available XLM: {{authService.userData.totalXLM}}
+                        Max Available XLM: {{this.authService.getMaxAvailableXLM().toFixed(7)}}
                       </a>
                     </div>
                     <div class="form-group">

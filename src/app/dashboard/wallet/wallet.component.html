@@ -23,7 +23,7 @@
                 <h5 routerLink="/wallet/overview" style="outline: none!important" class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(2)}}</h5>
                 <small>
                   <a href="javascript:void(0)" class="navy-link" [routerLink]="[{outlets: {popup: 'xlm-balance-status'}}]">
-                    1.50 XLM Reserved (${{(1.5*xlmP).toFixed(2)}})
+                    1.50 XLM Reserved (${{(1.5*+authService.userData.xlmPrice).toFixed(2)}})
                   </a>
                 </small>
               </div>

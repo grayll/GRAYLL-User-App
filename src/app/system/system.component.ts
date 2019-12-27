@@ -13,12 +13,14 @@ export class SystemComponent implements OnInit, OnDestroy {
 
   activeTabId: string;
   faWarning = faExclamationTriangle;
+  pageId: string
 
   constructor(
     private activatedRoute: ActivatedRoute,
     public sharedService: SharedService,
     private authService: AuthService,
   ) {
+    this.pageId = "system"
     this.loadDataFromRoute();
   }
 

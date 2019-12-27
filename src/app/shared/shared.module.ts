@@ -24,6 +24,7 @@ import {XlmBalanceStatusPopupComponent} from './popup/xlm-balance-status-popup/x
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {InputPasswordComponent} from './popup/input-password/input-password.component';
+import {ConfirmPasswordComponent} from './popup/confirm-pwd/confirm-pw';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import {InputPasswordComponent} from './popup/input-password/input-password.comp
     XlmLoanPopupComponent,
     XlmBalanceStatusPopupComponent,
     InputPasswordComponent,
+    ConfirmPasswordComponent,
   ],
   imports: [
     CommonModule,
