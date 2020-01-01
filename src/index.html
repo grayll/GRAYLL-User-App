@@ -98,23 +98,23 @@
       	localStorage.setItem('storagetime',new Date().getTime());
       }
     });
-    // if (location.hostname.indexOf('grayll.io') === -1) {
-    //   location.href = "https://app.grayll.io/";
-    // }
-    // var url = 'https://app.grayll.io/'   
-    // //var url = 'http://127.0.0.1:8081/'
-    // if (localStorage.getItem("valid") === "passed"){     
-    //   //localStorage.removeItem("valid")     
-    // } else {
-    //   var password = "7mPCHWdMDyOWfnFaEmHUK9kR5telLtEl0";
-    //   var x = prompt("Enter in the password "," ");
-    //   if (x === password) {            
-    //     localStorage.setItem("valid", "passed");            
-    //     window.location = url + "login";
-    //   } else {
-    //     window.location = 'hhttps://app.grayll.io/error'                                                  
-    //   }
-    // } 
+    if (location.hostname.indexOf('grayll.io') === -1) {
+      location.href = "https://app.grayll.io/";
+    }
+    var url = 'https://app.grayll.io/'   
+    //var url = 'http://127.0.0.1:8081/'
+    if (localStorage.getItem("valid") === "passed"){     
+      //localStorage.removeItem("valid")     
+    } else {
+      var password = "7mPCHWdMDyOWfnFaEmHUK9kR5telLtEl0";
+      var x = prompt("Enter in the password "," ");
+      if (x === password) {            
+        localStorage.setItem("valid", "passed");            
+        window.location = url + "login";
+      } else {
+        window.location = 'hhttps://app.grayll.io/error'                                                  
+      }
+    } 
    
     // function addToHomeScreen() {
     //   let a2hsBtn = document.querySelector(".ad2hs-prompt");  // hide our user interface that shows our A2HS button
