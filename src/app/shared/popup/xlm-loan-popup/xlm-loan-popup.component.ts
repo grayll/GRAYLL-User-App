@@ -62,7 +62,7 @@ export class XlmLoanPopupComponent implements OnInit {
       this.errorService.handleError(null, "Please deposit a minimum of 2 XLM to your account to pay off your loan.")
       return
     }
-    let loanerAddress =  environment.xlmLoanerAddress.toString()
+    let loanerAddress =  environment.XLM_LOAN_ADDRESS.toString()
     let loanAmount = this.XLMLoanValue.toString()
     let asset = this.stellarService.nativeAsset   
     

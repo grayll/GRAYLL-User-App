@@ -171,14 +171,11 @@ export class AuthService {
   }
   
   isActivated() : boolean {    
-    console.log(this.userInfo)   
-
+    console.log(this.userInfo)
     if (!this.userInfo.PublicKey || (this.userInfo.PublicKey && this.userInfo.PublicKey.trim().length === 0)){      
       return false
     }
-    // } else if (seedData){
-    //   return false
-    // }    
+    
     return true
   }
   setupTfa(account:string) {
@@ -197,6 +194,10 @@ export class AuthService {
   }
   updateTfaData(tfa) {   
     return this.http.post(`api/v1/users/updatetfa`, tfa) 
+  }
+
+  makeTransaction(xdr, txtype) {   
+    return this.http.post(`api/v1/users/MakeTransaction`, {xdr:xdr, tx: txtype}) 
   }
 
   isTfaEnable(){
@@ -273,23 +274,43 @@ export class AuthService {
   }
 
   calPercentXLM(){
-    return Math.round(+this.userData.totalXLM*this.userData.xlmPrice*100/(+this.userData.totalXLM*this.userData.xlmPrice + 
-      this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice))
+    if (this.userData){
+      if (+this.userData.totalGRX === 0){
+        return 100
+      } else {
+        return Math.round(+this.userData.totalXLM*this.userData.xlmPrice*100/(+this.userData.totalXLM*this.userData.xlmPrice + 
+          this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice))
+      }
+    } else {
+      return 0
+    }
   }
   calPercentGRX(){
-    return 100 - this.calPercentXLM()
+    if (this.userData){
+      return 100 - this.calPercentXLM()
+    } else {
+      return 0
+    }
   }
   grxInUsd(){
-    return +this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice
+    if (this.userData){
+      return +this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice
+    } else {
+      return 0
+    }
   }
   xlmInUsd(){
-    return +this.userData.totalXLM*this.userData.xlmPrice
+    if (this.userData){
+      return +this.userData.totalXLM*this.userData.xlmPrice
+    } else {
+      return 0
+    }
   }
   getMaxAvailableXLM(){
     if (this.userData.OpenOrders && this.userData.OpenOrdersXLM){
-      return +this.userData.totalXLM - 1.50001 - +this.userData.OpenOrders*0.5 - +this.userData.OpenOrdersXLM
+      return +this.userData.totalXLM - 2.00001 - +this.userData.OpenOrders*0.5 - +this.userData.OpenOrdersXLM
     } else {
-      return +this.userData.totalXLM - 1.50001                     
+      return +this.userData.totalXLM - 2.00001                     
     }
   }
   getMaxAvailableGRX(){

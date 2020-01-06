@@ -199,10 +199,10 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       this.router.navigateByUrl('/login')
       return false
     } 
-    if (!this.authService.hash || this.authService.userInfo.Setting.MulSignature){     
-      this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
-      return false
-    }  
+    // if (!this.authService.hash || this.authService.userInfo.Setting.MulSignature){     
+    //   this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
+    //   return false
+    // }  
     return true  
   }
 
@@ -215,8 +215,41 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     this.cancelCurrentOffer(this.item)    
       
   }
+  async cancelCurrentOffer(item){
+    //this.authService.GetSecretKey(null).then(SecKey => {   
+      try {   
+        let xdr = await this.stellarService.getCancelOfferXdr(this.authService.userInfo.PublicKey, item.cachedOffer, 
+          this.authService.userData, item.realAmount, item.assetType)
 
-  cancelCurrentOffer(item){
+        this.authService.makeTransaction(xdr, "cancel").subscribe(res => {
+          //console.log(res)
+          if ((res as any).errCode == "tx_success"){                          
+            this.stellarService.allOffers.splice(item.index, 1)
+            if (this.authService.userData.OpenOrders){
+              this.authService.userData.OpenOrders -=1
+            } else {
+              this.authService.userData.OpenOrders = 0
+            }
+            if (this.authService.userData.OpenOrders < 0){
+              this.authService.userData.OpenOrders = 0
+            }
+            this.authService.SetLocalUserData() 
+          } else {
+            this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
+          }
+        })       
+      }
+      catch(e ) {
+        console.log('cancelOffer error:', e)
+        if (e.toString().includes('status code 400')){
+          this.snotifyService.simple('Insufficient funds to cancel this order! Please add more funds to your account.')  
+        } else {
+          this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
+        }
+      }
+    //})
+  }
+  cancelCurrentOffer1(item){
     this.authService.GetSecretKey(null).then(SecKey => {      
       this.stellarService.cancelOffer(SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType).then(res=>
         {               

@@ -15,7 +15,7 @@
         <div class="alert alert-warning loan-unpaid justify-content-between d-none d-lg-flex" role="alert">
           <div style="display: inline;">
             <fa-icon [icon]="faWarning" class="text-purple" [fixedWidth]="true"></fa-icon>
-            Please click the button "Pay Off Loan" to return the 1.50 XLM loan to GRAYLL.
+            Please click the button "Pay Off Loan" to return the 2.0 XLM loan to GRAYLL.
           </div>
           <button class="btn btn-purple" [routerLink]="[{outlets: {popup: 'xlm-loan'}}]">Pay Off Loan</button>
         </div>
@@ -38,7 +38,7 @@
               <div class="row">
                 <div class="col-7 font-weight-bolder">
                   Algo System Notifications
-                </div>
+                </div>               
                 <div class="col-5 align-self-center text-right bottom-border-navy-animated" (click)="filterReadAlgoNotifications()">
                   <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
@@ -62,13 +62,13 @@
                 </div>
               </div>
               <div class="fixed-desktop-box">
-                <ng-container *ngFor="let notification of algoNotificationsToShow">
+                <ng-container *ngFor="let notice of noticesAlgo | async">
                   <app-algo-notification-item
-                    (markAsRead)="markAlgoNotificationAsRead(notification)"
-                    [notification]="notification">
+                    (markAsRead)="markAlgoNotificationAsRead(notice)"
+                    [notification]="notice">
                   </app-algo-notification-item>
                 </ng-container>
-                <p class="text-center mb-0" *ngIf="algoNotificationsToShow.length === 0">
+                <p class="text-center mb-0" *ngIf="noticesAlgo.length === 0">
                   There are no unread algo notifications.
                 </p>
               </div>
@@ -105,13 +105,13 @@
                 </div>
               </div>
               <div class="fixed-desktop-box">
-                <ng-container *ngFor="let notification of walletNotificationsToShow">
+                <ng-container *ngFor="let notice of notices | async">
                   <app-wallet-notification-item
-                    (markAsRead)="markWalletNotificationAsRead(notification)"
-                    [notification]="notification">
+                    (markAsRead)="markWalletNotificationAsRead(notice)"
+                    [notification]="notice">
                   </app-wallet-notification-item>
                 </ng-container>
-                <p class="text-center mb-0" *ngIf="walletNotificationsToShow.length === 0">
+                <p class="text-center mb-0" *ngIf="notices.length === 0">
                   There are no unread wallet notifications.
                 </p>
               </div>
@@ -148,10 +148,10 @@
                 </div>
               </div>
               <div class="fixed-desktop-box">
-                <ng-container *ngFor="let notification of systemNotificationsToShow">
+                <ng-container *ngFor="let notice of noticesGeneral | async">
                   <app-general-notification-item
-                    (markAsRead)="markSystemNotificationAsRead(notification)"
-                    [notification]="notification">
+                    (markAsRead)="markSystemNotificationAsRead(notice)"
+                    [notification]="notice">
                   </app-general-notification-item>
                 </ng-container>
                 <p class="text-center mb-0" *ngIf="systemNotificationsToShow.length === 0">
@@ -169,7 +169,7 @@
         <ngb-carousel id="carousel" [interval]="0" [showNavigationIndicators]="false">
           <div>
             <ng-template ngbSlide>
-              <div class="col-12">
+              <div class="col-12">               
                 <div class="card border-0">
                   <div class="card-body gradient-box size-card">
                     <div class="row" (swipeleft)="swipeLeft()" (swipeRight)="swipeRight()">

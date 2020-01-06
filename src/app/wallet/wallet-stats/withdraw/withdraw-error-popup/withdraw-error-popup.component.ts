@@ -26,7 +26,7 @@ export class WithdrawErrorPopupComponent implements OnInit {
   }
 
   review() {
-    this.sharedService.showModalOverview();
+    //this.sharedService.showModalOverview();
     this.popupService.close()
     .then(() => {
       setTimeout(() => {

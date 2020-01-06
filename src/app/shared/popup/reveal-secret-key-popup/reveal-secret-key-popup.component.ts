@@ -91,33 +91,36 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     if (this.clientValidation()) {
       if (this.authService.userInfo.Tfa){
         console.log(this.code, this.secret)
-        this.authService.verifyTfaAuth(this.code, this.password, 0).subscribe(res => {           
-          if ((res as any).valid === true ){                 
-            this.stellarService.decryptSecretKey(this.password, 
-              {Salt: this.authService.userInfo.SecretKeySalt, EncryptedSecretKey:this.authService.userInfo.EnSecretKey}, 
-              SecKey => {
-              if (SecKey != ''){
-                this.popupService.close().then(() => {
-                  this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
-                });
-              }
-            })                     
-          } else {        
-            switch ((res as any).errCode){
-              case environment.TOKEN_INVALID:
-                this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.')
-                break;
-              case environment.INVALID_UNAME_PASSWORD:
-                this.errorService.handleError(null, 'Your password is invalid! Please retry.')
-                break;
-              default:
-                this.errorService.handleError(null, `The request could not be performed! Please retry.`)
-                break;
-            }       
-          }     
+        this.authService.verifyTfaAuth(this.code, this.password, 0).subscribe(
+         
+          res => {  
+            console.log(res)         
+            if ((res as any).errCode === environment.SUCCESS ){                 
+              this.stellarService.decryptSecretKey(this.password, 
+                {Salt: this.authService.userInfo.SecretKeySalt, EncryptedSecretKey:this.authService.userInfo.EnSecretKey}, 
+                SecKey => {
+                if (SecKey != ''){
+                  this.popupService.close().then(() => {
+                    this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
+                  });
+                }
+              })                     
+            } else {        
+              switch ((res as any).errCode){
+                case environment.TOKEN_INVALID:
+                  this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.')
+                  break;
+                case environment.INVALID_UNAME_PASSWORD:
+                  this.errorService.handleError(null, 'Your password is invalid! Please retry.')
+                  break;
+                default:
+                  this.errorService.handleError(null, `The request could not be performed! Please retry.`)
+                  break;
+              }       
+            }     
           }),
           err => {
-            //this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.')
+            this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.')
           }        
       } else {
         //send request token to email

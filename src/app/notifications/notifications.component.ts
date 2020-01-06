@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {faBell, faExclamationTriangle, faSearch} from '@fortawesome/free-solid-svg-icons';
-import {AlgoNotificationModel, GeneralNotificationModel, WalletNotificationModel} from './notification.model';
+import {AlgoNotificationModel, GeneralNotificationModel, WalletNotificationModel, Notice, NoticeId} from './notification.model';
 import {NotificationsService} from './notifications.service';
 import {NgbCarousel} from '@ng-bootstrap/ng-bootstrap';
 import {disableBodyScroll, enableBodyScroll} from 'body-scroll-lock';
@@ -10,6 +10,12 @@ import axios from 'axios';
 import {environment} from 'src/environments/environment'
 import * as moment from 'moment'
 import { HttpClient } from '@angular/common/http';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { NoticeDataService} from './notifications.dataservice'
+
+
 
 @Component({
   selector: 'app-notifications',
@@ -45,15 +51,47 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   faSearch = faSearch;
   pageId: string
 
+  private noticeColl: AngularFirestoreCollection<Notice>;
+  notices: Observable<NoticeId[]>;
+  noticesAlgo: Observable<NoticeId[]>;
+  noticesGeneral: Observable<NoticeId[]>;
+
+  lastCursorWallet:number = 0
+  lastCursorAlgo:number = 0
+  lastCursorGeneral:number = 0
+
+  walletPath:string
+  algoPath:string
+  generalPath:string
+  limit:number
+
   constructor(
     public notificationsService: NotificationsService,
     public sharedService: SharedService,
     private authService: AuthService,
     private http: HttpClient,
+    private afs: AngularFirestore,
+    private dataService:NoticeDataService,
   ) {
     // Get notices from server
     this.pageId = "notification"
-    this.populateNotifications(0, "all");
+    this.limit = 4
+    
+    this.walletPath = 'notices/wallet/'+this.authService.userData.Uid
+    this.algoPath = 'notices/algo/'+this.authService.userData.Uid
+    this.generalPath = 'notices/general/'+this.authService.userData.Uid
+
+    console.log(this.walletPath)
+    this.dataService.first(this.walletPath, this.limit )
+    this.notices = this.dataService.data
+
+    this.dataService.firstAlgo(this.algoPath, this.limit )
+    this.noticesAlgo = this.dataService.algoData
+
+    this.dataService.firstGeneral(this.generalPath, this.limit )
+    this.noticesGeneral = this.dataService.generalData
+
+    //this.populateNotifications(0, "all");
   }
 
   ngOnInit() {
@@ -62,9 +100,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.loadMobileNotificationContainers();
     }, 100);
 
-    // if (!this.authService.userData){
-    //   this.authService.GetLocalUserData()
-    // }
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
+    }
+      
   }
   
   private changeBackgroundColor(addClass: boolean) {
@@ -109,7 +148,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       // }       
     }
   }
-
+  
   private populateNotifications(cursor:number, noticeType:string) {
     this.http.post(`api/v1/users/notices`, {limit:100, cursor:cursor, noticeType:noticeType})
     .subscribe(res => {      
@@ -141,6 +180,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         return item
       })
       this.algoNotificationsToShow = this.algoNotifications
+
+      // setTimeout(() => {
+      //   this.dataService.next(this.walletPath, 4)
+      // }, 5000);
       //this.populateNumberOfUnreadNotifications();
     },
     e => {

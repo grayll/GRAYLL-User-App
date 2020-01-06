@@ -1,3 +1,6 @@
+export interface Notice { title: string; body:string; txId?: number; isRead:boolean; time: number; times?:string }
+export interface NoticeId extends Notice { id: string; }
+
 export class GRY1NotificationModel {
   constructor(
     public id?: number,

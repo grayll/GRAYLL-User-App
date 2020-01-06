@@ -41,8 +41,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ) {
     this.pageId = "dashboard"
-    this.authService.getUserInfoMsg().subscribe(userInfo => {
-      if (!this.authService.isActivated()){      
+    if (!this.authService.userInfo){
+      this.authService.getUserInfoMsg().subscribe(userInfo => {
+        console.log('DashboardComponent:', userInfo)
+        if (!this.authService.isActivated()){     
+          console.log('Account is not activated:') 
+          this.showActivationPopup();
+        } else {   
+          console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
+          console.log('this.authService.userData:', this.authService.userData)
+          
+          if (this.swPush.isEnabled && !this.isTokenSentToServer()){
+            console.log('request subs')
+            this.requestSubNotifications()
+          } 
+        }
+      }) 
+    } else {
+      if (!this.authService.isActivated()){     
+        console.log('Account is not activated:') 
         this.showActivationPopup();
       } else {   
         console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
@@ -53,7 +70,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.requestSubNotifications()
         } 
       }
-    })   
+    }
   }
 
   ngOnInit(): void {

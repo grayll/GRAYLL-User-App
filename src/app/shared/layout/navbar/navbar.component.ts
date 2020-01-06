@@ -23,6 +23,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
   @Input() isGetAccountData: boolean;
   @Input() ComId: string;
+  
 
   isNavbarCollapsed = false;
   faPowerOff = faPowerOff;
@@ -51,15 +52,18 @@ export class NavbarComponent implements OnDestroy, OnInit {
     private snotifyService: SnotifyService,
     public popupService: PopupService,   
   ) {
+  
     this.server = new StellarSdk.Server(environment.horizon_url);
     // Get basic data
+    
     if (!this.authService.userInfo){
       this.http.post(`api/v1/users/getUserInfo`, {})
       .subscribe(res => {
         let data = (res as any)        
-        if (data.errCode == environment.SUCCESS){   
+        if (data.errCode == environment.SUCCESS){ 
+          console.log('NAV-getUserInfo')   
           this.authService.ParseUserInfo(data)
-          this.authService.pushUserInfoMsg(this.authService.userInfo) 
+          this.authService.pushUserInfoMsg(this.authService.userInfo)
           this.streaming()          
         } else {
           console.log('getUserInfo-userInfo failed') 
@@ -87,12 +91,12 @@ export class NavbarComponent implements OnDestroy, OnInit {
       this.streaming()  
     }
 
-    this.subsink = new SubSink()    
     if (!this.authService.userData){
       console.log('NAV.GetLocalUserData()')
       this.authService.GetLocalUserData()
     }   
-    
+
+    this.subsink = new SubSink()    
 
     this.subsink.add(push.messages.subscribe(msg => {
       let data = (msg as any).notification      
@@ -221,7 +225,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
         }
  
         if (message.counter_account === this.authService.userInfo.PublicKey || message.base_account === this.authService.userInfo.PublicKey){
-          if (this.ComId === "data" || this.ComId === "wallet" || this.ComId === "data"){
+          if (this.ComId === "data" || this.ComId === "wallet"){
             this.authService.pushShouldReload(true)
           }
           this.snotifyService.simple('Your order has been matched and executed!');
