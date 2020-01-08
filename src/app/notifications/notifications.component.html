@@ -43,7 +43,7 @@
                   <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{this.authService.userData.UrAlgo}}
+                      {{this.authService.userMetaStore.UrGRY1 + this.authService.userMetaStore.UrGRY2 + this.authService.userMetaStore.UrGRY3 + this.authService.userMetaStore.UrGRZ}}
                     </span>
                   </a>
                 </div>
@@ -64,7 +64,7 @@
               <div class="fixed-desktop-box">
                 <ng-container *ngFor="let notice of noticesAlgo | async">
                   <app-algo-notification-item
-                    (markAsRead)="markAlgoNotificationAsRead(notice)"
+                    (markAsRead)="markAsRead(algoPath, notice)"
                     [notification]="notice">
                   </app-algo-notification-item>
                 </ng-container>
@@ -86,7 +86,7 @@
                   <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{this.authService.userData.UrWallet}}
+                      {{this.authService.userMetaStore.UrWallet}}
                     </span>
                   </a>
                 </div>
@@ -107,7 +107,7 @@
               <div class="fixed-desktop-box">
                 <ng-container *ngFor="let notice of notices | async">
                   <app-wallet-notification-item
-                    (markAsRead)="markWalletNotificationAsRead(notice)"
+                    (markAsRead)="markAsRead(walletPath, notice)"
                     [notification]="notice">
                   </app-wallet-notification-item>
                 </ng-container>
@@ -129,7 +129,7 @@
                   <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{this.authService.userData.UrGeneral}}
+                      {{this.authService.userMetaStore.UrGeneral}}
                     </span>
                   </a>
                 </div>
@@ -150,7 +150,7 @@
               <div class="fixed-desktop-box">
                 <ng-container *ngFor="let notice of noticesGeneral | async">
                   <app-general-notification-item
-                    (markAsRead)="markSystemNotificationAsRead(notice)"
+                    (markAsRead)="markAsRead(generalPath, notice)"
                     [notification]="notice">
                   </app-general-notification-item>
                 </ng-container>
@@ -181,7 +181,7 @@
                         <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                           <fa-icon [icon]="faBell" size="lg"></fa-icon>
                           <span class="badge bg-yellow text-light badge-number">
-                      {{this.authService.userData.UrAlgo}}
+                      {{this.authService.userMetaStore.UrGRY1 + this.authService.userMetaStore.UrGRY2 + this.authService.userMetaStore.UrGRY3 + this.authService.userMetaStore.UrGRZ}}
                     </span>
                         </a>
                       </div>
@@ -227,7 +227,7 @@
                         <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                           <fa-icon [icon]="faBell" size="lg"></fa-icon>
                           <span class="badge bg-yellow text-light badge-number">
-                      {{this.authService.userData.UrWallet}}
+                      {{this.authService.userMetaStore.UrWallet}}
                     </span>
                         </a>
                       </div>
@@ -273,7 +273,7 @@
                         <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
                           <fa-icon [icon]="faBell" size="lg"></fa-icon>
                           <span class="badge bg-yellow text-light badge-number">
-                      {{this.authService.userData.UrGeneral}}
+                      {{this.authService.userMetaStore.UrGeneral}}
                     </span>
                         </a>
                       </div>

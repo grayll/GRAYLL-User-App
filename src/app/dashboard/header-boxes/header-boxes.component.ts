@@ -28,9 +28,8 @@ export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
   }
   
   ngOnInit(){
-    this.subSink.add(interval(60*60*60).subscribe(()=> {
-      console.log('get dbdata')
-      this.getDashBoardData()
+    this.subSink.add(interval(60*60*60).subscribe(()=> {      
+      this.getDashBoardData()      
     }))
   }
   ngOnDestroy(){
@@ -43,7 +42,7 @@ export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
       "coins":"grxusd,gryusd,grzusd"
     }).subscribe(
       data => {
-        console.log(data)
+        //console.log(data)
         let res = data as any
         if (res.db.grxusd){ 
           this.grxdb = res.db.grxusd

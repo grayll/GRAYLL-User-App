@@ -97,7 +97,7 @@ export class XlmLoanPopupComponent implements OnInit {
     })  
   }
   updateFund(){
-    this.authService.userData.totalXLM = +this.authService.userData.totalXLM - this.XLMLoanValue
+    this.authService.userMetaStore.XLM = this.authService.userMetaStore.XLM - this.XLMLoanValue
     this.authService.SetLocalUserData()
   }
   retry() {

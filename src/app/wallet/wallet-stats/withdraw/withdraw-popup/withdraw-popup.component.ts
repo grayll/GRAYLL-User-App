@@ -62,13 +62,13 @@ export class WithdrawPopupComponent implements OnInit {
     private authService: AuthService,
     private stellarService: StellarService,
   ) {
-    if (this.authService.userData.totalXLM){
-      this.totalXLM = this.authService.userData.totalXLM;
+    if (this.authService.userMetaStore.XLM){
+      this.totalXLM = this.authService.userMetaStore.XLM;
     } else {
       this.totalXLM = 0
     }
-    if (this.authService.userData.totalGRX){
-      this.totalGRX = this.authService.userData.totalGRX;
+    if (this.authService.userMetaStore.GRX){
+      this.totalGRX = this.authService.userMetaStore.GRX;
     } else {
       this.totalGRX = 0
     }

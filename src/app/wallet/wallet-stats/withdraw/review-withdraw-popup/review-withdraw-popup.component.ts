@@ -120,9 +120,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
                   this.popupService.close()
                   .then(() => {
                     if (asset.code === 'XLM'){
-                      this.authService.userData.totalXLM = +this.authService.userData.totalXLM - amount
+                      this.authService.userMetaStore.XLM = this.authService.userMetaStore.XLM - amount
                     } else {
-                      this.authService.userData.totalGRX = +this.authService.userData.totalGRX - amount
+                      this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX - amount
                     }
                     setTimeout(() => {
                       this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
@@ -168,9 +168,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
               this.popupService.close()
               .then(() => {
                 if (asset.code === 'XLM'){
-                  this.authService.userData.totalXLM = +this.authService.userData.totalXLM - amount
+                  this.authService.userMetaStore.XLM = this.authService.userMetaStore.XLM - amount
                 } else {
-                  this.authService.userData.totalGRX = +this.authService.userData.totalGRX - amount
+                  this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX - amount
                 }
                 setTimeout(() => {
                   this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
@@ -217,9 +217,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
                   this.popupService.close()
                   .then(() => {
                     if (asset.code === 'XLM'){
-                      this.authService.userData.totalXLM = +this.authService.userData.totalXLM - amount
+                      this.authService.userMetaStore.XLM = this.authService.userMetaStore.XLM - amount
                     } else {
-                      this.authService.userData.totalGRX = +this.authService.userData.totalGRX - amount
+                      this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX - amount
                     }
                     setTimeout(() => {
                       this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, HostListener} from '@angular/core';
 import {faBell, faExclamationTriangle, faSearch} from '@fortawesome/free-solid-svg-icons';
 import {AlgoNotificationModel, GeneralNotificationModel, WalletNotificationModel, Notice, NoticeId} from './notification.model';
 import {NotificationsService} from './notifications.service';
@@ -91,6 +91,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.dataService.firstGeneral(this.generalPath, this.limit )
     this.noticesGeneral = this.dataService.generalData
 
+    this.dataService.subsMarkRead().subscribe(value => {
+      this.dataService.markAsRead(value.collPath, value.id)
+    })
+
     //this.populateNotifications(0, "all");
   }
 
@@ -121,7 +125,14 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     disableBodyScroll(this.walletNotificationsMobileScrollContainer);
     disableBodyScroll(this.generalNotificationsMobileScrollContainer);
   }
-
+  // @HostListener('window:beforeunload')
+  // async ngOnDestroy() {
+  //   if (this.myUserSub) {
+  //     this.myUserSub.unsubscribe();
+  //   }
+  //   await this.authService.logout();
+  // }
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     this.changeBackgroundColor(false);
     enableBodyScroll(this.algoNotificationsMobileScrollContainer);
@@ -130,13 +141,11 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     // Send read ids to server
     if (this.readWalletNoticeIds.length > 0 || this.readGeneralNoticeIds.length > 0 || this.readAlgoNoticeIds.length > 0){
+      console.log('this.readWalletNoticeIds', this.readWalletNoticeIds)
       this.http.post(`api/v1/users/updateReadNotices`, 
       {walletIds:this.readWalletNoticeIds, algoIds:this.readAlgoNoticeIds, generalIds:this.readGeneralNoticeIds}).
       subscribe(res => {
-        if ((res as any).errCode == environment.SUCCESS){
-          this.readWalletNoticeIds = []
-          this.readAlgoNoticeIds = []
-          this.readGeneralNoticeIds = []
+        if ((res as any).errCode == environment.SUCCESS){         
           console.log("Updated read notice ids")
         }        
       },
@@ -179,12 +188,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         item.url = url + item.txId 
         return item
       })
-      this.algoNotificationsToShow = this.algoNotifications
-
-      // setTimeout(() => {
-      //   this.dataService.next(this.walletPath, 4)
-      // }, 5000);
-      //this.populateNumberOfUnreadNotifications();
+      this.algoNotificationsToShow = this.algoNotifications   
     },
     e => {
       console.log(e)
@@ -229,36 +233,30 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.isShowingAllSystemNotifications = !this.isShowingAllSystemNotifications;
   }
 
-  markAlgoNotificationAsRead(notification: any) {
-    if (!notification.isRead) {
-      notification.isRead = true;
-      if (+this.authService.userData.UrAlgo - 1 >= 0){
-        this.authService.userData.UrAlgo = +this.authService.userData.UrAlgo - 1
-      }
-    }
-  }
-
-  markWalletNotificationAsRead(notification: any) {
-    if (!notification.isRead) {
-      notification.isRead = true;
-      // Save notice marked as read to list and update when component destroy
-      this.readWalletNoticeIds.push(notification.id)
-      if (+this.authService.userData.UrWallet - 1 >= 0){
-        this.authService.userData.UrWallet = +this.authService.userData.UrWallet - 1
+  markAsRead(collPath: string, notice:any) {
+    if (!notice.isRead) {
+      notice.isRead = true;       
+      if (collPath.includes('wallet')){
+        if (this.authService.userMetaStore.UrWallet - 1 >= 0){
+          this.authService.userMetaStore.UrWallet = this.authService.userMetaStore.UrWallet - 1
+          //this.dataService.markAsRead(this.walletPath, notice.id)
+        }
+        this.readWalletNoticeIds.push(notice.id)
+      } else if(collPath.includes('algo')){
+        // need to check type of notice: gry1,2,3 gryz
+        // if (this.authService.userMetaStore.UrAlgo - 1 >= 0){
+        //   this.authService.userMetaStore.UrAlgo = this.authService.userMetaStore.UrAlgo - 1
+        // }
+        this.readAlgoNoticeIds.push(notice.id)
+      } else if(collPath.includes('general')){
+        if (this.authService.userMetaStore.UrGeneral - 1 >= 0){
+          this.authService.userMetaStore.UrGeneral = this.authService.userMetaStore.UrGeneral - 1
+        }
+        this.readGeneralNoticeIds.push(notice.id)
       }      
     }
   }
-
-  markSystemNotificationAsRead(notification: any) {
-    if (!notification.isRead) {
-      notification.isRead = true;
-      this.readGeneralNoticeIds.push(notification.id)
-      if (+this.authService.userData.UrGeneral - 1 >= 0){
-        this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral - 1
-      }
-    }
-  }
-
+  
   swipeLeft() {
     this.carousel.next();
   }

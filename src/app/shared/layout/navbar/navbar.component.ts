@@ -22,8 +22,7 @@ import {PopupService} from 'src/app/shared/popup/popup.service';
 export class NavbarComponent implements OnDestroy, OnInit {
 
   @Input() isGetAccountData: boolean;
-  @Input() ComId: string;
-  
+  @Input() ComId: string;  
 
   isNavbarCollapsed = false;
   faPowerOff = faPowerOff;
@@ -54,8 +53,11 @@ export class NavbarComponent implements OnDestroy, OnInit {
   ) {
   
     this.server = new StellarSdk.Server(environment.horizon_url);
-    // Get basic data
-    
+
+    // get user meta data
+    this.authService.getUserMeta()
+
+    // Get basic data    
     if (!this.authService.userInfo){
       this.http.post(`api/v1/users/getUserInfo`, {})
       .subscribe(res => {
@@ -100,26 +102,26 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
     this.subsink.add(push.messages.subscribe(msg => {
       let data = (msg as any).notification      
-      if (data.type === 'wallet'){
-        // console.log('navbar.UrWallet:', this.authService.userData.UrWallet)       
-        // this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
-        // console.log('navbar.UrWallet1:', this.authService.userData.UrWallet)       
-        // if (data.asset === 'XLM'){
-        //   let amount = +data.amount
-        //   this.authService.userData.totalXLM = (+this.authService.userData.totalXLM + amount).toFixed(7)
-        // } else if( data.asset === 'GRX' || data.asset === 'GRXT'){
-        //   let amount = +data.amount
-        //   console.log('navbar.amount:', data.amount)
-        //   console.log('navbar.subscribe:totalGRX0:', this.authService.userData.totalGRX)
-        //   this.authService.userData.totalGRX = (+this.authService.userData.totalGRX + amount).toFixed(7)
-        //   console.log('navbar.subscribe:totalGRX1:', this.authService.userData.totalGRX)
-        // }            
-      } else if (data.type === 'algo'){
-        this.authService.userData.UrAlgo = +this.authService.userData.UrAlgo + 1
-      } else if (data.type === 'general'){
-        this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral + 1
-      }
-      this.authService.SetLocalUserData() 
+      // if (data.type === 'wallet'){
+      //   console.log('navbar.UrWallet:', this.authService.userData.UrWallet)       
+      //   this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
+      //   console.log('navbar.UrWallet1:', this.authService.userData.UrWallet)       
+      //   if (data.asset === 'XLM'){
+      //     let amount = +data.amount
+      //     this.authService.userMetaStore.XLM = (this.authService.userMetaStore.XLM + amount).toFixed(7)
+      //   } else if( data.asset === 'GRX' || data.asset === 'GRXT'){
+      //     let amount = +data.amount
+      //     console.log('navbar.amount:', data.amount)
+      //     console.log('navbar.subscribe:totalGRX0:', this.authService.userMetaStore.GRX)
+      //     this.authService.userMetaStore.GRX = (+this.authService.userMetaStore.GRX + amount).toFixed(7)
+      //     console.log('navbar.subscribe:totalGRX1:', this.authService.userMetaStore.GRX)
+      //   }            
+      // } else if (data.type === 'algo'){
+      //   this.authService.userData.UrAlgo = +this.authService.userData.UrAlgo + 1
+      // } else if (data.type === 'general'){
+      //   this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral + 1
+      // }
+      // this.authService.SetLocalUserData() 
     }));
 
     // if (updates.isEnabled) {
@@ -143,14 +145,14 @@ export class NavbarComponent implements OnDestroy, OnInit {
         })
       ])
       .then(([ grxPrice, xlmPrice, balances ]) => {         
-        this.authService.userData.totalGRX = (balances as any).grx;
-        this.authService.userData.totalXLM = (balances as any).xlm;
+        this.authService.userMetaStore.GRX = (balances as any).grx;
+        this.authService.userMetaStore.XLM = (balances as any).xlm;
         this.authService.userData.xlmPrice = xlmPrice
         this.authService.userData.grxPrice = grxPrice
         this.authService.SetLocalUserData()
         console.log('NAV.this.authService.userData.xlmPrice:', this.authService.userData.xlmPrice)
-        console.log('NAV.totalGRX:', this.authService.userData.totalGRX)
-        console.log('NAV.totalXLM:', this.authService.userData.totalXLM)
+        console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
+        console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
         
       }) 
     }
@@ -187,22 +189,22 @@ export class NavbarComponent implements OnDestroy, OnInit {
       .cursor('now')
       .stream({
         onmessage: (message)=> {          
-          this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
-          console.log('navbar.UrWallet1:', this.authService.userData.UrWallet) 
+          // this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
+          // console.log('navbar.UrWallet1:', this.authService.userData.UrWallet) 
           
           let amount = +message.amount     
           if (message.from === this.authService.userInfo.PublicKey) {
             amount = - +message.amount  
           }    
           if (message.asset_type === 'native'){       
-            console.log('navbar.subscribe:totalXLM:', this.authService.userData.totalXLM)   
-            this.authService.userData.totalXLM = (+this.authService.userData.totalXLM + amount).toFixed(7)
-            console.log('navbar.subscribe:totalXLM1:', this.authService.userData.totalXLM)  
+            console.log('navbar.subscribe:totalXLM:', this.authService.userMetaStore.XLM)   
+            this.authService.userMetaStore.XLM = (this.authService.userMetaStore.XLM + amount)
+            console.log('navbar.subscribe:totalXLM1:', this.authService.userMetaStore.XLM)  
           } else if( message.asset_code === 'GRX' || message.asset_code === 'GRXT'){         
             console.log('navbar.amount:', message.amount)
-            console.log('navbar.subscribe:totalGRX0:', this.authService.userData.totalGRX)
-            this.authService.userData.totalGRX = (+this.authService.userData.totalGRX + amount).toFixed(7)
-            console.log('navbar.subscribe:totalGRX1:', this.authService.userData.totalGRX)
+            console.log('navbar.subscribe:totalGRX0:', this.authService.userMetaStore.GRX)
+            this.authService.userMetaStore.GRX = (this.authService.userMetaStore.GRX + amount)
+            console.log('navbar.subscribe:totalGRX1:', this.authService.userMetaStore.GRX)
           }   
         },
       });
@@ -258,12 +260,21 @@ export class NavbarComponent implements OnDestroy, OnInit {
     }
   }
 
-  getAllUnreadNumber(){
-    if (this.authService.userData){
-      return (+this.authService.userData.UrAlgo + +this.authService.userData.UrWallet + +this.authService.userData.UrGeneral)
-    }      
-    return 0    
-  }
+  // async getAllUnreadNumber(){
+  //   // if (this.authService.userMeta){
+  //   //   return (+this.authService.userMeta.UrAlgo + +this.authService.userMeta.UrWallet + +this.authService.userMeta.UrGeneral)
+  //   // }      
+  //   // return 0   
+
+  //   let num = await this.authService.userMeta.
+    
+  //   this.authService.userMeta.subscribe(userMeta => {
+  //     return (userMeta.UrAlgo + userMeta.UrWallet + userMeta.UrGeneral)
+  //   })
+      
+  //  // }      
+  //   //return 0 
+  // }
 
   ngOnDestroy():void {
     this.subsink.unsubscribe()

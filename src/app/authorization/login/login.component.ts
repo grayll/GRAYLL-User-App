@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ErrorService} from '../../shared/error/error.service';
 import {Router} from '@angular/router';
 import { NgZone } from '@angular/core';
-import { AuthService } from "../../shared/services/auth.service"
+import { AuthService, UserMeta } from "../../shared/services/auth.service"
 import { OnExecuteData, ReCaptchaV3Service } from 'ng-recaptcha';
 import { Subscription } from 'rxjs';
 import { HttpClient } from  "@angular/common/http";
@@ -123,7 +123,7 @@ export class LoginComponent {
     this.submitted = true;
     
     // Execute recaptcha
-    console.log('start call recapcha:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+    //console.log('start call recapcha:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
     this.recaptchaV3Service.execute('login')
     .subscribe((token) => {
       // Verify token 
@@ -142,21 +142,20 @@ export class LoginComponent {
               if (data.errCode === environment.SUCCESS) {
                 //console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                 this.authService.ParseUserInfo(data.userBasicInfo)
-                //console.log('this.authService.userInfo:',this.authService.userInfo)
-
+                
                 this.authService.userData = data.user
                 this.authService.userData.token = data.token
                 this.authService.userData.tokenExpiredTime = data.tokenExpiredTime
-                if (!this.authService.userData.OpenOrders){
-                  this.authService.userData.OpenOrders = 0
-                }
-                if (!this.authService.userData.OpenOrdersXLM){
-                  this.authService.userData.OpenOrdersXLM = 0
-                }
-                if (!this.authService.userData.OpenOrdersGRX){
-                  this.authService.userData.OpenOrdersGRX = 0
-                }
-                console.log('login-OpenOrders', this.authService.userData)
+                // if (!this.authService.userData.OpenOrders){
+                //   this.authService.userData.OpenOrders = 0
+                // }
+                // if (!this.authService.userData.OpenOrdersXLM){
+                //   this.authService.userData.OpenOrdersXLM = 0
+                // }
+                // if (!this.authService.userData.OpenOrdersGRX){
+                //   this.authService.userData.OpenOrdersGRX = 0
+                // }
+                //console.log('login-OpenOrders', this.authService.userData)
                 this.authService.hash = this.loginForm.value['password'];
                 this.authService.SetLocalUserData()
                                

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, HostListener} from '@angular/core';
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
 import {SharedService} from '../shared/shared.service';
 import { StellarService } from 'src/app/authorization/services/stellar-service';
@@ -55,11 +55,12 @@ export class WalletComponent implements OnInit, OnDestroy {
     window.scroll(0, 0);
     this.changeBackgroundColor(true);
   }
-
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     this.changeBackgroundColor(false);
     // save user data totalxlm,grx,openorders
-    console.log('ngOnDestroy: ', this.authService.userData)
+    console.log('ngOnDestroy: ', this.authService.userMetaStore)
+    this.authService.updateUserMeta()
 
   }
 

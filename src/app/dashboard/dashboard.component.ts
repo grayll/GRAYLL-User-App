@@ -41,6 +41,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ) {
     this.pageId = "dashboard"
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
+    }
+    
     if (!this.authService.userInfo){
       this.authService.getUserInfoMsg().subscribe(userInfo => {
         console.log('DashboardComponent:', userInfo)

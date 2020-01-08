@@ -225,13 +225,13 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
           //console.log(res)
           if ((res as any).errCode == "tx_success"){                          
             this.stellarService.allOffers.splice(item.index, 1)
-            if (this.authService.userData.OpenOrders){
-              this.authService.userData.OpenOrders -=1
+            if (this.authService.userMetaStore.OpenOrders){
+              this.authService.userMetaStore.OpenOrders -=1
             } else {
-              this.authService.userData.OpenOrders = 0
+              this.authService.userMetaStore.OpenOrders = 0
             }
-            if (this.authService.userData.OpenOrders < 0){
-              this.authService.userData.OpenOrders = 0
+            if (this.authService.userMetaStore.OpenOrders < 0){
+              this.authService.userMetaStore.OpenOrders = 0
             }
             this.authService.SetLocalUserData() 
           } else {
@@ -254,13 +254,13 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       this.stellarService.cancelOffer(SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType).then(res=>
         {               
           this.stellarService.allOffers.splice(item.index, 1)
-          if (this.authService.userData.OpenOrders){
-            this.authService.userData.OpenOrders -=1
+          if (this.authService.userMetaStore.OpenOrders){
+            this.authService.userMetaStore.OpenOrders -=1
           } else {
-            this.authService.userData.OpenOrders = 0
+            this.authService.userMetaStore.OpenOrders = 0
           }
-          if (this.authService.userData.OpenOrders < 0){
-            this.authService.userData.OpenOrders = 0
+          if (this.authService.userMetaStore.OpenOrders < 0){
+            this.authService.userMetaStore.OpenOrders = 0
           }
           this.authService.SetLocalUserData()    
         }
@@ -484,8 +484,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
           return offerData      
         })  
         if (countOpenOrder){
-          this.authService.userData.OpenOrdersGRX = totalOpenGRX    
-          this.authService.userData.OpenOrdersXLM = totalOpenXLM 
+          this.authService.userMetaStore.OpenOrdersGRX = totalOpenGRX    
+          this.authService.userMetaStore.OpenOrdersXLM = totalOpenXLM 
         }
         //this.offers = this.stellarService.allOffers 
         if (this.stellarService.allOffers ){        
@@ -498,7 +498,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
         }
         console.log('this.activityResult.paymentNextURL:', this.activityResult.paymentNextURL)
         this.activityResult.openOrderEmptyResultTimes = 0 
-        this.authService.userData.OpenOrders = this.stellarService.allOffers.length
+        this.authService.userMetaStore.OpenOrders = this.stellarService.allOffers.length
         this.authService.SetLocalUserData() 
       } else {
         this.activityResult.openOrderEmptyResultTimes += 1 

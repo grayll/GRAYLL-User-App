@@ -10,12 +10,20 @@ import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { createHash } from 'crypto';
 import { UserInfo, Setting } from 'src/app/models/user.model';
 
+
+export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
+  OpenOrdersXLM: number; GRX: number; XLM: number}
+
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthService {
   userData: any; // Save logged in user data
+  _userMeta: Subject<UserMeta>
+  userMeta:  Observable<UserMeta>
+  userMetaStore:  UserMeta = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
+  OpenOrdersXLM: 0, GRX: 0, XLM: 0}
+
   tfa$ = new BehaviorSubject<any>({})
   hash: string
   seedData: any
@@ -27,6 +35,26 @@ export class AuthService {
   
   userInfoMsg: Subject<UserInfo>
   shouldReload:Subject<boolean>
+
+  getUserMeta(){
+    this._userMeta = new Subject<UserMeta>()
+    this.userMeta = this._userMeta.asObservable()
+    this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(userMeta  => {
+      console.log('userMeta:', userMeta)
+      this.userMetaStore.UrGRY1 = userMeta.UrGRY1
+      this.userMetaStore.UrGRY2 = userMeta.UrGRY2
+      this.userMetaStore.UrGRY3 = userMeta.UrGRY3
+      this.userMetaStore.UrGRZ= userMeta.UrGRZ
+      this.userMetaStore.UrWallet = userMeta.UrWallet
+      this.userMetaStore.UrGeneral = userMeta.UrGeneral
+      console.log('this.userMetaStore:', this.userMetaStore)
+      this._userMeta.next(userMeta)
+    })
+  }
+
+  updateUserMeta(){
+    this.afs.doc('users_meta/'+this.userData.Uid).update(this.userMetaStore)
+  }
 
   subShouldReload(){
     if (!this.shouldReload){
@@ -160,12 +188,12 @@ export class AuthService {
   }
 
 
-  constructor(
-    
+  constructor(    
     public router: Router,  
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     public http: HttpClient,
-    public stellarService: StellarService,        
+    public stellarService: StellarService,  
+    private afs: AngularFirestore,      
   ) {    
    
   }
@@ -274,15 +302,11 @@ export class AuthService {
   }
 
   calPercentXLM(){
-    if (this.userData){
-      if (+this.userData.totalGRX === 0){
-        return 100
-      } else {
-        return Math.round(+this.userData.totalXLM*this.userData.xlmPrice*100/(+this.userData.totalXLM*this.userData.xlmPrice + 
-          this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice))
-      }
+    if (this.userMetaStore.GRX === 0){
+      return 100
     } else {
-      return 0
+      return Math.round(this.userMetaStore.XLM*this.userData.xlmPrice*100/(this.userMetaStore.XLM*this.userData.xlmPrice + 
+        this.userMetaStore.GRX*this.userData.grxPrice*this.userData.xlmPrice))
     }
   }
   calPercentGRX(){
@@ -293,32 +317,20 @@ export class AuthService {
     }
   }
   grxInUsd(){
-    if (this.userData){
-      return +this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice
-    } else {
-      return 0
-    }
+    return this.userMetaStore.GRX*this.userData.grxPrice*this.userData.xlmPrice
   }
   xlmInUsd(){
-    if (this.userData){
-      return +this.userData.totalXLM*this.userData.xlmPrice
-    } else {
-      return 0
-    }
+    return this.userMetaStore.XLM*this.userData.xlmPrice
   }
   getMaxAvailableXLM(){
-    if (this.userData.OpenOrders && this.userData.OpenOrdersXLM){
-      return +this.userData.totalXLM - 2.00001 - +this.userData.OpenOrders*0.5 - +this.userData.OpenOrdersXLM
+    if (this.userMetaStore.OpenOrders && this.userMetaStore.OpenOrdersXLM){
+      return this.userMetaStore.XLM - 2.00001 - this.userMetaStore.OpenOrders*0.5 - this.userMetaStore.OpenOrdersXLM
     } else {
-      return +this.userData.totalXLM - 2.00001                     
+      return this.userMetaStore.XLM - 2.00001                     
     }
   }
   getMaxAvailableGRX(){
-    if (this.userData.OpenOrdersGRX){
-      return (+this.userData.totalGRX - +this.userData.OpenOrdersGRX)
-    } else {
-      return +this.userData.totalGRX
-    }
+    return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX
   }
   /* Setting up user data when sign in with username/password, 
   sign up with username/password and sign in with social auth  

@@ -67,8 +67,8 @@ export class WalletComponent implements OnDestroy  {
   //   this.XLMUsdValue = `$ ${this.xlmBalance.toFixed(2)}`
   //   this.GRXUsdValue = `$ ${this.grxBalance.toFixed(2)}`
     
-  //   // this.authService.userData.totalGRX = this.totalGRX
-  //   // this.authService.userData.totalXLM = this.totalXLM
+  //   // this.authService.userMetaStore.GRX = this.totalGRX
+  //   // this.authService.userMetaStore.XLM = this.totalXLM
   //   // this.authService.userData.xlmPrice = this.xlmP
   //   // this.authService.userData.grxPrice = this.grxP
   //   // this.authService.SetLocalUserData()     
