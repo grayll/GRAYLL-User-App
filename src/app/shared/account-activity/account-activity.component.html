@@ -176,7 +176,7 @@
       </tr>
       </thead>
 
- 	<tbody *ngIf="payments" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollTransfers()" [scrollWindow]="false">
+ 	  <!-- <tbody *ngIf="payments" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollTransfers()" [scrollWindow]="false">
     <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
       <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
     </div>
@@ -192,7 +192,24 @@
                 </a>
               </td>
         </tr>      
-      </tbody>
+      </tbody> -->
+      <tbody *ngIf="notices | async" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollTransfers()" [scrollWindow]="false">
+        <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+          <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+        </div>
+            <tr *ngFor="let item of notices | async">
+                <td>{{item.times}}</td>
+                <td>{{item.counters}}</td>            
+                <td>{{item.asset}}</td>        
+                <td>{{item.issuer}}</td>            
+                <td>{{item.amount}}</td>            
+                <td class="text-center">
+                    <a href="{{item.url}}" target="_blank">
+                      <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                    </a>
+                  </td>
+            </tr>      
+          </tbody>
     </table>
   </div>
   

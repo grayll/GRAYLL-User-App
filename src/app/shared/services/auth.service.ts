@@ -12,17 +12,17 @@ import { UserInfo, Setting } from 'src/app/models/user.model';
 
 
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
-  OpenOrdersXLM: number; GRX: number; XLM: number}
+  OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root' 
 })
 export class AuthService {
   userData: any; // Save logged in user data
   _userMeta: Subject<UserMeta>
   userMeta:  Observable<UserMeta>
   userMetaStore:  UserMeta = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
-  OpenOrdersXLM: 0, GRX: 0, XLM: 0}
+  OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true}
 
   tfa$ = new BehaviorSubject<any>({})
   hash: string
@@ -37,19 +37,22 @@ export class AuthService {
   shouldReload:Subject<boolean>
 
   getUserMeta(){
-    this._userMeta = new Subject<UserMeta>()
-    this.userMeta = this._userMeta.asObservable()
-    this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(userMeta  => {
-      console.log('userMeta:', userMeta)
-      this.userMetaStore.UrGRY1 = userMeta.UrGRY1
-      this.userMetaStore.UrGRY2 = userMeta.UrGRY2
-      this.userMetaStore.UrGRY3 = userMeta.UrGRY3
-      this.userMetaStore.UrGRZ= userMeta.UrGRZ
-      this.userMetaStore.UrWallet = userMeta.UrWallet
-      this.userMetaStore.UrGeneral = userMeta.UrGeneral
-      console.log('this.userMetaStore:', this.userMetaStore)
-      this._userMeta.next(userMeta)
-    })
+    if (this.userMetaStore.ShouldReload){
+      this._userMeta = new Subject<UserMeta>()
+      this.userMeta = this._userMeta.asObservable()
+      this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(userMeta  => {
+        console.log('userMeta:', userMeta)
+        this.userMetaStore.UrGRY1 = userMeta.UrGRY1
+        this.userMetaStore.UrGRY2 = userMeta.UrGRY2
+        this.userMetaStore.UrGRY3 = userMeta.UrGRY3
+        this.userMetaStore.UrGRZ= userMeta.UrGRZ
+        this.userMetaStore.UrWallet = userMeta.UrWallet
+        this.userMetaStore.UrGeneral = userMeta.UrGeneral
+        console.log('this.userMetaStore:', this.userMetaStore)
+        this.userMetaStore.ShouldReload = false
+        this._userMeta.next(userMeta)
+      })
+    }
   }
 
   updateUserMeta(){

@@ -4,6 +4,7 @@ import {SubSink} from 'subsink';
 import { AuthService } from "../../shared/services/auth.service"
 import { HttpClient } from  '@angular/common/http';
 import { interval } from 'rxjs';
+import { AlgoService } from 'src/app/system/algo.service';
 
 @Component({
   selector: 'app-header-boxes',
@@ -22,6 +23,7 @@ export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
     private stellarService: StellarService,
     private authService: AuthService,
     private http: HttpClient,
+    private algoService:AlgoService,
   ) {    
     this.subSink = new SubSink()
     this.getDashBoardData()     

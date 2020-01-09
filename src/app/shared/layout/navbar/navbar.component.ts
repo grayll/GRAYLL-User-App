@@ -192,18 +192,22 @@ export class NavbarComponent implements OnDestroy, OnInit {
           // this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
           // console.log('navbar.UrWallet1:', this.authService.userData.UrWallet) 
           
-          let amount = +message.amount     
+          // let amount = Number.parseFloat(message.amount.toString())     
+          // if (message.from === this.authService.userInfo.PublicKey) {
+          //   amount = - Number.parseFloat(message.amount.toString())
+          // } 
+          let amount = +(message.amount)     
           if (message.from === this.authService.userInfo.PublicKey) {
-            amount = - +message.amount  
-          }    
+            amount = - +(message.amount)
+          }   
           if (message.asset_type === 'native'){       
             console.log('navbar.subscribe:totalXLM:', this.authService.userMetaStore.XLM)   
-            this.authService.userMetaStore.XLM = (this.authService.userMetaStore.XLM + amount)
+            this.authService.userMetaStore.XLM = +this.authService.userMetaStore.XLM + amount
             console.log('navbar.subscribe:totalXLM1:', this.authService.userMetaStore.XLM)  
           } else if( message.asset_code === 'GRX' || message.asset_code === 'GRXT'){         
             console.log('navbar.amount:', message.amount)
             console.log('navbar.subscribe:totalGRX0:', this.authService.userMetaStore.GRX)
-            this.authService.userMetaStore.GRX = (this.authService.userMetaStore.GRX + amount)
+            this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX + amount            
             console.log('navbar.subscribe:totalGRX1:', this.authService.userMetaStore.GRX)
           }   
         },

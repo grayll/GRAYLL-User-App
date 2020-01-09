@@ -13,6 +13,9 @@ import * as moment from 'moment';
 import { environment } from 'src/environments/environment';
 import {ActivityResult} from './models/activity-results';
 import {PopupService} from 'src/app/shared/popup/popup.service';
+import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
+import { NoticeId } from 'src/app/notifications/notification.model';
+import { Observable } from 'rxjs';
 
 var StellarSdk = require('stellar-sdk')
 
@@ -64,6 +67,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
   faSearch = faSearch;
   activityResult: ActivityResult
   item: any
+  notices: Observable<NoticeId[]>;
+  
 
   constructor(
     private clipboardService: ClipboardService,
@@ -73,6 +78,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     private router: Router,
     private sharedService:SharedService,
     private popupService: PopupService,
+    private dataService:NoticeDataService,
   ) {
     console.log('constructor-account activity')
     this.subs = new SubSink()
@@ -81,6 +87,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
 
     this.stellarService.allOffers = null
     this.stellarService.trades = null 
+
 
     Promise.all([
       this.getAccountOrders(null, true),
@@ -111,6 +118,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       }
     }))
   }
+
+
   ngOnChanges() {
     
     console.log('change:', this.shouldReload);
@@ -327,6 +336,12 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     } else {
       console.log('onScrollTransfers !!! called get:', this.activityResult.paymentEmptyResultTimes)
     }
+  }
+
+  getAccPayments(){
+    let walletPath = 'notices/wallet/'+this.authService.userData.Uid
+    this.dataService.getPaymentHistory(walletPath, 200)
+    this.notices = this.dataService.data
   }
 
   getAccountPayments(nextURL:string){
@@ -581,6 +596,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
         // }) 
         break;
       case 'transfers':
+        this.getAccPayments()
         this.getAccountPayments(null)
         break;
       case 'networkHistory':

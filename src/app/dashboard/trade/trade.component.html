@@ -8,7 +8,7 @@
           </div>
           <div class="d-inline-block text-white align-middle">
             <span class="text-light font-16">Algo System Balance</span>
-            <h5 class="text-light font-weight-bolder">$1,000,000,000,00</h5>
+            <h5 class="text-light font-weight-bolder">${{algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl}}</h5>
           </div>
         </div>
         <div class="row mt-2">
@@ -16,20 +16,20 @@
             <i class="text-yellow font-16">
               <fa-icon [icon]="faCircle"></fa-icon>
             </i>
-            <span class="font-16 text-white"> 25% GRX</span>
+            <span class="font-16 text-white"> {{this.authService.calPercentGRX()}}% GRX</span>
             <br>
             <p class="font-weight-bolder p-font text-white">
-              $1,000,000,000.00
+              ${{this.authService.grxInUsd().toFixed(3)}}
             </p>
           </div>
           <div class="col-6 mt-4 text-right">
             <i class="m-r-5 text-white font-16">
               <fa-icon [icon]="faCircle"></fa-icon>
             </i>
-            <span class="font-16 text-white"> 75% XLM</span>
+            <span class="font-16 text-white"> {{this.authService.calPercentXLM()}}% XLM</span>
             <br>
             <p class="m-b-0 font-weight-bolder p-font text-white">
-              $1,000,000,000.00
+              $ {{this.authService.xlmInUsd().toFixed(3)}}
             </p>
           </div>
         </div>

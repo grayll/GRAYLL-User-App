@@ -1,5 +1,6 @@
 import {AfterViewInit, Component} from '@angular/core';
 import * as c3 from 'c3';
+import { AlgoService } from 'src/app/system/algo.service';
 
 @Component({
   selector: 'app-info-boxes',
@@ -8,7 +9,7 @@ import * as c3 from 'c3';
 })
 export class InfoBoxesComponent implements AfterViewInit {
 
-  constructor() { }
+  constructor(private algoService:AlgoService,) { }
 
   public lineChartData: Array<any> = [
     { data: [12, 19, 3, 5, 2, 3], label: 'Balance $' }

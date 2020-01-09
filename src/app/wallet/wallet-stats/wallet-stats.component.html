@@ -62,7 +62,7 @@
             </div>
             <div class="d-inline-block text-white align-middle wallet-box">
               <span class="text-light font-16" routerLink="/system/overview">Algo System Balance</span>
-              <h5 class="text-light font-weight-bolder">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(3)}}</h5>
+              <h5 class="text-light font-weight-bolder">${{(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl).toFixed(3)}}</h5>
             </div>
           </div>
 
@@ -71,20 +71,22 @@
               <i class="text-yellow font-16">
                 <fa-icon [icon]="faCircle"></fa-icon>
               </i>
-              <span class="font-16"> 25% GRY</span>
+              <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl > 0" class="font-16">{{algoService.algoMetric.GRYBl*100/(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl)}}% GRY</span>
+              <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl === 0" class="font-16"> 0% GRY</span>
               <br>
               <h5 class="p-font">
-                $1,000,000,000.00
+                ${{algoService.algoMetric.GRYBl}}
               </h5>
             </div>
             <div class="col text-right">
               <i class="text-pink font-16">
                 <fa-icon [icon]="faCircle"></fa-icon>
               </i>
-              <span class="font-16"> 75% GRZ</span>
+              <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl > 0" class="font-16"> {{algoService.algoMetric.GRZBl*100/(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl)}}% GRY</span>
+              <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl === 0" class="font-16"> 0% GRZ</span>
               <br>
               <h5 class="p-font">
-                $1,000,000,000.00
+                ${{algoService.algoMetric.GRZBl}}
               </h5>
             </div>
           </div>
@@ -357,20 +359,22 @@
                 <i class="text-yellow font-16">
                   <fa-icon [icon]="faCircle"></fa-icon>
                 </i>
-                <span class="font-16"> 25% GRY</span>
+                <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl > 0" class="font-16">{{algoService.algoMetric.GRYBl*100/(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl)}}% GRY</span>
+                <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl === 0" class="font-16">0% GRY</span>
                 <br>
-                <h5 class="p-font">
-                  $1,000,000,000.00
+                <h5  class="p-font">
+                  ${{algoService.algoMetric.GRYBl}}
                 </h5>
               </div>
               <div class="col text-right">
                 <i class="text-pink font-16">
                   <fa-icon [icon]="faCircle"></fa-icon>
                 </i>
-                <span class="font-16"> 75% GRZ</span>
+                <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl > 0" class="font-16">{{algoService.algoMetric.GRZBl*100/(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl)}}% GRZ</span>
+                <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl === 0" class="font-16">0% GRZ</span>
                 <br>
                 <h5 class="p-font">
-                  $1,000,000,000.00
+                  ${{algoService.algoMetric.GRZBl}}
                 </h5>
               </div>
             </div>

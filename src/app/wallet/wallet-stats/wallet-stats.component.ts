@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment'
 import axios from 'axios'
 import { SwUpdate, SwPush } from '@angular/service-worker';
 import {PopupService} from 'src/app/shared/popup/popup.service';
+import { AlgoService } from 'src/app/system/algo.service';
 
 @Component({
   selector: 'app-wallet-stats',
@@ -80,6 +81,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     public push: SwPush,
     public popupService: PopupService,
+    private algoService: AlgoService,
   ) {
     
     this.grxP = this.authService.userData.grxPrice
