@@ -211,14 +211,14 @@ export class WithdrawPopupComponent implements OnInit {
             msg = 'Destination account address does not have a GRX trustline!'
           } else if (ret == 0){
             valid = true
+            this.withdrawModel.address = value
           }
           if (!valid){
             this.errorService.handleError(null, msg)
           }
-          return resolve(valid)
+          resolve(valid)
         })      
-      }
-      if (value.includes('*') && value.includes('.')){
+      } else if (value.includes('*') && value.includes('.')){
         this.stellarService.getAccountFromFed(value)
         .then(accId => {          
           this.withdrawModel.address = accId.toString()
@@ -228,8 +228,10 @@ export class WithdrawPopupComponent implements OnInit {
           this.errorService.handleError(null, 'The federation address does not exist.')         
           resolve(false)
         })
+      } else {
+        this.errorService.handleError(null, 'Please enter a valid Stellar Account or Federation Address!')
+        resolve(false)
       }
-      this.errorService.handleError(null, 'Please enter a valid Stellar Account or Federation Address!')
     })     
   }
 }

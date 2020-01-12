@@ -12,7 +12,7 @@ import { UserInfo, Setting } from 'src/app/models/user.model';
 
 
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
-  OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean}
+  OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
 
 @Injectable({
   providedIn: 'root' 
@@ -35,20 +35,21 @@ export class AuthService {
   
   userInfoMsg: Subject<UserInfo>
   shouldReload:Subject<boolean>
+  reload:boolean = true
 
   getUserMeta(){
     if (this.userMetaStore.ShouldReload){
       this._userMeta = new Subject<UserMeta>()
       this.userMeta = this._userMeta.asObservable()
-      this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(userMeta  => {
-        console.log('userMeta:', userMeta)
+      this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(userMeta  => {        
         this.userMetaStore.UrGRY1 = userMeta.UrGRY1
         this.userMetaStore.UrGRY2 = userMeta.UrGRY2
         this.userMetaStore.UrGRY3 = userMeta.UrGRY3
         this.userMetaStore.UrGRZ= userMeta.UrGRZ
         this.userMetaStore.UrWallet = userMeta.UrWallet
         this.userMetaStore.UrGeneral = userMeta.UrGeneral
-        console.log('this.userMetaStore:', this.userMetaStore)
+        this.userMetaStore.TokenExpiredTime = userMeta.TokenExpiredTime
+        //console.log('this.userMetaStore:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
         this._userMeta.next(userMeta)
       })
@@ -214,8 +215,8 @@ export class AuthService {
   }
 
   
-  verifyTfaAuth(token: any, secret: any, exp: Number) {       
-    return this.http.post(`api/v1/users/verifytoken`,  { token: token, secret:secret, expire:exp})         
+  verifyTfaAuth(token: any, pwd: any, exp: Number) {       
+    return this.http.post(`api/v1/users/verifytoken`,  { token: token, secret:pwd, expire:exp})         
   }
   UpdateSetting(field, status) {
     return this.http.post(`api/v1/users/updatesetting`,  { field: field, status:status}) 
@@ -241,6 +242,13 @@ export class AuthService {
   }
 
   isTokenExpired(){
+    let currentTs = Math.round(new Date().getTime()/1000)   
+    if (this.userMetaStore && currentTs >= this.userMetaStore.TokenExpiredTime){
+      return true
+    }
+    return false
+  }
+  isTokenExpired1(){
     let currentTs = Math.round(new Date().getTime()/1000)
     if (!this.userData){
       this.GetLocalUserData()
@@ -327,9 +335,9 @@ export class AuthService {
   }
   getMaxAvailableXLM(){
     if (this.userMetaStore.OpenOrders && this.userMetaStore.OpenOrdersXLM){
-      return this.userMetaStore.XLM - 2.00001 - this.userMetaStore.OpenOrders*0.5 - this.userMetaStore.OpenOrdersXLM
+      return +this.userMetaStore.XLM - 2.00001 - +this.userMetaStore.OpenOrders*0.5 - +this.userMetaStore.OpenOrdersXLM
     } else {
-      return this.userMetaStore.XLM - 2.00001                     
+      return +this.userMetaStore.XLM - 2.00001                     
     }
   }
   getMaxAvailableGRX(){

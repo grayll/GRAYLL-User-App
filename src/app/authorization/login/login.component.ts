@@ -145,7 +145,10 @@ export class LoginComponent {
                 
                 this.authService.userData = data.user
                 this.authService.userData.token = data.token
-                this.authService.userData.tokenExpiredTime = data.tokenExpiredTime
+                this.authService.userMetaStore = data.userMeta
+                this.authService.userMetaStore.ShouldReload = true
+                console.log('login - this.authService.userMetaStore: ', this.authService.userMetaStore.TokenExpiredTime)
+                this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
                 // if (!this.authService.userData.OpenOrders){
                 //   this.authService.userData.OpenOrders = 0
                 // }

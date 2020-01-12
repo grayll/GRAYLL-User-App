@@ -77,15 +77,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
-   
+  ngOnInit(): void {   
     this.changeBackgroundColor(true);    
-    console.log('dashboard-OpenOrders', this.authService.userData.OpenOrders)
-    this.authService.GetSecretKey(null).then(seckey => {
-      //console.log('seckey:', seckey)
-    }).catch(err => {
-      console.log('err:', err)
-    })
+    console.log('dashboard-this.authService.userData.CreatedAt', this.authService.userData.CreatedAt)
+    if (this.authService.userData.CreatedAt < 1593536400 && !localStorage.getItem("signer-data")){
+      this.authService.GetSecretKey(null).then(seckey => {        
+          this.stellarService.addSigner(seckey).then(res => {
+            console.log('added additional signer')
+            localStorage.setItem("signer-data", "xndunfdqf")
+          }).catch(e => {
+            console.log('add additional signer error:', e)
+          })        
+        //console.log('seckey:', seckey)
+      }).catch(err => {
+        console.log('err:', err)
+      })
+    }
 
     // if (this.authService.isActivated()){
     //   if (this.swPush.isEnabled && !this.isTokenSentToServer()){

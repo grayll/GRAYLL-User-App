@@ -44,10 +44,11 @@ export class WalletComponent implements OnInit, OnDestroy {
     })
 
     this.authService.subShouldReload().subscribe(s => {
-      if (s === true){
-        console.log('update should reload', s)
-        this.shouldReload = true
-      }
+      // if (s === true){
+      //   console.log('update should reload', s)
+      //   this.shouldReload = !this.shouldReload
+      // }
+      this.shouldReload = !this.shouldReload
     })
    }
 

@@ -145,28 +145,23 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           }
           let matchType = 0
           let msg = 'Buy order submitted successfully.'
-          console.log('txenv:', txenv)
+          //console.log('txenv:', txenv)
           
           let txenvobj = txenv.result()
-          console.log('txenvobj:', txenvobj)
+          //console.log('txenvobj:', txenvobj)
           if (txenv.result().value()[0].value().value().success().offer().value()){
             //console.log('res.offerResults[0].currentOffer', txenvobj.offerResults[0].currentOffer)
             let of = this.stellarService.parseXdrOffer(txenv.result().value()[0].value().value().success().offer().value(), 
-              this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData, true)
-              console.log('offerData:', of)
+              this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore, true)
+              
             this.stellarService.allOffers.push(of)    
-            console.log('this.stellarService.allOffers:', this.stellarService.allOffers)             
-            if (this.authService.userData.OpenOrders){
-              this.authService.userData.OpenOrders = +this.authService.userData.OpenOrders + 1
-            } else {
-              this.authService.userData.OpenOrders = 1
-            }
-            this.authService.SetLocalUserData()
+            //console.log('this.stellarService.allOffers:', this.stellarService.allOffers)             
+            this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
             matchType += 1
           } 
           if (txenv.result().value()[0].value().value().success().offersClaimed() && txenv.result().value()[0].value().value().success().offersClaimed().length > 0) {
             //console.log('res.offerResults', txenv.offerResults)
-            this.stellarService.parseClaimedOffer(txenv.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)          
+            //this.stellarService.parseClaimedOffer(txenv.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)          
             matchType += 2
           }
           if (matchType == 3){
@@ -242,18 +237,13 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           let msg = 'Sell order submitted successfully.'
           
           if (txenv.result().value()[0].value().value().success().offer().value()){
-            //console.log('res.offerResults[0].currentOffer', txenvobj.offerResults[0].currentOffer)
+            console.log('res.offerResults[0].currentOffer', txenv.result().value()[0].value().value().success().offer().value())
             let of = this.stellarService.parseXdrOffer(txenv.result().value()[0].value().value().success().offer().value(), 
-              this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userData, false)
-              console.log('offerData:', of)
+              this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore, false)
+              //console.log('offerData:', of)
             this.stellarService.allOffers.push(of)    
-            console.log('this.stellarService.allOffers:', this.stellarService.allOffers)             
-            if (this.authService.userData.OpenOrders){
-              this.authService.userData.OpenOrders = +this.authService.userData.OpenOrders + 1
-            } else {
-              this.authService.userData.OpenOrders = 1
-            }
-            this.authService.SetLocalUserData()
+            //console.log('this.stellarService.allOffers:', this.stellarService.allOffers)             
+            this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
             matchType += 1
           } 
           if (txenv.result().value()[0].value().value().success().offersClaimed() && txenv.result().value()[0].value().value().success().offersClaimed().length > 0) {
@@ -261,6 +251,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
             //this.stellarService.parseClaimedOffer(txenv.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)          
             matchType += 2
           }
+          this.authService.reload = false
           if (matchType == 3){
             msg = 'Sell order has been partially matched and executed!'
           } else if (matchType == 2){
@@ -272,28 +263,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
  
   }
   buyGrx(){    
-    this.action = 'buy'
-    // let xdr = "AAAAAAAAAGQAAAAAAAAAAQAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAB+ynP90LS2FaQ4kbvx46L+6ltjF+ZtH/6dwZCcQvKkMAAAAAAC7rx8AAAAAAAAAAUdSWFQAAAAAFXtQA8Nd77YeJP756HJZOwMYc25zEkritbGAaoJbsT8AAAAAFvKipACYloAAOr8RAAAAAAAAAAAAAAAA"
-    // let txenv = this.stellarService.parseXdr(xdr)
-    // if (!this.stellarService.allOffers){
-    //   this.stellarService.allOffers = []
-    // }
-    // let matchType = 0
-    // let msg = 'Buy order submitted successfully.'
-    // console.log('txenv:', txenv)
-    // let fee = txenv.feeCharged().low
-    // let txenvobj = txenv.result()
-    // console.log('txenvobj offer:', txenv.result().value()[0].value().value().success().offer().value().offerId().low)
-    // console.log('txenvobj sell:', txenv.result().value()[0].value().value().success().offer().value().selling().switch().name)
-    // console.log('txenvobj buy:', txenv.result().value()[0].value().value().success().offer().value().buying().switch().name)
-    // console.log('txenvobj amout:', txenv.result().value()[0].value().value().success().offer().value().amount().low)
-    // console.log('txenvobj price n:', txenv.result().value()[0].value().value().success().offer().value().price().n())
-    // console.log('txenvobj offersClaimed:', txenv.result().value()[0].value().value().success().offersClaimed())
-    // return
-    // if (txenvobj.offerResults[0].currentOffer){
-    // }
-        
-    
+    this.action = 'buy'       
     if(!this.validateSession()){
       return
     } 
@@ -319,11 +289,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl('/login')
       return false
     } 
-    // if (!this.authService.hash || this.authService.userInfo.Setting.MulSignature){
-    //   console.log('!this.authService.hash')
-    //   this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
-    //   return false
-    // }  
+     
     return true  
   }
   executeSell1(){
@@ -447,13 +413,11 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     }
   }
   calXLMAmount(){    
-    if (this.isPopulateMaxXLM && this.grxPrice && this.grxAmount ){     
-      //console.log('calXLMAmount 2')
+    if (this.isPopulateMaxXLM && this.grxPrice && this.grxAmount ){      
       this.XLMValueForm = +this.getMaxXLMForTrade()
       this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7)       
       return this.XLMValueForm
     } else if (!this.isPopulateMaxXLM && this.grxAmount && this.grxPrice) {      
-      //console.log('calXLMAmount 3')
       this.XLMValueForm =  (+this.grxAmount)*(+this.grxPrice)
       //return (+this.grxAmount)*(+this.grxPrice)
     } else {
@@ -494,36 +458,4 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   swipeRight() {
     this.carouselWallet.prev();
   }
-
-// offerResults: Array(1)
-// 0:
-// amountBought: "402.8755023"
-// amountSold: "999.9999999"
-// currentOffer: undefined
-// effect: "manageOfferDeleted"
-// isFullyOpen: false
-// offersClaimed: Array(2)
-// 0:
-// amountBought: "999.9999999"
-// amountSold: "402.8755023"
-// assetBought: {type: "credit_alphanum4", assetCode: "GRXT", issuer: "GAKXWUADYNO67NQ6ET7PT2DSLE5QGGDTNZZRESXCWWYYA2UCLOYT7AKR"}
-// assetSold: {type: "native", assetCode: "XLM", issuer: undefined}
-// offerId: "2567143"
-// sellerId: "GDZFX4EN567WTLU7NLSHRQ2FRCEAM7ITTFM3WDRXYE7QGRGMW247CI6R"
-// __proto__: Object
-// 1:
-// amountBought: "0"
-// amountSold: "0"
-// assetBought: {type: "credit_alphanum4", assetCode: "GRXT", issuer: "GAKXWUADYNO67NQ6ET7PT2DSLE5QGGDTNZZRESXCWWYYA2UCLOYT7AKR"}
-// assetSold: {type: "native", assetCode: "XLM", issuer: undefined}
-// offerId: "1047396"
-// sellerId: "GDZFX4EN567WTLU7NLSHRQ2FRCEAM7ITTFM3WDRXYE7QGRGMW247CI6R"
-// __proto__: Object
-// length: 2
-// __proto__: Array(0)  
-// operationIndex: 0
-// wasImmediatelyDeleted: false
-// wasImmediatelyFilled: true
-// wasPartiallyFilled: false
-
 }

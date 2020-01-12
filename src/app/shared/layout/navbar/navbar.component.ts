@@ -53,10 +53,19 @@ export class NavbarComponent implements OnDestroy, OnInit {
   ) {
   
     this.server = new StellarSdk.Server(environment.horizon_url);
-
     // get user meta data
     this.authService.getUserMeta()
-
+    if (this.authService.userMetaStore.TokenExpiredTime) {
+      this.scheduleCheckTokenExpiry()
+    } 
+    else {
+      this.authService.userMeta.subscribe(data => {
+        console.log('scheduleCheckTokenExpiry-data', data)
+        
+        this.scheduleCheckTokenExpiry()
+      })
+    }
+    
     // Get basic data    
     if (!this.authService.userInfo){
       this.http.post(`api/v1/users/getUserInfo`, {})
@@ -97,7 +106,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
       console.log('NAV.GetLocalUserData()')
       this.authService.GetLocalUserData()
     }   
-
+    
     this.subsink = new SubSink()    
 
     this.subsink.add(push.messages.subscribe(msg => {
@@ -128,7 +137,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     //   interval(6 * 60 * 60).subscribe(() => updates.checkForUpdate()
     //     .then(() => console.log('checking for updates')));
     // }
-    this.scheduleCheckTokenExpiry()
+    
   }
 
   ngOnInit(){
@@ -232,78 +241,62 @@ export class NavbarComponent implements OnDestroy, OnInit {
  
         if (message.counter_account === this.authService.userInfo.PublicKey || message.base_account === this.authService.userInfo.PublicKey){
           if (this.ComId === "data" || this.ComId === "wallet"){
-            this.authService.pushShouldReload(true)
+            console.log('pushShouldReload')
+            if (this.authService.reload){
+              this.authService.pushShouldReload(true)
+            }
           }
-          this.snotifyService.simple('Your order has been matched and executed!');
+          //this.snotifyService.simple('Your order has been matched and executed!');
         }
       }
     })  
   }
 
-  scheduleCheckTokenExpiry(){  
-    let remainTime = this.authService.userData.tokenExpiredTime*1000 - (new Date().getTime()) - 15*60*1000
-    console.log('remaining time for renew token:', remainTime)
-    if (remainTime >= 0){
-      setTimeout(()=> {
-        //will renew the token
-        console.log('route:', this.router.url)
+  scheduleCheckTokenExpiry(){ 
+    if (this.authService.isTokenExpired()){
+      console.log('token is expired, signout')
+      this.signOut()
+    } else {
+      let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 5*60*1000
+      console.log('remaining time for renew token:', remainTime, this.authService.userMetaStore)
+      if (remainTime >= 0){
+        setTimeout(()=> {
+          //will renew the token
+          console.log('nav-scheduleCheckTokenExpiry-route:', this.router.url)
+          this.ngZone.run(()=>{
+            if ( !this.router.url.includes('confirm-password')){
+            this.router.navigate([this.router.url, {outlets: {popup: 'confirm-password'}}]);
+            }
+          })
+          console.log('will renew the token')
+        }, remainTime)
+      }
 
-        //this.popupService.open() this.router.navigate([{ outlets: { popup: null } }])
-        //this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
-        this.ngZone.run(()=>{
-          this.router.navigate([this.router.url, {outlets: {popup: 'confirm-password'}}]);
-        })
-        console.log('will renew the token')
-      }, remainTime)
-//this.router.navigate(['/settings/profile', {outlets: {popup: 'enable-multisignature'}}]);
-      // this.popupService.observeValidation().subscribe(valid => { /dashboard/overview
-      //     if (valid){
-      //       this.authService.userInfo.token = 
-      //     }
-      // })
+      // // Schedule to logout
+      let logoutTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime() + 2)
+      console.log('remaining time for logoutTime:', logoutTime, this.authService.userMetaStore.TokenExpiredTime)
+      if (logoutTime >= 0){
+        setTimeout(()=> {
+          //will renew the token
+          if (this.authService.isTokenExpired){
+            console.log('token is expired')
+            this.signOut()
+          } else {
+            console.log('token already renew')
+          }          
+        }, logoutTime)
+      }
     }
   }
-
-  // async getAllUnreadNumber(){
-  //   // if (this.authService.userMeta){
-  //   //   return (+this.authService.userMeta.UrAlgo + +this.authService.userMeta.UrWallet + +this.authService.userMeta.UrGeneral)
-  //   // }      
-  //   // return 0   
-
-  //   let num = await this.authService.userMeta.
-    
-  //   this.authService.userMeta.subscribe(userMeta => {
-  //     return (userMeta.UrAlgo + userMeta.UrWallet + userMeta.UrGeneral)
-  //   })
-      
-  //  // }      
-  //   //return 0 
-  // }
 
   ngOnDestroy():void {
     this.subsink.unsubscribe()
   }
 
-  signOut(){
-    
-    //this.authService.SignOut();
-    // console.log('GetLocalUserData:', this.authService.GetLocalUserData())
-    // this.ngZone.run(()=>{
-    //   //this.router.navigate(['/login'])
-    // })
-    console.log('GetLocalUserData:', this.authService.GetLocalUserData())
-    localStorage.removeItem('user');    
-    this.authService.userData = null  
+  signOut(){       
+    localStorage.removeItem('grayll-user');    
     this.ngZone.run(()=> {
       this.router.navigateByUrl('/login')
-      // return this.firebaseAuth.auth.signOut().then(() => {
-      //   console.log('SignOut')
-      //   localStorage.removeItem('user');
-      //   this.userData = null  
-      // }).catch(err =>{
-      //   console.log('Err:', err)
-      // })
     })
   }
-
 }

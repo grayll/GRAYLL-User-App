@@ -91,8 +91,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     if (this.clientValidation()) {
       if (this.authService.userInfo.Tfa){
         console.log(this.code, this.secret)
-        this.authService.verifyTfaAuth(this.code, this.password, 0).subscribe(
-         
+        this.authService.verifyTfaAuth(this.code, this.password, 0).subscribe(         
           res => {  
             console.log(res)         
             if ((res as any).errCode === environment.SUCCESS ){                 
@@ -118,10 +117,10 @@ export class RevealSecretKeyPopupComponent implements OnInit {
                   break;
               }       
             }     
-          }),
+          },
           err => {
             this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.')
-          }        
+          })   
       } else {
         //send request token to email
         
