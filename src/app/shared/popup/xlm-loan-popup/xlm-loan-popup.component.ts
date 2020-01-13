@@ -19,7 +19,7 @@ export class XlmLoanPopupComponent implements OnInit {
 
   @ViewChild('content') modal;
  // currentXLMBalance: number;
-  XLMLoanValue = 1.50001;
+  XLMLoanValue:number = 2.0001;
 
   // XLMBalanceS: string = '';
   // XLMLoanS: string = this.XLMLoanValue.toString()+ ' XLM';
@@ -58,8 +58,8 @@ export class XlmLoanPopupComponent implements OnInit {
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    if (this.authService.getMaxAvailableXLM() - 1.50001 < 0){
-      this.errorService.handleError(null, "Please deposit a minimum of 2 XLM to your account to pay off your loan.")
+    if (this.authService.getMaxAvailableXLM() - this.XLMLoanValue < 0){
+      this.errorService.handleError(null, "Please deposit a minimum of " + this.XLMLoanValue + " XLM to your account to pay off your loan.")
       return
     }
     let loanerAddress =  environment.XLM_LOAN_ADDRESS.toString()

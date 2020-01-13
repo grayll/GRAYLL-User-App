@@ -38,6 +38,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
   generalNotices: number = 0 
   subsink:SubSink
   server:any
+  serverPayment: any
    
   constructor(
     private authService: AuthService,
@@ -53,6 +54,8 @@ export class NavbarComponent implements OnDestroy, OnInit {
   ) {
   
     this.server = new StellarSdk.Server(environment.horizon_url);
+    //this.serverPayment = new StellarSdk.Server(environment.horizon_url_payment);
+    
     // get user meta data
     this.authService.getUserMeta()
     if (this.authService.userMetaStore.TokenExpiredTime) {

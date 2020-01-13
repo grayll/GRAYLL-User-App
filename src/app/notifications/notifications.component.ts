@@ -75,7 +75,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   ) {
     // Get notices from server
     this.pageId = "notification"
-    this.limit = 4
+    this.limit = 200
     
     this.walletPath = 'notices/wallet/'+this.authService.userData.Uid
     this.algoPath = 'notices/algo/'+this.authService.userData.Uid
@@ -88,12 +88,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.dataService.firstAlgo(this.algoPath, this.limit )
     this.noticesAlgo = this.dataService.algoData
 
-    this.dataService.firstGeneral(this.generalPath, this.limit )
+    this.dataService.firstGeneral(this.generalPath, this.limit)
     this.noticesGeneral = this.dataService.generalData
 
-    this.dataService.subsMarkRead().subscribe(value => {
-      this.dataService.markAsRead(value.collPath, value.id)
-    })
+    // this.dataService.subsMarkRead().subscribe(async (value) => {
+    //   console.log("received push MarkRead")
+    //   await this.dataService.markAsRead(value.collPath, value.id)
+    // })
 
     //this.populateNotifications(0, "all");
   }
@@ -234,12 +235,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   markAsRead(collPath: string, notice:any) {
+    //console.log('notice-com:markAsRead')
     if (!notice.isRead) {
+      //console.log('notice-com:markAsRead not isread')
       notice.isRead = true;       
       if (collPath.includes('wallet')){
         if (this.authService.userMetaStore.UrWallet - 1 >= 0){
           this.authService.userMetaStore.UrWallet = this.authService.userMetaStore.UrWallet - 1
-          //this.dataService.markAsRead(this.walletPath, notice.id)
+          //await this.dataService.markAsRead(this.walletPath, notice.id)
+          //this.dataService.pushMarkRead({collPath:this.walletPath, id:notice.id})
         }
         this.readWalletNoticeIds.push(notice.id)
       } else if(collPath.includes('algo')){

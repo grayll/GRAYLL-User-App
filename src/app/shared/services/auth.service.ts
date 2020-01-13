@@ -41,17 +41,17 @@ export class AuthService {
     if (this.userMetaStore.ShouldReload){
       this._userMeta = new Subject<UserMeta>()
       this.userMeta = this._userMeta.asObservable()
-      this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(userMeta  => {        
-        this.userMetaStore.UrGRY1 = userMeta.UrGRY1
-        this.userMetaStore.UrGRY2 = userMeta.UrGRY2
-        this.userMetaStore.UrGRY3 = userMeta.UrGRY3
-        this.userMetaStore.UrGRZ= userMeta.UrGRZ
-        this.userMetaStore.UrWallet = userMeta.UrWallet
-        this.userMetaStore.UrGeneral = userMeta.UrGeneral
-        this.userMetaStore.TokenExpiredTime = userMeta.TokenExpiredTime
+      this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(data => {        
+        this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
+        this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
+        this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
+        this.userMetaStore.UrGRZ= data.UrGRZ >= 0? data.UrGRZ:0
+        this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
+        this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
+        this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
         //console.log('this.userMetaStore:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
-        this._userMeta.next(userMeta)
+        this._userMeta.next(data)
       })
     }
   }
