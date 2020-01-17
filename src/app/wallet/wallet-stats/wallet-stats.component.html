@@ -15,7 +15,7 @@
             <h5 class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(3)}}</h5>
             <small>
               <a href="javascript:void(0)" class="white-link" [routerLink]="[{outlets: {popup: 'xlm-balance-status'}}]">
-                2.0 XLM Reserved (${{(2*xlmP).toFixed(3)}})
+                2.0 XLM Reserved (${{(2*this.authService.userData.xlmPrice).toFixed(3)}})
               </a>
             </small>
           </div>
@@ -210,7 +210,7 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*xlmP).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -270,7 +270,7 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*xlmP).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -495,7 +495,7 @@
                       <div class="input-group-prepend">
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
-                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*xlmP).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">
@@ -556,7 +556,7 @@
                       <div class="input-group-prepend">
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
-                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*xlmP).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">

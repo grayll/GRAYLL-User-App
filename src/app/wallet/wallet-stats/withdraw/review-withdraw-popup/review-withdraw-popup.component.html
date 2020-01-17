@@ -30,12 +30,10 @@
             Amount
           </span>
           <br>
-          <span *ngIf="withdrawModel.xlmAmount">
-            {{withdrawModel.xlmAmount}} XLM
+          <span *ngIf="withdrawModel.asset">
+            {{withdrawModel.amount}} {{withdrawModel.asset}}
           </span>
-          <span *ngIf="withdrawModel.grxAmount">
-            {{withdrawModel.grxAmount}} GRX
-          </span>
+          
         </p>
       </div>      
     </div>

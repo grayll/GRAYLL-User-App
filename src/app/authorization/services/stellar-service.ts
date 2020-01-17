@@ -235,6 +235,29 @@ export class StellarService {
         .setTimeout(180).build()                    
         return tx.toXDR('base64')                      
     }
+    async payLoanXdr(publicKey: string, dest: string, amount: string, asset: any, memo: string) {        
+        const account = await this.horizon.loadAccount(publicKey)
+
+        console.log(account)
+       
+        let tx = new StellarSdk.TransactionBuilder(account, 
+        {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
+        .addOperation(StellarSdk.Operation.payment({ 
+            destination: dest,
+            asset: asset,
+            amount: amount,
+        }))
+        .addOperation(StellarSdk.Operation.setOptions({
+            high_threshold: 0,
+            signer:{
+                ed25519PublicKey: environment.XLM_LOAN_ADDRESS,
+                weight: 1                        
+            }
+        }))
+        .addMemo(StellarSdk.Memo.text(memo))        
+        .setTimeout(180).build()                    
+        return tx.toXDR('base64')                      
+    }
 
     sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string): Promise<any> {
         return new Promise((resolve, reject) => {

@@ -38,21 +38,21 @@ export class DataComponent implements OnInit, OnDestroy {
     private snotifyService: SnotifyService,
   ) {
     this.pageId = "data"
-    Promise.all([
-      this.stellarService.getCurrentGrxPrice1(),
-      this.stellarService.getCurrentXlmPrice1(),
-      this.stellarService.getAccountData(this.authService.userData.PublicKey)
-      .catch(err => {
-        // Notify internet connection.
-        this.snotifyService.simple('Please check your internet connection.')
-        console.log(err)
-      })
-    ])
-    .then(([ grx, xlm, account ]) => {
-      console.log(account)      
-      this.stellarService.userAccount = account;
-      this.stellarService.publishPrices([+grx,+xlm])     
-    })
+    // Promise.all([
+    //   this.stellarService.getCurrentGrxPrice1(),
+    //   this.stellarService.getCurrentXlmPrice1(),
+    //   this.stellarService.getAccountData(this.authService.userData.PublicKey)
+    //   .catch(err => {
+    //     // Notify internet connection.
+    //     this.snotifyService.simple('Please check your internet connection.')
+    //     console.log(err)
+    //   })
+    // ])
+    // .then(([ grx, xlm, account ]) => {
+    //   console.log(account)      
+    //   this.stellarService.userAccount = account;
+    //   this.stellarService.publishPrices([+grx,+xlm])     
+    // })
   }
 
   ngOnInit() {

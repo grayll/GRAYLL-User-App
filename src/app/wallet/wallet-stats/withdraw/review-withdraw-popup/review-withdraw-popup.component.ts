@@ -41,8 +41,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl("/wallet/overview")
     }
     this.popupService.open(this.modal);
-    this.withdrawModel = this.sharedService.getWithdrawModel();
-    
+    this.withdrawModel = this.sharedService.getWithdrawModel();    
     this.multiSigEnable = this.authService.userInfo.Setting.MulSignature
   }
 
@@ -63,11 +62,11 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     let amount = 0
     let asset
     console.log("0")
-    if (this.withdrawModel.grxAmount && this.withdrawModel.grxAmount > 0) {
-      amount = this.withdrawModel.grxAmount  
+    if (this.withdrawModel.asset === 'GRX') {
+      amount = this.withdrawModel.amount  
       asset = this.stellarService.grxAsset     
-    } else if(this.withdrawModel.xlmAmount && this.withdrawModel.xlmAmount > 0){
-      amount = this.withdrawModel.xlmAmount  
+    } else if(this.withdrawModel.asset === 'XLM'){
+      amount = this.withdrawModel.amount  
       asset = this.stellarService.nativeAsset
     } else {
       console.log("1")

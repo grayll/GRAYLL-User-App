@@ -52,9 +52,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           console.log('Account is not activated:') 
           this.showActivationPopup();
         } else {   
-          console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
-          console.log('this.authService.userData:', this.authService.userData)
-          
+          console.log('this.swPush.isEnabled:', this.swPush.isEnabled)                   
           if (this.swPush.isEnabled && !this.isTokenSentToServer()){
             console.log('request subs')
             this.requestSubNotifications()

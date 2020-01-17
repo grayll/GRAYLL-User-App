@@ -1,4 +1,4 @@
-import {Component, NgZone,Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, NgZone,Input, OnDestroy, OnInit, HostListener} from '@angular/core';
 import {Router} from '@angular/router';
 import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet} from '@fortawesome/free-solid-svg-icons';
 import {NotificationsService} from '../../../notifications/notifications.service';
@@ -52,19 +52,31 @@ export class NavbarComponent implements OnDestroy, OnInit {
     private snotifyService: SnotifyService,
     public popupService: PopupService,   
   ) {
+
+    // if (!this.authService.userData){
+    //   console.log('NAV.GetLocalUserData()')
+    //   this.authService.GetLocalUserData()
+    // } 
+    // console.log('NAV.userMetaStore:', this.authService.userMetaStore)
+    // if (!this.authService.userMetaStore || (this.authService.userMetaStore && this.authService.userMetaStore.XLM === 0)){      
+    //   this.authService.GetLocalUserMeta()
+    //   console.log('NAV.userMetaStore1:', this.authService.userMetaStore)
+    // } else {
+    //   console.log('NAV.userMetaStore:not load fromlocal')
+    // }   
   
     this.server = new StellarSdk.Server(environment.horizon_url);
     //this.serverPayment = new StellarSdk.Server(environment.horizon_url_payment);
     
     // get user meta data
     this.authService.getUserMeta()
+    this.authService.streamPrices()
     if (this.authService.userMetaStore.TokenExpiredTime) {
       this.scheduleCheckTokenExpiry()
     } 
     else {
       this.authService.userMeta.subscribe(data => {
-        console.log('scheduleCheckTokenExpiry-data', data)
-        
+        console.log('scheduleCheckTokenExpiry-data', data)        
         this.scheduleCheckTokenExpiry()
       })
     }
@@ -78,7 +90,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
           console.log('NAV-getUserInfo')   
           this.authService.ParseUserInfo(data)
           this.authService.pushUserInfoMsg(this.authService.userInfo)
-          this.streaming()          
+          //this.streaming()          
         } else {
           console.log('getUserInfo-userInfo failed') 
         }     
@@ -92,7 +104,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
             this.authService.ParseUserInfo(data)
             this.authService.pushUserInfoMsg(this.authService.userInfo)
             // streaming payment and trade
-            this.streaming() 
+            //this.streaming() 
           } else {
             //this.errorService.handleError(null, `The request could not be performed! Please retry.`);
           }        
@@ -102,13 +114,10 @@ export class NavbarComponent implements OnDestroy, OnInit {
         })
       })
     } else {
-      this.streaming()  
+      //this.streaming()  
     }
 
-    if (!this.authService.userData){
-      console.log('NAV.GetLocalUserData()')
-      this.authService.GetLocalUserData()
-    }   
+    
     
     this.subsink = new SubSink()    
 
@@ -144,6 +153,43 @@ export class NavbarComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(){
+    if (!this.authService.userData){
+      console.log('NAV.GetLocalUserData()')
+      this.authService.GetLocalUserData()
+    } 
+   
+    if (this.authService.userMetaStore.XLM === 0){      
+      this.authService.GetLocalUserMeta()
+      console.log('NAV.userMetaStore1:', this.authService.userMetaStore)
+    } 
+    console.log('navbar.subscribe', this.ComId)
+    if (this.ComId != 'notification'){
+      Promise.all([
+        // this.stellarService.getCurrentGrxPrice1(),
+        // this.stellarService.getCurrentXlmPrice1(),
+        this.stellarService.getAccountBalance(this.authService.userData.PublicKey)
+        .catch(err => {
+          // Notify internet connection.
+          //this.snotifyService.simple('Please check your internet connection.')
+          console.log(err)
+        })
+      ])
+      .then(([ balances ]) => {    
+        if  (balances && (balances as any).grx && (balances as any).xlm){ 
+          this.authService.userMetaStore.GRX = (balances as any).grx;
+          this.authService.userMetaStore.XLM = (balances as any).xlm;
+        }
+        // this.authService.userData.xlmPrice = xlmPrice
+        // this.authService.userData.grxPrice = grxPrice
+        // this.authService.SetLocalUserData()
+        // console.log('NAV.this.authService.userData.xlmPrice:', this.authService.userData.xlmPrice)
+        console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
+        console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
+        
+      }) 
+    }
+  }
+  ngOnInit1(){
     console.log('navbar.subscribe', this.ComId)
     if (this.ComId != 'notification'){
       Promise.all([
@@ -260,7 +306,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
       console.log('token is expired, signout')
       this.signOut()
     } else {
-      let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 5*60*1000
+      let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 15*60*1000
       console.log('remaining time for renew token:', remainTime, this.authService.userMetaStore)
       if (remainTime >= 0){
         setTimeout(()=> {
@@ -291,9 +337,12 @@ export class NavbarComponent implements OnDestroy, OnInit {
       }
     }
   }
-
+  @HostListener('window:beforeunload')
   ngOnDestroy():void {
     this.subsink.unsubscribe()
+    console.log('destroy:', this.authService.userMetaStore)
+    this.authService.SetLocalUserData()
+    this.authService.SetLocalUserMeta()
   }
 
   signOut(){       

@@ -4,6 +4,7 @@ import { StellarService } from '../../authorization/services/stellar-service';
 import { AuthService } from "../../shared/services/auth.service"
 import {SnotifyService} from 'ng-snotify';
 import {SubSink} from 'subsink';
+import { AlgoService } from 'src/app/system/algo.service';
 
 
 @Component({
@@ -44,8 +45,10 @@ export class WalletComponent implements OnDestroy  {
       private stellarService: StellarService,
       private authService: AuthService,
       private snotifyService: SnotifyService,
+      private algoService:AlgoService
     ) 
   {
+    
     //this.subs = new SubSink()
     // this.subs.add(this.stellarService.observePrices().subscribe(values => {
     //   this.xlmP = values[0]

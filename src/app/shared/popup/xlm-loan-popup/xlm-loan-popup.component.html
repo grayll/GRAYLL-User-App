@@ -30,12 +30,12 @@
         </label>
         <input disabled id="difference" type="text" class="form-control purple-input disabled-input" [value]="this.authService.getMaxAvailableXLM() - this.XLMLoanValue > 0 ? (this.authService.getMaxAvailableXLM() - this.XLMLoanValue).toString() + ' XLM' : '0 XLM'">
       </div>
-      <div *ngIf="!this.authService.hash" class="col-12">
+      <!-- <div *ngIf="!this.authService.hash" class="col-12">
         <label for="password" class="text-purple">
           Password
         </label>
         <input [(ngModel)]="password" id="password" type="password" class="form-control purple-input disabled-input">
-      </div>
+      </div> -->
       
     </div>
 

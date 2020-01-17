@@ -44,17 +44,19 @@ export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
       "coins":"grxusd,gryusd,grzusd"
     }).subscribe(
       data => {
-        //console.log(data)
+        console.log('db data:', data)
         let res = data as any
         if (res.db.grxusd){ 
           this.grxdb = res.db.grxusd
         }
         if (res.db.gryusd){ 
           this.grydb = res.db.gryusd
+          console.log('this.grydb :', this.grydb)
         }
         if (res.db.grzusd){ 
           this.grzdb = res.db.grzusd
         }
+        
       },
       e => {
         console.log(e)

@@ -14,6 +14,7 @@ import { UserInfo, Setting } from 'src/app/models/user.model';
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
   OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
 
+  export interface Prices {xlmp: number; grxp: number}
 @Injectable({
   providedIn: 'root' 
 })
@@ -49,14 +50,31 @@ export class AuthService {
         this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
         this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
         this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
-        //console.log('this.userMetaStore:', this.userMetaStore)
+        this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+        this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+        console.log('this.userMetaStore:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
         this._userMeta.next(data)
       })
     }
   }
 
+  streamPrices(){
+    if (this.userMetaStore.ShouldReload){
+      this._userMeta = new Subject<UserMeta>()
+      this.userMeta = this._userMeta.asObservable()
+      this.afs.doc<Prices>('prices/794retePzavE19bTcMaH/').valueChanges().subscribe(data => {        
+        this.userData.xlmPrice = data.xlmp
+        this.userData.grxPrice = data.grxp
+        console.log('STREAM-price:', data)        
+       // this._userMeta.next(data)
+      })
+    }
+  }
+
   updateUserMeta(){
+    this.userMetaStore.GRX = Number(this.userMetaStore.GRX)
+    this.userMetaStore.XLM = Number(this.userMetaStore.XLM)
     this.afs.doc('users_meta/'+this.userData.Uid).update(this.userMetaStore)
   }
 
@@ -180,6 +198,22 @@ export class AuthService {
   SetLocalUserData(){
     if (this.userData){
       localStorage.setItem('grayll-user', JSON.stringify(this.userData));       
+    }    
+  }
+
+  GetLocalUserMeta():any {    
+    if (this.userMetaStore.XLM === 0){
+      let data = localStorage.getItem('grayll-user-meta');
+      if (data){
+        this.userMetaStore = JSON.parse(data); 
+      }      
+    }   
+    return this.userMetaStore
+  }
+  
+  SetLocalUserMeta(){
+    if (this.userMetaStore){
+      localStorage.setItem('grayll-user-meta', JSON.stringify(this.userMetaStore));       
     }    
   }
 

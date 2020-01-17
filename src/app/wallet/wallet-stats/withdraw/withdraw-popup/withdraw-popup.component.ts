@@ -21,10 +21,11 @@ export class WithdrawPopupComponent implements OnInit {
   totalXLM: number;
   totalGRX: number;
   XLMValue: string;
-  GRXValue: string;
+  withdrawValue: string;
   memoMessage: string;
   recipient: string;
   selectedTabId: string;
+  selectedAssestTabId: string;
   selectedCountryCode: string;
   phoneNumber: string;
   emailAddress: string;
@@ -74,7 +75,7 @@ export class WithdrawPopupComponent implements OnInit {
     }
     this.XLMValue = '';
     this.memoMessage = null;
-    this.GRXValue = '';
+    this.withdrawValue = '';
     this.recipient = null;
     this.withdrawModel = new WithdrawModel();
     this.isMemoMessageSelected = true;
@@ -88,23 +89,28 @@ export class WithdrawPopupComponent implements OnInit {
     this.selectedCountryCode = 'af';
     this.popupService.open(this.modal);
     this.selectedTabId = 'wallet';
+    this.selectedAssestTabId = 'GRX' 
   }
 
   onTabChange(id: string) {
     this.selectedTabId = id;
   }
+  onTabAssetChange(id: string) {
+    this.selectedAssestTabId = id;
+    this.withdrawModel.asset = id
+    console.log('onTabAssetChange-', this.selectedAssestTabId)
+  }
 
   populateMaxGRX() {
-    this.GRXValue = this.totalGRX.toString();
+    this.withdrawValue = this.totalGRX.toString();
   }
 
-  populateMaxXLM() {
-    //this.XLMValue = (this.totalXLM - 1.5 - (+this.authService.userData.OpenOrders)).toString()
-    this.XLMValue = this.authService.getMaxAvailableXLM().toFixed(7)
+  populateMaxXLM() {    
+    this.withdrawValue = this.authService.getMaxAvailableXLM().toFixed(7)
   }
   getMaxXLMForTrade(){
-    if (this.authService.getMaxAvailableXLM() - 0.500011 > 0){
-      return (this.authService.getMaxAvailableXLM() - 0.500011).toFixed(7)
+    if (this.authService.getMaxAvailableXLM() - 0.50001 > 0){
+      return (this.authService.getMaxAvailableXLM() - 0.50001).toFixed(7)
     } else {
       return '0'
     }
@@ -123,10 +129,12 @@ export class WithdrawPopupComponent implements OnInit {
             // Populate Withdraw Model
             //this.withdrawModel.address = this.recipient;
             this.withdrawModel.emailAddress = this.emailAddress;
-            this.withdrawModel.grxAmount = +this.GRXValue;
+            //this.withdrawModel.grxAmount = +this.withdrawValue;
             this.withdrawModel.memoMessage = this.memoMessage;
             this.withdrawModel.phoneNumber = this.phoneNumber;
-            this.withdrawModel.xlmAmount = +this.XLMValue;
+            //this.withdrawModel.xlmAmount = +this.XLMValue;
+            this.withdrawModel.amount = +this.withdrawValue;
+            this.withdrawModel.asset = this.selectedAssestTabId
             this.authService.userData.withdraw = true
             this.popupService.close()
             .then(() => {
@@ -168,22 +176,39 @@ export class WithdrawPopupComponent implements OnInit {
           this.errorService.handleError(null, 'Please enter a valid email address!');
           resolve(false)
         }
-        if ((!this.GRXValue && !this.XLMValue) || (this.GRXValue && !this.isValidNumber(this.GRXValue))) {
-          this.errorService.handleError(null, 'Please enter a valid GRX amount!');
-          resolve(false)
-        }
+        // if ((!this.withdrawValue && !this.XLMValue) || (this.withdrawValue && !this.isValidNumber(this.withdrawValue))) {
+        //   this.errorService.handleError(null, 'Please enter a valid GRX amount!');
+        //   resolve(false)
+        // }
         if (this.selectedTabId !== 'wallet' && !this.memoMessage) {
           this.errorService.handleError(null, 'Please enter a memo message!');
           resolve(false)
         }
-        if ((!this.XLMValue && !this.GRXValue) || (this.XLMValue && !this.isValidNumber(this.XLMValue))) {
-          this.errorService.handleError(null, 'Please enter a valid XLM amount!');
+
+        //validate the withdraw value
+        if (!this.withdrawValue || (this.withdrawValue && !this.isValidNumber(this.withdrawValue))) {
+          this.errorService.handleError(null, 'Please enter a valid amount!');
           resolve(false)
         }
-        if ((this.XLMValue && +this.XLMValue > this.authService.getMaxAvailableXLM()) || (this.GRXValue && +this.GRXValue > this.authService.getMaxAvailableGRX())) {
-          this.errorService.handleError(null, 'The amount entered exceeds the maximum available balance!');
-          resolve(false)
+        if (this.selectedAssestTabId === 'GRX'){
+          if (this.withdrawValue && +this.withdrawValue > this.authService.getMaxAvailableGRX()){
+            this.errorService.handleError(null, 'The amount entered exceeds the maximum available balance!');
+            resolve(false)
+          }
+        } else if (this.selectedAssestTabId === 'XLM'){
+          if (this.withdrawValue && +this.withdrawValue > this.authService.getMaxAvailableXLM()){
+            this.errorService.handleError(null, 'The amount entered exceeds the maximum available balance!');
+            resolve(false)
+          }         
         }
+        // if ((!this.XLMValue && !this.withdrawValue) || (this.XLMValue && !this.isValidNumber(this.XLMValue))) {
+        //   this.errorService.handleError(null, 'Please enter a valid XLM amount!');
+        //   resolve(false)
+        // }
+        // if ((this.XLMValue && +this.XLMValue > this.authService.getMaxAvailableXLM()) || (this.withdrawValue && +this.withdrawValue > this.authService.getMaxAvailableGRX())) {
+        //   this.errorService.handleError(null, 'The amount entered exceeds the maximum available balance!');
+        //   resolve(false)
+        // }
         
         resolve(true)
       })

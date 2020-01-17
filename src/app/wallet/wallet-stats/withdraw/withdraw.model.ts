@@ -3,8 +3,10 @@ export class WithdrawModel {
     public address?: string,
     public grxAmount?: number,
     public xlmAmount?: number,
+    public amount?: number,
     public memoMessage?: string,
     public phoneNumber?: string,
-    public emailAddress?: string
+    public emailAddress?: string,
+    public asset?: string
   ) {}
 }

@@ -26,22 +26,22 @@ export class WalletComponent implements OnInit, OnDestroy {
   ) {
     this.pageId = "wallet"  
     this.shouldReload = false    
-    Promise.all([
-      this.stellarService.getCurrentGrxPrice1(),
-      this.stellarService.getCurrentXlmPrice1(),
-      this.stellarService.getAccountData(this.authService.userData.PublicKey)
-      .catch(err => {
-        // Notify internet connection.
-        this.snotifyService.simple('Please check your internet connection!')
-        console.log(err)
-      })
-    ])
-    .then(([ grx, xlm, account ]) => {
-      console.log(grx, xlm)      
-      this.stellarService.userAccount = account;
-      this.stellarService.publishPrices([+grx,+xlm])
+    // Promise.all([
+    //   this.stellarService.getCurrentGrxPrice1(),
+    //   this.stellarService.getCurrentXlmPrice1(),
+    //   this.stellarService.getAccountData(this.authService.userData.PublicKey)
+    //   .catch(err => {
+    //     // Notify internet connection.
+    //     this.snotifyService.simple('Please check your internet connection!')
+    //     console.log(err)
+    //   })
+    // ])
+    // .then(([ grx, xlm, account ]) => {
+    //   console.log(grx, xlm)      
+    //   this.stellarService.userAccount = account;
+    //   this.stellarService.publishPrices([+grx,+xlm])
       
-    })
+    // })
 
     this.authService.subShouldReload().subscribe(s => {
       // if (s === true){
@@ -62,7 +62,6 @@ export class WalletComponent implements OnInit, OnDestroy {
     // save user data totalxlm,grx,openorders
     console.log('ngOnDestroy: ', this.authService.userMetaStore)
     this.authService.updateUserMeta()
-
   }
 
   private changeBackgroundColor(addClass: boolean) {
