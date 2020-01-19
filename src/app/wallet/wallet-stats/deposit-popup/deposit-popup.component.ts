@@ -44,11 +44,15 @@ export class DepositPopupComponent implements OnInit {
   }
 
   depositClose(){
-    this.popupService.close().then(() => {
-      setTimeout(() => {
-        this.router.navigate(['/wallet/overview']);
-      }, 50);
-    });
+    //this.router.navigate([{ outlets: { popup: null }}]);
+    this.popupService.close()
+    // this.popupService.close().then(() => {
+    //   setTimeout(() => {
+    //     //this.router.navigate(['/wallet/overview']);
+
+    //     this.router.navigateByUrl('/wallet/overview')
+    //   }, 100);
+    // });
   }
 
 }

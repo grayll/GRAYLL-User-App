@@ -368,11 +368,16 @@ export class AuthService {
     return this.userMetaStore.XLM*this.userData.xlmPrice
   }
   getMaxAvailableXLM(){
+    let bl 
     if (this.userMetaStore.OpenOrders && this.userMetaStore.OpenOrdersXLM){
-      return +this.userMetaStore.XLM - 2.00001 - +this.userMetaStore.OpenOrders*0.5 - +this.userMetaStore.OpenOrdersXLM
+      bl = +this.userMetaStore.XLM - 2.0001 - +this.userMetaStore.OpenOrders*0.5 - +this.userMetaStore.OpenOrdersXLM
     } else {
-      return +this.userMetaStore.XLM - 2.00001                     
+      bl = +this.userMetaStore.XLM - 2.0001                     
     }
+    if (bl < 0 ){
+      bl = 0
+    }
+    return bl
   }
   getMaxAvailableGRX(){
     return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX

@@ -65,16 +65,26 @@ export class XlmLoanPopupComponent implements OnInit {
     let loanerAddress =  environment.XLM_LOAN_ADDRESS.toString()
     let loanAmount = this.XLMLoanValue.toString()
     let asset = this.stellarService.nativeAsset   
+
+    console.log('payOffLoan')
     
     //this.authService.GetSecretKey(this.password).then(async SecKey => {      
      // console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
       let loanPaidId = this.authService.GetLoadPaidLedgerId()
       if (loanPaidId && +loanPaidId > 0) {
+        console.log('payOffLoan 1')
         console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())          
         this.verifyTx(+loanPaidId)
       } else {    
+        console.log('payOffLoan 2:pk', this.authService.userInfo.PublicKey)
+        let pk = ''
+        if (this.authService.userInfo.PublicKey && this.authService.userInfo.PublicKey != ''){
+          pk = this.authService.userInfo.PublicKey
+        } else {
+          pk = this.authService.userData.PublicKey
+        }        
         try {
-          let xdr = await this.stellarService.payLoanXdr(this.authService.userInfo.PublicKey, loanerAddress, loanAmount, asset, '')          
+          let xdr = await this.stellarService.payLoanXdr(pk, loanerAddress, loanAmount, asset, '')          
           if (xdr === 'not trusted'){
             this.error = false;
             this.success = true;

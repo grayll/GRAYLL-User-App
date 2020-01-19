@@ -10,6 +10,20 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
+## Install nodejs on Ubuntu 19.4
+
+sudo apt remove nodejs npm
+- sudo apt install npm
+- sudo npm install -g n
+- sudo n latest
+- node -v
+- sudo ln -fns /usr/local/bin/npm /usr/bin/npm
+- sudo ln -fns /usr/local/bin/node /usr/bin/node
+- node -v
+
+sudo ln -fns  /usr/local/n/versions/node/12.14.1/bin/node /usr/bin/node
+sudo ln -fns  /usr/local/n/versions/node/12.14.1/bin/npm /usr/bin/npm
+
 
 ## Build
 =======
