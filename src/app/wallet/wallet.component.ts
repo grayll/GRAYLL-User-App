@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, HostListener} from '@angular/core';
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
 import {SharedService} from '../shared/shared.service';
 import { StellarService } from 'src/app/authorization/services/stellar-service';
@@ -26,28 +26,29 @@ export class WalletComponent implements OnInit, OnDestroy {
   ) {
     this.pageId = "wallet"  
     this.shouldReload = false    
-    Promise.all([
-      this.stellarService.getCurrentGrxPrice1(),
-      this.stellarService.getCurrentXlmPrice1(),
-      this.stellarService.getAccountData(this.authService.userData.PublicKey)
-      .catch(err => {
-        // Notify internet connection.
-        this.snotifyService.simple('Please check your internet connection!')
-        console.log(err)
-      })
-    ])
-    .then(([ grx, xlm, account ]) => {
-      console.log(grx, xlm)      
-      this.stellarService.userAccount = account;
-      this.stellarService.publishPrices([+grx,+xlm])
+    // Promise.all([
+    //   this.stellarService.getCurrentGrxPrice1(),
+    //   this.stellarService.getCurrentXlmPrice1(),
+    //   this.stellarService.getAccountData(this.authService.userData.PublicKey)
+    //   .catch(err => {
+    //     // Notify internet connection.
+    //     this.snotifyService.simple('Please check your internet connection!')
+    //     console.log(err)
+    //   })
+    // ])
+    // .then(([ grx, xlm, account ]) => {
+    //   console.log(grx, xlm)      
+    //   this.stellarService.userAccount = account;
+    //   this.stellarService.publishPrices([+grx,+xlm])
       
-    })
+    // })
 
     this.authService.subShouldReload().subscribe(s => {
-      if (s === true){
-        console.log('update should reload', s)
-        this.shouldReload = true
-      }
+      // if (s === true){
+      //   console.log('update should reload', s)
+      //   this.shouldReload = !this.shouldReload
+      // }
+      this.shouldReload = !this.shouldReload
     })
    }
 
@@ -55,12 +56,12 @@ export class WalletComponent implements OnInit, OnDestroy {
     window.scroll(0, 0);
     this.changeBackgroundColor(true);
   }
-
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     this.changeBackgroundColor(false);
     // save user data totalxlm,grx,openorders
-    console.log('ngOnDestroy: ', this.authService.userData)
-
+    console.log('ngOnDestroy: ', this.authService.userMetaStore)
+    this.authService.updateUserMeta()
   }
 
   private changeBackgroundColor(addClass: boolean) {

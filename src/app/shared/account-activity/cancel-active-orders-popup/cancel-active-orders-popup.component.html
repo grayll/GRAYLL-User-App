@@ -18,10 +18,7 @@
           Cancel
         </a>
       </div> -->
-      <div class="col text-center" *ngIf="!isCachedPass">       
-        <input type="password"  class="form-control mx-auto w-75"
-          [(ngModel)]="password" [placeholder]="Password">
-      </div>
+      
       <div class="col">
         <a (click)="cancelAllOrders()" href="javascript:void(0)" class="btn btn-purple">
           Confirm

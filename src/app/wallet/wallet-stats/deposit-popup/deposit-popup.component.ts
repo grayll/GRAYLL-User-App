@@ -3,6 +3,7 @@ import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
 import {PopupService} from '../../../shared/popup/popup.service';
 import { AuthService } from "../../../shared/services/auth.service"
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-deposit-popup',
@@ -20,6 +21,7 @@ export class DepositPopupComponent implements OnInit {
     private snotifyService: SnotifyService,
     public popupService: PopupService,
     private authService: AuthService,
+    private router: Router,
   ) {
     this.federationAddress = this.authService.userData.Federation;
     this.stellarAddress =  this.authService.userData.PublicKey;
@@ -39,6 +41,18 @@ export class DepositPopupComponent implements OnInit {
     if (this.clipboardService.copyFromContent(this.stellarAddress)) {
       this.snotifyService.simple('Stellar address copied.');
     }
+  }
+
+  depositClose(){
+    //this.router.navigate([{ outlets: { popup: null }}]);
+    this.popupService.close()
+    // this.popupService.close().then(() => {
+    //   setTimeout(() => {
+    //     //this.router.navigate(['/wallet/overview']);
+
+    //     this.router.navigateByUrl('/wallet/overview')
+    //   }, 100);
+    // });
   }
 
 }

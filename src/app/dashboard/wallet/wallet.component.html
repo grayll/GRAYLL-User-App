@@ -20,10 +20,10 @@
               </div>
               <div class="d-inline-block text-white align-middle wallet-box">
                 <span routerLink="/wallet/overview" style="outline: none!important" class="text-light font-16">Wallet Balance</span>
-                <h5 routerLink="/wallet/overview" style="outline: none!important" class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(2)}}</h5>
+                <h5 routerLink="/wallet/overview" style="outline: none!important" class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(3)}}</h5>
                 <small>
                   <a href="javascript:void(0)" class="navy-link" [routerLink]="[{outlets: {popup: 'xlm-balance-status'}}]">
-                    1.50 XLM Reserved (${{(1.5*+authService.userData.xlmPrice).toFixed(2)}})
+                    2.0 XLM Reserved (${{(2*+authService.userData.xlmPrice).toFixed(3)}})
                   </a>
                 </small>
               </div>
@@ -36,7 +36,7 @@
                 <span class="font-16"> {{this.authService.calPercentGRX()}}% GRX</span>
                 <br>
                 <p class="font-weight-bolder p-font">
-                  {{'$' + (this.authService.grxInUsd().toFixed(2))}}
+                  ${{(this.authService.grxInUsd().toFixed(3))}}
                 </p>
               </div>
               <div class="col-6 text-right mt-3">
@@ -46,7 +46,7 @@
                 <span class="font-16"> {{this.authService.calPercentXLM()}}% XLM</span>
                 <br>
                 <p class="m-b-0 font-weight-bolder p-font">
-                  {{'$' + (this.authService.xlmInUsd().toFixed(2))}}
+                  ${{(this.authService.xlmInUsd().toFixed(3))}}
                 </p>
               </div>
             </div>

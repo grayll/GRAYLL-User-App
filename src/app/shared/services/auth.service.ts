@@ -10,12 +10,21 @@ import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { createHash } from 'crypto';
 import { UserInfo, Setting } from 'src/app/models/user.model';
 
-@Injectable({
-  providedIn: 'root'
-})
 
+export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
+  OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
+
+  export interface Prices {xlmp: number; grxp: number}
+@Injectable({
+  providedIn: 'root' 
+})
 export class AuthService {
   userData: any; // Save logged in user data
+  _userMeta: Subject<UserMeta>
+  userMeta:  Observable<UserMeta>
+  userMetaStore:  UserMeta = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
+  OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true}
+
   tfa$ = new BehaviorSubject<any>({})
   hash: string
   seedData: any
@@ -27,6 +36,47 @@ export class AuthService {
   
   userInfoMsg: Subject<UserInfo>
   shouldReload:Subject<boolean>
+  reload:boolean = true
+
+  getUserMeta(){
+    if (this.userMetaStore.ShouldReload){
+      this._userMeta = new Subject<UserMeta>()
+      this.userMeta = this._userMeta.asObservable()
+      this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(data => {        
+        this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
+        this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
+        this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
+        this.userMetaStore.UrGRZ= data.UrGRZ >= 0? data.UrGRZ:0
+        this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
+        this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
+        this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
+        this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+        this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+        console.log('this.userMetaStore:', this.userMetaStore)
+        this.userMetaStore.ShouldReload = false
+        this._userMeta.next(data)
+      })
+    }
+  }
+
+  streamPrices(){
+    if (this.userMetaStore.ShouldReload){
+      this._userMeta = new Subject<UserMeta>()
+      this.userMeta = this._userMeta.asObservable()
+      this.afs.doc<Prices>('prices/794retePzavE19bTcMaH/').valueChanges().subscribe(data => {        
+        this.userData.xlmPrice = data.xlmp
+        this.userData.grxPrice = data.grxp
+        console.log('STREAM-price:', data)        
+       // this._userMeta.next(data)
+      })
+    }
+  }
+
+  updateUserMeta(){
+    this.userMetaStore.GRX = Number(this.userMetaStore.GRX)
+    this.userMetaStore.XLM = Number(this.userMetaStore.XLM)
+    this.afs.doc('users_meta/'+this.userData.Uid).update(this.userMetaStore)
+  }
 
   subShouldReload(){
     if (!this.shouldReload){
@@ -151,6 +201,22 @@ export class AuthService {
     }    
   }
 
+  GetLocalUserMeta():any {    
+    if (this.userMetaStore.XLM === 0){
+      let data = localStorage.getItem('grayll-user-meta');
+      if (data){
+        this.userMetaStore = JSON.parse(data); 
+      }      
+    }   
+    return this.userMetaStore
+  }
+  
+  SetLocalUserMeta(){
+    if (this.userMetaStore){
+      localStorage.setItem('grayll-user-meta', JSON.stringify(this.userMetaStore));       
+    }    
+  }
+
   getTfa(){
     return this.tfa$.value
   }
@@ -160,25 +226,22 @@ export class AuthService {
   }
 
 
-  constructor(
-    
+  constructor(    
     public router: Router,  
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     public http: HttpClient,
-    public stellarService: StellarService,        
+    public stellarService: StellarService,  
+    private afs: AngularFirestore,      
   ) {    
    
   }
   
   isActivated() : boolean {    
-    console.log(this.userInfo)   
-
+    console.log(this.userInfo)
     if (!this.userInfo.PublicKey || (this.userInfo.PublicKey && this.userInfo.PublicKey.trim().length === 0)){      
       return false
     }
-    // } else if (seedData){
-    //   return false
-    // }    
+    
     return true
   }
   setupTfa(account:string) {
@@ -186,8 +249,8 @@ export class AuthService {
   }
 
   
-  verifyTfaAuth(token: any, secret: any, exp: Number) {       
-    return this.http.post(`api/v1/users/verifytoken`,  { token: token, secret:secret, expire:exp})         
+  verifyTfaAuth(token: any, pwd: any, exp: Number) {       
+    return this.http.post(`api/v1/users/verifytoken`,  { token: token, secret:pwd, expire:exp})         
   }
   UpdateSetting(field, status) {
     return this.http.post(`api/v1/users/updatesetting`,  { field: field, status:status}) 
@@ -197,6 +260,10 @@ export class AuthService {
   }
   updateTfaData(tfa) {   
     return this.http.post(`api/v1/users/updatetfa`, tfa) 
+  }
+
+  makeTransaction(xdr, txtype) {   
+    return this.http.post(`api/v1/users/MakeTransaction`, {xdr:xdr, tx: txtype}) 
   }
 
   isTfaEnable(){
@@ -209,6 +276,13 @@ export class AuthService {
   }
 
   isTokenExpired(){
+    let currentTs = Math.round(new Date().getTime()/1000)   
+    if (this.userMetaStore && currentTs >= this.userMetaStore.TokenExpiredTime){
+      return true
+    }
+    return false
+  }
+  isTokenExpired1(){
     let currentTs = Math.round(new Date().getTime()/1000)
     if (!this.userData){
       this.GetLocalUserData()
@@ -273,31 +347,40 @@ export class AuthService {
   }
 
   calPercentXLM(){
-    return Math.round(+this.userData.totalXLM*this.userData.xlmPrice*100/(+this.userData.totalXLM*this.userData.xlmPrice + 
-      this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice))
+    if (this.userMetaStore.GRX === 0){
+      return 100
+    } else {
+      return Math.round(this.userMetaStore.XLM*this.userData.xlmPrice*100/(this.userMetaStore.XLM*this.userData.xlmPrice + 
+        this.userMetaStore.GRX*this.userData.grxPrice*this.userData.xlmPrice))
+    }
   }
   calPercentGRX(){
-    return 100 - this.calPercentXLM()
+    if (this.userData){
+      return 100 - this.calPercentXLM()
+    } else {
+      return 0
+    }
   }
   grxInUsd(){
-    return +this.userData.totalGRX*this.userData.grxPrice*this.userData.xlmPrice
+    return this.userMetaStore.GRX*this.userData.grxPrice*this.userData.xlmPrice
   }
   xlmInUsd(){
-    return +this.userData.totalXLM*this.userData.xlmPrice
+    return this.userMetaStore.XLM*this.userData.xlmPrice
   }
   getMaxAvailableXLM(){
-    if (this.userData.OpenOrders && this.userData.OpenOrdersXLM){
-      return +this.userData.totalXLM - 1.50001 - +this.userData.OpenOrders*0.5 - +this.userData.OpenOrdersXLM
+    let bl 
+    if (this.userMetaStore.OpenOrders && this.userMetaStore.OpenOrdersXLM){
+      bl = +this.userMetaStore.XLM - 2.0001 - +this.userMetaStore.OpenOrders*0.5 - +this.userMetaStore.OpenOrdersXLM
     } else {
-      return +this.userData.totalXLM - 1.50001                     
+      bl = +this.userMetaStore.XLM - 2.0001                     
     }
+    if (bl < 0 ){
+      bl = 0
+    }
+    return bl
   }
   getMaxAvailableGRX(){
-    if (this.userData.OpenOrdersGRX){
-      return (+this.userData.totalGRX - +this.userData.OpenOrdersGRX)
-    } else {
-      return +this.userData.totalGRX
-    }
+    return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX
   }
   /* Setting up user data when sign in with username/password, 
   sign up with username/password and sign in with social auth  

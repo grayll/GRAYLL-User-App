@@ -70,8 +70,9 @@ export class DisableTwoFaComponent implements OnInit {
         .then(() => {
           setTimeout(() => {
             this.snotifyService.simple('Two-factor authentication has now been disabled.');
-            this.userService.enable2FA(false);
-            this.settingsService.sendTwoFAEnabledToObserver(false);
+            this.authService.userInfo.Tfa = false
+            //this.userService.enable2FA(false);
+            //this.settingsService.sendTwoFAEnabledToObserver(false);
           }, 50);
         })
         .catch((error) => console.log(error));  

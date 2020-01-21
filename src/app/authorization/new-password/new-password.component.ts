@@ -85,8 +85,6 @@ export class NewPasswordComponent {
     }
   };
 
-
-
   submitClicked() {
     this.submitted = true;
     this.onValueChanged()

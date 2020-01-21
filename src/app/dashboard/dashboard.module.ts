@@ -15,6 +15,8 @@ import {NgbTabsetModule, NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
 import {HeaderBoxesComponent} from './header-boxes/header-boxes.component';
 import {PopupModule} from '../shared/popup/popup.module';
 import {NgxFlagIconCssModule} from 'ngx-flag-icon-css';
+import {DepositPopupComponent} from './deposit-popup/deposit-popup.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,8 @@ import {NgxFlagIconCssModule} from 'ngx-flag-icon-css';
     InfoBoxesComponent,
     WalletComponent,
     TradeComponent,
-    HeaderBoxesComponent
+    HeaderBoxesComponent,
+    DepositPopupComponent,
   ],
   imports: [
     CommonModule,
@@ -35,7 +38,8 @@ import {NgxFlagIconCssModule} from 'ngx-flag-icon-css';
     NgbTooltipModule,
     NgbTabsetModule,
     PopupModule,
-    NgxFlagIconCssModule
+    NgxFlagIconCssModule,
+    QRCodeModule
   ]
 })
 export class DashboardModule { }

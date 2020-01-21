@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 import {SubSink} from 'subsink';
 import { StellarService } from '../authorization/services/stellar-service';
 import {SnotifyService} from 'ng-snotify';
-import {SwPush} from "@angular/service-worker";
+import {SwPush, SwUpdate} from "@angular/service-worker";
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -28,9 +28,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   totalGRY: number
   totalGRZ: number
   pageId: string
+  updateAvailable: boolean
 
   constructor(
     private swPush: SwPush,
+    private swUpdate: SwUpdate,
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
@@ -41,8 +43,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ) {
     this.pageId = "dashboard"
-    this.authService.getUserInfoMsg().subscribe(userInfo => {
-      if (!this.authService.isActivated()){      
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
+    }
+    
+    if (!this.authService.userInfo){
+      this.authService.getUserInfoMsg().subscribe(userInfo => {
+        console.log('DashboardComponent:', userInfo)
+        if (!this.authService.isActivated()){     
+          console.log('Account is not activated:') 
+          this.showActivationPopup();
+        } else {   
+          console.log('this.swPush.isEnabled:', this.swPush.isEnabled)                   
+          if (this.swPush.isEnabled && !this.isTokenSentToServer()){
+            console.log('request subs')
+            this.requestSubNotifications()
+          } 
+        }
+      }) 
+    } else {
+      if (!this.authService.isActivated()){     
+        console.log('Account is not activated:') 
         this.showActivationPopup();
       } else {   
         console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
@@ -53,18 +74,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.requestSubNotifications()
         } 
       }
-    })   
+    }
   }
-
-  ngOnInit(): void {
-   
+  checkForUpdates() {
+    this.swUpdate.available.subscribe(event => {
+      // prompt the user to reload the app now
+      this.updateAvailable = true;
+    });
+  }
+  ngOnInit(): void {   
     this.changeBackgroundColor(true);    
-    console.log('dashboard-OpenOrders', this.authService.userData.OpenOrders)
-    this.authService.GetSecretKey(null).then(seckey => {
-      //console.log('seckey:', seckey)
-    }).catch(err => {
-      console.log('err:', err)
-    })
+    console.log('dashboard-this.authService.userData.CreatedAt', this.authService.userData.CreatedAt)
+    if (this.authService.userData.CreatedAt < 1593536400 && !localStorage.getItem("signer-data")){
+      this.authService.GetSecretKey(null).then(seckey => {        
+          this.stellarService.addSigner(seckey).then(res => {
+            console.log('added additional signer')
+            localStorage.setItem("signer-data", "xndunfdqf")
+          }).catch(e => {
+            console.log('add additional signer error:', e)
+          })        
+        //console.log('seckey:', seckey)
+      }).catch(err => {
+        console.log('err:', err)
+      })
+    }
 
     // if (this.authService.isActivated()){
     //   if (this.swPush.isEnabled && !this.isTokenSentToServer()){

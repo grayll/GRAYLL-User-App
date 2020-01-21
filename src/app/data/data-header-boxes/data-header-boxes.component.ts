@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {NgbCarousel} from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from "../../shared/services/auth.service"
+import { AlgoService } from 'src/app/system/algo.service';
 
 @Component({
   selector: 'app-data-header-boxes',
@@ -68,7 +69,8 @@ export class DataHeaderBoxesComponent implements OnInit {
   public lineChartLegend = false;
   public lineChartType = 'line';
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService,
+    private algoService:AlgoService) { }
 
   ngOnInit() {
   }

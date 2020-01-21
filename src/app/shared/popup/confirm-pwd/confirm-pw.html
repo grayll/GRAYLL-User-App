@@ -1,0 +1,31 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Confirm Password"></app-popup-header>
+  <div class="modal-body">
+
+    <app-error></app-error>
+
+    <div class="row mb-1">      
+      <div class="col-12 text-center">
+        <p class="text-purple font-16">
+          To continue your login session, please enter your password.
+        </p>
+        <p class="text-purple font-16">
+          {{remainingTime}}
+        </p>
+        
+        <br/>      
+        <input *ngIf="!this.authService.userInfo.Tfa" type="password" class="form-control mx-auto w-75" [(ngModel)]="password" placeholder="Password">
+        <input *ngIf="this.authService.userInfo.Tfa" type="text" class="form-control mx-auto w-75" [(ngModel)]="faCode" placeholder="Two FA Code">         
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer justify-content-center">
+    <div class="row text-center" style="display: contents!important;">
+      <div class="col">        
+        <button class="btn btn-purple" (click)="submit()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -136,10 +136,10 @@
       </thead>
   
       
-	<tbody *ngIf="this.stellarService.allOffers"  class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollOpenOrders()" [scrollWindow]="false">
-    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
-      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
-    </div>
+      <tbody *ngIf="this.stellarService.allOffers"  class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollOpenOrders()" [scrollWindow]="false">
+        <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+          <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+        </div>
         <tr *ngFor="let item of this.stellarService.allOffers">    
           <td>{{item.time}}</td>
           <td>{{item.type}}</td>
@@ -157,7 +157,7 @@
               <span class="ml-1 cancel text-danger">Cancel</span>
             </a>            
           </td>
-      </tr>       
+        </tr>       
       </tbody>
     </table>
   </div>
@@ -176,7 +176,7 @@
       </tr>
       </thead>
 
- 	<tbody *ngIf="payments" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollTransfers()" [scrollWindow]="false">
+ 	  <!-- <tbody *ngIf="payments" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollTransfers()" [scrollWindow]="false">
     <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
       <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
     </div>
@@ -192,7 +192,24 @@
                 </a>
               </td>
         </tr>      
-      </tbody>
+      </tbody> -->
+      <tbody *ngIf="notices | async" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollTransfers()" [scrollWindow]="false">
+        <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+          <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+        </div>
+            <tr *ngFor="let item of notices | async">
+                <td>{{item.times}}</td>
+                <td>{{item.counters}}</td>            
+                <td>{{item.asset}}</td>        
+                <td>{{item.issuer}}</td>            
+                <td>{{item.amount}}</td>            
+                <td class="text-center">
+                    <a href="{{item.url}}" target="_blank">
+                      <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                    </a>
+                  </td>
+            </tr>      
+          </tbody>
     </table>
   </div>
   
@@ -235,8 +252,8 @@
      *ngIf="selectedTab.id === 'allOrders'" id="completedOrdersContainer">
   <hr class="m-0 py-2 w-100 mx-0 px-0" style="border-color: #fff;">
     <div class="col-md-2 col-xs pl-0">
-      <span *ngIf="this.stellarService.trades" class="align-middle font-14 font-weight-bolder">Completed Orders ({{this.stellarService.trades.length}})</span>
-      <span *ngIf="!this.stellarService.trades" class="align-middle font-14 font-weight-bolder">Completed Orders (0)</span><br>
+      <span *ngIf="tradess | async" class="align-middle font-14 font-weight-bolder">Completed Orders ({{(tradess | async).length}})</span>
+      <span *ngIf="!(tradess | async)" class="align-middle font-14 font-weight-bolder">Completed Orders (0)</span><br>
       <span class="text-light font-10 font-weight-bolder">Most Recent Completed Orders</span>
     </div>
     <div class="col">
@@ -263,13 +280,13 @@
           <th>Actions</th>
         </tr>
       </thead>
-    
-    <tbody *ngIf="this.stellarService.trades" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollCompletedOrders()" [scrollWindow]="false">
-    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
-      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
-    </div>
-        <tr *ngFor="let item of this.stellarService.trades">    
-          <td>{{item.time}}</td>
+
+      <tbody *ngIf="tradess | async" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollCompletedOrders()" [scrollWindow]="false">
+        <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+          <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+        </div>
+        <tr *ngFor="let item of tradess | async">         
+          <td>{{item.times}}</td>
           <td>{{item.type}}</td>
           
           <td>{{item.asset}}</td>        

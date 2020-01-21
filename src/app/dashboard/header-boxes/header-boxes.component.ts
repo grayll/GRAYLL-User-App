@@ -4,6 +4,7 @@ import {SubSink} from 'subsink';
 import { AuthService } from "../../shared/services/auth.service"
 import { HttpClient } from  '@angular/common/http';
 import { interval } from 'rxjs';
+import { AlgoService } from 'src/app/system/algo.service';
 
 @Component({
   selector: 'app-header-boxes',
@@ -22,15 +23,15 @@ export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
     private stellarService: StellarService,
     private authService: AuthService,
     private http: HttpClient,
+    private algoService:AlgoService,
   ) {    
     this.subSink = new SubSink()
     this.getDashBoardData()     
   }
   
   ngOnInit(){
-    this.subSink.add(interval(60*60*60).subscribe(()=> {
-      console.log('get dbdata')
-      this.getDashBoardData()
+    this.subSink.add(interval(60*60*60).subscribe(()=> {      
+      this.getDashBoardData()      
     }))
   }
   ngOnDestroy(){
@@ -43,17 +44,19 @@ export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
       "coins":"grxusd,gryusd,grzusd"
     }).subscribe(
       data => {
-        console.log(data)
+        console.log('db data:', data)
         let res = data as any
         if (res.db.grxusd){ 
           this.grxdb = res.db.grxusd
         }
         if (res.db.gryusd){ 
           this.grydb = res.db.gryusd
+          console.log('this.grydb :', this.grydb)
         }
         if (res.db.grzusd){ 
           this.grzdb = res.db.grzusd
         }
+        
       },
       e => {
         console.log(e)

@@ -5,6 +5,7 @@ import {ActivateAccountPopupComponent} from '../shared/popup/activate-account/ac
 import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
 import {XlmBalanceStatusPopupComponent} from '../shared/popup/xlm-balance-status-popup/xlm-balance-status-popup.component';
 import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
+import { DepositPopupComponent } from './deposit-popup/deposit-popup.component';
 
 const popupRoutes: Routes = [
   {
@@ -25,6 +26,11 @@ const popupRoutes: Routes = [
   {
     path: 'confirm-password',
     component: ConfirmPasswordComponent,
+    outlet: 'popup'
+  },
+  {
+    path: 'deposit',
+    component: DepositPopupComponent,
     outlet: 'popup'
   },
 ];

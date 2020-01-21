@@ -42,16 +42,16 @@ export class MainChartComponent {
       frame:"frame_01h",
       name: '1 Hours'
     },
-    {
-      id: 240,
-      frame:"frame_04h",
-      name: '4 Hours'
-    },
-    {
-      id: 1440,
-      frame:"frame_01d",
-      name: '1 Day'
-    }
+    // {
+    //   id: 240,
+    //   frame:"frame_04h",
+    //   name: '4 Hours'
+    // },
+    // {
+    //   id: 1440,
+    //   frame:"frame_01d",
+    //   name: '1 Day'
+    // }
   ];
 
   selectedTimespan: {id: number, frame:string, name: string} = this.timespanFilter[0];

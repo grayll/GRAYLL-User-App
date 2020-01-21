@@ -19,7 +19,7 @@ export class XlmLoanPopupComponent implements OnInit {
 
   @ViewChild('content') modal;
  // currentXLMBalance: number;
-  XLMLoanValue = 1.50001;
+  XLMLoanValue:number = 2.0001;
 
   // XLMBalanceS: string = '';
   // XLMLoanS: string = this.XLMLoanValue.toString()+ ' XLM';
@@ -54,50 +54,84 @@ export class XlmLoanPopupComponent implements OnInit {
     }
   }
 
-  payOffLoan() { 
+  async payOffLoan() { 
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-    if (this.authService.getMaxAvailableXLM() - 1.50001 < 0){
-      this.errorService.handleError(null, "Please deposit a minimum of 2 XLM to your account to pay off your loan.")
+    if (this.authService.getMaxAvailableXLM() - this.XLMLoanValue < 0){
+      this.errorService.handleError(null, "Please deposit a minimum of " + this.XLMLoanValue + " XLM to your account to pay off your loan.")
       return
     }
-    let loanerAddress =  environment.xlmLoanerAddress.toString()
+    let loanerAddress =  environment.XLM_LOAN_ADDRESS.toString()
     let loanAmount = this.XLMLoanValue.toString()
     let asset = this.stellarService.nativeAsset   
+
+    console.log('payOffLoan')
     
-    this.authService.GetSecretKey(this.password).then(SecKey => {      
-      console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
+    //this.authService.GetSecretKey(this.password).then(async SecKey => {      
+     // console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
       let loanPaidId = this.authService.GetLoadPaidLedgerId()
       if (loanPaidId && +loanPaidId > 0) {
+        console.log('payOffLoan 1')
         console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())          
         this.verifyTx(+loanPaidId)
-      } else {          
-        this.stellarService.sendAsset(SecKey, loanerAddress, loanAmount, asset, '')
-        .then( ledger => {
-          if (ledger <= 0){            
-            console.log('ledger <= 0')
-            this.error = true;
-            this.success = false;
-            this.updateFund()
-          } else {
-            //console.log('Set LoadPaidLedgerId:', ledger)
-            this.authService.SetLoanPaidLedgerId(ledger)
-            this.verifyTx(+ledger)    
-          }     
-        }).catch( e => {          
-          console.log(e)
+      } else {    
+        console.log('payOffLoan 2:pk', this.authService.userInfo.PublicKey)
+        let pk = ''
+        if (this.authService.userInfo.PublicKey && this.authService.userInfo.PublicKey != ''){
+          pk = this.authService.userInfo.PublicKey
+        } else {
+          pk = this.authService.userData.PublicKey
+        }        
+        try {
+          let xdr = await this.stellarService.payLoanXdr(pk, loanerAddress, loanAmount, asset, '')          
+          if (xdr === 'not trusted'){
+            this.error = false;
+            this.success = true;
+            return
+          }
+          console.log(xdr)
+          this.authService.makeTransaction(xdr, "loanpaid").subscribe(res => {
+            console.log(res)
+            if ((res as any).errCode == "tx_success"){
+              this.error = false;
+              this.success = true;
+              this.authService.userInfo.LoanPaidStatus = 2
+              this.updateFund()   
+            } else {
+              this.error = true;
+              this.success = false;
+            }
+          })          
+        } catch (e){
           this.error = true;
           this.success = false;
-        })
+        }      
+        // this.stellarService.sendAsset(SecKey, loanerAddress, loanAmount, asset, '')
+        // .then( ledger => {
+        //   if (ledger <= 0){            
+        //     console.log('ledger <= 0')
+        //     this.error = true;
+        //     this.success = false;
+        //     this.updateFund()
+        //   } else {
+        //     //console.log('Set LoadPaidLedgerId:', ledger)
+        //     this.authService.SetLoanPaidLedgerId(ledger)
+        //     this.verifyTx(+ledger)    
+        //   }     
+        // }).catch( e => {          
+        //   console.log(e)
+        //   this.error = true;
+        //   this.success = false;
+        // })
       }               
-    }).catch(err => {
-      this.error = true;
-      this.success = false;
-    })  
+    // }).catch(err => {
+    //   this.error = true;
+    //   this.success = false;
+    // })  
   }
   updateFund(){
-    this.authService.userData.totalXLM = +this.authService.userData.totalXLM - this.XLMLoanValue
+    this.authService.userMetaStore.XLM = this.authService.userMetaStore.XLM - this.XLMLoanValue
     this.authService.SetLocalUserData()
   }
   retry() {

@@ -3,6 +3,7 @@
   <div class="modal-body" *ngIf="withdrawModel">
     <div class="row">
       <div class="col-md-12">
+        <app-error></app-error>
         <p class="text-purple">
           Please review and confirm this withdrawal transaction.
         </p>
@@ -15,7 +16,7 @@
             Send to Address
           </span>
           <br>
-          <span *ngIf="withdrawModel.address" style="font-size: 90%">{{withdrawModel.address}}</span>
+          <span *ngIf="withdrawModel.address" style="font-size: 85%">{{withdrawModel.address}}</span>
           <span *ngIf="withdrawModel.emailAddress">{{withdrawModel.emailAddress}}</span>
           <span *ngIf="withdrawModel.phoneNumber">{{withdrawModel.phoneNumber}}</span>
         </p>
@@ -29,22 +30,20 @@
             Amount
           </span>
           <br>
-          <span *ngIf="withdrawModel.xlmAmount">
-            {{withdrawModel.xlmAmount}} XLM
+          <span *ngIf="withdrawModel.asset">
+            {{withdrawModel.amount}} {{withdrawModel.asset}}
           </span>
-          <span *ngIf="withdrawModel.grxAmount">
-            {{withdrawModel.grxAmount}} GRX
-          </span>
+          
         </p>
       </div>      
     </div>
     <br>
-    <div *ngIf="!authService.hash"  class="row">
+    <!-- <div *ngIf="!authService.hash"  class="row">
       <div class="col-md-12">
         <input type="password"  [(ngModel)]="password" class="fixed-input-height text-light form-control form-control-no-border bg-purple" style="height: 46px"
                    placeholder="Password">
       </div>
-    </div>
+    </div> -->
     <div *ngIf="multiSigEnable" class="row">
       <div class="col-md-12">
         <input type="text"  [(ngModel)]="twoFaCode" class="fixed-input-height text-light form-control form-control-no-border bg-purple" style="height: 46px"

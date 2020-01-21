@@ -21,7 +21,17 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.json"
+              "src/manifest.json",
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              },              
+              {
+                "glob": "**/*-sw.js",
+                "input": "src/app/sw",
+                "output": "/"
+              }              
             ],
             "styles": [
               "src/styles.css",

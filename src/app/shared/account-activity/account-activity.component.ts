@@ -13,6 +13,9 @@ import * as moment from 'moment';
 import { environment } from 'src/environments/environment';
 import {ActivityResult} from './models/activity-results';
 import {PopupService} from 'src/app/shared/popup/popup.service';
+import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
+import { NoticeId, OrderId } from 'src/app/notifications/notification.model';
+import { Observable } from 'rxjs';
 
 var StellarSdk = require('stellar-sdk')
 
@@ -64,6 +67,9 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
   faSearch = faSearch;
   activityResult: ActivityResult
   item: any
+  notices: Observable<NoticeId[]>;
+  tradess: Observable<OrderId[]>;
+  
 
   constructor(
     private clipboardService: ClipboardService,
@@ -73,23 +79,27 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     private router: Router,
     private sharedService:SharedService,
     private popupService: PopupService,
+    private dataService:NoticeDataService,
   ) {
-    console.log('constructor-account activity')
+    
     this.subs = new SubSink()
     this.selectedTab = this.activityTabs[0];
     this.activityResult = new ActivityResult()
 
     this.stellarService.allOffers = null
     this.stellarService.trades = null 
+    this.getAccountOrders(null, true)
+    this.getAccTrades()
 
-    Promise.all([
-      this.getAccountOrders(null, true),
-      this.getAccountTrades(null)
-    ]).then(([ofs, trades]) => {
+    // Promise.all([
+    //   this.getAccountOrders(null, true),
       
-    }).catch( err => {
-      console.log('Error get open order and trade:', err)
-    }) 
+    //   //this.getAccountTrades(null)
+    // ]).then(([ofs, trades]) => {
+      
+    // }).catch( err => {
+    //   console.log('Error get open order and trade:', err)
+    // }) 
     
     // this.getAccountOrders(null, true),
     // this.getAccountTrades(null)
@@ -103,33 +113,32 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       console.log(err)
     })
 
-    this.subs.add(this.popupService.observeValidation().subscribe(valid => {
-      if (valid){//cancel
-        if (this.item){
-          this.cancelCurrentOffer(this.item)    
-        }
-      }
-    }))
+    // this.subs.add(this.popupService.observeValidation().subscribe(valid => {
+    //   if (valid){//cancel
+    //     if (this.item){
+    //       this.cancelCurrentOffer(this.item)    
+    //     }
+    //   }
+    // }))
   }
+
+
   ngOnChanges() {
     
     console.log('change:', this.shouldReload);
-    if (this.shouldReload){
-      this.stellarService.allOffers = null
-      this.stellarService.trades = null 
-      Promise.all([
-        this.getAccountOrders(null, true),
-        this.getAccountTrades(null)
-      ]).then(([ofs, trades]) => {
-        
-      }).catch( err => {
-        console.log('Error get open order and trade:', err)
-      })   
+    this.stellarService.allOffers = null
+    this.getAccountOrders(null, true)
+      // Promise.all([
+      //   this.getAccountOrders(null, true),
+      //   this.getAccountTrades(null)
+      // ]).then(([ofs, trades]) => {
+
+      // }).catch( err => {
+      //   console.log('Error get open order and trade:', err)
+      // })   
 
       this.grxP = +this.authService.userData.grxPrice
       this.xlmP = +this.authService.userData.xlmPrice
-      this.shouldReload = false
-    }
   }
   downloadHistory(){
     console.log('this.selectedTab.id:', this.selectedTab.id)
@@ -155,17 +164,17 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     switch (table){
       case "order":
         columns = ['Date',	'Type',	'Asset',	'Amount',	'Filled',	'Price (XLM)',	'Total Price (XLM)',	'Price (USD)',	'Total Price (USD)', 'URL']
-        fields = ['time','type','asset','amount', 'filled','xlmp','totalxlm','priceusd', 'totalusd', 'url']
+        fields = ['times','type','asset','amount', 'filled','xlmp','totalxlm','priceusd', 'totalusd', 'url']
         fileName = "OrderHistory.PDF"
         //data = this.offers            
         //data = this.stellarService.allOffers
-        data = this.stellarService.trades
+        data = this.dataService.dataTradeSync
         break
       case "transfer":
         columns = ['Date',	'Counterparty',	'Asset', 'Issuer',	'Amount', 'Url']
-        fields = ['time','counter','asset', 'issuer', 'amount', 'url']
+        fields = ['times','counter','asset', 'issuer', 'amount', 'url']
         fileName = "TransferHistory.PDF"
-        data = this.payments          
+        data = this.dataService.dataPaymentsSync         
         break
       case "network":
           columns = ['Date',	'Operation', 'ID', 'Amount',	'Asset', 'Account', 'Url']
@@ -199,10 +208,10 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       this.router.navigateByUrl('/login')
       return false
     } 
-    if (!this.authService.hash || this.authService.userInfo.Setting.MulSignature){     
-      this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
-      return false
-    }  
+    // if (!this.authService.hash || this.authService.userInfo.Setting.MulSignature){     
+    //   this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
+    //   return false
+    // }  
     return true  
   }
 
@@ -215,19 +224,52 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     this.cancelCurrentOffer(this.item)    
       
   }
-
-  cancelCurrentOffer(item){
+  async cancelCurrentOffer(item){    
+      try {   
+        let xdr = await this.stellarService.getCancelOfferXdr(this.authService.userInfo.PublicKey, item.cachedOffer)
+        this.authService.makeTransaction(xdr, "cancel").subscribe(res => {
+          //console.log(res)
+          if ((res as any).errCode == "tx_success"){                          
+            this.stellarService.allOffers.splice(item.index, 1)
+            if (this.authService.userMetaStore.OpenOrders){
+              this.authService.userMetaStore.OpenOrders -=1
+            } else {
+              this.authService.userMetaStore.OpenOrders = 0
+            }
+            if (this.authService.userMetaStore.OpenOrders < 0){
+              this.authService.userMetaStore.OpenOrders = 0
+            }
+            if (item.assetType === 'GRX'){
+              this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX + +item.realAmount
+            } else if(item.assetType === 'XLM'){
+              this.authService.userMetaStore.XLM = +this.authService.userMetaStore.XLM + +item.realAmount
+            }
+          } else {
+            this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
+          }
+        })       
+      } catch(e ) {
+        console.log('cancelOffer error:', e)
+        if (e.toString().includes('status code 400')){
+          this.snotifyService.simple('Insufficient funds to cancel this order! Please add more funds to your account.')  
+        } else {
+          this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
+        }
+      }
+    
+  }
+  cancelCurrentOffer1(item){
     this.authService.GetSecretKey(null).then(SecKey => {      
       this.stellarService.cancelOffer(SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType).then(res=>
         {               
           this.stellarService.allOffers.splice(item.index, 1)
-          if (this.authService.userData.OpenOrders){
-            this.authService.userData.OpenOrders -=1
+          if (this.authService.userMetaStore.OpenOrders){
+            this.authService.userMetaStore.OpenOrders -=1
           } else {
-            this.authService.userData.OpenOrders = 0
+            this.authService.userMetaStore.OpenOrders = 0
           }
-          if (this.authService.userData.OpenOrders < 0){
-            this.authService.userData.OpenOrders = 0
+          if (this.authService.userMetaStore.OpenOrders < 0){
+            this.authService.userMetaStore.OpenOrders = 0
           }
           this.authService.SetLocalUserData()    
         }
@@ -294,6 +336,17 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     } else {
       console.log('onScrollTransfers !!! called get:', this.activityResult.paymentEmptyResultTimes)
     }
+  }
+
+  getAccPayments(){
+    let walletPath = 'notices/wallet/'+this.authService.userData.Uid
+    this.dataService.getPaymentHistory(walletPath, 200)
+    this.notices = this.dataService.data
+  }
+  getAccTrades(){
+    let path = 'trades/users/'+this.authService.userData.Uid
+    this.dataService.getTradeHistory(path, 200)
+    this.tradess = this.dataService.dataTrade
   }
 
   getAccountPayments(nextURL:string){
@@ -395,7 +448,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
 
   getAccountOrders(nextURL, countOpenOrder:boolean) {  
     console.log('start getAccountOrders:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-    this.stellarService.getOffer(this.authService.userData.PublicKey, 20, nextURL).then(pms => {          
+    this.stellarService.getOffer(this.authService.userData.PublicKey, 200, nextURL).then(pms => {          
       if (pms && pms.data._embedded.records.length > 0){   
         let totalOpenXLM = 0
         let totalOpenGRX = 0
@@ -451,26 +504,27 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
           return offerData      
         })  
         if (countOpenOrder){
-          this.authService.userData.OpenOrdersGRX = totalOpenGRX    
-          this.authService.userData.OpenOrdersXLM = totalOpenXLM 
+          this.authService.userMetaStore.OpenOrdersGRX = totalOpenGRX    
+          this.authService.userMetaStore.OpenOrdersXLM = totalOpenXLM 
         }
         //this.offers = this.stellarService.allOffers 
-        if (this.stellarService.allOffers ){        
-          this.stellarService.allOffers = this.stellarService.allOffers.concat(records)
-        } else {
-          this.stellarService.allOffers = records
-        }
+        // if (this.stellarService.allOffers ){        
+        //   this.stellarService.allOffers = this.stellarService.allOffers.concat(records)
+        // } else {
+        //   this.stellarService.allOffers = records
+        // }
+        this.stellarService.allOffers = records
         if (pms.data._links.next.href){
           this.activityResult.openOrderNextURL = pms.data._links.next.href
         }
         console.log('this.activityResult.paymentNextURL:', this.activityResult.paymentNextURL)
         this.activityResult.openOrderEmptyResultTimes = 0 
-        this.authService.userData.OpenOrders = this.stellarService.allOffers.length
+        this.authService.userMetaStore.OpenOrders = this.stellarService.allOffers.length
         this.authService.SetLocalUserData() 
       } else {
         this.activityResult.openOrderEmptyResultTimes += 1 
       }
-      console.log('end getAccountOrders:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+      //console.log('end getAccountOrders:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
     })
             
   }
@@ -535,8 +589,10 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       case 'allOrders':
         this.stellarService.allOffers = null
         this.stellarService.trades = null
-        this.getAccountOrders(null, false),
-        this.getAccountTrades(null)
+        this.getAccountOrders(null, false)
+        this.getAccTrades()
+        //this.getAccountTrades(null)
+
         // console.log('start Promise.all:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
         // Promise.all([          
         //   this.getAccountOrders(null, false),
@@ -548,7 +604,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
         // }) 
         break;
       case 'transfers':
-        this.getAccountPayments(null)
+        this.getAccPayments()
+        //this.getAccountPayments(null)
         break;
       case 'networkHistory':
         this.getNetworkHistory()

@@ -12,6 +12,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
+
 // Firebase services + enviorment module
 import { AngularFireModule } from "@angular/fire";
 import { AngularFireAuthModule } from "@angular/fire/auth";
@@ -67,6 +68,8 @@ export class MyHammerConfig extends HammerGestureConfig  {
     NgxPasswordToggleModule,
     NgxUiLoaderModule,
     ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production}),   
+    AngularFireModule.initializeApp(environment.firebase),
+ 	  AngularFirestoreModule,
   ],
   providers: [
     ErrorService, AuthService, StellarService,

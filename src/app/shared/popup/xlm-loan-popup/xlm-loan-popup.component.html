@@ -1,5 +1,5 @@
 <ng-template #content let-modal>
-  <app-popup-header popupHeaderTitle="Pay Off | 1.50 XLM Loan"></app-popup-header>
+  <app-popup-header popupHeaderTitle="Pay Off | 2.0 XLM Loan"></app-popup-header>
   <div class="modal-body">
 
     <app-error></app-error>
@@ -15,7 +15,7 @@
         <input disabled id="xlmBalance" type="text" class="form-control purple-input disabled-input" [value]="this.authService.getMaxAvailableXLM() + ' XLM'">
       </div>
       <div class="col-12 text-right">
-        <small class="text-purple">1.50 XLM Reserved</small>
+        <small class="text-purple">2.0 XLM Reserved</small>
       </div>
       <div class="col-12">
         <label for="loanValue" class="text-purple">
@@ -30,12 +30,12 @@
         </label>
         <input disabled id="difference" type="text" class="form-control purple-input disabled-input" [value]="this.authService.getMaxAvailableXLM() - this.XLMLoanValue > 0 ? (this.authService.getMaxAvailableXLM() - this.XLMLoanValue).toString() + ' XLM' : '0 XLM'">
       </div>
-      <div *ngIf="!this.authService.hash" class="col-12">
+      <!-- <div *ngIf="!this.authService.hash" class="col-12">
         <label for="password" class="text-purple">
           Password
         </label>
         <input [(ngModel)]="password" id="password" type="password" class="form-control purple-input disabled-input">
-      </div>
+      </div> -->
       
     </div>
 
@@ -52,7 +52,7 @@
       <div class="row mb-1">
         <div class="col-12 text-center">
           <p class="text-purple">
-            Thank you, your 1.50 XLM loan has been repaid successfully.
+            Thank you, your 2.0 XLM loan has been repaid successfully.
           </p>
         </div>
       </div>
@@ -75,7 +75,7 @@
       <div class="row mb-1">
         <div class="col-12 text-center">
           <p class="text-purple">
-            Something went wrong, please retry the 1.50 XLM load repayment.
+            Something went wrong, please retry the 2.0 XLM load repayment.
           </p>
         </div>
       </div>
@@ -86,7 +86,7 @@
   <div class="modal-footer">
     <div class="row text-center" style="display: contents!important;">
       <div class="col">
-        <button class="btn btn-purple" *ngIf="!success && !error" (click)="payOffLoan()">Pay Off 1.50 XLM</button>
+        <button class="btn btn-purple" *ngIf="!success && !error" (click)="payOffLoan()">Pay Off 2.0 XLM</button>
         <button class="btn btn-purple" *ngIf="success" (click)="popupService.close()">Close</button>
         <button class="btn btn-purple" *ngIf="error" (click)="retry()">Retry</button>
       </div>

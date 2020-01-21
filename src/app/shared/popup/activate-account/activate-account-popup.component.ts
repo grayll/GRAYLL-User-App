@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
+import {Component, OnInit, ViewChild, OnDestroy, HostListener} from '@angular/core';
 import {PopupService} from '../popup.service';
 import {Router} from '@angular/router';
 import {UserService} from '../../../authorization/user.service';
@@ -56,7 +56,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     this.firstPopup = true;
     this.secretKey = '                                                        ';
     this.seed = '';
-    this.onCloseRedirectTo = '/login';
+    this.onCloseRedirectTo = '/dashboard/overview';
     if (this.authService.isActivated()){
       this.router.navigateByUrl('/dashboard/overview')
     } else {
@@ -68,6 +68,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     this.buildForm() 
     this.popupService.open(this.modal);
   }
+  @HostListener('window:beforeunload')
   ngOnDestroy(){
     this.authService.RemoveSeedData()
     if (this.authService.isActivated()){      
@@ -135,9 +136,13 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     this.errorService.clearError();
     this.onValueChanged()
 
-    //if (!this.authService.GetSeedData(this.frm.value['password'])){
+    if (this.authService.hash && this.authService.hash != '' && this.frm.value['password'] != this.authService.hash){
+      this.errorService.handleError(null, "Please enter a valid password!")
+      return
+    }
+
     this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
-      console.log('phrase:', res.recoveryPhrase)  
+      //console.log('phrase:', res.recoveryPhrase)  
       this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
         let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
           enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
@@ -145,10 +150,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
         this.http.post(`api/v1/users/validateaccount`, data)
         .subscribe(resp => {
           console.log(resp)
-          if ((resp as any).errCode === environment.SUCCESS){
-            // let seedData = {seed: res.recoveryPhrase, publicKey: res.keypair.publicKey(), secret: res.keypair.secret()}
-            // this.authService.SetSeedData(seedData, this.frm.value['password'])
-    
+          if ((resp as any).errCode === environment.SUCCESS){                
             this.stellarService.trustAsset(res.keypair.secret()).then(
               txd => {
                 this.hideCloseButton = true;
@@ -157,13 +159,9 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
                 this.seed = res.recoveryPhrase  
                 this.error = false;
                 this.success = true;       
-                this.authService.userData.PublicKey = res.keypair.publicKey()
+                this.authService.userData.PublicKey = res.keypair.publicKey()                     
                 this.authService.SetLocalUserData() 
-                this.authService.RemoveSeedData()
-                // if (this.swPush.isEnabled && !this.authService.userData.Subs){
-                //   console.log('request subs')
-                //   this.requestSubNotifications()
-                // } 
+                this.authService.RemoveSeedData()                
               },
               err => {
                 console.log('err trust asset:', err)                 
@@ -238,15 +236,19 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     this.canGoToDeposit = true;
     this.error = false;
     this.success = false;
-    this.hideCloseButton = false;
-    this.onCloseRedirectTo = '/dashboard/overview';
+    this.hideCloseButton = false;    
   }
   goToDeposit() {
+    console.log('goToDeposit')
     this.popupService.close().then(() => {
       setTimeout(() => {
-        this.router.navigate(['/wallet/overview', {outlets: {popup: 'deposit'}}]);
-      }, 200);
+        this.router.navigate(['/dashboard/overview', {outlets: {popup: 'deposit'}}]);
+      }, 100);
     });
+
+    // this.popupService.close().then(() => {
+    //   this.router.navigate(['/wallet/overview', {outlets: {popup: 'deposit'}}]);
+    // });
   }
 }
   
