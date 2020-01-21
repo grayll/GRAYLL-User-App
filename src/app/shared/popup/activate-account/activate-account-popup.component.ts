@@ -141,7 +141,6 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
       return
     }
 
-    //if (!this.authService.GetSeedData(this.frm.value['password'])){
     this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
       //console.log('phrase:', res.recoveryPhrase)  
       this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
@@ -151,8 +150,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
         this.http.post(`api/v1/users/validateaccount`, data)
         .subscribe(resp => {
           console.log(resp)
-          if ((resp as any).errCode === environment.SUCCESS){
-                
+          if ((resp as any).errCode === environment.SUCCESS){                
             this.stellarService.trustAsset(res.keypair.secret()).then(
               txd => {
                 this.hideCloseButton = true;

@@ -39,6 +39,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
   subsink:SubSink
   server:any
   serverPayment: any
+  updateAvailable: boolean = false
    
   constructor(
     private authService: AuthService,
@@ -51,6 +52,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     private http: HttpClient,
     private snotifyService: SnotifyService,
     public popupService: PopupService,   
+    private swUpdate: SwUpdate,
   ) {
 
     // if (!this.authService.userData){
@@ -115,12 +117,8 @@ export class NavbarComponent implements OnDestroy, OnInit {
       })
     } else {
       //this.streaming()  
-    }
-
-    
-    
-    this.subsink = new SubSink()    
-
+    }    
+    this.subsink = new SubSink()
     this.subsink.add(push.messages.subscribe(msg => {
       let data = (msg as any).notification      
       // if (data.type === 'wallet'){
@@ -145,6 +143,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
       // this.authService.SetLocalUserData() 
     }));
 
+    this.checkForUpdates()
     // if (updates.isEnabled) {
     //   interval(6 * 60 * 60).subscribe(() => updates.checkForUpdate()
     //     .then(() => console.log('checking for updates')));
@@ -188,6 +187,20 @@ export class NavbarComponent implements OnDestroy, OnInit {
         
       }) 
     }
+
+    if (this.updateAvailable){
+      this.promptUser()
+    }
+    
+  }
+  checkForUpdates() {
+    console.log('this.checkForUpdates:')
+    this.swUpdate.available.subscribe(event => {
+      // prompt the user to reload the app now      
+      this.updateAvailable = true;
+      console.log('this.updateAvailable:', this.updateAvailable)
+      this.promptUser()
+    });
   }
   ngOnInit1(){
     console.log('navbar.subscribe', this.ComId)
@@ -208,28 +221,30 @@ export class NavbarComponent implements OnDestroy, OnInit {
         this.authService.userData.xlmPrice = xlmPrice
         this.authService.userData.grxPrice = grxPrice
         this.authService.SetLocalUserData()
-        console.log('NAV.this.authService.userData.xlmPrice:', this.authService.userData.xlmPrice)
+        
         console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
         console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
         
       }) 
     }
+
+    
   }
 
-  public checkForUpdates(): void {
-    this.subsink.add(this.updates.available.subscribe(event => this.promptUser()))
-    if (this.updates.isEnabled) {
-      // Required to enable updates on Windows and ios.
-      this.updates.activateUpdate();
-      interval(60 * 60 * 1000).subscribe(() => {
-          this.updates.checkForUpdate().then(() => {
-              // console.log('checking for updates');
-          });
-      });
-    }
-    // Important: on Safari (ios) Heroku doesn't auto redirect links to their https which allows the installation of the pwa like usual
-    // but it deactivates the swUpdate. So make sure to open your pwa on safari like so: https://example.com then (install/add to home)
-  }
+  // public checkForUpdates(): void {
+  //   this.subsink.add(this.updates.available.subscribe(event => this.promptUser()))
+  //   if (this.updates.isEnabled) {
+  //     // Required to enable updates on Windows and ios.
+  //     this.updates.activateUpdate();
+  //     interval(60 * 60 * 1000).subscribe(() => {
+  //         this.updates.checkForUpdate().then(() => {
+  //             // console.log('checking for updates');
+  //         });
+  //     });
+  //   }
+  //   // Important: on Safari (ios) Heroku doesn't auto redirect links to their https which allows the installation of the pwa like usual
+  //   // but it deactivates the swUpdate. So make sure to open your pwa on safari like so: https://example.com then (install/add to home)
+  // }
 
   promptUser(): void {
     this.updates.activateUpdate().then(() => {

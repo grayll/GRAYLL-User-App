@@ -1,0 +1,67 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Deposit GRX or XLM"></app-popup-header>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12">
+        <p class="text-purple">
+          <span class="font-weight-bolder">Send GRX or XLM to your GRAYLL wallet address below.</span>
+          <br>
+          Funding your account only takes a few seconds to confirm.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-9">
+        <div class="row">
+          <div class="col-md-12">
+            <p class="text-purple font-weight-bolder mb-0">Federation Address (Payment Alias)</p>
+          </div>
+          <div class="col-md-8 col-sm-12 text-center" placement="bottom" [ngbTooltip]="federationAddress" triggers="click:blur">
+            <input disabled [value]="federationAddress" type="text" class="form-control form-control-no-border bg-gradient disabled-field">
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <button (click)="copyFederationAddress()" class="btn btn-block btn-yellow">Copy Address</button>
+          </div>
+          <div class="col-md-12">
+            <p class="text-purple font-12 mt-1">
+              Share your Federation Address (Payment Alias) with others so they can send you GRX and XLM.
+              It is linked to your Stellar address below.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-9">
+        <div class="row">
+          <div class="col-md-12">
+            <p class="text-purple font-weight-bolder mb-0">Stellar Address (Public Key)</p>
+          </div>
+          <div class="col-md-8 col-sm-12 text-center" placement="bottom" [ngbTooltip]="stellarAddress" triggers="click:blur">
+            <input disabled [value]="stellarAddress" type="text" class="form-control form-control-no-border bg-gradient text-light disabled-field">
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <button (click)="copyStellarAddress()" class="btn btn-block btn-yellow">Copy Address</button>
+          </div>
+          <div class="col-md-12">
+            <p class="text-purple font-12 mt-1">
+              This is a public key of your GRAYLL account, which can be safely shared to receive GRX and XLM.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 text-center">
+        <!-- <img class="qr-code-img text-sm-center float-md-right" src="assets/images/qrcode_demo.png" alt="Demo QR Code"> -->
+        <qrcode [qrdata]="stellarAddress" [size]="50" class="qr-code-img text-sm-center float-md-right" [level]="'M'"></qrcode>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer justify-content-center">
+    <div class="row center-mobile">
+      <div class="col">
+        <a href="javascript:void(0)" class="btn btn-purple" (click)="depositClose()">
+          Deposit Completed
+        </a>
+      </div>
+    </div>
+  </div>
+</ng-template>

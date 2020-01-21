@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 import {SubSink} from 'subsink';
 import { StellarService } from '../authorization/services/stellar-service';
 import {SnotifyService} from 'ng-snotify';
-import {SwPush} from "@angular/service-worker";
+import {SwPush, SwUpdate} from "@angular/service-worker";
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -28,9 +28,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   totalGRY: number
   totalGRZ: number
   pageId: string
+  updateAvailable: boolean
 
   constructor(
     private swPush: SwPush,
+    private swUpdate: SwUpdate,
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
@@ -74,7 +76,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     }
   }
-
+  checkForUpdates() {
+    this.swUpdate.available.subscribe(event => {
+      // prompt the user to reload the app now
+      this.updateAvailable = true;
+    });
+  }
   ngOnInit(): void {   
     this.changeBackgroundColor(true);    
     console.log('dashboard-this.authService.userData.CreatedAt', this.authService.userData.CreatedAt)
