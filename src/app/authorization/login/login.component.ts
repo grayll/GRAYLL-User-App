@@ -151,7 +151,7 @@ export class LoginComponent {
                 this.authService.userMetaStore.ShouldReload = true
                 console.log('login - this.authService.userMetaStore: ', this.authService.userMetaStore)
                 this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
-                this.authService.SetLocalUserMeta()
+                //this.authService.SetLocalUserMeta()
                 // if (!this.authService.userData.OpenOrders){
                 //   this.authService.userData.OpenOrders = 0
                 // }

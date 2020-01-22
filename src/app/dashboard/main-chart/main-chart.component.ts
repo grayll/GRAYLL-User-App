@@ -42,19 +42,19 @@ export class MainChartComponent {
       frame:"frame_01h",
       name: '1 Hours'
     },
-    // {
-    //   id: 240,
-    //   frame:"frame_04h",
-    //   name: '4 Hours'
-    // },
-    // {
-    //   id: 1440,
-    //   frame:"frame_01d",
-    //   name: '1 Day'
-    // }
+    {
+      id: 240,
+      frame:"frame_04h",
+      name: '4 Hours'
+    },
+    {
+      id: 1440,
+      frame:"frame_01d",
+      name: '1 Day'
+    }
   ];
 
-  selectedTimespan: {id: number, frame:string, name: string} = this.timespanFilter[0];
+  selectedTimespan: {id: number, frame:string, name: string} = this.timespanFilter[4];
   public onChange(value: any) {
     console.log(this.selectedTimespan)
     this.getFrameData()
@@ -64,7 +64,7 @@ export class MainChartComponent {
     this.dataService.getFramesData(288, "grxusd,gryusd,grzusd", this.selectedTimespan.frame).subscribe(data => {      
       console.log(data)
       if (data.res.grxusd && data.res.grxusd[0]){ 
-        console.log('grx')
+        
         let timeFrame:TimePrice[] = [] 
         data.res.grxusd.forEach(p => {
           let np = {t: new Date(p.ts*1000), y:p.price}   
@@ -74,7 +74,7 @@ export class MainChartComponent {
       }   
 
       if (data.res.gryusd && data.res.gryusd[0]){ 
-        console.log('gry')
+        
         let timeFrame:TimePrice[] = [] 
         data.res.gryusd.forEach(p => {
           let np = {t: new Date(p.ts*1000), y:p.price}   
@@ -84,7 +84,7 @@ export class MainChartComponent {
       } 
 
       if (data.res.grzusd && data.res.grzusd[0]){ 
-        console.log('grz')
+       
         let timeFrame:TimePrice[] = [] 
         data.res.grzusd.forEach(p => {
           let np = {t: new Date(p.ts*1000), y:p.price}   
@@ -164,7 +164,7 @@ public lineChartData =  [
     pointRadius: 0,
     fill: false,
     lineTension: 0,
-    borderWidth: 1
+    borderWidth: 1.5
   },
   {
     label: 'GRY',
@@ -175,7 +175,7 @@ public lineChartData =  [
     pointRadius: 0,
     fill: false,
     lineTension: 0,
-    borderWidth: 1,
+    borderWidth: 1.3,
     yAxisID: 'id-right',
   },
   {
@@ -187,7 +187,7 @@ public lineChartData =  [
     pointRadius: 0,
     fill: false,
     lineTension: 0,
-    borderWidth: 1,
+    borderWidth: 1.3,
     yAxisID: 'id-right1',
   }
 ];
@@ -221,10 +221,8 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
         {
           id: 'id-left',
           position: 'left',
-          // gridLines: {
-          //   drawBorder: true,
-          //   display: false
-          // }          
+          ticks: { fontColor: 'white' },
+          gridLines: { color: 'rgba(255,255,255,0.1)' }                  
         },
         {
           id: 'id-right',

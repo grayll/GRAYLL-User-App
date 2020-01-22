@@ -102,6 +102,8 @@ export class RevealSecretKeyPopupComponent implements OnInit {
                   this.popupService.close().then(() => {
                     this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
                   });
+                } else {
+                  this.errorService.handleError(null, 'Your password is invalid! Please retry.')
                 }
               })                     
             } else {        
@@ -122,18 +124,21 @@ export class RevealSecretKeyPopupComponent implements OnInit {
             this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.')
           })   
       } else {
-        //send request token to email
-        
+        //send request token to email        
         this.http.post(`api/v1/users/verifyRevealSecretToken`, {token:this.code})
         .subscribe(res => {
           if ((res as any).errCode == environment.SUCCESS){            
             this.stellarService.decryptSecretKey(this.password, 
               {Salt: this.authService.userInfo.SecretKeySalt, EncryptedSecretKey:this.authService.userInfo.EnSecretKey}, 
               SecKey => {
-              if (SecKey != ''){               
+              if (SecKey != ''){     
+                console.log('sec', SecKey)          
                 this.popupService.close().then(() => {
                   this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
                 });
+              } else {
+                console.log('invalid pwd')       
+                this.errorService.handleError(null, 'Your password is invalid! Please retry.')
               }
             })
           } else if ((res as any).errCode == environment.INVALID_CODE) {
@@ -155,7 +160,7 @@ export class RevealSecretKeyPopupComponent implements OnInit {
   
   clientValidation(): boolean {
     if (!this.code || this.code === '') {
-      this.errorService.handleError(null, 'Please enter your ' + (this.authService.userInfo.Tfa ? '2FA code' : 'password') + '!');
+      this.errorService.handleError(null, 'Please enter your ' + (this.authService.userInfo.Tfa ? '2FA code' : 'Security code') + '!');
       return false;
     }
     if (!this.authService.hash){

@@ -5,7 +5,7 @@
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "/",
-  "start_url": "/?utm_source=grayll_pwa_a2hs",
+  "start_url": "/",
   "icons": [
     {
       "src": "assets/icons/favicon.ico",
