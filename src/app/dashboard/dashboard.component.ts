@@ -28,8 +28,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   totalGRY: number
   totalGRZ: number
   pageId: string
-  updateAvailable: boolean
-
+  
   constructor(
     private swPush: SwPush,
     private swUpdate: SwUpdate,
@@ -76,12 +75,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     }
   }
-  checkForUpdates() {
-    this.swUpdate.available.subscribe(event => {
-      // prompt the user to reload the app now
-      this.updateAvailable = true;
-    });
-  }
+ 
   ngOnInit(): void {   
     this.changeBackgroundColor(true);    
     console.log('dashboard-this.authService.userData.CreatedAt', this.authService.userData.CreatedAt)

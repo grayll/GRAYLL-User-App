@@ -9,7 +9,7 @@ import { AlgoService } from 'src/app/system/algo.service';
 })
 export class InfoBoxesComponent implements AfterViewInit {
 
-  constructor(private algoService:AlgoService,) { }
+  constructor(public algoService:AlgoService,) { }
 
   public lineChartData: Array<any> = [
     { data: [12, 19, 3, 5, 2, 3], label: 'Balance $' }

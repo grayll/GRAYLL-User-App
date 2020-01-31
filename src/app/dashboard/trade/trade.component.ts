@@ -13,7 +13,7 @@ export class TradeComponent {
   faChartLine = faChartLine;
   faCircle = faCircle;
 
-  constructor(private algoService:AlgoService,
-    private authService:AuthService) { }
+  constructor(public algoService:AlgoService,
+    public authService:AuthService) { }
 
 }

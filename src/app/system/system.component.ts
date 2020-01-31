@@ -18,7 +18,7 @@ export class SystemComponent implements OnInit, OnDestroy {
   constructor(
     private activatedRoute: ActivatedRoute,
     public sharedService: SharedService,
-    private authService: AuthService,
+    public authService: AuthService,
   ) {
     this.pageId = "system"
     this.loadDataFromRoute();

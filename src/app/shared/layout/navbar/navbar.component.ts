@@ -42,7 +42,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
   updateAvailable: boolean = false
    
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router,
     private ngZone:NgZone,
     public notificationsService: NotificationsService,
@@ -52,7 +52,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     private http: HttpClient,
     private snotifyService: SnotifyService,
     public popupService: PopupService,   
-    private swUpdate: SwUpdate,
+    
   ) {
 
     // if (!this.authService.userData){
@@ -68,8 +68,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     // }   
   
     this.server = new StellarSdk.Server(environment.horizon_url);
-    //this.serverPayment = new StellarSdk.Server(environment.horizon_url_payment);
-    
+        
     // get user meta data
     this.authService.getUserMeta()
     this.authService.streamPrices()
@@ -141,25 +140,16 @@ export class NavbarComponent implements OnDestroy, OnInit {
       //   this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral + 1
       // }
       // this.authService.SetLocalUserData() 
-    }));
-
-    this.checkForUpdates()
-    // if (updates.isEnabled) {
-    //   interval(6 * 60 * 60).subscribe(() => updates.checkForUpdate()
-    //     .then(() => console.log('checking for updates')));
-    // }
-    
+    }));    
   }
 
   ngOnInit(){
-    if (!this.authService.userData){
-      console.log('NAV.GetLocalUserData()')
+    if (!this.authService.userData){      
       this.authService.GetLocalUserData()
     } 
    
     if (this.authService.userMetaStore.XLM === 0){      
-      this.authService.GetLocalUserMeta()
-      console.log('NAV.userMetaStore1:', this.authService.userMetaStore)
+      this.authService.GetLocalUserMeta()      
     } 
     console.log('navbar.subscribe', this.ComId)
     if (this.ComId != 'notification'){
@@ -188,20 +178,10 @@ export class NavbarComponent implements OnDestroy, OnInit {
       }) 
     }
 
-    if (this.updateAvailable){
-      this.promptUser()
-    }
-    
+    //this.promptUser()    
+    this.checkForUpdates()
   }
-  checkForUpdates() {
-    console.log('this.checkForUpdates:')
-    this.swUpdate.available.subscribe(event => {
-      // prompt the user to reload the app now      
-      this.updateAvailable = true;
-      console.log('this.updateAvailable:', this.updateAvailable)
-      this.promptUser()
-    });
-  }
+  
   ngOnInit1(){
     console.log('navbar.subscribe', this.ComId)
     if (this.ComId != 'notification'){
@@ -226,31 +206,34 @@ export class NavbarComponent implements OnDestroy, OnInit {
         console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
         
       }) 
+    }    
+  }
+  
+  checkForUpdates(): void {
+    console.log('checkForUpdates()');
+    this.updates.available.subscribe(event => this.promptUser());
+    if (this.updates.isEnabled) {
+        // Required to enable updates on Windows and ios.
+        this.updates.activateUpdate();
+        interval(2 * 60 * 1000).subscribe(() => {
+          console.log('run interval 2 minutes');
+            this.updates.checkForUpdate().then(() => {
+                console.log('checking for updates');
+            });
+        });
     }
-
-    
+    // Important: on Safari (ios) Heroku doesn't auto redirect links to their https which allows the installation of the pwa like usual
+    // but it deactivates the swUpdate. So make sure to open your pwa on safari like so: https://example.com then (install/add to home)
   }
 
-  // public checkForUpdates(): void {
-  //   this.subsink.add(this.updates.available.subscribe(event => this.promptUser()))
-  //   if (this.updates.isEnabled) {
-  //     // Required to enable updates on Windows and ios.
-  //     this.updates.activateUpdate();
-  //     interval(60 * 60 * 1000).subscribe(() => {
-  //         this.updates.checkForUpdate().then(() => {
-  //             // console.log('checking for updates');
-  //         });
-  //     });
-  //   }
-  //   // Important: on Safari (ios) Heroku doesn't auto redirect links to their https which allows the installation of the pwa like usual
-  //   // but it deactivates the swUpdate. So make sure to open your pwa on safari like so: https://example.com then (install/add to home)
-  // }
-
   promptUser(): void {
-    this.updates.activateUpdate().then(() => {
-        window.location.reload();
-    });
-  }  
+    console.log('Update available')
+    if(confirm("New version available. Load new version?")) {
+      this.updates.activateUpdate().then(() => {          
+          window.location.reload();
+      });
+    }
+  }
 
   // streaming payments of account
   // streaming trade for get grx,xlm price

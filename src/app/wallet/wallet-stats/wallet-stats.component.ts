@@ -78,10 +78,10 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     private router: Router,
     private stellarService: StellarService,
-    private authService: AuthService,
+    public authService: AuthService,
     public push: SwPush,
     public popupService: PopupService,
-    private algoService: AlgoService,
+    public algoService: AlgoService,
   ) {
     
     this.grxP = this.authService.userData.grxPrice
@@ -220,7 +220,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     //})  
   }
   async executeSell(){
-    if (!this.validateBuyAbility()){
+    if (!this.validateSellAbility()){
       return
     } 
     //this.authService.GetSecretKey(null).then(SecKey => {    
@@ -263,6 +263,20 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
  
   }
   buyGrx(){    
+
+    // let keyRecovery = "AYOertZTfOtb0n6GZnCbcwN7QXMHhibn9BrT5x5JPNZ0nZ1txy/JY5s17tXE6moIS5lyj6VUzkV9Z44y0FLOA4Hakf8e/VGHJ9SVa/mBeZuGkMM8APr1UH4XpAdSPhKM7w=="
+    // let localKey = "U3rNtmqQEqgjHLz7YSN4BzBZ9LoV4TGu/WywpXD3lII="
+    // let pwd = "Ffjj9999"
+    // this.stellarService.decryptSecretKey(pwd, 
+    //   {Salt: localKey, EncryptedSecretKey:keyRecovery}, 
+    //   SecKey => {
+    //   if (SecKey != ''){
+    //     console.log(SecKey)
+    //   } else {
+    //     console.log('seckey: invalid')
+    //   }
+    // })  
+
     this.action = 'buy'       
     if(!this.validateSession()){
       return
@@ -275,12 +289,19 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
   validateBuyAbility(){
     let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
-    if (+this.grxAmount*+this.grxPrice > maxAvailabeXLM || maxAvailabeXLM < 0){
-      console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
-      this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')
-      this.reInitVariables()    
+    if (maxAvailabeXLM < 0){
+      this.snotifyService.simple('Insufficient funds to submit this buy order! For each sell order you place 0.5 XLM is reserved from your account balance. Please add more XLM to your account.')
+      this.reInitVariables()  
       return false
     }
+
+    if (+this.grxAmount*+this.grxPrice > maxAvailabeXLM){
+      console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
+      this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')
+      this.reInitVariables()  
+      return false
+    }
+    
     return true
   }
   validateSession(){
@@ -344,12 +365,21 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
     let maxAvailabeGRX = this.authService.getMaxAvailableGRX()
 
-    if (+this.grxAmount > maxAvailabeGRX || maxAvailabeXLM < 0){
+    if (maxAvailabeXLM < 0){
+      this.snotifyService.simple(`Insufficient funds to submit this sell order! For each buy order you place 0.5 XLM is reserved from your account balance.
+        Please add more XLM to your account.`)
+      this.reInitVariables()  
+      return false 
+    }
+
+    if (+this.grxAmount > maxAvailabeGRX){
       console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
       this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')  
       this.reInitVariables()  
       return false
     }
+
+    
     return true
   }
   sellGrx(){

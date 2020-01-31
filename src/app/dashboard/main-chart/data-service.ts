@@ -50,23 +50,20 @@ export class ChartDataService {
   //   return this.getFrameData(limit, this.getCoinDocName(coinIndex), this.getFrameName(this.frameIndex))
   // }
 
-  getFrameData(limit:number, coin:string, frame:string): Observable<PriceData[]> {       
-    return this.http.post<PriceData[]>("https://us-central1-grayll-mvp.cloudfunctions.net/GetFrameData",
-    {
-      "Limit":limit, "Coin":coin, "Frame":frame
-    });    
-  }
-  runDataFrames(limit:number, coins:string, frame:string):Observable<any>{
-    //console.log('runDataFrames', this.frameIndex, coins, frame)
-    return interval(60000 * this.frameIndex).pipe(
-      flatMap(() => this.getFramesData(limit, coins, frame))
-    );
-  }
+  // getFrameData(limit:number, coin:string, frame:string): Observable<PriceData[]> {       
+  //   return this.http.post<PriceData[]>("https://us-central1-grayll-mvp.cloudfunctions.net/GetFrameData",
+  //   {
+  //     "Limit":limit, "Coin":coin, "Frame":frame
+  //   });    
+  // }
+  // runDataFrames(limit:number, coins:string, frame:string):Observable<any>{
+  //   //console.log('runDataFrames', this.frameIndex, coins, frame)
+  //   return interval(60000 * this.frameIndex).pipe(
+  //     flatMap(() => this.getFramesData(limit, coins, frame))
+  //   );
+  // }
   getFramesData(limit:number, coins:string, frame:string):Observable<any> {            
-    return this.http.post("api/v1/users/GetFramesData",
-    {
-      "limit":limit, "coins":coins, "frame":frame
-    })
+    return this.http.get(`api/v1/users/GetFramesDataGet/${limit}/${coins}/${frame}`)
   }
   // runGetDataFrames(limit:number, coins:string, frame:string){
   //   setInterval(()=> {

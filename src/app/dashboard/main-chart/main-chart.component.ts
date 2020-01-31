@@ -68,7 +68,7 @@ export class MainChartComponent {
         let timeFrame:TimePrice[] = [] 
         data.res.grxusd.forEach(p => {
           let np = {t: new Date(p.ts*1000), y:p.price}   
-          timeFrame.push(np)
+          timeFrame.unshift(np)
         });
         this.lineChartData[0].data  = timeFrame        
       }   
@@ -78,7 +78,7 @@ export class MainChartComponent {
         let timeFrame:TimePrice[] = [] 
         data.res.gryusd.forEach(p => {
           let np = {t: new Date(p.ts*1000), y:p.price}   
-          timeFrame.push(np)
+          timeFrame.unshift(np)
         });
         this.lineChartData[1].data  = timeFrame        
       } 
@@ -88,7 +88,7 @@ export class MainChartComponent {
         let timeFrame:TimePrice[] = [] 
         data.res.grzusd.forEach(p => {
           let np = {t: new Date(p.ts*1000), y:p.price}   
-          timeFrame.push(np)
+          timeFrame.unshift(np)
         });
         this.lineChartData[2].data  = timeFrame        
       }       

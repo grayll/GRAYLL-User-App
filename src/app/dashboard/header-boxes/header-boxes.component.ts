@@ -20,10 +20,10 @@ export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
   subSink: SubSink
 
   constructor(
-    private stellarService: StellarService,
-    private authService: AuthService,
+    public stellarService: StellarService,
+    public authService: AuthService,
     private http: HttpClient,
-    private algoService:AlgoService,
+    public algoService:AlgoService,
   ) {    
     this.subSink = new SubSink()
     this.getDashBoardData()     
@@ -39,24 +39,20 @@ export class HeaderBoxesComponent  implements OnDestroy, OnInit  {
   }
 
   getDashBoardData(){
-    this.http.post("api/v1/users/GetDashBoardInfo",
-    {
-      "coins":"grxusd,gryusd,grzusd"
-    }).subscribe(
+    this.http.get("api/v1/users/GetDashBoardInfoGet/grxusd,gryusd,grzusd").subscribe(
       data => {
-        console.log('db data:', data)
+        //console.log('db data:', data)
         let res = data as any
         if (res.db.grxusd){ 
           this.grxdb = res.db.grxusd
         }
         if (res.db.gryusd){ 
           this.grydb = res.db.gryusd
-          console.log('this.grydb :', this.grydb)
+          //console.log('this.grydb :', this.grydb)
         }
         if (res.db.grzusd){ 
           this.grzdb = res.db.grzusd
-        }
-        
+        }        
       },
       e => {
         console.log(e)

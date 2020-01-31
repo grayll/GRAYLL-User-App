@@ -52,7 +52,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   constructor(
     public sharedService: SharedService,
-    private authService: AuthService,
+    public authService: AuthService,
   ) {
     this.pageId = "setting"
   }

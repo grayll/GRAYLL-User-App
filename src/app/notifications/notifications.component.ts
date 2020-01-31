@@ -68,10 +68,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   constructor(
     public notificationsService: NotificationsService,
     public sharedService: SharedService,
-    private authService: AuthService,
+    public authService: AuthService,
     private http: HttpClient,
     private afs: AngularFirestore,
-    private dataService:NoticeDataService,
+    public dataService:NoticeDataService,
   ) {
     // Get notices from server
     this.pageId = "notification"

@@ -43,7 +43,7 @@ export class WalletComponent implements OnDestroy  {
 
   constructor ( 
       private stellarService: StellarService,
-      private authService: AuthService,
+      public authService: AuthService,
       private snotifyService: SnotifyService,
       private algoService:AlgoService
     ) 

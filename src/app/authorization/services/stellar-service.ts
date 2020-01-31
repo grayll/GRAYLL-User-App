@@ -561,7 +561,9 @@ export class StellarService {
                 .setTimeout(180)
                 //.setNetworkPassphrase(StellarSdk.Networks.MAINNET)
                 .build()
-                tx.sign(source)                
+                tx.sign(source)  
+                let xdr = tx.toXDR('base64') 
+                console.log('xdr:', xdr)            
                 this.horizon.submitTransaction(tx).then( res => {
                     //console.log('submitTransaction res:', res)
                     resolve(res)

@@ -219,7 +219,7 @@
                   </div>
                   <div class="col">
                     <a class="purple-link" href="javascript:void(0)" (click)="populateMaxXLM()">
-                      Max Available XLM: {{this.getMaxXLMForTrade()}}
+                      Max Available XLM: {{this.authService.getMaxAvailableXLM().toFixed(7)}}
                     </a>
                   </div>
                 </div>

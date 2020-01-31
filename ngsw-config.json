@@ -37,15 +37,20 @@
   ,
   "dataGroups": [    
     {
-      "name": "from-api",
-      "version": 1,
-      "urls": ["/GetDashBoardInfo"],
+      "name": "from-api",      
+      "urls": [
+        "/**/GetDashBoardInfoGet", 
+        "/**/GetFramesDataGet",
+        "/**/horizon-testnet.stellar.org",
+        "/**/horizon.stellar.org",
+        "/**/firestore.googleapis.com"
+      ],
       "cacheConfig": {
         "strategy": "freshness",
-        "maxSize": 15,
-        "maxAge": "1h",
+        "maxSize": 100,
+        "maxAge": "1d",
         "timeout": "3s"
       }
-    }
+    }    
   ]
 }

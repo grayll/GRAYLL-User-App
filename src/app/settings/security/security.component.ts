@@ -50,7 +50,7 @@ export class SecurityComponent implements OnDestroy, OnInit {
     private snotifyService: SnotifyService,
     private popupService: PopupService,
     private settingsService: SettingsService,
-    private authService: AuthService,
+    public authService: AuthService,
     private userService: UserService,
     private router: Router,
   ) {

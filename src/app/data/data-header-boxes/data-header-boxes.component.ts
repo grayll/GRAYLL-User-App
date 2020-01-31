@@ -69,8 +69,9 @@ export class DataHeaderBoxesComponent implements OnInit {
   public lineChartLegend = false;
   public lineChartType = 'line';
 
-  constructor(private authService: AuthService,
-    private algoService:AlgoService) { }
+  constructor(
+    public authService: AuthService,
+    public algoService: AlgoService) { }
 
   ngOnInit() {
   }

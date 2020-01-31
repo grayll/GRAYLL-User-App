@@ -24,6 +24,11 @@
         <div id="collapsedContent" [ngbCollapse]="isContentCollapsed">
           {{notification.body}}
         </div>
+        <p *ngIf="notification.url" class="font-12 mb-0">
+          <a href="{{notification.url}}" target="_blank" class="white-link">
+            PAYOFF LOAN
+          </a>
+        </p>
       </div>
     </div>
   </div>
