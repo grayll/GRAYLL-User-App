@@ -7,11 +7,13 @@ import {DataHeaderBoxesComponent} from './data-header-boxes/data-header-boxes.co
 import {ChartsModule} from 'ng2-charts';
 import {NgbCarouselModule, NgbTabsetModule} from '@ng-bootstrap/ng-bootstrap';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 
 @NgModule({
   declarations: [
     DataComponent,
-    DataHeaderBoxesComponent
+    DataHeaderBoxesComponent,
+    ConfirmNewVersionComponent,
   ],
   imports: [
     CommonModule,

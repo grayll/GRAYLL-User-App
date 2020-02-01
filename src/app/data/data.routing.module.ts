@@ -3,6 +3,7 @@ import {DataComponent} from './data.component';
 import {NgModule} from '@angular/core';
 import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
 import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
+import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 
 const popupRoutes: Routes = [
   {
@@ -17,6 +18,11 @@ const routes: Routes = [
     path: 'overview',
     component: DataComponent,
     children: [...popupRoutes]
+  },
+  {
+    path: 'confirm-new-version',
+    component: ConfirmNewVersionComponent,
+    outlet: 'popup'
   },
   {
     path: 'overview/system-activity/closed-algo-positions',

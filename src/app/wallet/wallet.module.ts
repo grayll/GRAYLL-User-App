@@ -16,6 +16,7 @@ import {WithdrawErrorPopupComponent} from './wallet-stats/withdraw/withdraw-erro
 import {NgSelectModule} from '@ng-select/ng-select';
 import {NgxFlagIconCssModule} from 'ngx-flag-icon-css';
 import { QRCodeModule } from 'angularx-qrcode';
+import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { QRCodeModule } from 'angularx-qrcode';
     WithdrawPopupComponent,
     WithdrawSuccessPopupComponent,
     ReviewWithdrawPopupComponent,
-    WithdrawErrorPopupComponent
+    WithdrawErrorPopupComponent,
+    ConfirmNewVersionComponent,
   ],
   imports: [
     CommonModule,

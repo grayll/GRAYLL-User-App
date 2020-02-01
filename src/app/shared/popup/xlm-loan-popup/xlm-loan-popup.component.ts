@@ -19,7 +19,7 @@ export class XlmLoanPopupComponent implements OnInit {
 
   @ViewChild('content') modal;
  // currentXLMBalance: number;
-  XLMLoanValue:number = 2.0001;
+  XLMLoanValue:number = 2.1000;
 
   // XLMBalanceS: string = '';
   // XLMLoanS: string = this.XLMLoanValue.toString()+ ' XLM';

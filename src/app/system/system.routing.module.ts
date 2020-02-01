@@ -6,11 +6,17 @@ import {OpenAlgoPositionSuccessComponent} from './system-header-boxes/open-algo-
 import {OpenAlgoPositionErrorComponent} from './system-header-boxes/open-algo-position-error/open-algo-position-error.component';
 import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
 import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
+import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 
 const popupRoutes: Routes = [
   {
     path: 'cancel-algo-positions',
     component: CancelAlgoPositionsComponent,
+    outlet: 'popup'
+  },
+  {
+    path: 'confirm-new-version',
+    component: ConfirmNewVersionComponent,
     outlet: 'popup'
   },
   {

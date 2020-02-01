@@ -17,6 +17,7 @@ import {PopupModule} from '../shared/popup/popup.module';
 import {NgxFlagIconCssModule} from 'ngx-flag-icon-css';
 import {DepositPopupComponent} from './deposit-popup/deposit-popup.component';
 import { QRCodeModule } from 'angularx-qrcode';
+import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { QRCodeModule } from 'angularx-qrcode';
     TradeComponent,
     HeaderBoxesComponent,
     DepositPopupComponent,
+    ConfirmNewVersionComponent,
   ],
   imports: [
     CommonModule,

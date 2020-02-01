@@ -14,6 +14,7 @@ import {CountdownModule} from 'ngx-countdown';
 import {OpenAlgoPositionSuccessComponent} from './system-header-boxes/open-algo-position-success/open-algo-position-success.component';
 import {OpenAlgoPositionErrorComponent} from './system-header-boxes/open-algo-position-error/open-algo-position-error.component';
 import {UnreadNotificationsComponent} from './system-header-boxes/unread-notifications/unread-notifications.component';
+import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,9 @@ import {UnreadNotificationsComponent} from './system-header-boxes/unread-notific
     CancelAlgoPositionsComponent,
     OpenAlgoPositionSuccessComponent,
     OpenAlgoPositionErrorComponent,
-    UnreadNotificationsComponent
+    UnreadNotificationsComponent,
+    ConfirmNewVersionComponent,
+    
   ],
   imports: [
     //NgModule,

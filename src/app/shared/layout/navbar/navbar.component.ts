@@ -211,14 +211,20 @@ export class NavbarComponent implements OnDestroy, OnInit {
   
   checkForUpdates(): void {
     console.log('checkForUpdates()');
-    this.updates.available.subscribe(event => this.promptUser());
+    this.updates.available.subscribe(event => 
+      {
+        //this.promptUser()
+        console.log('show new version')
+        this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
+        //this.popupService.open(this.router.url + "(popup)")
+      });
     if (this.updates.isEnabled) {
         // Required to enable updates on Windows and ios.
         this.updates.activateUpdate();
         interval(2 * 60 * 1000).subscribe(() => {
-          console.log('run interval 2 minutes');
+          //console.log('run interval 2 minutes');
             this.updates.checkForUpdate().then(() => {
-                console.log('checking for updates');
+                console.log('Checking for update');
             });
         });
     }
@@ -227,7 +233,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
   }
 
   promptUser(): void {
-    console.log('Update available')
+    console.log('Update is available')
     if(confirm("New version available. Load new version?")) {
       this.updates.activateUpdate().then(() => {          
           window.location.reload();

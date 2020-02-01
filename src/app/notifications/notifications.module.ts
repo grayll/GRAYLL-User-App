@@ -6,10 +6,12 @@ import {SharedModule} from '../shared/shared.module';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {PopupModule} from '../shared/popup/popup.module';
 import {NgbCarouselModule, NgbCollapseModule} from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 
 @NgModule({
   declarations: [
-    NotificationsComponent
+    NotificationsComponent,
+    ConfirmNewVersionComponent,
   ],
   imports: [
     CommonModule,

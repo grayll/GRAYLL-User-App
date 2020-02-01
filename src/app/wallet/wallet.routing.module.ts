@@ -12,10 +12,16 @@ import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-pop
 import {XlmBalanceStatusPopupComponent} from '../shared/popup/xlm-balance-status-popup/xlm-balance-status-popup.component';
 import {InputPasswordComponent} from '../shared/popup/input-password/input-password.component';
 import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
+import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 const popupRoutes: Routes = [
   {
     path: 'deposit',
     component: DepositPopupComponent,
+    outlet: 'popup'
+  },
+  {
+    path: 'confirm-new-version',
+    component: ConfirmNewVersionComponent,
     outlet: 'popup'
   },
   {

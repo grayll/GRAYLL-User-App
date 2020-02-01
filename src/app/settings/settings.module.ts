@@ -32,6 +32,7 @@ import {DataSettingsComponent} from './data-settings/data-settings.component';
 import { DisableWalletAppNotificationsSettingsComponent } from './notifications-settings/disable-wallet-app-notifications-settings/disable-wallet-app-notifications-settings.component';
 import { DisableAlgoAppNotificationsSettingsComponent } from './notifications-settings/disable-algo-app-notifications-settings/disable-algo-app-notifications-settings.component';
 import { QRCodeModule } from 'angularx-qrcode';
+import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -55,7 +56,8 @@ import { QRCodeModule } from 'angularx-qrcode';
     VerifyPhoneNumberComponent,
     DataSettingsComponent,
     DisableWalletAppNotificationsSettingsComponent,
-    DisableAlgoAppNotificationsSettingsComponent
+    DisableAlgoAppNotificationsSettingsComponent,
+    ConfirmNewVersionComponent,
   ],
   imports: [
     CommonModule,

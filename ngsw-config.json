@@ -42,13 +42,12 @@
         "/**/GetDashBoardInfoGet", 
         "/**/GetFramesDataGet",
         "/**/horizon-testnet.stellar.org",
-        "/**/horizon.stellar.org",
-        "/**/firestore.googleapis.com"
+        "/**/horizon.stellar.org"        
       ],
       "cacheConfig": {
         "strategy": "freshness",
         "maxSize": 100,
-        "maxAge": "1d",
+        "maxAge": "3d",
         "timeout": "3s"
       }
     }    
