@@ -86,8 +86,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     }
     
     // Get basic data    
-    if (!this.authService.userInfo){
-      this.http.post(`api/v1/users/getUserInfo`, {})
+    if (!this.authService.userInfo){this.http.post(`api/v1/users/getUserInfo`, {})
       .subscribe(res => {
         let data = (res as any)        
         if (data.errCode == environment.SUCCESS){ 
@@ -121,29 +120,29 @@ export class NavbarComponent implements OnDestroy, OnInit {
       //this.streaming()  
     }    
     this.subsink = new SubSink()
-    this.subsink.add(push.messages.subscribe(msg => {
-      let data = (msg as any).notification      
-      // if (data.type === 'wallet'){
-      //   console.log('navbar.UrWallet:', this.authService.userData.UrWallet)       
-      //   this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
-      //   console.log('navbar.UrWallet1:', this.authService.userData.UrWallet)       
-      //   if (data.asset === 'XLM'){
-      //     let amount = +data.amount
-      //     this.authService.userMetaStore.XLM = (this.authService.userMetaStore.XLM + amount).toFixed(7)
-      //   } else if( data.asset === 'GRX' || data.asset === 'GRXT'){
-      //     let amount = +data.amount
-      //     console.log('navbar.amount:', data.amount)
-      //     console.log('navbar.subscribe:totalGRX0:', this.authService.userMetaStore.GRX)
-      //     this.authService.userMetaStore.GRX = (+this.authService.userMetaStore.GRX + amount).toFixed(7)
-      //     console.log('navbar.subscribe:totalGRX1:', this.authService.userMetaStore.GRX)
-      //   }            
-      // } else if (data.type === 'algo'){
-      //   this.authService.userData.UrAlgo = +this.authService.userData.UrAlgo + 1
-      // } else if (data.type === 'general'){
-      //   this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral + 1
-      // }
-      // this.authService.SetLocalUserData() 
-    }));    
+    // this.subsink.add(push.messages.subscribe(msg => {
+    //   let data = (msg as any).notification      
+    //   if (data.type === 'wallet'){
+    //     console.log('navbar.UrWallet:', this.authService.userData.UrWallet)       
+    //     this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
+    //     console.log('navbar.UrWallet1:', this.authService.userData.UrWallet)       
+    //     if (data.asset === 'XLM'){
+    //       let amount = +data.amount
+    //       this.authService.userMetaStore.XLM = (this.authService.userMetaStore.XLM + amount).toFixed(7)
+    //     } else if( data.asset === 'GRX' || data.asset === 'GRXT'){
+    //       let amount = +data.amount
+    //       console.log('navbar.amount:', data.amount)
+    //       console.log('navbar.subscribe:totalGRX0:', this.authService.userMetaStore.GRX)
+    //       this.authService.userMetaStore.GRX = (+this.authService.userMetaStore.GRX + amount).toFixed(7)
+    //       console.log('navbar.subscribe:totalGRX1:', this.authService.userMetaStore.GRX)
+    //     }            
+    //   } else if (data.type === 'algo'){
+    //     this.authService.userData.UrAlgo = +this.authService.userData.UrAlgo + 1
+    //   } else if (data.type === 'general'){
+    //     this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral + 1
+    //   }
+    //   this.authService.SetLocalUserData() 
+    // }));    
   }
 
   ngOnInit(){
