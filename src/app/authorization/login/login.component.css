@@ -47,8 +47,83 @@ a.blue-link:hover {
   color: #40278C!important;
 }
 
+#setup_button {
+  max-width: 300px;
+  height: 38px;
+  border-radius: .25rem;
+  color: #ffffff;
+  background-color: #40278c;
+  border: none;
+}
+
+#setup_button .desktop {
+  display: block;
+}
+
+#setup_button .phone {
+  display: none;
+}
+
+#setup_button:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.ath-container {
+  position: fixed;
+  flex-direction: column;
+  z-index: 1000;
+  width: 100vw;
+  background-color: #eee;
+  color: #000;
+  padding: 1%;
+  text-align: center;
+}
+
+.banner-bottom-center {
+  top: calc(100vh - 72px);
+}
+
+.ath-banner {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: relative;
+}
+
+.ath-guidance img {
+  position: absolute;
+  bottom: 0;
+}
+
+.ath-close {
+  background: url("/assets/images/addtohomescreen/cross.png");
+  width: 24px;
+  height: 24px;
+  position: fixed;
+  top: 50px;
+  right: 15px;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+@media (min-width: 992px) {
+  .banner-bottom-center {
+    width: 60%;
+    left: 20%;
+  }
+  .ath-container img {
+    left: 15%;
+  }
+}
+
 @media (max-width: 420px) {
   .card {
     width: auto;
+  }
+  #setup_button .desktop {
+    display: none;
+  }
+  #setup_button .phone {
+    display: block;
   }
 }

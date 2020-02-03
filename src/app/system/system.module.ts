@@ -24,8 +24,7 @@ import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/
     OpenAlgoPositionSuccessComponent,
     OpenAlgoPositionErrorComponent,
     UnreadNotificationsComponent,
-    ConfirmNewVersionComponent,
-    
+        
   ],
   imports: [
     //NgModule,

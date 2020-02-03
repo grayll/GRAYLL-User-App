@@ -11,7 +11,7 @@ import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/
 @NgModule({
   declarations: [
     NotificationsComponent,
-    ConfirmNewVersionComponent,
+    
   ],
   imports: [
     CommonModule,

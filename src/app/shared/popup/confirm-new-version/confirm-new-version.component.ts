@@ -30,9 +30,11 @@ export class ConfirmNewVersionComponent implements OnInit {
     this.popupService.open(this.modal);
   }
   
-  submit() {
+  confirm() {
     this.popupService.close().then(() => {
-      window.location.reload();
+      console.log('window reload')
+      //window.location.reload();
+      this.popupService.pushUpdateRes(true)
     });
   }  
 

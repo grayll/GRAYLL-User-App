@@ -26,8 +26,7 @@ import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/
     WalletComponent,
     TradeComponent,
     HeaderBoxesComponent,
-    DepositPopupComponent,
-    ConfirmNewVersionComponent,
+    DepositPopupComponent,    
   ],
   imports: [
     CommonModule,

@@ -14,6 +14,7 @@ import { NotificationsService } from 'src/app/notifications/notifications.servic
 var naclutil = require('tweetnacl-util');
 import * as moment from 'moment'
 import { UserInfo, Setting } from 'src/app/models/user.model'
+import { PwaService } from 'src/app/pwa.service';
 
 
 @Component({
@@ -27,6 +28,12 @@ export class LoginComponent {
   userIcon = faUser;
   keyIcon  = faKey;
   loginForm: FormGroup;
+  deferredPrompt; // Allows to show the install prompt
+  setupButton;
+  browserPlatform;
+  iosguide: boolean = false;
+  safariguide: boolean = false;
+  firefoxguide: boolean = false;
   submitted = false;
   message: string;
   
@@ -42,7 +49,11 @@ export class LoginComponent {
     private recaptchaV3Service: ReCaptchaV3Service,
     public notificationsService: NotificationsService,
     public http: HttpClient,   
-    private ngZone:NgZone) {}
+     public Pwa: PwaService,
+    private ngZone:NgZone) {
+    	this.browserPlatform = this.Pwa.getBrowserPlatform();
+      console.log("Current Platform : ", this.browserPlatform);
+    }
 
   ngOnInit(): void {
     this.buildForm();    
@@ -235,5 +246,43 @@ export class LoginComponent {
     this.errorService.clearError();
     this.router.navigate(['/login/two-factor']);
   }
+  
+  installApp() {
+    if (this.browserPlatform == "iphone" || this.browserPlatform == "safari") {
+      console.log('iphone device show guide');
+      this.iosguide = true;
+    }
+    else if (this.browserPlatform == "ipad") {
+      console.log('ipad device show guide');
+      this.safariguide = true;
+    }
+    else {
+      console.log('install app');
+      this.Pwa.installApp();
+    }
+    /*else if (this.browserPlatform == "firefox")
+      this.firefoxguide = true;*/
 
+    /*// Show the prompt
+    this.deferredPrompt.prompt();
+    this.setupButton.disabled = true;
+    // Wait for the user to respond to the prompt
+    this.deferredPrompt.userChoice
+        .then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('PWA setup accepted');
+                // hide our user interface that shows our A2HS button
+                this.setupButton.style.display = 'none';
+            } else {
+                console.log('PWA setup rejected');
+            }
+            this.deferredPrompt = null;
+        });*/
+  }
+
+  closeGuide() {
+    if (this.iosguide || this.firefoxguide || this.safariguide) {
+      this.iosguide = false; this.firefoxguide = false; this.safariguide = false;
+    }
+  }
 }

@@ -39,7 +39,9 @@ export class NavbarComponent implements OnDestroy, OnInit {
   subsink:SubSink
   server:any
   serverPayment: any
-  updateAvailable: boolean = false
+  // Indicate shown update new version to users
+  // If already shown not show again.
+  shownUpdate: boolean = false
    
   constructor(
     public authService: AuthService,
@@ -55,6 +57,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     
   ) {
 
+    
     // if (!this.authService.userData){
     //   console.log('NAV.GetLocalUserData()')
     //   this.authService.GetLocalUserData()
@@ -179,54 +182,67 @@ export class NavbarComponent implements OnDestroy, OnInit {
     }
 
     //this.promptUser()    
-    this.checkForUpdates()
+    this.checkForUpdates(true)
+    this.subsink.add(this.popupService.observeUpdate().subscribe( valid => {
+      console.log('subcribe reload')
+      this.shownUpdate = false
+      window.location.reload()
+    }))
   }
   
-  ngOnInit1(){
-    console.log('navbar.subscribe', this.ComId)
-    if (this.ComId != 'notification'){
-      Promise.all([
-        this.stellarService.getCurrentGrxPrice1(),
-        this.stellarService.getCurrentXlmPrice1(),
-        this.stellarService.getAccountBalance(this.authService.userData.PublicKey)
-        .catch(err => {
-          // Notify internet connection.
-          //this.snotifyService.simple('Please check your internet connection.')
-          console.log(err)
-        })
-      ])
-      .then(([ grxPrice, xlmPrice, balances ]) => {         
-        this.authService.userMetaStore.GRX = (balances as any).grx;
-        this.authService.userMetaStore.XLM = (balances as any).xlm;
-        this.authService.userData.xlmPrice = xlmPrice
-        this.authService.userData.grxPrice = grxPrice
-        this.authService.SetLocalUserData()
+  // ngOnInit1(){
+  //   console.log('navbar.subscribe', this.ComId)
+  //   if (this.ComId != 'notification'){
+  //     Promise.all([
+  //       this.stellarService.getCurrentGrxPrice1(),
+  //       this.stellarService.getCurrentXlmPrice1(),
+  //       this.stellarService.getAccountBalance(this.authService.userData.PublicKey)
+  //       .catch(err => {
+  //         // Notify internet connection.
+  //         //this.snotifyService.simple('Please check your internet connection.')
+  //         console.log(err)
+  //       })
+  //     ])
+  //     .then(([ grxPrice, xlmPrice, balances ]) => {         
+  //       this.authService.userMetaStore.GRX = (balances as any).grx;
+  //       this.authService.userMetaStore.XLM = (balances as any).xlm;
+  //       this.authService.userData.xlmPrice = xlmPrice
+  //       this.authService.userData.grxPrice = grxPrice
+  //       this.authService.SetLocalUserData()
         
-        console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
-        console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
+  //       console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
+  //       console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
         
-      }) 
-    }    
-  }
+  //     }) 
+  //   }    
+  // }
   
-  checkForUpdates(): void {
+  checkForUpdates(isFirstCheck: boolean): void {
     console.log('checkForUpdates()');
     this.updates.available.subscribe(event => 
-      {
-        //this.promptUser()
-        console.log('show new version')
-        this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
-        //this.popupService.open(this.router.url + "(popup)")
-      });
+    {
+      if (!this.shownUpdate){
+        this.promptUser()
+        this.shownUpdate = true
+      }      
+      console.log('Show new version url: ', this.router.url)
+      //this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
+      //this.popupService.open(this.router.url + "(popup)")
+    });
     if (this.updates.isEnabled) {
         // Required to enable updates on Windows and ios.
         this.updates.activateUpdate();
-        interval(2 * 60 * 1000).subscribe(() => {
-          //console.log('run interval 2 minutes');
-            this.updates.checkForUpdate().then(() => {
-                console.log('Checking for update');
-            });
-        });
+        if (isFirstCheck){
+          this.updates.checkForUpdate().then(() => {
+            console.log('Checking for updates');
+          });
+        } 
+        this.subsink.add(interval(2 * 60 * 1000).subscribe(() => {
+          console.log('run interval 2 minutes');
+          this.updates.checkForUpdate().then(() => {
+              console.log('2Checking for update');
+          });
+        }));
     }
     // Important: on Safari (ios) Heroku doesn't auto redirect links to their https which allows the installation of the pwa like usual
     // but it deactivates the swUpdate. So make sure to open your pwa on safari like so: https://example.com then (install/add to home)
@@ -234,7 +250,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
   promptUser(): void {
     console.log('Update is available')
-    if(confirm("New version available. Load new version?")) {
+    if(confirm("New version of the GRAYLL App is available. Refresh?")) {
       this.updates.activateUpdate().then(() => {          
           window.location.reload();
       });

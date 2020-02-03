@@ -40,7 +40,9 @@
               "node_modules/@ng-select/ng-select/themes/default.theme.css",
               "node_modules/flag-icon-css/css/flag-icon.min.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "src/assets/addtohomescreen.js"
+            ],
             "es5BrowserSupport": true
           },
           "configurations": {

@@ -37,6 +37,7 @@ export class AuthService {
   userInfoMsg: Subject<UserInfo>
   shouldReload:Subject<boolean>
   reload:boolean = true
+  priceDoc = '794retePzavE19bTcMaH/'
 
   getUserMeta(){
     if (this.userMetaStore.ShouldReload){
@@ -63,7 +64,8 @@ export class AuthService {
     if (this.userMetaStore.ShouldReload){
       this._userMeta = new Subject<UserMeta>()
       this.userMeta = this._userMeta.asObservable()
-      this.afs.doc<Prices>('prices/794retePzavE19bTcMaH/').valueChanges().subscribe(data => {        
+
+      this.afs.doc<Prices>('prices/'+this.priceDoc).valueChanges().subscribe(data => {        
         this.userData.xlmPrice = data.xlmp
         this.userData.grxPrice = data.grxp
         console.log('STREAM-price:', data)        

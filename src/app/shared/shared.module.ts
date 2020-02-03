@@ -25,6 +25,7 @@ import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {InputPasswordComponent} from './popup/input-password/input-password.component';
 import {ConfirmPasswordComponent} from './popup/confirm-pwd/confirm-pw';
+import { ConfirmNewVersionComponent } from './popup/confirm-new-version/confirm-new-version.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import {ConfirmPasswordComponent} from './popup/confirm-pwd/confirm-pw';
     XlmBalanceStatusPopupComponent,
     InputPasswordComponent,
     ConfirmPasswordComponent,
+    ConfirmNewVersionComponent,
   ],
   imports: [
     CommonModule,
@@ -69,7 +71,8 @@ import {ConfirmPasswordComponent} from './popup/confirm-pwd/confirm-pw';
     AlgoNotificationItemComponent,
     CustomModalComponent,
     WalletNotificationItemComponent,
-    GeneralNotificationItemComponent
+    GeneralNotificationItemComponent,
+    ConfirmNewVersionComponent,
   ]
 })
 export class SharedModule { }

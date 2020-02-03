@@ -51,7 +51,8 @@ export class MyHammerConfig extends HammerGestureConfig  {
   declarations: [
     AppComponent,
     NotFoundComponent,
-    ErrorPageComponent
+    ErrorPageComponent,
+    
   ],
   imports: [
     BrowserModule,

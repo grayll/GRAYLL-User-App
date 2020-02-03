@@ -848,6 +848,34 @@ export class StellarService {
         }, 'base64');
     }
 
+    encryptSecretKey1(password, secretKey, callback) {
+        const Salt = naclutil.encodeBase64(nacl.randomBytes(32));
+        const nonce = new Uint8Array(24);
+        scrypt(password, Salt, this.logN, this.blockSize, 98, this.interruptStep, (derivedKey) => {
+            const EnSecretKey = naclutil.encodeBase64(
+                nacl.secretbox(secretKey, nonce, naclutil.decodeBase64(derivedKey))
+            );
+            callback({ EnSecretKey, Salt });
+        }, 'base64');
+    }
+
+    decryptSecretKey1(password, encryptedSecretKeyBundle, callback) {
+        const nonce = new Uint8Array(24);
+        scrypt(
+            password,
+            encryptedSecretKeyBundle.Salt,
+            this.logN,
+            this.blockSize,
+            98,
+            this.interruptStep,
+            (derivedKey) => {
+            const secretKey = nacl.secretbox.open(naclutil.decodeBase64(
+                encryptedSecretKeyBundle.EncryptedSecretKey), nonce, naclutil.decodeBase64(derivedKey)
+            );
+            secretKey ? callback(secretKey) : callback('');
+        }, 'base64');
+    }
+
     hashPassword(password, callback){
         const salt = naclutil.encodeBase64(nacl.randomBytes(32));
         console.log('salt.len: ', salt)

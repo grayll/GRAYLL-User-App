@@ -18,6 +18,8 @@ export class PopupService {
 
   validationResult: Subject<boolean>
 
+  confirmUpdate: Subject<boolean>
+
   constructor(
     private modalService: NgbModal,
     private router: Router,
@@ -37,6 +39,21 @@ export class PopupService {
     }
 
     this.validationResult.next(res)
+  }
+
+  public observeUpdate(): Observable<boolean> {
+    if (!this.confirmUpdate){
+      this.confirmUpdate = new Subject<boolean>()
+    }
+    return this.confirmUpdate.asObservable()
+  }
+
+  public pushUpdateRes(res:boolean){
+    if (!this.confirmUpdate){
+      this.confirmUpdate = new Subject<boolean>()
+    }
+
+    this.confirmUpdate.next(res)
   }
 
   public open(modal) {

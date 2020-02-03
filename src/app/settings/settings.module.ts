@@ -57,7 +57,7 @@ import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/
     DataSettingsComponent,
     DisableWalletAppNotificationsSettingsComponent,
     DisableAlgoAppNotificationsSettingsComponent,
-    ConfirmNewVersionComponent,
+    
   ],
   imports: [
     CommonModule,
