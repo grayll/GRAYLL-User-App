@@ -5,6 +5,7 @@ import { NoticeId, Notice, Order, OrderId } from './notification.model';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import * as moment from 'moment'
+import { AuthService } from '../shared/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,10 @@ export class NoticeDataService {
   latestEntryTrade: any;
   txUrl:string
   
-  constructor(private afs: AngularFirestore) {
+  constructor(
+    private afs: AngularFirestore,
+    private authService: AuthService,
+    ) {
     let url = 'https://stellar.expert/explorer/public/'
     if (environment.horizon_url.includes('testnet')){
       url = 'https://stellar.expert/explorer/testnet/'
@@ -137,9 +141,14 @@ export class NoticeDataService {
       .subscribe(data => {
         console.log('trade data:', data)
         if (data.length && data.length > 0){
-          this.latestEntryTrade = data[data.length - 1].doc;  
+          this.latestEntryTrade = data[data.length - 1].doc; 
           this.dataTradeSync = data       
           this._dataTrade.next(data);
+          if (this.authService.reload){
+            this.authService.pushShouldReload(true)
+          } else {
+           this.authService.reload = true
+          }
         }
     });
   }

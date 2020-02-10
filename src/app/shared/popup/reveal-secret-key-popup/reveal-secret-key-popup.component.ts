@@ -94,18 +94,22 @@ export class RevealSecretKeyPopupComponent implements OnInit {
         this.authService.verifyTfaAuth(this.code, this.password, 0).subscribe(         
           res => {  
             console.log(res)         
-            if ((res as any).errCode === environment.SUCCESS ){                 
-              this.stellarService.decryptSecretKey(this.password, 
-                {Salt: this.authService.userInfo.SecretKeySalt, EncryptedSecretKey:this.authService.userInfo.EnSecretKey}, 
-                SecKey => {
-                if (SecKey != ''){
-                  this.popupService.close().then(() => {
-                    this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
-                  });
-                } else {
-                  this.errorService.handleError(null, 'Your password is invalid! Please retry.')
-                }
-              })                     
+            if ((res as any).errCode === environment.SUCCESS ){  
+              this.popupService.close().then(() => {
+                this.settingsService.sendConfirmAuthorityToObserver(this.authService.getSecretKey());
+              });             
+              // this.stellarService.decryptSecretKey(this.password, 
+              //   {Salt: this.authService.userInfo.SecretKeySalt, EncryptedSecretKey:this.authService.userInfo.EnSecretKey}, 
+              //   SecKey => {
+              //   if (SecKey != ''){
+              //     console.log('reveal-sec', SecKey)
+              //     this.popupService.close().then(() => {
+              //       this.settingsService.sendConfirmAuthorityToObserver(SecKey);
+              //     });
+              //   } else {
+              //     this.errorService.handleError(null, 'Your password is invalid! Please retry.')
+              //   }
+              // })                     
             } else {        
               switch ((res as any).errCode){
                 case environment.TOKEN_INVALID:
@@ -127,27 +131,28 @@ export class RevealSecretKeyPopupComponent implements OnInit {
         //send request token to email        
         this.http.post(`api/v1/users/verifyRevealSecretToken`, {token:this.code})
         .subscribe(res => {
-          if ((res as any).errCode == environment.SUCCESS){            
-            this.stellarService.decryptSecretKey(this.password, 
-              {Salt: this.authService.userInfo.SecretKeySalt, EncryptedSecretKey:this.authService.userInfo.EnSecretKey}, 
-              SecKey => {
-              if (SecKey != ''){     
-                console.log('sec', SecKey)          
-                this.popupService.close().then(() => {
-                  this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
-                });
-              } else {
-                console.log('invalid pwd')       
-                this.errorService.handleError(null, 'Your password is invalid! Please retry.')
-              }
-            })
+          if ((res as any).errCode == environment.SUCCESS){               
+            this.popupService.close().then(() => {              
+              this.settingsService.sendConfirmAuthorityToObserver(this.authService.getSecretKey());
+            });                
+            // this.stellarService.decryptSecretKey(this.password, 
+            //   {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
+            //   SecKey => {
+            //   if (SecKey != ''){     
+            //     console.log('sec', SecKey)          
+            //     this.popupService.close().then(() => {
+            //       this.settingsService.sendConfirmAuthorityToObserver(this.stellarService.SecretBytesToString(SecKey));
+            //     });
+            //   } else {
+            //     console.log('invalid pwd')       
+            //     this.errorService.handleError(null, 'Your password is invalid! Please retry.')
+            //   }
+            // })
           } else if ((res as any).errCode == environment.INVALID_CODE) {
             this.errorService.handleError(null, 'Please enter a valid verification code!');
           } else {
             
-          }
-          console.log((res as any))          
-          // 
+          }          
         },
         e => {
           console.log(e)
@@ -163,12 +168,12 @@ export class RevealSecretKeyPopupComponent implements OnInit {
       this.errorService.handleError(null, 'Please enter your ' + (this.authService.userInfo.Tfa ? '2FA code' : 'Security code') + '!');
       return false;
     }
-    if (!this.authService.hash){
-      if (!this.password || this.password === '') {
-        this.errorService.handleError(null, 'Please enter your password!');
-        return false;
-      }
-    }
+    // if (!this.authService.hash){
+    //   if (!this.password || this.password === '') {
+    //     this.errorService.handleError(null, 'Please enter your password!');
+    //     return false;
+    //   }
+    // }
     return true;
   }
 

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 import {faKey, faUser} from '@fortawesome/free-solid-svg-icons';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ErrorService} from '../../shared/error/error.service';
@@ -15,6 +15,8 @@ var naclutil = require('tweetnacl-util');
 import * as moment from 'moment'
 import { UserInfo, Setting } from 'src/app/models/user.model'
 import { PwaService } from 'src/app/pwa.service';
+import { StellarService } from '../services/stellar-service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 
 @Component({
@@ -36,7 +38,7 @@ export class LoginComponent {
   firefoxguide: boolean = false;
   submitted = false;
   message: string;
-  
+   
 
   get email() { return this.loginForm.get('email'); }
   get password() { return this.loginForm.get('password'); }
@@ -49,7 +51,9 @@ export class LoginComponent {
     private recaptchaV3Service: ReCaptchaV3Service,
     public notificationsService: NotificationsService,
     public http: HttpClient,   
-     public Pwa: PwaService,
+    public Pwa: PwaService,
+    public stellarService: StellarService,
+    private loadingService: LoadingService,
     private ngZone:NgZone) {
     	this.browserPlatform = this.Pwa.getBrowserPlatform();
       console.log("Current Platform : ", this.browserPlatform);
@@ -132,7 +136,7 @@ export class LoginComponent {
       return;
     }
     this.submitted = true;
-    
+    this.loadingService.show()
     // Execute recaptcha
     //console.log('start call recapcha:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
     this.recaptchaV3Service.execute('login')
@@ -146,8 +150,7 @@ export class LoginComponent {
           //console.log('recapcha resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
           this.ngZone.run(() => {     
             //console.log('login start:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS')) 
-            this.http.post(`api/v1/accounts/login`, 
-              {email:this.loginForm.value['email'], password: this.loginForm.value['password']})                
+            this.http.post(`api/v1/accounts/login`, {email:this.email.value, password: this.password.value})                
             .subscribe(res => {  
               let data =  (res as any)             
               if (data.errCode === environment.SUCCESS) {
@@ -162,19 +165,6 @@ export class LoginComponent {
                 this.authService.userMetaStore.ShouldReload = true
                 console.log('login - this.authService.userMetaStore: ', this.authService.userMetaStore)
                 this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
-                //this.authService.SetLocalUserMeta()
-                // if (!this.authService.userData.OpenOrders){
-                //   this.authService.userData.OpenOrders = 0
-                // }
-                // if (!this.authService.userData.OpenOrdersXLM){
-                //   this.authService.userData.OpenOrdersXLM = 0
-                // }
-                // if (!this.authService.userData.OpenOrdersGRX){
-                //   this.authService.userData.OpenOrdersGRX = 0
-                // }
-                //console.log('login-OpenOrders', this.authService.userData)
-                this.authService.hash = this.loginForm.value['password'];
-                this.authService.SetLocalUserData()
                                
                 //store on local storage
                 if (this.authService.userInfo.Tfa){
@@ -187,35 +177,99 @@ export class LoginComponent {
                     } else {
                       this.router.navigate(['/login/two-factor'])
                     }
-                } else {
+                } else {                  
                   this.router.navigate(['/dashboard/overview'])
                 } 
+                this.loadingService.hide()
+
+                if (this.authService.userInfo && this.authService.userData.PublicKey && this.authService.userInfo.LocalKey){
+                  if (this.authService.userInfo.EnSecretKey.length < 80){                   
+                    console.log(this.authService.userInfo.SecretKeySalt, this.password.value)
+                    console.log(this.authService.userInfo.EnSecretKey)
+
+                    this.stellarService.decryptSecretKey1(this.password.value, 
+                      {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
+                      secretKey => {
+                        if (secretKey != ''){
+                          this.authService.secretKey = secretKey
+                          console.log('GetSecretKey6', secretKey)
+                          console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                          this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                            console.log('OLD USER-secretKeyBundle:', secretKeyBundle)
+                            this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey  
+                            // Save new EnSecretKey and Salt                           
+                            this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.Salt}).subscribe( 
+                              res => {
+                                console.log('saveEnSecretKeyData', res)
+                              },
+                              e => {
+                                console.log('saveEnSecretKeyData error', e)
+                                this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.salt}).subscribe( 
+                                  res => {
+                                    console.log('saveEnSecretKeyData', res)
+                                  },
+                                  e => {
+                                    console.log('saveEnSecretKeyData error', e)
+                                  }
+                                )  
+                              }
+                            )                            
+                            this.authService.SetLocalUserData()
+                            console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                          })            
+                        } else {
+                          console.log('GetSecretKey7')
+                          //reject('')
+                        }
+                      })
+                  } else {
+                    console.log('decryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                    this.stellarService.decryptSecretKey(this.password.value, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
+                    secretKey => {
+                      if (secretKey != ''){
+                        this.authService.secretKey = secretKey
+                        
+                        console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                        this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                          console.log('login-secretKeyBundle:', secretKeyBundle)
+                          this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
+                          this.authService.SetLocalUserData()
+                          console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                        })            
+                      } else {
+                        console.log('GetSecretKey7')
+                        //reject('')
+                      }
+                    })
+                  }
+                }
+              
               } else if ((res as any).errCode === environment.INVALID_UNAME_PASSWORD){
                 this.showError('Invalid email or password!')                                 
               }  else if((res as any).errCode === environment.UNVERIFIED)  {    
                 this.showError('Please verify your email before logging in.')                                
               }  else if((res as any).errCode === environment.IP_CONFIRM) {    
                 this.showError('Please confirm your IP address via the link sent to your email.')                                
-              } 
+              }              
             },
             error => {              
-              console.log(error)                  
+              console.log(error)                       
               this.showError(null)                             
             })                
-          });  
+          }); 
           
-        } else {          
-          this.showError(null)
-              
+        } else {                 
+          this.showError(null)              
         }
       })
-      .catch(err => {        
+      .catch(err => { 
         this.showError(null)        
       })   
     });
   }
 
   showError(msg:string){
+    this.loadingService.hide() 
     if (!msg){
       this.errorService.handleError(null, 'Login attempt failed! Please retry.');
     } else {
@@ -284,5 +338,30 @@ export class LoginComponent {
     if (this.iosguide || this.firefoxguide || this.safariguide) {
       this.iosguide = false; this.firefoxguide = false; this.safariguide = false;
     }
+  }
+
+  //@HostListener('window:beforeunload')
+  ngOnDestroy():void {
+  //   if (this.authService.userInfo && this.authService.userData.PublicKey && this.authService.userInfo.LocalKey){
+  //     console.log('this.password.value', this.password.value)
+  //     console.log('decryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+  //     this.stellarService.decryptSecretKey(this.password.value, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
+  //       secretKey => {
+  //         if (secretKey != ''){
+  //           this.authService.secretKey = secretKey
+  //           console.log('GetSecretKey6', secretKey)
+  //           console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+  //           this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, this.stellarService.StringToSecretBytes(secretKey), this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+  //             console.log('login-secretKeyBundle:', secretKeyBundle)
+  //             this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
+  //             this.authService.SetLocalUserData()
+  //             console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+  //           })            
+  //         } else {
+  //           console.log('GetSecretKey7')
+  //           //reject('')
+  //         }
+  //       })
+  //     }
   }
 }

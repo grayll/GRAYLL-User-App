@@ -14,7 +14,7 @@ import { UserInfo, Setting } from 'src/app/models/user.model';
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
   OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
 
-  export interface Prices {xlmp: number; grxp: number; sellingWallet: string; sellingPercent: number; sellingPrice: number}
+  export interface Prices {xlmp: number; grxp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
 @Injectable({
   providedIn: 'root' 
 })
@@ -51,8 +51,10 @@ export class AuthService {
         this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
         this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
         this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
-        this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-        this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+        // if (!(this.userMetaStore.GRX > 0 || this.userMetaStore.XLM > 0)){        
+        //   this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+        //   this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+        // }
         console.log('this.userMetaStore:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
         this._userMeta.next(data)
@@ -64,13 +66,14 @@ export class AuthService {
     if (this.userMetaStore.ShouldReload){
       this._userMeta = new Subject<UserMeta>()
       this.userMeta = this._userMeta.asObservable()
-
       this.afs.doc<Prices>('prices/'+this.priceDoc).valueChanges().subscribe(data => {        
         this.userData.xlmPrice = data.xlmp
         this.userData.grxPrice = data.grxp
         this.userInfo.SellingWallet = data.sellingWallet
         this.userInfo.SellingPercent = data.sellingPercent
-        console.log('STREAM-price:', data)       
+        this.userInfo.SellingPrice = data.sellingPrice
+        console.log('STREAM-price:', data)        
+       
       })
     }
   }
@@ -108,8 +111,10 @@ export class AuthService {
     }
     this.userInfoMsg.next(userInfo)
   }
-  
-  GetSecretKey(pwd):Promise<any>{
+  getSecretKey():string {
+    return this.stellarService.SecretBytesToString(this.secretKey)
+  }
+  GetSecretKey1(pwd):Promise<any>{
     return new Promise((resolve, reject) => {
       if (this.secretKey){
         resolve(this.secretKey)
@@ -122,13 +127,57 @@ export class AuthService {
           return ''
         }
         
-        this.stellarService.decryptSecretKey(password, 
+        this.stellarService.decryptSecretKey1(password, 
           {Salt: this.userInfo.SecretKeySalt, EncryptedSecretKey:this.userInfo.EnSecretKey}, 
           SecKey => {
             if (SecKey != ''){
               this.secretKey = this.stellarService.SecretBytesToString(SecKey)
               resolve(this.secretKey)
             } else {
+              reject('')
+            }
+          })
+        }
+      })
+  }
+
+  DecryptLocalSecret(){
+    if (!this.secretKey){
+      if (this.userInfo && this.userData){
+        this.stellarService.decryptSecretKey(this.userInfo.LocalKey, 
+          {Salt: this.userInfo.SecretKeySalt, EnSecretKey:this.userData.EnSecretKey}, secretKey => {        
+          this.secretKey = secretKey
+        })
+      }
+    }
+  }
+
+  GetSecretKey(pwd):Promise<any>{
+    return new Promise((resolve, reject) => {
+      console.log('GetSecretKey')
+      if (this.secretKey){
+        console.log('GetSecretKey1')
+        resolve(this.secretKey)
+      } else {
+        console.log('GetSecretKey2')
+        let password = pwd
+        if (this.hash){
+          console.log('GetSecretKey3')
+          password = this.hash
+        }
+        if (!password){
+          console.log('GetSecretKey4')
+          return ''
+        }
+        console.log('GetSecretKey5')
+        this.stellarService.decryptSecretKey(password, {Salt: this.userInfo.SecretKeySalt, EnSecretKey:this.userInfo.EnSecretKey}, 
+          SecKey => {
+            if (SecKey != ''){
+              console.log('GetSecretKey6')
+              //this.secretKey = this.stellarService.SecretBytesToString(SecKey)
+              resolve(this.secretKey)
+            } else {
+              console.log('GetSecretKey7')
               reject('')
             }
           })
@@ -145,8 +194,11 @@ export class AuthService {
       data.Setting.MailGeneral,
       data.Setting.MailWallet,
       data.Setting.MulSignature)     
-    this.userInfo = new UserInfo(data.Uid, data.EnSecretKey, data.SecretKeySalt, 
-      data.LoanPaidStatus, data.Tfa, data.Expire, setting, data.PublicKey)
+    // this.userInfo = new UserInfo(data.Uid, data.EnSecretKey, data.SecretKeySalt, 
+    //   data.LoanPaidStatus, data.Tfa, data.Expire, setting, data.PublicKey)
+
+      this.userInfo = {Uid: data.Uid, EnSecretKey: data.EnSecretKey, SecretKeySalt: data.SecretKeySalt, 
+        LoanPaidStatus: data.LoanPaidStatus, Tfa: data.Tfa, Expire: data.Expire,Setting: setting, PublicKey: data.PublicKey, LocalKey: data.LocalKey}
       return this.userInfo
   }
 
@@ -238,6 +290,8 @@ export class AuthService {
   ) {    
    
   }
+
+  
   
   isActivated() : boolean {    
     console.log(this.userInfo)
@@ -251,6 +305,20 @@ export class AuthService {
     return this.http.post(`api/v1/users/setuptfa`, { account: account})             
   }
 
+  verifyTx(ledger, action, price): Promise<any> {
+    return new Promise((resolve, reject) => {
+    this.http.post(`api/v1/users/txverify`, {ledger: ledger, action: action, price: price})    
+    .subscribe(
+      resp => {
+        resolve(resp)    
+      },
+      err => {
+        reject(err)
+        console.log('verify ledger exp: ', err)        
+      } 
+    )    
+    })
+  }
   
   verifyTfaAuth(token: any, pwd: any, exp: Number) {       
     return this.http.post(`api/v1/users/verifytoken`,  { token: token, secret:pwd, expire:exp})         
@@ -309,7 +377,7 @@ export class AuthService {
 
   SetSeedData(data:any, password: string){
     this.seedData = data
-    this.stellarService.encryptSecretKey(password, JSON.stringify(this.seedData), (encryptedSeed) => { 
+    this.stellarService.encryptSecretKey(password, JSON.stringify(this.seedData), '', (encryptedSeed) => { 
       sessionStorage.setItem('seedData', JSON.stringify(encryptedSeed));  
     })
     
@@ -383,6 +451,7 @@ export class AuthService {
     return bl
   }
   getMaxAvailableGRX(){
+    //console.log('this.userMetaStore.', this.userMetaStore)
     return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX
   }
   /* Setting up user data when sign in with username/password, 

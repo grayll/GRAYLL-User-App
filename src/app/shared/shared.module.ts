@@ -26,6 +26,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {InputPasswordComponent} from './popup/input-password/input-password.component';
 import {ConfirmPasswordComponent} from './popup/confirm-pwd/confirm-pw';
 import { ConfirmNewVersionComponent } from './popup/confirm-new-version/confirm-new-version.component';
+import { SwUpdateNotifiyComponent } from './sw-update-notifiy/sw-update-notifiy.component';
+import { LoaderScreenComponent } from './loader-screen/loader-screen.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +48,8 @@ import { ConfirmNewVersionComponent } from './popup/confirm-new-version/confirm-
     InputPasswordComponent,
     ConfirmPasswordComponent,
     ConfirmNewVersionComponent,
+    SwUpdateNotifiyComponent,
+    LoaderScreenComponent,
   ],
   imports: [
     CommonModule,
@@ -73,6 +77,8 @@ import { ConfirmNewVersionComponent } from './popup/confirm-new-version/confirm-
     WalletNotificationItemComponent,
     GeneralNotificationItemComponent,
     ConfirmNewVersionComponent,
+    SwUpdateNotifiyComponent,
+    LoaderScreenComponent,
   ]
 })
 export class SharedModule { }

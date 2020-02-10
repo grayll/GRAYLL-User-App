@@ -12,10 +12,7 @@ import {AuthService} from 'src/app/shared/services/auth.service';
 export class ConfirmNewVersionComponent implements OnInit {
 
   @ViewChild('content') modal;
- 
-  password: string = '';
-  twoFaCode: string = ''
- 
+
   constructor(
     public popupService: PopupService,    
      
@@ -33,8 +30,8 @@ export class ConfirmNewVersionComponent implements OnInit {
   confirm() {
     this.popupService.close().then(() => {
       console.log('window reload')
-      //window.location.reload();
-      this.popupService.pushUpdateRes(true)
+      window.location.reload();
+      //this.popupService.pushUpdateRes(true)
     });
   }  
 

@@ -7,6 +7,7 @@ import { SecureInnerPagesGuard } from "./shared/guard/secure-inner-pages.guard";
 import {LoginComponent} from './authorization/login/login.component'
 import { CanActivate } from '@angular/router/src/utils/preactivation';
 import { AuthGuard } from './shared/guard/auth.guard';
+import { SwUpdateNotifiyComponent } from './shared/sw-update-notifiy/sw-update-notifiy.component';
 
 const routes: Routes = [
   {
@@ -54,6 +55,10 @@ const routes: Routes = [
     redirectTo: '/dashboard/overview',
     pathMatch: 'full',
     canActivate: [AuthGuard],
+  },
+  {
+    path: 'swnotify',
+    component: SwUpdateNotifiyComponent,   
   },
   {
     path: '404',

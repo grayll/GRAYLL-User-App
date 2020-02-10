@@ -25,29 +25,9 @@ export class WalletComponent implements OnInit, OnDestroy {
     //updates: SwUpdate, push: SwPush
   ) {
     this.pageId = "wallet"  
-    this.shouldReload = false    
-    // Promise.all([
-    //   this.stellarService.getCurrentGrxPrice1(),
-    //   this.stellarService.getCurrentXlmPrice1(),
-    //   this.stellarService.getAccountData(this.authService.userData.PublicKey)
-    //   .catch(err => {
-    //     // Notify internet connection.
-    //     this.snotifyService.simple('Please check your internet connection!')
-    //     console.log(err)
-    //   })
-    // ])
-    // .then(([ grx, xlm, account ]) => {
-    //   console.log(grx, xlm)      
-    //   this.stellarService.userAccount = account;
-    //   this.stellarService.publishPrices([+grx,+xlm])
-      
-    // })
-
-    this.authService.subShouldReload().subscribe(s => {
-      // if (s === true){
-      //   console.log('update should reload', s)
-      //   this.shouldReload = !this.shouldReload
-      // }
+    this.shouldReload = false     
+    this.authService.subShouldReload().subscribe(s => {    
+      // make change on  shouldReload so OnChange on account activity is triggered
       this.shouldReload = !this.shouldReload
     })
    }
@@ -55,6 +35,9 @@ export class WalletComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     window.scroll(0, 0);
     this.changeBackgroundColor(true);
+    this.stellarService.loadAccount(this.authService.userData.PublicKey).then(acc => {
+      this.stellarService.account = acc
+    })
   }
   @HostListener('window:beforeunload')
   ngOnDestroy(): void {

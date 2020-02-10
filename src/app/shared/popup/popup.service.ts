@@ -41,20 +41,20 @@ export class PopupService {
     this.validationResult.next(res)
   }
 
-  public observeUpdate(): Observable<boolean> {
-    if (!this.confirmUpdate){
-      this.confirmUpdate = new Subject<boolean>()
-    }
-    return this.confirmUpdate.asObservable()
-  }
+  // public observeUpdate(): Observable<boolean> {
+  //   if (!this.confirmUpdate){
+  //     this.confirmUpdate = new Subject<boolean>()
+  //   }
+  //   return this.confirmUpdate.asObservable()
+  // }
 
-  public pushUpdateRes(res:boolean){
-    if (!this.confirmUpdate){
-      this.confirmUpdate = new Subject<boolean>()
-    }
+  // public pushUpdateRes(res:boolean){
+  //   if (!this.confirmUpdate){
+  //     this.confirmUpdate = new Subject<boolean>()
+  //   }
 
-    this.confirmUpdate.next(res)
-  }
+  //   this.confirmUpdate.next(res)
+  // }
 
   public open(modal) {
     this.isOpen = true

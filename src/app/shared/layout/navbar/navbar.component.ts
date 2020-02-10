@@ -13,6 +13,7 @@ import { interval, Subject } from 'rxjs';
 var StellarSdk = require('stellar-sdk');
 import {SnotifyService} from 'ng-snotify';
 import {PopupService} from 'src/app/shared/popup/popup.service';
+import { SwUpdateNotifyService } from '../../sw-update-notifiy/sw-update-notify.service';
 
 @Component({
   selector: 'app-navbar',
@@ -42,6 +43,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
   // Indicate shown update new version to users
   // If already shown not show again.
   shownUpdate: boolean = false
+  isSignout:boolean = false
    
   constructor(
     public authService: AuthService,
@@ -54,6 +56,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     private http: HttpClient,
     private snotifyService: SnotifyService,
     public popupService: PopupService,   
+    public swService: SwUpdateNotifyService,
     
   ) {
 
@@ -90,9 +93,18 @@ export class NavbarComponent implements OnDestroy, OnInit {
       .subscribe(res => {
         let data = (res as any)        
         if (data.errCode == environment.SUCCESS){ 
-          console.log('NAV-getUserInfo')   
+           
           this.authService.ParseUserInfo(data)
+          console.log('NAV-getUserInfo', this.authService.userInfo)  
           this.authService.pushUserInfoMsg(this.authService.userInfo)
+          this.authService.DecryptLocalSecret()
+
+          // if (!this.authService.secretKey){
+          //   this.stellarService.decryptSecretKey(this.authService.userInfo.LocalKey, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userData.EnSecretKey}, secretKey => {
+          //     console.log(' NAV-decryptSecretKey:', secretKey)
+          //     this.authService.secretKey = secretKey
+          //   })
+          // }
           //this.streaming()          
         } else {
           console.log('getUserInfo-userInfo failed') 
@@ -106,6 +118,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
           if (data.errCode == environment.SUCCESS){            
             this.authService.ParseUserInfo(data)
             this.authService.pushUserInfoMsg(this.authService.userInfo)
+            this.authService.DecryptLocalSecret()
             // streaming payment and trade
             //this.streaming() 
           } else {
@@ -118,7 +131,8 @@ export class NavbarComponent implements OnDestroy, OnInit {
       })
     } else {
       //this.streaming()  
-    }    
+    } 
+    
     this.subsink = new SubSink()
     // this.subsink.add(push.messages.subscribe(msg => {
     //   let data = (msg as any).notification      
@@ -182,11 +196,11 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
     //this.promptUser()    
     this.checkForUpdates(true)
-    this.subsink.add(this.popupService.observeUpdate().subscribe( valid => {
-      console.log('subcribe reload')
-      this.shownUpdate = false
-      window.location.reload()
-    }))
+    // this.subsink.add(this.popupService.observeUpdate().subscribe( valid => {
+    //   console.log('subcribe reload')
+    //   this.shownUpdate = false
+    //   window.location.reload()
+    // }))
   }
   
   // ngOnInit1(){
@@ -220,13 +234,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     console.log('checkForUpdates()');
     this.updates.available.subscribe(event => 
     {
-      if (!this.shownUpdate){
-        this.promptUser()
-        this.shownUpdate = true
-      }      
-      console.log('Show new version url: ', this.router.url)
-      //this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
-      //this.popupService.open(this.router.url + "(popup)")
+      this.swService.show()
     });
     if (this.updates.isEnabled) {
         // Required to enable updates on Windows and ios.
@@ -239,7 +247,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
         this.subsink.add(interval(2 * 60 * 1000).subscribe(() => {
           console.log('run interval 2 minutes');
           this.updates.checkForUpdate().then(() => {
-              console.log('2Checking for update');
+              console.log('3Checking for update');
           });
         }));
     }
@@ -248,6 +256,12 @@ export class NavbarComponent implements OnDestroy, OnInit {
   }
 
   promptUser(): void {
+    console.log('Update is available')
+    //this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
+    this.router.navigate(['/swnotify'])
+  }
+
+  promptUser1(): void {
     console.log('Update is available')
     if(confirm("New version of the GRAYLL App is available. Refresh?")) {
       this.updates.activateUpdate().then(() => {          
@@ -360,12 +374,16 @@ export class NavbarComponent implements OnDestroy, OnInit {
   ngOnDestroy():void {
     this.subsink.unsubscribe()
     console.log('destroy:', this.authService.userMetaStore)
-    this.authService.SetLocalUserData()
-    this.authService.SetLocalUserMeta()
+    if (!this.isSignout){
+      this.authService.SetLocalUserData()
+      this.authService.SetLocalUserMeta()
+    }
   }
 
-  signOut(){       
+  signOut(){  
+    this.isSignout = true
     localStorage.removeItem('grayll-user');    
+    localStorage.removeItem('grayll-user-meta'); 
     this.ngZone.run(()=> {
       this.router.navigateByUrl('/login')
     })

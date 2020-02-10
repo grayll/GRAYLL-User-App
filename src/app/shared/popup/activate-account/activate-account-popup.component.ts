@@ -15,6 +15,7 @@ const bip39 = require('bip39')
 var naclutil = require('tweetnacl-util');
 import { HttpClient } from '@angular/common/http';
 import {SwPush} from "@angular/service-worker";
+import { LoadingService } from '../../services/loading.service';
 
 @Component({
   selector: 'app-pay-loan-popup',
@@ -51,6 +52,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     private clipboardService: ClipboardService,
     private snotifyService: SnotifyService,
     private http: HttpClient,
+    private loadingService: LoadingService,
   ) { 
   
     this.firstPopup = true;
@@ -131,8 +133,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     if (this.isSubmitted){
       return
     }
-    this.isSubmitted = true
-    
+    this.isSubmitted = true    
     this.errorService.clearError();
     this.onValueChanged()
 
@@ -140,10 +141,12 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
       this.errorService.handleError(null, "Please enter a valid password!")
       return
     }
-
+    this.loadingService.show()
     this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
       //console.log('phrase:', res.recoveryPhrase)  
-      this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), (enSecret) => { 
+      
+      this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), '', (enSecret) => { 
+       
         let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
           enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
               
@@ -158,20 +161,32 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
                 this.secretKey = res.keypair.secret()
                 this.seed = res.recoveryPhrase  
                 this.error = false;
-                this.success = true;       
+                this.success = true;    
                 this.authService.userData.PublicKey = res.keypair.publicKey()                     
-                this.authService.SetLocalUserData() 
-                this.authService.RemoveSeedData()                
+                this.authService.secretKey = res.keypair.rawSecretKey()
+                
+                this.authService.userInfo.EnSecretKey =  enSecret.EnSecretKey
+                this.authService.userInfo.SecretKeySalt = enSecret.Salt
+                this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, 
+                  res.keypair.rawSecretKey(), this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                  console.log('activate-secretKeyBundle:', secretKeyBundle)
+                  this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
+                  this.authService.SetLocalUserData() 
+                  this.authService.RemoveSeedData() 
+                  this.loadingService.hide()                 
+                })                 
               },
               err => {
                 console.log('err trust asset:', err)                 
                 this.error = true;
                 this.success = false;
+                this.loadingService.hide()
               }
             ).catch(e => {
               console.log('trustAsset.create error: ', e)
               this.error = true;
               this.success = false;
+              this.loadingService.hide()
             })                                            
           } else if ((resp as any).errCode === environment.INVALID_UNAME_PASSWORD){
             this.frm.reset()
@@ -180,11 +195,13 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
             this.frm.reset()
             this.errorService.handleError(null, "The account could not be activated! Please retry.")
           }
+          this.loadingService.hide()
         },
         err => {
           console.log(err)
           this.error = true;
           this.success = false;
+          this.loadingService.hide()
         })
       })       
     })         

@@ -16,6 +16,7 @@ import {PopupService} from 'src/app/shared/popup/popup.service';
 import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
 import { NoticeId, OrderId } from 'src/app/notifications/notification.model';
 import { Observable } from 'rxjs';
+import { LoadingService } from '../services/loading.service';
 
 var StellarSdk = require('stellar-sdk')
 
@@ -69,7 +70,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
   item: any
   notices: Observable<NoticeId[]>;
   tradess: Observable<OrderId[]>;
-  
+
+  isInitData: boolean = true  
 
   constructor(
     private clipboardService: ClipboardService,
@@ -80,6 +82,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     private sharedService:SharedService,
     private popupService: PopupService,
     private dataService:NoticeDataService,
+    private loadingService: LoadingService,
   ) {
     
     this.subs = new SubSink()
@@ -88,9 +91,10 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
 
     this.stellarService.allOffers = null
     this.stellarService.trades = null 
+    this.authService.reload = false
     this.getAccountOrders(null, true)
     this.getAccTrades()
-
+    
     // Promise.all([
     //   this.getAccountOrders(null, true),
       
@@ -113,6 +117,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       console.log(err)
     })
 
+    this.isInitData = false
+
     // this.subs.add(this.popupService.observeValidation().subscribe(valid => {
     //   if (valid){//cancel
     //     if (this.item){
@@ -120,25 +126,26 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     //     }
     //   }
     // }))
+
   }
 
 
-  ngOnChanges() {
-    
+  ngOnChanges() {    
     console.log('change:', this.shouldReload);
     this.stellarService.allOffers = null
-    this.getAccountOrders(null, true)
-      // Promise.all([
-      //   this.getAccountOrders(null, true),
-      //   this.getAccountTrades(null)
-      // ]).then(([ofs, trades]) => {
-
-      // }).catch( err => {
-      //   console.log('Error get open order and trade:', err)
-      // })   
-
+    if (this.authService.reload){
+      this.getAccountOrders(null, true)
       this.grxP = +this.authService.userData.grxPrice
       this.xlmP = +this.authService.userData.xlmPrice
+    }
+    // Promise.all([
+    //   this.getAccountOrders(null, true),
+    //   this.getAccountTrades(null)
+    // ]).then(([ofs, trades]) => {
+
+    // }).catch( err => {
+    //   console.log('Error get open order and trade:', err)
+    // }) 
   }
   downloadHistory(){
     console.log('this.selectedTab.id:', this.selectedTab.id)
@@ -189,29 +196,13 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     this.sharedService.savePDF(columns, fields, data, fileName)
   }
   
-  // validateSession(){
-  //   if (this.authService.isTokenExpired()){
-  //     this.snotifyService.simple('Your session has expired! Please login again.'); 
-  //     this.router.navigateByUrl('/login')
-  //     return false
-  //   } 
-  //   if (!this.authService.hash){
-  //     this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
-  //     return false
-  //   }
-  //   return true
-  // }
-
   validateSession(){
     if (this.authService.isTokenExpired()){
       this.snotifyService.simple('Your login session has expired! Please login again.'); 
       this.router.navigateByUrl('/login')
       return false
     } 
-    // if (!this.authService.hash || this.authService.userInfo.Setting.MulSignature){     
-    //   this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
-    //   return false
-    // }  
+      
     return true  
   }
 
@@ -224,7 +215,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     this.cancelCurrentOffer(this.item)    
       
   }
-  async cancelCurrentOffer(item){    
+  async cancelCurrentOffer1(item){    
       try {   
         let xdr = await this.stellarService.getCancelOfferXdr(this.authService.userInfo.PublicKey, item.cachedOffer)
         this.authService.makeTransaction(xdr, "cancel").subscribe(res => {
@@ -258,22 +249,40 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       }
     
   }
-  cancelCurrentOffer1(item){
-    this.authService.GetSecretKey(null).then(SecKey => {      
-      this.stellarService.cancelOffer(SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType).then(res=>
-        {               
+  cancelCurrentOffer(item){
+    //this.authService.GetSecretKey(null).then(SecKey => {     
+      this.loadingService.show() 
+      this.stellarService.cancelOffer(this.authService.getSecretKey(), item.cachedOffer, this.authService.userMetaStore, item.realAmount, item.assetType).then(res=>
+        {    
+          console.log('cancelCurrentOffer a', this.authService.userMetaStore, item.assetType, item.realAmount)                 
           this.stellarService.allOffers.splice(item.index, 1)
           if (this.authService.userMetaStore.OpenOrders){
             this.authService.userMetaStore.OpenOrders -=1
-          } else {
-            this.authService.userMetaStore.OpenOrders = 0
-          }
+          } 
           if (this.authService.userMetaStore.OpenOrders < 0){
             this.authService.userMetaStore.OpenOrders = 0
           }
-          this.authService.SetLocalUserData()    
+                   
+          if(item.assetType === 'XLM'){                        
+            this.authService.userMetaStore.OpenOrdersXLM = +this.authService.userMetaStore.OpenOrdersXLM - +item.realAmount
+            console.log('cancelCurrentOffer 21', this.authService.userMetaStore, item.assetType, item.realAmount) 
+          } else {
+            this.authService.userMetaStore.OpenOrdersGRX = +this.authService.userMetaStore.OpenOrdersGRX - +item.realAmount
+          }
+          
+          this.loadingService.hide()
+          // if (this.authService.userMetaStore.OpenOrders){
+          //   this.authService.userMetaStore.OpenOrders -=1
+          // } else {
+          //   this.authService.userMetaStore.OpenOrders = 0
+          // }
+          // if (this.authService.userMetaStore.OpenOrders < 0){
+          //   this.authService.userMetaStore.OpenOrders = 0
+          // }
+          //this.authService.SetLocalUserData()    
         }
       ).catch(e => {
+        this.loadingService.hide()
         console.log('cancelOffer error:', e)
         if (e.toString().includes('status code 400')){
           this.snotifyService.simple('Insufficient funds to cancel this order! Please add more funds to your account.')  
@@ -281,7 +290,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
           this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
         }
       })
-    })
+    //})
   }
 
   parseAsset(asset) {
@@ -507,6 +516,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
           this.authService.userMetaStore.OpenOrdersGRX = totalOpenGRX    
           this.authService.userMetaStore.OpenOrdersXLM = totalOpenXLM 
         }
+
+        console.log('ACC-ACTIVITY-METASTORE:',this.authService.userMetaStore)
         //this.offers = this.stellarService.allOffers 
         // if (this.stellarService.allOffers ){        
         //   this.stellarService.allOffers = this.stellarService.allOffers.concat(records)
@@ -523,6 +534,9 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
         this.authService.SetLocalUserData() 
       } else {
         this.activityResult.openOrderEmptyResultTimes += 1 
+        this.authService.userMetaStore.OpenOrdersGRX = 0    
+        this.authService.userMetaStore.OpenOrdersXLM = 0 
+        this.authService.userMetaStore.OpenOrders = 0
       }
       //console.log('end getAccountOrders:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
     })
@@ -589,7 +603,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       case 'allOrders':
         this.stellarService.allOffers = null
         this.stellarService.trades = null
-        this.getAccountOrders(null, false)
+        this.getAccountOrders(null, true)
         this.getAccTrades()
         //this.getAccountTrades(null)
 

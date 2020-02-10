@@ -240,9 +240,9 @@
                   </div>
                 </div>
                 <div class="form-group float-right mb-0">
-                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=askPrice">Ask</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=bidPrice">Bid</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=grxP">Last</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=askPrice.toFixed(7)">Ask</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=bidPrice.toFixed(7)">Bid</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=grxP.toFixed(7)">Last</a>
                 </div>
                 <div class="form-group">
                   <div class="input-group input-group-lg fixed-input-height">
