@@ -157,7 +157,7 @@ registerClicked() {
               this.registerForm.reset() 
             } else {    
               this.ngZone.run(() => {                    
-                this.router.navigate(['/login/confirm-email'], { state: { email: this.registerForm.value['email'],
+                this.router.navigate(['/confirm-email'], { state: { email: this.registerForm.value['email'],
                   name: this.registerForm.value['name']}})
               }) 
             }

@@ -24,7 +24,7 @@ export class AuthService {
   userMeta:  Observable<UserMeta>
   userMetaStore:  UserMeta = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
   OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true}
-
+  
   tfa$ = new BehaviorSubject<any>({})
   hash: string
   seedData: any
@@ -39,6 +39,9 @@ export class AuthService {
   reload:boolean = true
   priceDoc = '794retePzavE19bTcMaH/'
 
+  isGetBalance: boolean
+  // variable to not load userMetaStore and price every time if page is not reload
+
   getUserMeta(){
     if (this.userMetaStore.ShouldReload){
       this._userMeta = new Subject<UserMeta>()
@@ -51,15 +54,62 @@ export class AuthService {
         this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
         this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
         this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
-        // if (!(this.userMetaStore.GRX > 0 || this.userMetaStore.XLM > 0)){        
-        //   this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-        //   this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
-        // }
-        console.log('this.userMetaStore:', this.userMetaStore)
+        
+        if (this.isGetBalance && !this.userMetaStore.ShouldReload && data.XLM > 0){
+          console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
+          console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
+          this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+          this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+          this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
+          this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
+          this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
+        }
+       
+        console.log('GETUSERMETA:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
         this._userMeta.next(data)
       })
     }
+  }
+  getUserMeta1(){
+    if (this.userMetaStore.ShouldReload){
+      this._userMeta = new Subject<UserMeta>()
+      this.userMeta = this._userMeta.asObservable()
+      this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(data => {        
+        this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
+        this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
+        this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
+        this.userMetaStore.UrGRZ= data.UrGRZ >= 0? data.UrGRZ:0
+        this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
+        this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
+        this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
+
+        if (!this.userMetaStore.ShouldReload){
+          console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
+          console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
+          this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+          this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+          this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
+          this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
+          this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
+        }
+
+        // if (!(this.userMetaStore.GRX > 0 || this.userMetaStore.XLM > 0)){        
+        //   this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+        //   this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+        // }
+        console.log('GETUSERMETA-FIRSTLOAD:', this.userMetaStore)
+        this.userMetaStore.ShouldReload = false
+        this._userMeta.next(data)
+      })
+    }
+  }
+
+  subUserMeta(){    
+    //this._userMeta = new Subject<UserMeta>()
+    //this.userMeta = this._userMeta.asObservable()
+    this.userMeta = this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges()   
+    return this.userMeta 
   }
 
   streamPrices(){
@@ -305,9 +355,10 @@ export class AuthService {
     return this.http.post(`api/v1/users/setuptfa`, { account: account})             
   }
 
-  verifyTx(ledger, action, price): Promise<any> {
+  verifyTx(ledger, action, data): Promise<any> {
     return new Promise((resolve, reject) => {
-    this.http.post(`api/v1/users/txverify`, {ledger: ledger, action: action, price: price})    
+      console.log('verifyTx-data:', data)
+    this.http.post(`api/v1/users/txverify`, {ledger: ledger, action: action, data: data})    
     .subscribe(
       resp => {
         resolve(resp)    

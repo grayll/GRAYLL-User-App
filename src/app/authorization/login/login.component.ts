@@ -156,6 +156,7 @@ export class LoginComponent {
               if (data.errCode === environment.SUCCESS) {
                 //console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                 this.authService.ParseUserInfo(data.userBasicInfo)
+                console.log('decryptSecretKey0:', this.authService.userInfo)
                 
                 this.authService.userData = data.user
                 this.authService.userData.token = data.token
@@ -192,21 +193,33 @@ export class LoginComponent {
                       secretKey => {
                         if (secretKey != ''){
                           this.authService.secretKey = secretKey
-                          console.log('GetSecretKey6', secretKey)
-                          console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                          this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                          //console.log('GetSecretKey6', secretKey)
+                          //console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                          this.stellarService.encryptSecretKey(this.password.value, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
                             console.log('OLD USER-secretKeyBundle:', secretKeyBundle)
                             this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey  
                             // Save new EnSecretKey and Salt                           
                             this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.Salt}).subscribe( 
                               res => {
                                 console.log('saveEnSecretKeyData', res)
+                                this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                                  //console.log('login-secretKeyBundle:', secretKeyBundle)
+                                  this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
+                                  this.authService.SetLocalUserData()
+                                  console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                                })   
                               },
                               e => {
-                                console.log('saveEnSecretKeyData error', e)
+                                //console.log('saveEnSecretKeyData error', e)
                                 this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.salt}).subscribe( 
                                   res => {
                                     console.log('saveEnSecretKeyData', res)
+                                    this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                                      //console.log('login-secretKeyBundle:', secretKeyBundle)
+                                      this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
+                                      this.authService.SetLocalUserData()
+                                      console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                                    })  
                                   },
                                   e => {
                                     console.log('saveEnSecretKeyData error', e)
@@ -215,29 +228,29 @@ export class LoginComponent {
                               }
                             )                            
                             this.authService.SetLocalUserData()
-                            console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                            //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                           })            
                         } else {
-                          console.log('GetSecretKey7')
+                          console.log('GetSecretKey7, key invalid')
                           //reject('')
                         }
                       })
                   } else {
-                    console.log('decryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                    
                     this.stellarService.decryptSecretKey(this.password.value, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
                     secretKey => {
                       if (secretKey != ''){
                         this.authService.secretKey = secretKey
-                        
-                        console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                        // console.log('decryptSecretKey:', secretKey)
+                        // console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                         this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                          console.log('login-secretKeyBundle:', secretKeyBundle)
+                          //console.log('login-secretKeyBundle:', secretKeyBundle)
                           this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
                           this.authService.SetLocalUserData()
                           console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                         })            
                       } else {
-                        console.log('GetSecretKey7')
+                        //console.log('GetSecretKey7')
                         //reject('')
                       }
                     })

@@ -177,71 +177,93 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       // }) 
 
       this.loadingService.show()
+      var dexAmount = +this.grxAmount
+      var superAdminAmount = 0
+      if (this.authService.userInfo.SellingPercent <= 100){
+        dexAmount = this.authService.userInfo.SellingPercent*+this.grxAmount/100
+        superAdminAmount = +this.grxAmount - dexAmount
+      }
+      
       // check setting whether direct purchase on admin account
-      // if (this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){
-      //   if (+this.grxPrice >= +this.authService.userData.grxPrice && +this.grxPrice >= this.authService.userInfo.SellingPrice){
-      //     // purchase directly from grayll super admin
-      //     if (this.authService.userInfo.SellingPercent == 0){
-      //       // buy all from grayll super admin
-      //       let xlmAmount = +this.grxAmount*+this.grxPrice
-      //       this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
-      //         xlmAmount.toString(), this.stellarService.nativeAsset, '')
-      //       .then( ledger => {
-      //         this.authService.verifyTx(ledger, 'buying', +this.grxPrice).then(resp => {
-      //           // update fund
-      //           console.log('verifyTx: ', resp)
-      //         }).catch( e => {
-
-      //         })
-      //       }).catch(e => {
-
-      //       })
-      //     } else {
-      //       // buy from super admin and dex
-
-      //     }
-      //   }
-      // }
-
-      this.stellarService.buyOrder(this.authService.getSecretKey(), this.grxPrice, this.grxAmount).then( res => {
-        if (!this.stellarService.allOffers){
-          this.stellarService.allOffers = []
+      console.log('grxPrice:', this.grxPrice , this.authService.userData.grxPrice , this.authService.userInfo.SellingPrice)
+      console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent)
+      if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){
+        if (+this.grxPrice >= +this.authService.userData.grxPrice && +this.grxPrice >= this.authService.userInfo.SellingPrice){
+          console.log('Direct purchase from super admin')
+          // purchase directly from grayll super admin         
+       
+          if (superAdminAmount > 0){
+            // buy all from grayll super admin
+            let xlmAmount = superAdminAmount*+this.grxPrice
+            this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
+              xlmAmount.toString(), this.stellarService.nativeAsset, '')
+            .then( ledger => {
+              this.authService.verifyTx(ledger, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:xlmAmount}).then(resp => {
+                // update fund
+                console.log('verifyTx: ', resp)
+                this.loadingService.hide()
+                let msg 
+                if (resp.errCode === environment.SUCCESS){
+                  msg = 'Buy order has been matched and executed!'                   
+                } else {
+                  msg = 'Buy order could not be submitted! Please retry!'                  
+                }
+                this.loadingService.hide()
+                this.snotifyService.simple(msg); 
+              }).catch( e => {
+                console.log(e)
+                this.loadingService.hide()
+              })              
+            }).catch(e => {
+              let msg = 'Buy order could not be submitted! Please retry!'   
+              this.snotifyService.simple(msg);        
+              this.loadingService.hide()
+            })            
+            //return
+          } 
         }
-        let matchType = 0
-        let msg = 'Buy order submitted successfully.'
-        if (res.offerResults[0].currentOffer){
-          console.log('res.offerResults[0].currentOffer', res.offerResults[0].currentOffer)
-          let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
-            this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore)
+      }
 
-          this.stellarService.allOffers.push(of)                 
-          this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
-          matchType += 1
-          //this.authService.SetLocalUserData()          
-        } 
-        if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {
-          console.log('res.offerResults', res.offerResults)
-          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userMetaStore)          
-          matchType += 2
-        }
-        if (matchType == 3){
-          msg = 'Buy order has been partially matched and executed!'
-        } else if (matchType == 2){
-          msg = 'Buy order has been matched and executed!'
-        }
-        this.loadingService.hide()
-        this.snotifyService.simple(msg); 
-        
-      }).catch(e => {
-        console.log(e)
-        this.loadingService.hide()
-        if (e.toString().includes('status code 400')){
-          this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')  
-        } else {
-          this.snotifyService.simple('Buy order could not be submitted! Please retry!')
-        } 
-      })        
-    //})  
+      if (dexAmount > 0){
+        this.stellarService.buyOrder(this.authService.getSecretKey(), this.grxPrice, dexAmount.toString()).then( res => {
+          if (!this.stellarService.allOffers){
+            this.stellarService.allOffers = []
+          }
+          let matchType = 0
+          let msg = 'Buy order submitted successfully.'
+          if (res.offerResults[0].currentOffer){
+            console.log('res.offerResults[0].currentOffer', res.offerResults[0].currentOffer)
+            let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
+              this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore)
+  
+            this.stellarService.allOffers.push(of)                 
+            this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
+            matchType += 1
+            //this.authService.SetLocalUserData()          
+          } 
+          if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {
+            console.log('res.offerResults', res.offerResults)
+            this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userMetaStore)          
+            matchType += 2
+          }
+          if (matchType == 3){
+            msg = 'Buy order has been partially matched and executed!'
+          } else if (matchType == 2){
+            msg = 'Buy order has been matched and executed!'
+          }
+          this.loadingService.hide()
+          this.snotifyService.simple(msg); 
+          
+        }).catch(e => {
+          console.log(e)
+          this.loadingService.hide()
+          if (e.toString().includes('status code 400')){
+            this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')  
+          } else {
+            this.snotifyService.simple('Buy order could not be submitted! Please retry!')
+          } 
+        })  
+      }     
   }
   
   verifyTx(ledger){

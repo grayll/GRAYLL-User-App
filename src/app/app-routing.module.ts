@@ -10,10 +10,17 @@ import { AuthGuard } from './shared/guard/auth.guard';
 import { SwUpdateNotifiyComponent } from './shared/sw-update-notifiy/sw-update-notifiy.component';
 
 const routes: Routes = [
+  // {
+  //   path: 'login',
+  //   loadChildren: './authorization/authorization.module#AuthorizationModule'
+  // },
   {
-    path: 'login',
-    loadChildren: './authorization/authorization.module#AuthorizationModule'
-  },
+    path: '',
+    //redirectTo: '/login',
+    loadChildren: './authorization/authorization.module#AuthorizationModule',
+    //pathMatch: 'full',
+    //canActivate: [AuthGuard],
+  },  
   {
     path: 'dashboard',
     loadChildren: './dashboard/dashboard.module#DashboardModule',
@@ -44,12 +51,7 @@ const routes: Routes = [
     loadChildren: './settings/settings.module#SettingsModule',
     canActivate: [AuthGuard],
   },
-  {
-    path: '',
-    redirectTo: '/login',
-    pathMatch: 'full',
-    canActivate: [AuthGuard],
-  },  
+  
   {
     path: 'dashboard',
     redirectTo: '/dashboard/overview',
@@ -68,6 +70,7 @@ const routes: Routes = [
     path: 'error',
     component: ErrorPageComponent
   },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
   {
     path: '**',
     redirectTo: '/404'

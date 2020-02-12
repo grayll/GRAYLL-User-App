@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {SharedService} from './shared/shared.service';
 import {SwPush} from "@angular/service-worker";
 import {Router} from '@angular/router';
+import { AlgoliaService } from './algolia.service';
 
 @Component({
   selector: 'app-root',
@@ -21,16 +22,17 @@ export class AppComponent {
   //         event.waitUntil(clients.openWindow(event.notification.data.url));
   //     }
   // });
-  constructor(public sharedService: SharedService,
+  constructor(public sharedService: SharedService, private algolia: AlgoliaService,
     private swPush: SwPush,
     private router: Router,) {
-    this.swPush.notificationClicks.subscribe( noticeData =>
-      {        
-        const url = noticeData.notification.data.url
-        // window.open(url, '_blank');
-        // console.log('data.url: ' + url);
-        //this.router.navigate(noticeData.notification.data.url)
-        window.open(noticeData.notification.data.url, '_blank');
-     });
+      this.algolia.init();
+    // this.swPush.notificationClicks.subscribe( noticeData =>
+    //   {        
+    //     const url = noticeData.notification.data.url
+    //     // window.open(url, '_blank');
+    //     // console.log('data.url: ' + url);
+    //     //this.router.navigate(noticeData.notification.data.url)
+    //     window.open(noticeData.notification.data.url, '_blank');
+    //  });
   }
 }

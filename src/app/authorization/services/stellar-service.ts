@@ -969,7 +969,7 @@ export class StellarService {
     
     decryptSecretKey(password, enSecretKeyBundle, callback) {
         //const nonce = new Uint8Array(24);
-        console.log('pwd', password)
+        console.log('pwd', password, enSecretKeyBundle)
         console.log('enSecretKeyBundle', enSecretKeyBundle)
         
         var secretBox = require('secret-box')

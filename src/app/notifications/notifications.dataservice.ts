@@ -26,7 +26,7 @@ export class NoticeDataService {
   private _dataTrade: BehaviorSubject<OrderId[]>;
   public dataTrade: Observable<OrderId[]>;
   public dataTradeSync: OrderId[];
-
+  
   private _markAsRead: Subject<any>
 
   latestEntry: any;
@@ -99,6 +99,22 @@ export class NoticeDataService {
       }))
     );
   }
+
+  parseTransfer(notice){
+    let data = notice as Notice;
+        const id = notice.id;
+        
+        //let times = moment(a.payload.doc.data()["time"]*1000).format('HH:mm | DD/MM/YYYY')
+        let times =  moment.utc(notice.time*1000).local().format('DD/MM/YYYY HH:mm:ss')
+        // let issuer = 'Stellar'
+        // if (notice.asset.includes('GRX')){
+        //   issuer = 'GRAYLL'
+        // }
+        let url = this.txUrl + notice.txId
+        let counters = this.trimAddress(notice.counter)
+        //console.log('a.payload.doc.data():', a.payload.doc.data())
+        return { id, url, counters, times, ...data };     
+  }
   getPaymentHistory(path:string, limit:number) {
     this._data = new BehaviorSubject([]);
     //this.data = this._data.asObservable().subscribe(res => this.allData.push(res));
@@ -122,15 +138,35 @@ export class NoticeDataService {
         const data = a.payload.doc.data() as OrderId;       
         //let times = moment(a.payload.doc.data()["time"]*1000).format('HH:mm | DD/MM/YYYY')
         let ts = a.payload.doc.data()["time"]
-        let times =  moment.utc(ts.seconds*1000).local().format('DD/MM/YYYY HH:mm:ss')
+        let times
+        if (isNaN(ts)){
+          times =  moment.utc(ts.seconds*1000).local().format('DD/MM/YYYY HH:mm:ss')
+        }  else {
+          times =  moment.utc(ts*1000).local().format('DD/MM/YYYY HH:mm:ss')
+        }  
+        //let times =  moment.utc(ts.seconds*1000).local().format('DD/MM/YYYY HH:mm:ss')
         
         let url = this.txUrl + a.payload.doc.data()["offerId"]        
         //console.log('a.payload.doc.data():', a.payload.doc.data())
-        return { url,times, ...data };     
+        return { url, times, ...data };     
 
       }))
     );
   }
+
+  parseTrade(trade){
+    const data = trade as OrderId; 
+    let times
+    if (isNaN(trade.time)){
+      times =  moment.utc(trade.time.seconds*1000).local().format('DD/MM/YYYY HH:mm:ss')
+    }  else {
+      times =  moment.utc(trade.time*1000).local().format('DD/MM/YYYY HH:mm:ss')
+    }  
+    
+    let url = this.txUrl + trade.offerId        
+    return { url, times, ...data };     
+  }
+  
   getTradeHistory(path:string, limit:number) {
     this._dataTrade = new BehaviorSubject([]);    
     this.dataTrade = this._dataTrade.asObservable()

@@ -59,24 +59,51 @@ export class NavbarComponent implements OnDestroy, OnInit {
     public swService: SwUpdateNotifyService,
     
   ) {
-
-    
-    // if (!this.authService.userData){
-    //   console.log('NAV.GetLocalUserData()')
-    //   this.authService.GetLocalUserData()
-    // } 
-    // console.log('NAV.userMetaStore:', this.authService.userMetaStore)
-    // if (!this.authService.userMetaStore || (this.authService.userMetaStore && this.authService.userMetaStore.XLM === 0)){      
-    //   this.authService.GetLocalUserMeta()
-    //   console.log('NAV.userMetaStore1:', this.authService.userMetaStore)
-    // } else {
-    //   console.log('NAV.userMetaStore:not load fromlocal')
-    // }   
-  
-    this.server = new StellarSdk.Server(environment.horizon_url);
-        
+       
+    this.server = new StellarSdk.Server(environment.horizon_url);      
+    this.authService.isGetBalance = false  
     // get user meta data
     this.authService.getUserMeta()
+    // if (!this.authService.userMeta){
+    //   this.authService.subUserMeta().subscribe(data => {
+    //     console.log('INIT subcribe-DATA:', data)
+    //     this.authService.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
+    //     this.authService.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
+    //     this.authService.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
+    //     this.authService.userMetaStore.UrGRZ= data.UrGRZ >= 0? data.UrGRZ:0
+    //     this.authService.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
+    //     this.authService.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
+    //     this.authService.userMetaStore.TokenExpiredTime = data.TokenExpiredTime 
+        
+    //     if (!this.authService.isGetBalance){
+    //       this.authService.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+    //       this.authService.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+    //       this.authService.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
+    //       this.authService.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
+    //       this.authService.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
+    //     }
+    //   })
+    //   console.log('INIT subcribe')
+    // } else {// already subscribe
+    //   console.log('ALREADY subcribe') 
+    //   this.authService.userMeta.subscribe(data => {
+    //     console.log('ALREADY subcribe-DATA:', data) 
+    //     this.authService.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
+    //     this.authService.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
+    //     this.authService.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
+    //     this.authService.userMetaStore.UrGRZ= data.UrGRZ >= 0? data.UrGRZ:0
+    //     this.authService.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
+    //     this.authService.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
+    //     this.authService.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
+        
+    //     this.authService.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+    //     this.authService.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+    //     this.authService.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
+    //     this.authService.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
+    //     this.authService.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
+    //   })     
+    // }
+    
     this.authService.streamPrices()
     if (this.authService.userMetaStore.TokenExpiredTime) {
       this.scheduleCheckTokenExpiry()
@@ -188,6 +215,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
         // this.authService.userData.grxPrice = grxPrice
         // this.authService.SetLocalUserData()
         // console.log('NAV.this.authService.userData.xlmPrice:', this.authService.userData.xlmPrice)
+        this.authService.isGetBalance = true
         console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
         console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
         
@@ -385,7 +413,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     localStorage.removeItem('grayll-user');    
     localStorage.removeItem('grayll-user-meta'); 
     this.ngZone.run(()=> {
-      this.router.navigateByUrl('/login')
+      this.router.navigateByUrl('/')
     })
   }
 }
