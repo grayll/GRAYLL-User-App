@@ -762,8 +762,10 @@ export class StellarService {
     }
     getAccountBalance(publicKey: string){        
         return new Promise((resolve, reject) => {
-            this.horizon.loadAccount(publicKey).then(                
+            this.horizon.loadAccount(publicKey).then(  
+                    
                 res => {    
+                    this.account = res
                     console.log(res)                
                     let xlm = 0
                     let grx = 0

@@ -35,9 +35,9 @@ export class WalletComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     window.scroll(0, 0);
     this.changeBackgroundColor(true);
-    this.stellarService.loadAccount(this.authService.userData.PublicKey).then(acc => {
-      this.stellarService.account = acc
-    })
+    // this.stellarService.loadAccount(this.authService.userData.PublicKey).then(acc => {
+    //   this.stellarService.account = acc
+    // })
   }
   @HostListener('window:beforeunload')
   ngOnDestroy(): void {

@@ -17,7 +17,7 @@ export class OpenAlgoPositionSuccessComponent implements OnInit {
   constructor(
     public popupService: PopupService,
     private router: Router,
-    private sharedService: SharedService
+    private sharedService: SharedService,    
   ) { }
 
   ngOnInit() {
@@ -27,9 +27,9 @@ export class OpenAlgoPositionSuccessComponent implements OnInit {
 
   goToError() {
     this.popupService.close().then(() => {
-      setTimeout(() => {
-        this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
-      }, 1000);
+      // setTimeout(() => {
+      //   this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
+      // }, 1000);
     });
   }
 

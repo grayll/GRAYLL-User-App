@@ -15,7 +15,7 @@
         <p class="text-purple font-14">{{algoPosition.token}} | Algo Position Opened</p>
       </div>
       <div class="col-12">
-        <p class="text-purple font-16 mb-0">${{algoPosition.usdValue}}</p>
+        <p class="text-purple font-16 mb-0">${{algoPosition.positionValue}}</p>
       </div>
     </div>
 
@@ -23,12 +23,12 @@
 
     <div class="row text-center">
       <div class="col-12 text-purple">
-        <p class="mb-0">{{algoPosition.token}} | $0.09121</p>
+        <p class="mb-0">{{algoPosition.token}} | {{algoPosition.itemPrice.toFixed(5)}}</p>
         <p class="mb-0">{{algoPosition.item}} Algo Fee @ 1.8%</p>
-        <p class="mb-0">$81,999,99198</p>
-        <p class="mb-0">{{algoPosition.itemAmount}} GRX</p>
-        <p class="mb-0">GRX | {{algoPosition.grxAmount}}</p>
-        <a href="javascript:void(0)" (click)="goToOverview()" class="mb-0 navy-link">Stellar Transaction ID | 0108181408618385411</a><br>
+        <!-- <p class="mb-0">$81,999,99198</p> -->
+        <p class="mb-0">{{algoPosition.grxAmount}} GRX</p>
+        <p class="mb-0">GRX | {{algoPosition.grxPrice}}</p>
+        <a href="javascript:void(0)" (click)="goToOverview()" class="mb-0 navy-link">Stellar Transaction ID | {{algoPosition.stellarTxId}}</a><br>
         <a href="javascript:void(0)" (click)="goToOverview()" class="mb-0 navy-link">GRAYLL Transaction ID | 0108181408618385411</a>
       </div>
     </div>

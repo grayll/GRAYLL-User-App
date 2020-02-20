@@ -14,6 +14,7 @@ var StellarSdk = require('stellar-sdk');
 import {SnotifyService} from 'ng-snotify';
 import {PopupService} from 'src/app/shared/popup/popup.service';
 import { SwUpdateNotifyService } from '../../sw-update-notifiy/sw-update-notify.service';
+import { AngularFireWrapper } from '../../services/angularfire.service';
 
 @Component({
   selector: 'app-navbar',
@@ -57,6 +58,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     private snotifyService: SnotifyService,
     public popupService: PopupService,   
     public swService: SwUpdateNotifyService,
+    private afW: AngularFireWrapper,
     
   ) {
        
@@ -119,20 +121,11 @@ export class NavbarComponent implements OnDestroy, OnInit {
     if (!this.authService.userInfo){this.http.post(`api/v1/users/getUserInfo`, {})
       .subscribe(res => {
         let data = (res as any)        
-        if (data.errCode == environment.SUCCESS){ 
-           
+        if (data.errCode == environment.SUCCESS){           
           this.authService.ParseUserInfo(data)
           console.log('NAV-getUserInfo', this.authService.userInfo)  
           this.authService.pushUserInfoMsg(this.authService.userInfo)
-          this.authService.DecryptLocalSecret()
-
-          // if (!this.authService.secretKey){
-          //   this.stellarService.decryptSecretKey(this.authService.userInfo.LocalKey, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userData.EnSecretKey}, secretKey => {
-          //     console.log(' NAV-decryptSecretKey:', secretKey)
-          //     this.authService.secretKey = secretKey
-          //   })
-          // }
-          //this.streaming()          
+          this.authService.DecryptLocalSecret()                 
         } else {
           console.log('getUserInfo-userInfo failed') 
         }     
@@ -224,39 +217,18 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
     //this.promptUser()    
     this.checkForUpdates(true)
-    // this.subsink.add(this.popupService.observeUpdate().subscribe( valid => {
-    //   console.log('subcribe reload')
-    //   this.shownUpdate = false
-    //   window.location.reload()
-    // }))
+    
+    // this.afW.db('default').object('orders/2bqgQjiXfAHdZrGFqtzF')
+    //   .valueChanges()
+    //   .subscribe(data => {
+    //     console.log('APPTEST:', data)
+    //   })
+      // this.afW.db('default').object('prices/794retePzavE19bTcMaH')
+      // .valueChanges()
+      // .subscribe(data => {
+      //   console.log('APPTEST:', data)        
+      // })
   }
-  
-  // ngOnInit1(){
-  //   console.log('navbar.subscribe', this.ComId)
-  //   if (this.ComId != 'notification'){
-  //     Promise.all([
-  //       this.stellarService.getCurrentGrxPrice1(),
-  //       this.stellarService.getCurrentXlmPrice1(),
-  //       this.stellarService.getAccountBalance(this.authService.userData.PublicKey)
-  //       .catch(err => {
-  //         // Notify internet connection.
-  //         //this.snotifyService.simple('Please check your internet connection.')
-  //         console.log(err)
-  //       })
-  //     ])
-  //     .then(([ grxPrice, xlmPrice, balances ]) => {         
-  //       this.authService.userMetaStore.GRX = (balances as any).grx;
-  //       this.authService.userMetaStore.XLM = (balances as any).xlm;
-  //       this.authService.userData.xlmPrice = xlmPrice
-  //       this.authService.userData.grxPrice = grxPrice
-  //       this.authService.SetLocalUserData()
-        
-  //       console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
-  //       console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
-        
-  //     }) 
-  //   }    
-  // }
   
   checkForUpdates(isFirstCheck: boolean): void {
     console.log('checkForUpdates()');

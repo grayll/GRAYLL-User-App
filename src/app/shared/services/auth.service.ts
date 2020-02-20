@@ -14,7 +14,7 @@ import { UserInfo, Setting } from 'src/app/models/user.model';
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
   OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
 
-  export interface Prices {xlmp: number; grxp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
+  export interface Prices {xlmp: number; grxp: number;gryp: number;grzp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
 @Injectable({
   providedIn: 'root' 
 })
@@ -119,6 +119,8 @@ export class AuthService {
       this.afs.doc<Prices>('prices/'+this.priceDoc).valueChanges().subscribe(data => {        
         this.userData.xlmPrice = data.xlmp
         this.userData.grxPrice = data.grxp
+        this.userData.gryPrice = data.gryp
+        this.userData.grzPrice = data.grzp
         this.userInfo.SellingWallet = data.sellingWallet
         this.userInfo.SellingPercent = data.sellingPercent
         this.userInfo.SellingPrice = data.sellingPrice

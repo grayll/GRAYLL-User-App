@@ -30,7 +30,7 @@
                 <div class="input-group-prepend">
                   <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                 </div>
-                <input type="text" [(ngModel)]="algoPosition.usdValue"
+                <input type="text" [(ngModel)]="algoPosition.usdValue" (keyup)="usdAmountChange()"
                        class="fixed-input-height text-light form-control form-control-no-border bg-purple border-0" placeholder="USD Value (Minimum $10.00)">
               </div>
             </div>
@@ -41,15 +41,15 @@
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
                           </span>
                 </div>
-                <input type="text" class="fixed-input-height text-light form-control form-control-no-border border-0 bg-purple"
-                       placeholder="selectedTab.id + ' | ' + selectedTab.value + ' Amount'" [(ngModel)]="algoPosition.itemAmount">
+                <input type="text" class="fixed-input-height text-light form-control form-control-no-border border-0 bg-purple" (keyup)="itemAmountChange()"
+                       [placeholder]="selectedTab.id + ' | ' + selectedTab.value + ' Amount'" [(ngModel)]="algoPosition.itemAmount">
               </div>
             </div>
           </div>
           <div class="col-md-12 text-center mt-3">
             <div class="border-navy">
               <p class="font-weight-bolder">
-                Current Value GRY/USD | $0.09042
+                Current Value GRY/USD | {{authService.userData.gryPrice.toFixed(5)}}
               </p>
               <div class="d-flex align-items-center px-1">
                 <div>
@@ -82,7 +82,7 @@
                 </div>
                 <input type="text" class="fixed-input-height text-light
                     form-control form-control-no-border bg-purple border-0"
-                       placeholder="GRX Amount" [(ngModel)]="GRXValue">
+                    (keyup)="grxAmountChange()"   placeholder="GRX Amount" [(ngModel)]="algoPosition.grxAmount">
               </div>
             </div>
           </div>
@@ -95,7 +95,7 @@
               </div>
               <div class="col">
                 <a class="navy-link-white" href="javascript:void(0)" (click)="populateMaxGRX()">
-                  Max Available GRX: {{totalGRX}}
+                  Max Available GRX: {{this.authService.getMaxAvailableGRX()}}
                 </a>
               </div>
             </div>
