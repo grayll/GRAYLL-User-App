@@ -12,6 +12,8 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { environment } from 'src/environments/environment'
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { AlgoService } from '../algo.service';
 
 @Component({
   selector: 'app-system-header-boxes',
@@ -28,8 +30,10 @@ export class SystemHeaderBoxesComponent implements OnInit {
   algoPosition: AlgoPositionModel;
   // itemChange to detect which is calculated from (usd,gry,grx)
   itemChange: string
-  GRY_FEE = 1.8
-  GRZ_FEE = 0.3
+  //GRY_FEE = 1.8
+  //GRZ_FEE = 0.3
+  grydb:any
+  grzdb:any
   countdownConfig: CountdownConfig = {
     leftTime: 60,
     template: '$!s!',
@@ -42,28 +46,32 @@ export class SystemHeaderBoxesComponent implements OnInit {
       name: 'GRY | 1',
       value: 'Balthazar',
       token: 'GRY',
-      tabName: 'Balthzr'
+      tabName: 'Balthzr',
+      fee: 0.018
     },
     {
       id: 'GRY 2',
       name: 'GRY | 2',
       value: 'Kaspar',
       token: 'GRY',
-      tabName: 'Kaspar'
+      tabName: 'Kaspar',
+      fee: 0.013
     },
     {
       id: 'GRY 3',
       name: 'GRY | 3',
       value: 'Melkior',
       token: 'GRY',
-      tabName: 'Melkior'
+      tabName: 'Melkior',
+      fee: 0.009
     },
     {
       id: 'GRZ',
       name: 'GRZ',
       value: 'Arkady',
       token: 'GRZ',
-      tabName: 'Arkady'
+      tabName: 'Arkady',
+      fee: 0.003
     }
   ];
 
@@ -80,15 +88,43 @@ export class SystemHeaderBoxesComponent implements OnInit {
     public authService: AuthService,
     public stellarService: StellarService,
     private http: HttpClient,
+    private loadingService: LoadingService,
+    private algoService: AlgoService,
 
-  ) {
-    //this.GRXValue = null;
-    //this.totalGRX = 99999999999.99998;
+  ) {    
     this.selectedTab = this.algoItems[0];
     this.algoPosition = new AlgoPositionModel(null, this.selectedTab.name, null, null, null, null);
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    //this.algoService.initFireStoreDb()
+    //this.algoService.getAlgoPositions()
+    // this.algoService.algoPositions.subscribe(pos => 
+    //   {
+    //     pos.forEach( p => {
+    //       console.log('data:', p['close_position_ROI_%'])
+    //     })
+        
+    //   })
+    this.getDashBoardData()
+  }
+
+  getDashBoardData(){
+    this.http.get("api/v1/users/GetDashBoardInfoGet/gryusd,grzusd").subscribe(
+      data => {       
+        let res = data as any      
+        if (res.db.gryusd){ 
+          this.grydb = res.db.gryusd          
+        }
+        if (res.db.grzusd){ 
+          this.grzdb = res.db.grzusd
+        }        
+      },
+      e => {
+        console.log(e)
+      }
+    )
+  }
 
   populateMaxGRX() {
     //this.GRXValue = this.totalGRX.toString();
@@ -100,8 +136,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
   usdAmountChange(){
     console.log('usdAmountChange')
     this.itemChange = 'usdAmountChange'
-    this.calculateAmount()
-   
+    this.calculateAmount()   
   }
   itemAmountChange(){
     this.itemChange = 'itemAmountChange'
@@ -123,16 +158,16 @@ export class SystemHeaderBoxesComponent implements OnInit {
           return false;
         }
   
-        if (this.selectedTab === 'GRZ'){
+        if (this.selectedTab.id === 'GRZ'){
           this.algoPosition.itemAmount = (this.algoPosition.usdValue/+this.authService.userData.grzPrice).toFixed(7)
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - this.GRZ_FEE)/100
+          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
           this.algoPosition.itemPrice = this.authService.userData.grzPrice
         } else {
           this.algoPosition.itemAmount = (this.algoPosition.usdValue/+this.authService.userData.gryPrice).toFixed(7)
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - this.GRY_FEE)/100
+          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
           this.algoPosition.itemPrice = this.authService.userData.gryPrice
         }
-        this.algoPosition.grxAmount = (this.algoPosition.usdValue/+this.authService.userData.grxPrice).toFixed(7)
+        this.algoPosition.grxAmount = (this.algoPosition.usdValue/+this.authService.userData.grxusdPrice).toFixed(7)
         break
       case 'itemAmountChange':
         if (this.algoPosition.itemAmount && !this.isValidNumber(this.algoPosition.itemAmount)) {
@@ -140,16 +175,16 @@ export class SystemHeaderBoxesComponent implements OnInit {
           return false;
         }
   
-        if (this.selectedTab === 'GRZ'){
+        if (this.selectedTab.id === 'GRZ'){
           this.algoPosition.usdValue = this.algoPosition.itemAmount*+this.authService.userData.grzPrice
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - this.GRZ_FEE)/100
+          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
           this.algoPosition.itemPrice = this.authService.userData.grzPrice
         } else {
           this.algoPosition.usdValue = this.algoPosition.itemAmount*+this.authService.userData.gryPrice
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - this.GRY_FEE)/100
+          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
           this.algoPosition.itemPrice = this.authService.userData.gryPrice
         }
-        this.algoPosition.grxAmount = (this.algoPosition.usdValue/+this.authService.userData.grxPrice).toFixed(7)
+        this.algoPosition.grxAmount = (this.algoPosition.usdValue/+this.authService.userData.grxusdPrice).toFixed(7)
         break
       case 'grxAmountChange':
         if (this.algoPosition.grxAmount && !this.isValidNumber(this.algoPosition.grxAmount)) {
@@ -157,14 +192,14 @@ export class SystemHeaderBoxesComponent implements OnInit {
           return false;
         }
         
-        this.algoPosition.usdValue = +(this.algoPosition.grxAmount*+this.authService.userData.grxPrice).toFixed(7)
+        this.algoPosition.usdValue = +(this.algoPosition.grxAmount*+this.authService.userData.grxusdPrice).toFixed(7)
         if (this.selectedTab === 'GRZ'){
           this.algoPosition.itemAmount = (this.algoPosition.usdValue/+this.authService.userData.grzPrice).toFixed(7)
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - this.GRZ_FEE)/100
+          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
           this.algoPosition.itemPrice = this.authService.userData.grzPrice
         } else {
           this.algoPosition.itemAmount = (this.algoPosition.usdValue/+this.authService.userData.gryPrice).toFixed(7)
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - this.GRY_FEE)/100
+          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
           this.algoPosition.itemPrice = this.authService.userData.gryPrice
         }
         break
@@ -173,7 +208,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
       this.errorService.handleError(null, 'Insufficient balance. Please deposit more GRX to open position.');
       return false;
     }
-    this.algoPosition.grxPrice = this.authService.userData.grxPrice  
+    this.algoPosition.grxPrice = this.authService.userData.grxusdPrice  
   }
 
   didChangeTab(id: string) {
@@ -189,7 +224,6 @@ export class SystemHeaderBoxesComponent implements OnInit {
         this.algoPosition.itemAmount = this.algoPosition.usdValue/+this.authService.userData.gryPrice
       }
     }
-
   }
 
   scrollToSystemActivity() {
@@ -235,6 +269,10 @@ export class SystemHeaderBoxesComponent implements OnInit {
       this.errorService.handleError(null, 'Minimum amount is $10.');
       return false;
     }
+    if (this.algoPosition.grxAmount > this.authService.getMaxAvailableGRX()) {
+      this.errorService.handleError(null, 'Insufficient balance. Please deposit more GRX to open position.');
+      return false;
+    }
     return true;
   }
 
@@ -244,79 +282,88 @@ export class SystemHeaderBoxesComponent implements OnInit {
     // this.algoPosition.usdValue = +this.algoPosition.usdValue;
     this.algoPosition.token = this.selectedTab.id;
   }
-
-  // OpenPositionRequest struct {
-	// 	UserId                int64   `json:"user_id"`
-	// 	StellarTxId           string  `json:"stellar_transaction_id"`
-	// 	GrayllTxId            string  `json:"grayll_transaction_id"`
-	// 	OpenPositionTimestamp int64   `json:"open_position_timestamp"`
-	// 	AlgoType              string  `json:"algorithm_type"`
-	// 	GrzPrice              float64 `json:"grz_price"`
-	// 	GrxPrice              float64 `json:"grx_price"`
-	// 	OpenPositionTotalUSD  float64 `json:"open_position_total_$"`
-	// 	OpenPositionFeeUSD    float64 `json:"open_position_fee_$"`
-	// 	OpenPositionFeeGRX    float64 `json:"open_position_fee_GRX"`
-	// 	OpenPositionValueUSD  float64 `json:"open_position_value_$"`
-	// 	OpenPositionTotalGRX  float64 `json:"open_position_total_GRX"`
-	// 	OpenPositionValueGRZ  float64 `json:"open_position_value_GRZ"`
-	// 	OpenPositionValueGRX  float64 `json:"open_position_value_GRX"`
-	// }
-
+  
   private openPopup() {
+
     this.sharedService.openAlgoPosition(this.algoPosition);
     console.log('this.algoPosition:', this.algoPosition)
-    this.stellarService.sendAsset(this.authService.getSecretKey(), environment.XLM_LOAN_ADDRESS, 
+    this.loadingService.show()
+    this.stellarService.sendAsset(this.authService.getSecretKey(), environment.HOT_WALLET_ONE, 
       this.algoPosition.grxAmount.toString(), this.stellarService.grxAsset, '').then( ledgerId => {
         this.algoPosition.stellarTxId = ledgerId
         if (this.algoPosition.item === 'GRZ'){
-          this.http.post('https://grayll-test-oivbo7uxva-uc.a.run.app/grz/positions/create', {
-            //user_id:this.authService.userInfo.Uid,
-            user_id:1000,
-            stellar_transaction_id:ledgerId.toString(),
+          this.http.post(environment.grz_api_url + 'api/v1/grz/position/open', {
+            user_id:this.authService.userInfo.Uid,            
+            open_stellar_transaction_id:ledgerId.toString(),
             grayll_transaction_id:"0",
             open_position_timestamp:0,
-            algorithm_type:this.algoPosition.id,
-            grz_price: this.algoPosition.itemPrice,
-            grx_price: this.algoPosition.grxPrice,
+            algorithm_type:this.selectedTab.id,
+            open_value_GRZ: this.algoPosition.itemPrice,
+            open_value_GRX: this.algoPosition.grxPrice,
             open_position_total_$:+this.algoPosition.usdValue,
-            open_position_fee_$:+this.algoPosition.usdValue*this.GRZ_FEE,
-            open_position_fee_GRX:this.algoPosition.grxAmount*this.GRZ_FEE,
-    
+            open_position_fee_$:+this.algoPosition.usdValue*+this.selectedTab.fee,
+            open_position_fee_GRX:+this.algoPosition.grxAmount*+this.selectedTab.fee,
+            duration:0,
+            current_position_ROI_$:0,
+            current_position_ROI_percent:0,
             open_position_value_$:this.algoPosition.positionValue,
             open_position_total_GRX:+this.algoPosition.grxAmount,
             open_position_value_GRZ:+this.algoPosition.itemAmount,
-            open_position_value_GRX:(+this.algoPosition.grxAmount - +this.algoPosition.grxAmount*this.GRZ_FEE),
-          }).subscribe( res => {
-            console.log(res)
-            this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
+            open_position_value_GRX:(+this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee),
+          }).subscribe(res => {
+              if ((res as any).errCode != environment.SUCCESS){
+               
+                this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
+              } else {
+                console.log('res:', res)
+               this.algoPosition.grayllTxId = (res as any).grayllTxId
+               this.sharedService.openAlgoPosition(this.algoPosition);
+               this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
+              }
+              this.loadingService.hide()
+          },
+          e => {
+
+            this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
+            this.loadingService.hide()
           })
         } else {
-          this.http.post('https://grayll-test-oivbo7uxva-uc.a.run.app/gry/positions/create', {
-            //user_id:this.authService.userInfo.Uid,
-            user_id:1000,
-            stellar_transaction_id:ledgerId.toString(),
+          this.http.post(environment.grz_api_url + 'api/v1/gry/position/open', {
+            user_id:this.authService.userInfo.Uid,            
+            open_stellar_transaction_id:ledgerId.toString(),
             grayll_transaction_id:"0",
             open_position_timestamp:0,
             algorithm_type:this.algoPosition.id,
-            grz_price: this.algoPosition.itemPrice,
-            grx_price: this.algoPosition.grxPrice,
+            open_value_GRY: this.algoPosition.itemPrice,
+            open_value_GRX: this.algoPosition.grxPrice,
             open_position_total_$:+this.algoPosition.usdValue,
-            open_position_fee_$:+this.algoPosition.usdValue*this.GRY_FEE,
-            open_position_fee_GRX:this.algoPosition.grxAmount*this.GRY_FEE,
+            open_position_fee_$:+this.algoPosition.usdValue*+this.selectedTab.fee,
+            open_position_fee_GRX:this.algoPosition.grxAmount*+this.selectedTab.fee,
     
             open_position_value_$:this.algoPosition.positionValue,
             open_position_total_GRX:+this.algoPosition.grxAmount,
             open_position_value_GRZ:+this.algoPosition.itemAmount,
-            open_position_value_GRX:(+this.algoPosition.grxAmount - +this.algoPosition.grxAmount*this.GRY_FEE),
-          }).subscribe( res => {
-            this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
+            open_position_value_GRX:(+this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee),
+          }).subscribe( 
+            res => {
+              if ((res as any).errCode != environment.SUCCESS){
+                this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
+              } else {
+               this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
+              }
+              this.loadingService.hide()
+          },
+          e => {
+            this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
+            this.loadingService.hide()
           })
         }
       }).catch( e => {
         console.log(e)
-      })
-    
-        
+        this.loadingService.hide()
+        this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
+      })    
+      
     
   }
 

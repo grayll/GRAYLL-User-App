@@ -14,7 +14,9 @@ var StellarSdk = require('stellar-sdk');
 import {SnotifyService} from 'ng-snotify';
 import {PopupService} from 'src/app/shared/popup/popup.service';
 import { SwUpdateNotifyService } from '../../sw-update-notifiy/sw-update-notify.service';
-import { AngularFireWrapper } from '../../services/angularfire.service';
+//import { AngularFireWrapper } from '../../services/angularfire.service';
+import * as firebase from 'firebase/app';
+import { AngularFireDatabase } from '@angular/fire/database';
 
 @Component({
   selector: 'app-navbar',
@@ -58,7 +60,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     private snotifyService: SnotifyService,
     public popupService: PopupService,   
     public swService: SwUpdateNotifyService,
-    private afW: AngularFireWrapper,
+    //private afW: AngularFireWrapper,
     
   ) {
        
@@ -66,46 +68,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     this.authService.isGetBalance = false  
     // get user meta data
     this.authService.getUserMeta()
-    // if (!this.authService.userMeta){
-    //   this.authService.subUserMeta().subscribe(data => {
-    //     console.log('INIT subcribe-DATA:', data)
-    //     this.authService.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
-    //     this.authService.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
-    //     this.authService.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
-    //     this.authService.userMetaStore.UrGRZ= data.UrGRZ >= 0? data.UrGRZ:0
-    //     this.authService.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
-    //     this.authService.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
-    //     this.authService.userMetaStore.TokenExpiredTime = data.TokenExpiredTime 
         
-    //     if (!this.authService.isGetBalance){
-    //       this.authService.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-    //       this.authService.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
-    //       this.authService.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
-    //       this.authService.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
-    //       this.authService.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
-    //     }
-    //   })
-    //   console.log('INIT subcribe')
-    // } else {// already subscribe
-    //   console.log('ALREADY subcribe') 
-    //   this.authService.userMeta.subscribe(data => {
-    //     console.log('ALREADY subcribe-DATA:', data) 
-    //     this.authService.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
-    //     this.authService.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
-    //     this.authService.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
-    //     this.authService.userMetaStore.UrGRZ= data.UrGRZ >= 0? data.UrGRZ:0
-    //     this.authService.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
-    //     this.authService.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
-    //     this.authService.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
-        
-    //     this.authService.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-    //     this.authService.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
-    //     this.authService.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
-    //     this.authService.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
-    //     this.authService.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
-    //   })     
-    // }
-    
     this.authService.streamPrices()
     if (this.authService.userMetaStore.TokenExpiredTime) {
       this.scheduleCheckTokenExpiry()
@@ -123,7 +86,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
         let data = (res as any)        
         if (data.errCode == environment.SUCCESS){           
           this.authService.ParseUserInfo(data)
-          console.log('NAV-getUserInfo', this.authService.userInfo)  
+          //console.log('NAV-getUserInfo', this.authService.userInfo)  
           this.authService.pushUserInfoMsg(this.authService.userInfo)
           this.authService.DecryptLocalSecret()                 
         } else {
@@ -204,10 +167,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
           this.authService.userMetaStore.GRX = (balances as any).grx;
           this.authService.userMetaStore.XLM = (balances as any).xlm;
         }
-        // this.authService.userData.xlmPrice = xlmPrice
-        // this.authService.userData.grxPrice = grxPrice
-        // this.authService.SetLocalUserData()
-        // console.log('NAV.this.authService.userData.xlmPrice:', this.authService.userData.xlmPrice)
+        
         this.authService.isGetBalance = true
         console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
         console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
@@ -217,6 +177,8 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
     //this.promptUser()    
     this.checkForUpdates(true)
+
+    //this.initFireStoreDb()
     
     // this.afW.db('default').object('orders/2bqgQjiXfAHdZrGFqtzF')
     //   .valueChanges()
@@ -254,6 +216,25 @@ export class NavbarComponent implements OnDestroy, OnInit {
     // Important: on Safari (ios) Heroku doesn't auto redirect links to their https which allows the installation of the pwa like usual
     // but it deactivates the swUpdate. So make sure to open your pwa on safari like so: https://example.com then (install/add to home)
   }
+
+  // initFireStoreDb(){    
+  //   var app = firebase.initializeApp(environment.dbs.systemtest, 'grayll-system-test');
+  //   let db = firebase.firestore(app);
+  //   db.collection('algo_positions/GRZ/algo_positions_open/').onSnapshot(snapshot => {
+      
+  //     snapshot.docChanges().forEach(function(change) {
+  //       if (change.type === "added") {
+  //           console.log("New: ", change.doc.data());
+  //       }
+  //       if (change.type === "modified") {
+  //           console.log("Modified: ", change.doc.data());
+  //       }
+  //       if (change.type === "removed") {
+  //           console.log("Removed: ", change.doc.data());
+  //       }
+  //     });
+  //   })
+  // }
 
   promptUser(): void {
     console.log('Update is available')
@@ -373,7 +354,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
   @HostListener('window:beforeunload')
   ngOnDestroy():void {
     this.subsink.unsubscribe()
-    console.log('destroy:', this.authService.userMetaStore)
+    
     if (!this.isSignout){
       this.authService.SetLocalUserData()
       this.authService.SetLocalUserMeta()

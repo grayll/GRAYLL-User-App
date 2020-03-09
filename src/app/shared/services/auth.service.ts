@@ -14,7 +14,8 @@ import { UserInfo, Setting } from 'src/app/models/user.model';
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
   OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
 
-  export interface Prices {xlmp: number; grxp: number;gryp: number;grzp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
+  export interface Prices {xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
+  export interface Prices1 {xlmp: number; grxp: number;gryp: number;grzp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
 @Injectable({
   providedIn: 'root' 
 })
@@ -58,8 +59,8 @@ export class AuthService {
         if (this.isGetBalance && !this.userMetaStore.ShouldReload && data.XLM > 0){
           console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
           console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
-          this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-          this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+          // this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+          // this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
           this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
           this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
           this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
@@ -116,11 +117,12 @@ export class AuthService {
     if (this.userMetaStore.ShouldReload){
       this._userMeta = new Subject<UserMeta>()
       this.userMeta = this._userMeta.asObservable()
-      this.afs.doc<Prices>('prices/'+this.priceDoc).valueChanges().subscribe(data => {        
-        this.userData.xlmPrice = data.xlmp
-        this.userData.grxPrice = data.grxp
-        this.userData.gryPrice = data.gryp
-        this.userData.grzPrice = data.grzp
+      this.afs.doc<Prices>('price_update/'+this.priceDoc).valueChanges().subscribe(data => {        
+        this.userData.xlmPrice = data.xlmusd
+        this.userData.grxPrice = data.xlmgrx
+        this.userData.gryPrice = data.gryusd
+        this.userData.grzPrice = data.grzusd
+        this.userData.grxusdPrice = data.grxusd
         this.userInfo.SellingWallet = data.sellingWallet
         this.userInfo.SellingPercent = data.sellingPercent
         this.userInfo.SellingPrice = data.sellingPrice
@@ -129,6 +131,23 @@ export class AuthService {
       })
     }
   }
+  // streamPrices1(){
+  //   if (this.userMetaStore.ShouldReload){
+  //     this._userMeta = new Subject<UserMeta>()
+  //     this.userMeta = this._userMeta.asObservable()
+  //     this.afs.doc<Prices>('prices/'+this.priceDoc).valueChanges().subscribe(data => {        
+  //       this.userData.xlmPrice = data.xlmp
+  //       this.userData.grxPrice = data.grxp
+  //       this.userData.gryPrice = data.gryp
+  //       this.userData.grzPrice = data.grzp
+  //       this.userInfo.SellingWallet = data.sellingWallet
+  //       this.userInfo.SellingPercent = data.sellingPercent
+  //       this.userInfo.SellingPrice = data.sellingPrice
+  //       console.log('STREAM-price:', data)        
+       
+  //     })
+  //   }
+  // }
 
   updateUserMeta(){
     this.userMetaStore.GRX = Number(this.userMetaStore.GRX)

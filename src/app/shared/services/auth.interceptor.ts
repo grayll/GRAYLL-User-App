@@ -42,14 +42,13 @@ export class AuthInterceptor implements HttpInterceptor {
         this.router.navigate(['/login'])
       }   
     }
-    if (!req.url.includes("users")) {
-        return next.handle(req);
-    }
-
-    // if (!this.authService.userData){
-    //   this.authService.GetLocalUserData()
+    // if (!req.url.includes("users") ) {
+    //     return next.handle(req);
     // }
-    
+    if (!req.url.includes("users") && !req.url.includes("grz") && !req.url.includes("gry")) {
+      return next.handle(req);
+    }
+    console.log('add token', req.url)
     req = req.clone({
         setHeaders: {
             Authorization: `Bearer ${this.authService.userData.token}`

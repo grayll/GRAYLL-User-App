@@ -5,6 +5,8 @@
 // import { AngularFireDatabase, AngularFireList, AngularFireObject } from '@angular/fire/database'
 // import { _firebaseAppFactory } from "@angular/fire/firebase.app.module";
 // import { FirebaseAppConfig } from "angularfire2";
+// import { environment } from 'src/environments/environment';
+// import * as firebase from 'firebase/app';
 
 // @Injectable()
 // export class FirebaseService {
@@ -16,7 +18,7 @@
 //      * get DB provider for the corresponding application.
 //      */
 //     public initFirebaseApp(config: FirebaseAppConfig, firebaseAppName: string) {
-//         this._db = new AngularFireDatabase(_firebaseAppFactory(config, firebaseAppName));
+//         this._db = firebase.initializeApp(environment.dbs[firebaseAppName], firebaseAppName).database();
 //     }
 
 //     /** Function to get firebase DB list */

@@ -47,27 +47,58 @@
             </div>
           </div>
           <div class="col-md-12 text-center mt-3">
-            <div class="border-navy">
+            <div class="border-navy" *ngIf="this.selectedTab.id != 'GRZ'">              
               <p class="font-weight-bolder">
                 Current Value GRY/USD | {{authService.userData.gryPrice.toFixed(5)}}
               </p>
               <div class="d-flex align-items-center px-1">
                 <div>
                   <h6 class="font-weight-lighter text-white">% 24h</h6>
-                  <h6 class="text-white font-weight-lighter">11.12</h6>
+                  <h6 *ngIf="grydb" class="text-white font-weight-lighter">{{grydb.day.toFixed(2)}}</h6>
+                  <h6 *ngIf="!grydb" class="text-white font-weight-lighter"></h6>
                 </div>
                 <div class="ml-auto  text-right">
-                  <h6 class="font-weight-lighter text-white">% 7d</h6>
-                  <h6 class="text-white font-weight-lighter">-0.12</h6>
+                  <h6  class="font-weight-lighter text-white">% 7d</h6>
+                  <h6 *ngIf="grydb" class="text-white font-weight-lighter">{{grydb.sevendays.toFixed(2)}}</h6>
+                  <h6 *ngIf="!grydb" class="text-white font-weight-lighter"></h6>
                 </div>
                 <div class="ml-auto  text-right">
                   <h6 class="font-weight-lighter text-white">% ROI</h6>
-                  <h6 class="text-white font-weight-lighter">1,009.45</h6>
-                </div>
+                  <h6 *ngIf="grydb" class="text-white font-weight-lighter">{{grydb.roi.toFixed(2)}}</h6>
+                  <h6 *ngIf="!grydb" class="text-white font-weight-lighter"></h6>
+                </div>               
               </div>
               <p class="mb-0">
                 Approximately
-                <countdown [config]="countdownConfig"></countdown>
+                <!-- <countdown [config]="countdownConfig"></countdown> -->
+                Seconds Until <br> GRY/USD Value Update
+              </p>
+            </div>
+            <div class="border-navy" *ngIf="this.selectedTab.id === 'GRZ'">
+              <p class="font-weight-bolder" >
+                Current Value GRZ/USD | {{authService.userData.grzPrice.toFixed(5)}}
+              </p>
+             
+              <div class="d-flex align-items-center px-1">
+                <div>
+                  <h6 class="font-weight-lighter text-white">% 24h</h6>
+                  <h6 *ngIf="grydb" class="text-white font-weight-lighter">{{grzdb.day.toFixed(2)}}</h6>
+                  <h6 *ngIf="!grydb" class="text-white font-weight-lighter"></h6>
+                </div>
+                <div class="ml-auto  text-right">
+                  <h6  class="font-weight-lighter text-white">% 7d</h6>
+                  <h6 *ngIf="grydb" class="text-white font-weight-lighter">{{grzdb.sevendays.toFixed(2)}}</h6>
+                  <h6 *ngIf="!grydb" class="text-white font-weight-lighter"></h6>
+                </div>
+                <div class="ml-auto  text-right">
+                  <h6 class="font-weight-lighter text-white">% ROI</h6>
+                  <h6 *ngIf="grydb" class="text-white font-weight-lighter">{{grzdb.roi.toFixed(2)}}</h6>
+                  <h6 *ngIf="!grydb" class="text-white font-weight-lighter"></h6>
+                </div> 
+              </div>
+              <p class="mb-0">
+                Approximately
+                <!-- <countdown [config]="countdownConfig"></countdown> -->
                 Seconds Until <br> GRY/USD Value Update
               </p>
             </div>
@@ -115,7 +146,7 @@
                   GRY 1 | Balthazar
                   <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                 </h6>
-                <h6 class="text-white font-weight-bolder m-b-0">GRY | $0.08000</h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.userData.gryPrice.toFixed(5)}}</h6>
               </div>
               <div class="col text-right" style="margin-top: -4px;">
                 <div class="border-navy-hover" style="outline:0!important"
@@ -125,7 +156,7 @@
                   <a href="javascript:void(0)" class="navy-link mt-1">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.numberOfGRY1Notifications}}
+                      {{authService.userMetaStore.UrGRY1}}
                     </span>
                   </a>
                 </div>
@@ -135,29 +166,29 @@
             <div class="d-flex align-items-center px-1">
               <div>
                 <h6 class="font-weight-bolder text-white">% 24h</h6>
-                <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1Metric.OneDayPercent}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% 7d</h6>
-                <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1Metric.SevenDayPercent}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1Metric.ROI}}</h6>
               </div>
             </div>
             <div class="row mt-3 px-1">
               <div class="col">
                 <div class="border-navy-hover" (click)="scrollToSystemActivity()">
                   <h6 class="text-white font-weight-bolder">
-                    GRY 1 | Positions
+                    GRY 3 | Positions
                   </h6>
-                  <h6 class="text-white mb-0">121</h6>
+                  <h6 class="text-white mb-0">{{algoService.gry1Metric.Positions}}</h6>
                 </div>
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 1 | Profits</h6>
-                <h6 class="text-white mb-0">$7,000.00</h6>
+                <h6 class="text-white mb-0">${{algoService.gry1Metric.CurrentProfit}}</h6>
               </div>
             </div>
 
@@ -167,7 +198,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current Total Value</h6>
-                <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+                <h6 class="text-white mb-0 font-weight-bolder">${{algoService.gry1Metric.TotalValue.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -181,7 +212,7 @@
                   GRY 2 | Kaspar
                   <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                 </h6>
-                <h6 class="text-white font-weight-bolder m-b-0">GRY | $0.08000</h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.userData.gryPrice.toFixed(5)}}</h6>
               </div>
               <div class="col text-right" style="margin-top: -4px;">
                 <div class="border-navy-hover" (click)="openModal('unread-gry2-notifications')"
@@ -191,7 +222,7 @@
                   <a href="javascript:void(0)" class="navy-link mt-1">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.numberOfGRY2Notifications}}
+                      {{authService.userMetaStore.UrGRY2}}
                     </span>
                   </a>
                 </div>
@@ -201,29 +232,29 @@
             <div class="d-flex align-items-center px-1">
               <div>
                 <h6 class="font-weight-bolder text-white">% 24h</h6>
-                <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry2Metric.OneDayPercent}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% 7d</h6>
-                <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry2Metric.SevenDayPercent}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry2Metric.ROI}}</h6>
               </div>
             </div>
             <div class="row mt-3 px-1">
               <div class="col">
                 <div class="border-navy-hover" (click)="scrollToSystemActivity()">
                   <h6 class="text-white font-weight-bolder">
-                    GRY 2 | Positions
+                    GRY 3 | Positions
                   </h6>
-                  <h6 class="text-white mb-0">121</h6>
+                  <h6 class="text-white mb-0">{{algoService.gry2Metric.Positions}}</h6>
                 </div>
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 2 | Profits</h6>
-                <h6 class="text-white mb-0">$7,000.00</h6>
+                <h6 class="text-white mb-0">${{algoService.gry2Metric.CurrentProfit}}</h6>
               </div>
             </div>
 
@@ -233,7 +264,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current Total Value</h6>
-                <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+                <h6 class="text-white mb-0 font-weight-bolder">${{algoService.gry2Metric.TotalValue.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -250,7 +281,7 @@
                   GRY 3 | Melkior
                   <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                 </h6>
-                <h6 class="text-white font-weight-bolder m-b-0">GRY | $0.08000</h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.userData.gryPrice.toFixed(5)}}</h6>
               </div>
               <div class="col text-right" style="margin-top: -4px;">
                 <div class="border-navy-hover" (click)="openModal('unread-gry3-notifications')"
@@ -260,7 +291,7 @@
                   <a href="javascript:void(0)" class="navy-link mt-1">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.numberOfGRY3Notifications}}
+                      {{authService.userMetaStore.UrGRY3}}
                     </span>
                   </a>
                 </div>
@@ -270,15 +301,15 @@
             <div class="d-flex align-items-center px-1">
               <div>
                 <h6 class="font-weight-bolder text-white">% 24h</h6>
-                <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry3Metric.OneDayPercent}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% 7d</h6>
-                <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry3Metric.SevenDayPercent}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry3Metric.ROI}}</h6>
               </div>
             </div>
             <div class="row mt-3 px-1">
@@ -287,12 +318,12 @@
                   <h6 class="text-white font-weight-bolder">
                     GRY 3 | Positions
                   </h6>
-                  <h6 class="text-white mb-0">121</h6>
+                  <h6 class="text-white mb-0">{{algoService.gry3Metric.Positions}}</h6>
                 </div>
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 3 | Profits</h6>
-                <h6 class="text-white mb-0">$7,000.00</h6>
+                <h6 class="text-white mb-0">${{algoService.gry3Metric.CurrentProfit}}</h6>
               </div>
             </div>
 
@@ -302,10 +333,10 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current Total Value</h6>
-                <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+                <h6 class="text-white mb-0 font-weight-bolder">${{algoService.gry3Metric.TotalValue.toFixed(5)}}</h6>
               </div>
-            </div>
-
+            </div>         
+            
           </div>
         </div>
         <div class="card border-0 no-margin" style="height: 272px!important;">
@@ -316,7 +347,7 @@
                   GRZ | Arkady
                   <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                 </h6>
-                <h6 class="text-white font-weight-bolder m-b-0">GRZ | $0.08000</h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRZ | {{authService.userData.grzPrice.toFixed(5)}}</h6>
               </div>
               <div class="col text-right" style="margin-top: -4px;">
                 <div class="border-navy-hover" (click)="openModal('unread-grz-notifications')"
@@ -326,25 +357,24 @@
                   <a href="javascript:void(0)" class="navy-link mt-1">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
-                      {{notificationsService.numberOfGRZNotifications}}
+                      {{authService.userMetaStore.UrGRZ}}
                     </span>
                   </a>
                 </div>
               </div>
             </div>
-
             <div class="d-flex align-items-center px-1">
               <div>
                 <h6 class="font-weight-bolder text-white">% 24h</h6>
-                <h6 class="text-white font-weight-lighter m-0">0.08</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.OneDayPercent}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% 7d</h6>
-                <h6 class="text-white font-weight-lighter m-0">-3.06</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.SevenDayPercent}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">-20.08</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.ROI}}</h6>
               </div>
             </div>
             <div class="row mt-3 px-1">
@@ -353,12 +383,12 @@
                   <h6 class="text-white font-weight-bolder">
                     GRZ | Positions
                   </h6>
-                  <h6 class="text-white mb-0">121</h6>
+                  <h6 class="text-white mb-0">{{algoService.grzMetric.Positions}}</h6>
                 </div>
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRZ | Profits</h6>
-                <h6 class="text-white mb-0">$7,000.00</h6>
+                <h6 class="text-white mb-0">${{algoService.grzMetric.CurrentProfit}}</h6>
               </div>
             </div>
 
@@ -368,10 +398,9 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current Total Value</h6>
-                <h6 class="text-white mb-0 font-weight-bolder">$10,000.00</h6>
+                <h6 class="text-white mb-0 font-weight-bolder">${{algoService.grzMetric.TotalValue.toFixed(5)}}</h6>
               </div>
             </div>
-
           </div>
         </div>
       </div>

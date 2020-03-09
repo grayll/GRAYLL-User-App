@@ -35,4 +35,12 @@ export class AppComponent {
     //     window.open(noticeData.notification.data.url, '_blank');
     //  });
   }
+
+  // ngOnInit() {
+  //   // Get the instance of the Intercom and insert the logged in user info, we will insert the user email
+  //   // dynamically after we complete the user login or sign up flow.
+  //   (<any>window).Intercom('boot', {
+  //     email: 'xyz@gmail.com',
+  //     });
+  // }
 }

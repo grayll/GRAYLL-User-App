@@ -196,20 +196,20 @@ export class NoticeDataService {
     await this.afs.doc(collPath+ '/' + id).set({isRead:true}, {merge : true})
   }
   // In your first query you subscribe to the collection and save the latest entry
- first(path:string, limit:number) {
-  this._data = new BehaviorSubject([]);
-  //this.data = this._data.asObservable().subscribe(res => this.allData.push(res));
-  this.data = this._data.asObservable()
+  first(path:string, limit:number) {
+    this._data = new BehaviorSubject([]);
+    //this.data = this._data.asObservable().subscribe(res => this.allData.push(res));
+    this.data = this._data.asObservable()
 
-  const scoresRef = this.getCollection(path, ref => ref
-    .orderBy('time', 'desc')
-    .limit(limit))
-    .subscribe(data => {
-      if (data.length && data.length > 0){
-        this.latestEntry = data[data.length - 1].doc;       
-        this._data.next(data);
-      }
-    });
+    const scoresRef = this.getCollection(path, ref => ref
+      .orderBy('time', 'desc')
+      .limit(limit))
+      .subscribe(data => {
+        if (data.length && data.length > 0){
+          this.latestEntry = data[data.length - 1].doc;       
+          this._data.next(data);
+        }
+      }); 
   }
 
   firstGeneral(path:string, limit:number) {
