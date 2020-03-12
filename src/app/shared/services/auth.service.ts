@@ -14,8 +14,10 @@ import { UserInfo, Setting } from 'src/app/models/user.model';
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
   OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
 
-  export interface Prices {xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
-  export interface Prices1 {xlmp: number; grxp: number;gryp: number;grzp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
+export interface Prices {xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
+export interface Prices1 {xlmp: number; grxp: number;gryp: number;grzp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
+export interface PriceInfo {xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number;}
+
 @Injectable({
   providedIn: 'root' 
 })
@@ -25,6 +27,8 @@ export class AuthService {
   userMeta:  Observable<UserMeta>
   userMetaStore:  UserMeta = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
   OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true}
+
+  priceInfo: PriceInfo = {xlmusd: 0, grxusd: 0, xlmgrx: 0, gryusd: 0,grzusd: 0}
   
   tfa$ = new BehaviorSubject<any>({})
   hash: string
@@ -42,6 +46,15 @@ export class AuthService {
 
   isGetBalance: boolean
   // variable to not load userMetaStore and price every time if page is not reload
+  constructor(    
+    public router: Router,  
+    public ngZone: NgZone, // NgZone service to remove outside scope warning
+    public http: HttpClient,
+    public stellarService: StellarService,  
+    private afs: AngularFirestore,      
+  ) {    
+   
+  }
 
   getUserMeta(){
     if (this.userMetaStore.ShouldReload){
@@ -59,8 +72,8 @@ export class AuthService {
         if (this.isGetBalance && !this.userMetaStore.ShouldReload && data.XLM > 0){
           console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
           console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
-          // this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-          // this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+          this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+          this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
           this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
           this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
           this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
@@ -126,29 +139,18 @@ export class AuthService {
         this.userInfo.SellingWallet = data.sellingWallet
         this.userInfo.SellingPercent = data.sellingPercent
         this.userInfo.SellingPrice = data.sellingPrice
+
+        this.priceInfo.grxusd = data.grxusd
+        this.priceInfo.xlmgrx = data.xlmgrx  
+        this.priceInfo.xlmusd = data.xlmusd
+        this.priceInfo.gryusd = data.gryusd
+        this.priceInfo.grzusd = data.grzusd
         console.log('STREAM-price:', data)        
        
       })
     }
   }
-  // streamPrices1(){
-  //   if (this.userMetaStore.ShouldReload){
-  //     this._userMeta = new Subject<UserMeta>()
-  //     this.userMeta = this._userMeta.asObservable()
-  //     this.afs.doc<Prices>('prices/'+this.priceDoc).valueChanges().subscribe(data => {        
-  //       this.userData.xlmPrice = data.xlmp
-  //       this.userData.grxPrice = data.grxp
-  //       this.userData.gryPrice = data.gryp
-  //       this.userData.grzPrice = data.grzp
-  //       this.userInfo.SellingWallet = data.sellingWallet
-  //       this.userInfo.SellingPercent = data.sellingPercent
-  //       this.userInfo.SellingPrice = data.sellingPrice
-  //       console.log('STREAM-price:', data)        
-       
-  //     })
-  //   }
-  // }
-
+  
   updateUserMeta(){
     this.userMetaStore.GRX = Number(this.userMetaStore.GRX)
     this.userMetaStore.XLM = Number(this.userMetaStore.XLM)
@@ -352,18 +354,7 @@ export class AuthService {
   }
 
 
-  constructor(    
-    public router: Router,  
-    public ngZone: NgZone, // NgZone service to remove outside scope warning
-    public http: HttpClient,
-    public stellarService: StellarService,  
-    private afs: AngularFirestore,      
-  ) {    
-   
-  }
-
-  
-  
+    
   isActivated() : boolean {    
     console.log(this.userInfo)
     if (!this.userInfo.PublicKey || (this.userInfo.PublicKey && this.userInfo.PublicKey.trim().length === 0)){      

@@ -159,15 +159,16 @@ export class SystemHeaderBoxesComponent implements OnInit {
         }
   
         if (this.selectedTab.id === 'GRZ'){
-          this.algoPosition.itemAmount = (this.algoPosition.usdValue/+this.authService.userData.grzPrice).toFixed(7)
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
-          this.algoPosition.itemPrice = this.authService.userData.grzPrice
+          this.algoPosition.itemAmount = (this.algoPosition.usdValue/this.authService.priceInfo.grzusd).toFixed(7)
+         // this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
+          this.algoPosition.itemPrice = this.authService.priceInfo.grzusd
         } else {
-          this.algoPosition.itemAmount = (this.algoPosition.usdValue/+this.authService.userData.gryPrice).toFixed(7)
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
-          this.algoPosition.itemPrice = this.authService.userData.gryPrice
+          this.algoPosition.itemAmount = (this.algoPosition.usdValue/this.authService.priceInfo.gryusd).toFixed(7)
+          //this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
+          this.algoPosition.itemPrice = this.authService.priceInfo.gryusd
         }
-        this.algoPosition.grxAmount = (this.algoPosition.usdValue/+this.authService.userData.grxusdPrice).toFixed(7)
+        this.algoPosition.positionValue = this.algoPosition.usdValue - +this.selectedTab.fee*this.algoPosition.usdValue
+        this.algoPosition.grxAmount = (this.algoPosition.usdValue/this.authService.priceInfo.grxusd).toFixed(7)
         break
       case 'itemAmountChange':
         if (this.algoPosition.itemAmount && !this.isValidNumber(this.algoPosition.itemAmount)) {
@@ -176,15 +177,15 @@ export class SystemHeaderBoxesComponent implements OnInit {
         }
   
         if (this.selectedTab.id === 'GRZ'){
-          this.algoPosition.usdValue = this.algoPosition.itemAmount*+this.authService.userData.grzPrice
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
-          this.algoPosition.itemPrice = this.authService.userData.grzPrice
+          this.algoPosition.usdValue = +this.algoPosition.itemAmount*this.authService.priceInfo.grzusd
+          //this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
+          this.algoPosition.itemPrice = this.authService.priceInfo.grzusd
         } else {
-          this.algoPosition.usdValue = this.algoPosition.itemAmount*+this.authService.userData.gryPrice
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
-          this.algoPosition.itemPrice = this.authService.userData.gryPrice
+          this.algoPosition.usdValue = +this.algoPosition.itemAmount*this.authService.priceInfo.gryusd          
+          this.algoPosition.itemPrice = this.authService.priceInfo.gryusd
         }
-        this.algoPosition.grxAmount = (this.algoPosition.usdValue/+this.authService.userData.grxusdPrice).toFixed(7)
+        this.algoPosition.positionValue = this.algoPosition.usdValue - +this.selectedTab.fee*this.algoPosition.usdValue
+        this.algoPosition.grxAmount = (this.algoPosition.usdValue/this.authService.priceInfo.grxusd).toFixed(7)
         break
       case 'grxAmountChange':
         if (this.algoPosition.grxAmount && !this.isValidNumber(this.algoPosition.grxAmount)) {
@@ -192,15 +193,16 @@ export class SystemHeaderBoxesComponent implements OnInit {
           return false;
         }
         
-        this.algoPosition.usdValue = +(this.algoPosition.grxAmount*+this.authService.userData.grxusdPrice).toFixed(7)
+        this.algoPosition.usdValue = +(+this.algoPosition.grxAmount*this.authService.priceInfo.grxusd).toFixed(7)
+        this.algoPosition.positionValue = this.algoPosition.usdValue - +this.selectedTab.fee*this.algoPosition.usdValue
         if (this.selectedTab === 'GRZ'){
-          this.algoPosition.itemAmount = (this.algoPosition.usdValue/+this.authService.userData.grzPrice).toFixed(7)
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
-          this.algoPosition.itemPrice = this.authService.userData.grzPrice
+          this.algoPosition.itemAmount = (this.algoPosition.usdValue/this.authService.priceInfo.grzusd).toFixed(7)
+          //this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
+          this.algoPosition.itemPrice = this.authService.priceInfo.grzusd
         } else {
-          this.algoPosition.itemAmount = (this.algoPosition.usdValue/+this.authService.userData.gryPrice).toFixed(7)
-          this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
-          this.algoPosition.itemPrice = this.authService.userData.gryPrice
+          this.algoPosition.itemAmount = (this.algoPosition.usdValue/this.authService.priceInfo.gryusd).toFixed(7)
+          //this.algoPosition.positionValue = this.algoPosition.usdValue*(100 - +this.selectedTab.fee)/100
+          this.algoPosition.itemPrice = this.authService.priceInfo.gryusd
         }
         break
     }  
@@ -208,7 +210,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
       this.errorService.handleError(null, 'Insufficient balance. Please deposit more GRX to open position.');
       return false;
     }
-    this.algoPosition.grxPrice = this.authService.userData.grxusdPrice  
+    this.algoPosition.grxPrice = this.authService.priceInfo.grxusd  
   }
 
   didChangeTab(id: string) {
@@ -219,9 +221,9 @@ export class SystemHeaderBoxesComponent implements OnInit {
     if (this.algoPosition.usdValue){
       if (this.selectedTab.id === 'GRZ' ){
         console.log('didChangeTab')
-        this.algoPosition.itemAmount = this.algoPosition.usdValue/+this.authService.userData.grzPrice
+        this.algoPosition.itemAmount = this.algoPosition.usdValue/this.authService.priceInfo.grzusd
       } else {
-        this.algoPosition.itemAmount = this.algoPosition.usdValue/+this.authService.userData.gryPrice
+        this.algoPosition.itemAmount = this.algoPosition.usdValue/this.authService.priceInfo.gryusd
       }
     }
   }
@@ -308,11 +310,10 @@ export class SystemHeaderBoxesComponent implements OnInit {
             current_position_ROI_percent:0,
             open_position_value_$:this.algoPosition.positionValue,
             open_position_total_GRX:+this.algoPosition.grxAmount,
-            open_position_value_GRZ:+this.algoPosition.itemAmount,
+            open_position_value_GRZ:+this.algoPosition.itemAmount - +this.algoPosition.itemAmount*+this.selectedTab.fee,
             open_position_value_GRX:(+this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee),
           }).subscribe(res => {
-              if ((res as any).errCode != environment.SUCCESS){
-               
+              if ((res as any).errCode != environment.SUCCESS){               
                 this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
               } else {
                 console.log('res:', res)

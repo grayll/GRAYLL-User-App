@@ -27,7 +27,7 @@ export class AuthInterceptor implements HttpInterceptor {
   
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {    
     // If you are calling an outside domain then do not add the token.
-    console.log(req.url)
+    
     if (!req.url.includes('http')){
         req = req.clone({url : environment.api_url + req.url})
     }
@@ -48,7 +48,7 @@ export class AuthInterceptor implements HttpInterceptor {
     if (!req.url.includes("users") && !req.url.includes("grz") && !req.url.includes("gry")) {
       return next.handle(req);
     }
-    console.log('add token', req.url)
+    
     req = req.clone({
         setHeaders: {
             Authorization: `Bearer ${this.authService.userData.token}`

@@ -91,9 +91,10 @@
     <tr *ngFor="let position of algoService.openPositions">
       <td class="width-91px">{{position.time}}</td>
       <td class="width-51px">{{position.status}}</td>
-      <td class="width-71px">
+      <!-- <td class="width-71px">
         <countdown [config]="getCountdownConfigFor(position.duration)"></countdown>
-      </td>
+      </td> -->
+      <td class="width-71px">{{position.duration_string}}</countdown></td>
       <td class="width-61px">{{position.algorithm_type}}</td>
       <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
       <td class="width-73px">{{position.open_value_GRZ.toFixed(5)}}</td>
@@ -189,9 +190,7 @@
     <tr *ngFor="let position of algoService.closePositions">
       <td class="width-91px">{{position.time}}</td>
       <td class="width-51px">{{position.status}}</td>
-      <td class="width-71px">
-        <countdown [config]="getCountdownConfigFor(position.duration)"></countdown>
-      </td>
+      <td class="width-71px"><countdown [config]="getCountdownConfigFor(position.duration)"></countdown></td>
       <td class="width-61px">{{position.algorithm_type}}</td>
 
       <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>

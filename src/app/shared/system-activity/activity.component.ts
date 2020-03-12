@@ -75,16 +75,18 @@ export class ActivityComponent implements OnInit, OnChanges {
     //this.populateOpenAlgoPositionsArray();
    
     this.algoService.algoPositions$.subscribe(positions => {
-      //this.positions = positions     
+      //this.positions = positions   
+      let totalValueGRZ = 0 
       this.algoService.openPositions = positions.filter(pos => {
         if (pos.status == "OPEN"){
           //pos.current_position_ROI_per = pos['current_position_ROI_%']        
           pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
           pos.url = "https://stellar.expert/explorer/public/" + pos.open_stellar_transaction_id.toString()      
-          this.algoService.grzMetric.TotalValue += pos.current_position_value_$   
+          totalValueGRZ += pos.current_position_value_$   
           return pos
         }        
       })
+      this.algoService.grzMetric.TotalValue = totalValueGRZ
       this.algoService.grzMetric.Positions = this.algoService.openPositions.length
 
       this.algoService.closePositions = positions.filter(pos => {
@@ -114,17 +116,22 @@ export class ActivityComponent implements OnInit, OnChanges {
   }
 
   closePosition(position){
-    let grzusd = +this.authService.userData.grzPrice
-    let grxusd = +this.authService.userData.grxusdPrice
+    let grzusd = this.authService.priceInfo.grzusd
+    let grxusd = this.authService.priceInfo.grxusd
     if (position.algorithm_type === 'GRZ'){
-      let close_position_total1_$ = grzusd*position.open_position_value_GRZ
+        
       let close_position_total_$ = position.open_position_value_$ + (grzusd - position.open_value_GRZ)*position.open_position_value_$/position.open_value_GRZ
-
-      console.log('close value: ', close_position_total_$, close_position_total1_$)
-      let close_position_value_$ = close_position_total_$ *(100-0.003)/100
-      if  (this.authService.userData.grzPrice - position.open_value_GRZ > 0) {
-        close_position_value_$ = close_position_total_$ *(100 - 0.18 - 0.003)/100
+      let close_position_fee_$ = close_position_total_$*0.003
+      let close_position_ROI_$ = close_position_total_$  - position.open_position_value_$
+      let close_performance_fee_$ = 0
+      if (close_position_ROI_$ - close_position_fee_$ > 0) {
+        close_performance_fee_$ =  (close_position_ROI_$ - close_position_fee_$ ) * 0.18
       }
+
+      let close_position_total_GRX = close_position_total_$/grxusd
+      let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
+      let  close_position_ROI_percent_GROSS = close_position_ROI_$*100/position.open_position_value_$
+      let  close_position_ROI_percent_NET = (close_position_value_$  - position.open_position_value_$)*100/position.open_position_value_$      
       
       this.http.post(environment.grz_api_url + 'api/v1/grz/position/close', {
         user_id: this.authService.userInfo.Uid,            
@@ -138,18 +145,18 @@ export class ActivityComponent implements OnInit, OnChanges {
 
         close_position_value_$:       close_position_value_$,
         close_position_value_GRX:     close_position_value_$/grxusd,
-        close_position_ROI_$:         close_position_value_$  - position.open_position_total_$,
-        close_position_ROI_percent:   (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ,
-        current_position_ROI_$:       close_position_value_$  - position.open_position_total_$,
-        current_position_ROI_percent: (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ,
+        close_position_ROI_$:         close_position_ROI_$,
+        close_position_ROI_percent:   close_position_ROI_percent_GROSS,
+        close_position_ROI_percent_NET:   close_position_ROI_percent_NET,
+        current_position_ROI_$:       close_position_ROI_$,
+        current_position_ROI_percent: close_position_ROI_percent_GROSS,
         close_position_total_$:    close_position_total_$,
-        close_position_total_GRX:  close_position_total_$/grxusd,
-        close_position_total_GRZ:   close_position_total1_$/grzusd,
-        close_position_fee_$:      close_position_total_$*0.003,
-        close_position_fee_GRX:      close_position_total_$*0.003/grxusd,
-        close_performance_fee_$:   grzusd - position.open_value_GRZ > 0? close_position_total_$*0.18: 0,
-        close_performance_fee_GRX: grzusd - position.open_value_GRZ > 0? 
-                                    close_position_total_$*0.18/grxusd: 0       
+        close_position_total_GRX:  close_position_total_GRX,
+        close_position_total_GRZ:   close_position_total_$/grzusd,
+        close_position_fee_$:      close_performance_fee_$,
+        close_position_fee_GRX:      close_position_total_GRX*0.003,
+        close_performance_fee_$:   close_performance_fee_$,
+        close_performance_fee_GRX: close_performance_fee_$/grxusd     
 
       }).subscribe( res => {
         console.log(res)

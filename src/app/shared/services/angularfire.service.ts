@@ -78,11 +78,11 @@ export class AngularFireWrapper {
     //   ...
     //   otherDb: {...} // usual firebase configs 
     // }
-    console.log('environment.dbs[dbName]', environment.dbs[dbName])
+    // console.log('environment.dbs[dbName]', environment.dbs[dbName])
 
-    if (dbName && environment.dbs[dbName]) {
-      this._firebaseDb = firebase.initializeApp(environment.dbs[dbName], dbName).database();
-    }
+    // if (dbName && environment.dbs[dbName]) {
+    //   this._firebaseDb = firebase.initializeApp(environment.dbs[dbName], dbName).database();
+    // }
   }
 
   db(dbName): AngularFireWrapper {
