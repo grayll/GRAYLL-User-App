@@ -148,7 +148,7 @@ export class LoginComponent {
       .then(response => {      
         if (response.data.status === 'success'){    
           //console.log('recapcha resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-          this.ngZone.run(() => {     
+          //this.ngZone.run(() => {     
             //console.log('login start:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS')) 
             this.http.post(`api/v1/accounts/login`, {email:this.email.value, password: this.password.value})                
             .subscribe(res => {  
@@ -156,8 +156,8 @@ export class LoginComponent {
               if (data.errCode === environment.SUCCESS) {
                 //console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                 this.authService.ParseUserInfo(data.userBasicInfo)
-                console.log('decryptSecretKey0:', this.authService.userInfo)
-                
+                //console.log('decryptSecretKey0:', this.authService.userInfo)
+                this.authService.hash = this.password.value
                 this.authService.userData = data.user
                 this.authService.userData.token = data.token
                 this.authService.userData.xlmPrice = data.userMeta.XlmP
@@ -185,19 +185,17 @@ export class LoginComponent {
 
                 if (this.authService.userInfo && this.authService.userData.PublicKey && this.authService.userInfo.LocalKey){
                   if (this.authService.userInfo.EnSecretKey.length < 80){                   
-                    console.log(this.authService.userInfo.SecretKeySalt, this.password.value)
-                    console.log(this.authService.userInfo.EnSecretKey)
+                    //console.log(this.authService.userInfo.SecretKeySalt, this.password.value)
+                    //console.log(this.authService.userInfo.EnSecretKey)
 
                     this.stellarService.decryptSecretKey1(this.password.value, 
                       {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
                       secretKey => {
                         if (secretKey != ''){
-                          this.authService.secretKey = secretKey
-                          //console.log('GetSecretKey6', secretKey)
-                          //console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                          this.authService.secretKey = secretKey                          
                           this.stellarService.encryptSecretKey(this.password.value, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                            console.log('OLD USER-secretKeyBundle:', secretKeyBundle)
-                            this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey  
+                            //console.log('OLD USER-secretKeyBundle:', secretKeyBundle)
+                            this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey
                             // Save new EnSecretKey and Salt                           
                             this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.Salt}).subscribe( 
                               res => {
@@ -206,7 +204,7 @@ export class LoginComponent {
                                   //console.log('login-secretKeyBundle:', secretKeyBundle)
                                   this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
                                   this.authService.SetLocalUserData()
-                                  console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                                  //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                                 })   
                               },
                               e => {
@@ -236,7 +234,6 @@ export class LoginComponent {
                         }
                       })
                   } else {
-                    
                     this.stellarService.decryptSecretKey(this.password.value, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
                     secretKey => {
                       if (secretKey != ''){
@@ -247,7 +244,7 @@ export class LoginComponent {
                           //console.log('login-secretKeyBundle:', secretKeyBundle)
                           this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
                           this.authService.SetLocalUserData()
-                          console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                          //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                         })            
                       } else {
                         //console.log('GetSecretKey7')
@@ -269,7 +266,7 @@ export class LoginComponent {
               console.log(error)                       
               this.showError(null)                             
             })                
-          }); 
+          //}); 
           
         } else {                 
           this.showError(null)              

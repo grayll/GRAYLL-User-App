@@ -59,6 +59,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.requestSubNotifications()
           } 
         }
+
+        // check whether user has changed pwd
+        if (this.authService.userInfo.EnSecretKey == '' && this.authService.userInfo.PublicKey != ''){
+          this.router.navigate([{outlets: {popup: 'reactivate-account'}}], {relativeTo: this.route});
+        }
       }) 
     } else {
       if (!this.authService.isActivated()){     
@@ -72,6 +77,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
           console.log('request subs')
           this.requestSubNotifications()
         } 
+      }
+       // check whether user has changed pwd
+      if (this.authService.userInfo.EnSecretKey == '' && this.authService.userInfo.PublicKey != ''){
+        this.router.navigate([{outlets: {popup: 'reactivate-account'}}], {relativeTo: this.route});
       }
     }
   }

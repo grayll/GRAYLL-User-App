@@ -23,14 +23,14 @@
 
     <div class="row text-center">
       <div class="col-12 text-purple">
-        <p class="mb-0">{{algoPosition.token}} | {{algoPosition.itemPrice.toFixed(5)}}</p>
+        <p class="mb-0">{{algoPosition.token}} | ${{algoPosition.itemPrice.toFixed(5)}}</p>
         <p *ngIf="algoPosition.item === 'GRZ'" class="mb-0">{{algoPosition.item}} Algo Fee @ 0.3%</p>
         <p *ngIf="algoPosition.item != 'GRZ'" class="mb-0">{{algoPosition.item}} Algo Fee @ 1.8%</p>
-        <!-- <p class="mb-0">$81,999,99198</p> -->
-        <p class="mb-0">{{algoPosition.grxAmount}} GRX</p>
-        <p class="mb-0">GRX | {{algoPosition.grxPrice}}</p>
+        <p class="mb-0">${{algoPosition.openFee$}}</p>
+        <p class="mb-0">{{algoPosition.positionValueGRX}} GRX</p>
+        <p class="mb-0">GRX | ${{algoPosition.grxPrice}}</p>
         
-        <a href="https://stellar.expert/explorer/public/ledger/{{algoPosition.stellarTxId}}" target="_blank" class="mb-0 navy-link">Stellar Transaction ID | {{algoPosition.stellarTxId}}</a><br>
+        <a href="https://stellar.expert/explorer/public/search?term={{algoPosition.stellarTxId}}" target="_blank" class="mb-0 navy-link">Stellar Transaction ID | {{algoPosition.stellarTxId}}</a><br>
        
         <a href="javascript:void(0)" (click)="goToOverview()" class="mb-0 navy-link">GRAYLL Transaction ID | {{algoPosition.grayllTxId}}</a>
       </div>

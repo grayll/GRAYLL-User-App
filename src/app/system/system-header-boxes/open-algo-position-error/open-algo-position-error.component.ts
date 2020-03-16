@@ -21,6 +21,9 @@ export class OpenAlgoPositionErrorComponent implements OnInit {
   ngOnInit() {
     this.popupService.open(this.modal);
     this.algoPosition = this.sharedService.getOpenedAlgoPosition();
+    if (!this.algoPosition){
+      this.popupService.close()
+    }
   }
 
 }

@@ -10,7 +10,7 @@ import {CancelActiveOrdersPopupComponent} from '../shared/account-activity/cance
 import {RevealSecretKeyPopupComponent} from '../shared/popup/reveal-secret-key-popup/reveal-secret-key-popup.component';
 import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
 import {XlmBalanceStatusPopupComponent} from '../shared/popup/xlm-balance-status-popup/xlm-balance-status-popup.component';
-import {InputPasswordComponent} from '../shared/popup/input-password/input-password.component';
+//import {InputPasswordComponent} from '../shared/popup/input-password/input-password.component';
 import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
 import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 const popupRoutes: Routes = [
@@ -64,11 +64,11 @@ const popupRoutes: Routes = [
     component: XlmBalanceStatusPopupComponent,
     outlet: 'popup'
   },
-  {
-    path: 'input-password',
-    component: InputPasswordComponent,
-    outlet: 'popup'
-  },
+  // {
+  //   path: 'input-password',
+  //   component: InputPasswordComponent,
+  //   outlet: 'popup'
+  // },
   {
     path: 'confirm-password',
     component: ConfirmPasswordComponent,

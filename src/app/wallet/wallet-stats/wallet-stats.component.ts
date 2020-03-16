@@ -88,7 +88,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     private loadingService: LoadingService,
   ) {
     
-    this.grxP = this.authService.userData.grxPrice
+    this.grxP = this.authService.priceInfo.xlmgrx
     this.xlmP = this.authService.userData.xlmPrice
 
     this.federationAddress = this.authService.userData.Federation;
@@ -185,28 +185,27 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       }
       
       // check setting whether direct purchase on admin account
-      console.log('grxPrice:', this.grxPrice , this.authService.userData.grxPrice , this.authService.userInfo.SellingPrice)
-      console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent)
-      if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){
-        if (+this.grxPrice >= +this.authService.userData.grxPrice && +this.grxPrice >= this.authService.userInfo.SellingPrice){
+      console.log('grxPrice:', this.grxPrice , this.authService.priceInfo.xlmgrx , this.authService.userInfo.SellingPrice)
+      console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent, dexAmount, superAdminAmount)
+      if (+this.grxPrice >= this.authService.priceInfo.xlmgrx && +this.grxPrice >= this.authService.userInfo.SellingPrice){
+        if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){        
           console.log('Direct purchase from super admin')
-          // purchase directly from grayll super admin         
-       
+          // purchase directly from grayll super admin        
           if (superAdminAmount > 0){
             // buy all from grayll super admin
             let xlmAmount = superAdminAmount*+this.grxPrice
             this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
               xlmAmount.toString(), this.stellarService.nativeAsset, '')
-            .then( ledger => {
-              this.authService.verifyTx(ledger, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:xlmAmount}).then(resp => {
+            .then( txHash => {
+              this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:xlmAmount}).then(resp => {
                 // update fund
-                console.log('verifyTx: ', resp)
+                //console.log('verifyTx: ', resp)
                 this.loadingService.hide()
                 let msg 
                 if (resp.errCode === environment.SUCCESS){
                   msg = 'Buy order has been matched and executed!'                   
                 } else {
-                  msg = 'Buy order could not be submitted! Please retry!'                  
+                  msg = 'Buy order could not be submitted! Please retry!'             
                 }
                 this.loadingService.hide()
                 this.snotifyService.simple(msg); 
@@ -222,10 +221,14 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
             //return
           } 
         }
+      } else {
+        dexAmount = +this.grxAmount
       }
 
       if (dexAmount > 0){
+        console.log('dexAmount.toString()', dexAmount.toString())
         this.stellarService.buyOrder(this.authService.getSecretKey(), this.grxPrice, dexAmount.toString()).then( res => {
+          console.log(res)
           if (!this.stellarService.allOffers){
             this.stellarService.allOffers = []
           }

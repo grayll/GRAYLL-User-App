@@ -356,8 +356,17 @@ export class StellarService {
                 //let xdr = tx.toXDR('base64')   
                 //console.log('Tx xdr', xdr)            
                 this.horizon.submitTransaction(tx).then( resp => {
-                    //console.log('resp: ', resp);
-                    resolve(resp.ledger)
+                    console.log('resp: ', resp.hash);
+                    // this.horizon.operations()          
+                    // .forTransaction(resp.hash)
+                    // .call()
+                    // .then(function (opResult) {
+                    //     console.log('opResult:', opResult);              
+                    // })
+                    // .catch(function (err) {
+                    //     console.error(err);
+                    // });
+                    resolve(resp.hash)
                 }).catch(err => {
                     console.log('err: ', err);                    
                     reject(err)
@@ -637,7 +646,16 @@ export class StellarService {
         return axios.get(url)       
     }
     
-    
+    verifyPublicKey(secretKey, publicKey): boolean{
+        let source = StellarSdk.Keypair.fromSecret(secretKey);     
+        console.log(source.publicKey(),publicKey) 
+        if (source.publicKey() != publicKey){
+            console.log('false')
+            return false
+        }
+        console.log('true')
+        return true
+    }
 
     trustAsset(accSeed: string): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -962,7 +980,7 @@ export class StellarService {
             Salt = naclutil.encodeBase64(nacl.randomBytes(32));
         }
         //const nonce = new Uint8Array(24);
-        console.log('encryptSecretKey-secretKey:', secretKey)
+        //console.log('encryptSecretKey-secretKey:', secretKey)
         scrypt(password, Salt, this.logN, this.blockSize, 126, this.interruptStep, (derivedKey) => {            
             const EnSecretKey = naclutil.encodeBase64(secretBox.encrypt(new Buffer(secretKey), new Buffer(derivedKey)))
             callback({ EnSecretKey, Salt });
@@ -971,8 +989,8 @@ export class StellarService {
     
     decryptSecretKey(password, enSecretKeyBundle, callback) {
         //const nonce = new Uint8Array(24);
-        console.log('pwd', password, enSecretKeyBundle)
-        console.log('enSecretKeyBundle', enSecretKeyBundle)
+        //console.log('pwd', password, enSecretKeyBundle)
+        //console.log('enSecretKeyBundle', enSecretKeyBundle)
         
         var secretBox = require('secret-box')
         scrypt(

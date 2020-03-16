@@ -11,6 +11,8 @@ export class AlgoPositionModel {
     public positionValue?: number,
     public stellarTxId?: string,
     public grayllTxId?: string,
+    public openFee$?: number,
+    public positionValueGRX?: number,
   ) {}
 }
 

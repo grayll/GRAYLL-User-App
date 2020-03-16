@@ -85,17 +85,9 @@ export class XlmLoanPopupComponent implements OnInit {
         // }        
         try {
           this.stellarService.sendAsset(this.authService.getSecretKey(), loanerAddress, loanAmount, asset, '')
-          .then( ledger => {
-            if (ledger <= 0){            
-              console.log('ledger <= 0')
-              this.error = true;
-              this.success = false;
-              this.updateFund()
-            } else {
-              //console.log('Set LoadPaidLedgerId:', ledger)
-              this.authService.SetLoanPaidLedgerId(ledger)
-              this.verifyTx(+ledger)    
-            }     
+          .then( txHash => {
+            this.authService.SetLoanPaidLedgerId(txHash)
+            this.verifyTx(txHash)     
           }).catch( e => {          
             console.log(e)
             this.error = true;
@@ -228,8 +220,8 @@ export class XlmLoanPopupComponent implements OnInit {
     }
   }
 
-  verifyTx(ledger){
-    this.http.post(`api/v1/users/txverify`, {ledger: ledger, action:'payoff'})    
+  verifyTx(txHash){
+    this.http.post(`api/v1/users/txverify`, {txHash: txHash, action:'payoff'})    
     .subscribe(
       resp => {
         console.log(resp)

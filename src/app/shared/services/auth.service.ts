@@ -9,6 +9,7 @@ import { AngularFireAuth } from "angularfire2/auth";
 import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { createHash } from 'crypto';
 import { UserInfo, Setting } from 'src/app/models/user.model';
+import { CountdownConfig } from 'ngx-countdown/src/countdown.config';
 
 
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
@@ -46,6 +47,13 @@ export class AuthService {
 
   isGetBalance: boolean
   // variable to not load userMetaStore and price every time if page is not reload
+
+  // UserMeta
+  balanceUpdateCount: number = 0
+  userMeta$ : Observable<UserMeta>
+  countdownConfig: CountdownConfig 
+
+
   constructor(    
     public router: Router,  
     public ngZone: NgZone, // NgZone service to remove outside scope warning
@@ -64,12 +72,13 @@ export class AuthService {
         this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
         this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
         this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
-        this.userMetaStore.UrGRZ= data.UrGRZ >= 0? data.UrGRZ:0
+        this.userMetaStore.UrGRZ = data.UrGRZ >= 0? data.UrGRZ:0
         this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
         this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
         this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
-        
-        if (this.isGetBalance && !this.userMetaStore.ShouldReload && data.XLM > 0){
+       
+
+        if (this.balanceUpdateCount > 0 && this.userMetaStore.XLM > 0 ){
           console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
           console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
           this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
@@ -77,7 +86,19 @@ export class AuthService {
           this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
           this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
           this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
-        }
+        } 
+        this.balanceUpdateCount++
+        console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)
+        
+        // if (this.isGetBalance && !this.userMetaStore.ShouldReload && data.XLM > 0){
+        //   console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
+        //   console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
+        //   this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+        //   this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+        //   this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
+        //   this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
+        //   this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
+        // }
        
         console.log('GETUSERMETA:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
@@ -145,6 +166,12 @@ export class AuthService {
         this.priceInfo.xlmusd = data.xlmusd
         this.priceInfo.gryusd = data.gryusd
         this.priceInfo.grzusd = data.grzusd
+        this.countdownConfig =  {
+          leftTime: 60,
+          template: '$!s!',
+          effect: null,
+          demand: false
+        };
         console.log('STREAM-price:', data)        
        
       })
@@ -367,10 +394,10 @@ export class AuthService {
     return this.http.post(`api/v1/users/setuptfa`, { account: account})             
   }
 
-  verifyTx(ledger, action, data): Promise<any> {
+  verifyTx(txHash, action, data): Promise<any> {
     return new Promise((resolve, reject) => {
       console.log('verifyTx-data:', data)
-    this.http.post(`api/v1/users/txverify`, {ledger: ledger, action: action, data: data})    
+    this.http.post(`api/v1/users/txverify`, {txHash: txHash, action: action, data: data})    
     .subscribe(
       resp => {
         resolve(resp)    

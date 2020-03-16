@@ -72,28 +72,37 @@ export class ActivityComponent implements OnInit, OnChanges {
     private http: HttpClient,
     private loadingService: LoadingService,
   ) {
-    //this.populateOpenAlgoPositionsArray();
-   
+    //this.populateOpenAlgoPositionsArray();   
     this.algoService.algoPositions$.subscribe(positions => {
       //this.positions = positions   
       let totalValueGRZ = 0 
+      let totalValueGRZProfit = 0 
       this.algoService.openPositions = positions.filter(pos => {
         if (pos.status == "OPEN"){
           //pos.current_position_ROI_per = pos['current_position_ROI_%']        
           pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          pos.url = "https://stellar.expert/explorer/public/" + pos.open_stellar_transaction_id.toString()      
-          totalValueGRZ += pos.current_position_value_$   
+          if (pos.open_stellar_transaction_id) {
+            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id.toString()   
+          } else {
+            pos.url = ""
+          }   
+          totalValueGRZ += pos.current_position_value_$ 
+          totalValueGRZProfit += pos.current_position_ROI_$  
           return pos
         }        
       })
       this.algoService.grzMetric.TotalValue = totalValueGRZ
+      this.algoService.grzMetric.CurrentProfit = totalValueGRZProfit
       this.algoService.grzMetric.Positions = this.algoService.openPositions.length
 
       this.algoService.closePositions = positions.filter(pos => {
-        if (pos.status != "OPEN"){
-          //pos.close_position_ROI_per = pos['close_position_ROI_%']
+        if (pos.status != "OPEN"){          
           pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          pos.url = "https://stellar.expert/explorer/public/" + pos.close_stellar_transaction_id.toString()
+          if (pos.close_stellar_transaction_id) {
+            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString()   
+          } else {
+            pos.url = ""
+          } 
           return pos
         }        
       })
@@ -102,13 +111,20 @@ export class ActivityComponent implements OnInit, OnChanges {
         if (pos.status == "OPEN"){
           //pos.current_position_ROI_per = pos['current_position_ROI_%']        
           pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          pos.url = "https://stellar.expert/explorer/public/" + pos.open_stellar_transaction_id.toString()          
-          
+          if (pos.open_stellar_transaction_id) {
+            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id.toString()   
+          } else {
+            pos.url = ""
+          }          
         }   
         if (pos.status != "OPEN"){
           //pos.close_position_ROI_per = pos['close_position_ROI_%']
           pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          pos.url = "https://stellar.expert/explorer/public/" + pos.close_stellar_transaction_id.toString()         
+          if (pos.close_stellar_transaction_id) {
+            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString()   
+          } else {
+            pos.url = ""
+          }        
         } 
         return pos       
       })
@@ -116,6 +132,7 @@ export class ActivityComponent implements OnInit, OnChanges {
   }
 
   closePosition(position){
+    this.loadingService.show()
     let grzusd = this.authService.priceInfo.grzusd
     let grxusd = this.authService.priceInfo.grxusd
     if (position.algorithm_type === 'GRZ'){
@@ -153,7 +170,7 @@ export class ActivityComponent implements OnInit, OnChanges {
         close_position_total_$:    close_position_total_$,
         close_position_total_GRX:  close_position_total_GRX,
         close_position_total_GRZ:   close_position_total_$/grzusd,
-        close_position_fee_$:      close_performance_fee_$,
+        close_position_fee_$:      close_position_fee_$,
         close_position_fee_GRX:      close_position_total_GRX*0.003,
         close_performance_fee_$:   close_performance_fee_$,
         close_performance_fee_GRX: close_performance_fee_$/grxusd     

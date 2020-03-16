@@ -23,7 +23,7 @@ import {XlmLoanPopupComponent} from './popup/xlm-loan-popup/xlm-loan-popup.compo
 import {XlmBalanceStatusPopupComponent} from './popup/xlm-balance-status-popup/xlm-balance-status-popup.component';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {InputPasswordComponent} from './popup/input-password/input-password.component';
+import {ReActivateAccountComponent} from './popup/reactivate-account/reactivate-account.component';
 import {ConfirmPasswordComponent} from './popup/confirm-pwd/confirm-pw';
 import { ConfirmNewVersionComponent } from './popup/confirm-new-version/confirm-new-version.component';
 import { SwUpdateNotifiyComponent } from './sw-update-notifiy/sw-update-notifiy.component';
@@ -45,7 +45,7 @@ import { LoaderScreenComponent } from './loader-screen/loader-screen.component';
     ActivateAccountPopupComponent,
     XlmLoanPopupComponent,
     XlmBalanceStatusPopupComponent,
-    InputPasswordComponent,
+    ReActivateAccountComponent,
     ConfirmPasswordComponent,
     ConfirmNewVersionComponent,
     SwUpdateNotifiyComponent,
@@ -79,6 +79,7 @@ import { LoaderScreenComponent } from './loader-screen/loader-screen.component';
     ConfirmNewVersionComponent,
     SwUpdateNotifiyComponent,
     LoaderScreenComponent,
+    ReActivateAccountComponent,
   ]
 })
 export class SharedModule { }

@@ -34,12 +34,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
   //GRZ_FEE = 0.3
   grydb:any
   grzdb:any
-  countdownConfig: CountdownConfig = {
-    leftTime: 60,
-    template: '$!s!',
-    effect: null,
-    demand: false
-  };
+  
   algoItems = [
     {
       id: 'GRY 1',
@@ -92,6 +87,12 @@ export class SystemHeaderBoxesComponent implements OnInit {
     private algoService: AlgoService,
 
   ) {    
+    this.authService.countdownConfig = {
+      leftTime: 60,
+      template: '$!s!',
+      effect: null,
+      demand: false
+    };
     this.selectedTab = this.algoItems[0];
     this.algoPosition = new AlgoPositionModel(null, this.selectedTab.name, null, null, null, null);
   }
@@ -288,15 +289,15 @@ export class SystemHeaderBoxesComponent implements OnInit {
   private openPopup() {
 
     this.sharedService.openAlgoPosition(this.algoPosition);
-    console.log('this.algoPosition:', this.algoPosition)
+    //console.log('this.algoPosition:', this.algoPosition)
     this.loadingService.show()
     this.stellarService.sendAsset(this.authService.getSecretKey(), environment.HOT_WALLET_ONE, 
-      this.algoPosition.grxAmount.toString(), this.stellarService.grxAsset, '').then( ledgerId => {
-        this.algoPosition.stellarTxId = ledgerId
+      this.algoPosition.grxAmount.toString(), this.stellarService.grxAsset, '').then( txHash => {
+        this.algoPosition.stellarTxId = txHash
         if (this.algoPosition.item === 'GRZ'){
           this.http.post(environment.grz_api_url + 'api/v1/grz/position/open', {
             user_id:this.authService.userInfo.Uid,            
-            open_stellar_transaction_id:ledgerId.toString(),
+            open_stellar_transaction_id:txHash,
             grayll_transaction_id:"0",
             open_position_timestamp:0,
             algorithm_type:this.selectedTab.id,
@@ -318,6 +319,9 @@ export class SystemHeaderBoxesComponent implements OnInit {
               } else {
                 console.log('res:', res)
                this.algoPosition.grayllTxId = (res as any).grayllTxId
+               this.algoPosition.stellarTxId = (res as any).stellarTxId
+               this.algoPosition.openFee$ = +this.algoPosition.usdValue*+this.selectedTab.fee
+               this.algoPosition.positionValueGRX = +this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee
                this.sharedService.openAlgoPosition(this.algoPosition);
                this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
               }
@@ -331,7 +335,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
         } else {
           this.http.post(environment.grz_api_url + 'api/v1/gry/position/open', {
             user_id:this.authService.userInfo.Uid,            
-            open_stellar_transaction_id:ledgerId.toString(),
+            open_stellar_transaction_id:txHash,
             grayll_transaction_id:"0",
             open_position_timestamp:0,
             algorithm_type:this.algoPosition.id,

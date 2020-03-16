@@ -1,0 +1,45 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Account Re-Activation | Secret Key"></app-popup-header>
+  <div class="modal-body">
+
+    <app-error></app-error>
+
+    <div class="row mb-1">      
+      <div class="col-12 text-center">
+        <p class="text-secondary font-16">
+          Your password has changed, for security reasons your account needs to be re-activated.
+        </p>
+        <p class="text-primary font-16">
+          Please enter your <b>Secret Key</b> to ensure you have access to all the GRAYLL App features.
+        </p>
+        <br/>
+        <p class="text-secondary font-16">
+          You should never share your Secret Key. Anyone that has your Secret Key has access to your wallet and the assets.
+        </p>       
+            
+        <div *ngIf="!authService.hash"  class="row">
+          <div class="col-md-12">
+            <input type="password"  [(ngModel)]="password" class="form-control form-control-no-border fixed-input-height" style="height: 46px"
+                        placeholder="Password">
+          </div>
+        </div>
+        <br/>   
+        <div class="row">
+          <div class="col-md-12">
+            <input type="password"  [(ngModel)]="secretKey" class="form-control form-control-no-border fixed-input-height" style="height: 46px"
+                        placeholder="Secret Key">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer justify-content-center">
+    <div class="row text-center" style="display: contents!important;">
+      <div class="col">        
+        <button class="btn btn-purple" (click)="submit()">Re-Activate</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

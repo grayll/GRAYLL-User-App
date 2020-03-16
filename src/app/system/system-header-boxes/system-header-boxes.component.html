@@ -49,7 +49,7 @@
           <div class="col-md-12 text-center mt-3">
             <div class="border-navy" *ngIf="this.selectedTab.id != 'GRZ'">              
               <p class="font-weight-bolder">
-                Current Value GRY/USD | {{authService.userData.gryPrice.toFixed(5)}}
+                Current Value GRY/USD | {{authService.priceInfo.gryusd.toFixed(5)}}
               </p>
               <div class="d-flex align-items-center px-1">
                 <div>
@@ -70,13 +70,13 @@
               </div>
               <p class="mb-0">
                 Approximately
-                <countdown [config]="countdownConfig"></countdown>
+                <countdown [config]="authService.countdownConfig"></countdown>
                 Seconds Until <br> GRY/USD Value Update
               </p>
             </div>
             <div class="border-navy" *ngIf="this.selectedTab.id === 'GRZ'">
               <p class="font-weight-bolder" >
-                Current Value GRZ/USD | {{authService.userData.grzPrice.toFixed(5)}}
+                Current Value GRZ/USD | {{authService.priceInfo.grzusd.toFixed(5)}}
               </p>
              
               <div class="d-flex align-items-center px-1">
@@ -99,6 +99,7 @@
               <p class="mb-0">
                 Approximately
                 <!-- <countdown [config]="countdownConfig"></countdown> -->
+                <countdown [config]="authService.countdownConfig"></countdown>
                 Seconds Until <br> GRY/USD Value Update
               </p>
             </div>
@@ -146,7 +147,7 @@
                   GRY 1 | Balthazar
                   <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                 </h6>
-                <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.userData.gryPrice.toFixed(5)}}</h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.priceInfo.gryusd.toFixed(5)}}</h6>
               </div>
               <div class="col text-right" style="margin-top: -4px;">
                 <div class="border-navy-hover" style="outline:0!important"
@@ -188,7 +189,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 1 | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.gry1Metric.CurrentProfit}}</h6>
+                <h6 class="text-white mb-0">${{algoService.gry1Metric.CurrentProfit.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -212,7 +213,7 @@
                   GRY 2 | Kaspar
                   <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                 </h6>
-                <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.userData.gryPrice.toFixed(5)}}</h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.priceInfo.gryusd.toFixed(5)}}</h6>
               </div>
               <div class="col text-right" style="margin-top: -4px;">
                 <div class="border-navy-hover" (click)="openModal('unread-gry2-notifications')"
@@ -254,7 +255,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 2 | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.gry2Metric.CurrentProfit}}</h6>
+                <h6 class="text-white mb-0">${{algoService.gry2Metric.CurrentProfit.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -281,7 +282,7 @@
                   GRY 3 | Melkior
                   <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                 </h6>
-                <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.userData.gryPrice.toFixed(5)}}</h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.priceInfo.gryusd.toFixed(5)}}</h6>
               </div>
               <div class="col text-right" style="margin-top: -4px;">
                 <div class="border-navy-hover" (click)="openModal('unread-gry3-notifications')"
@@ -323,7 +324,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 3 | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.gry3Metric.CurrentProfit}}</h6>
+                <h6 class="text-white mb-0">${{algoService.gry3Metric.CurrentProfit.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -347,7 +348,7 @@
                   GRZ | Arkady
                   <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                 </h6>
-                <h6 class="text-white font-weight-bolder m-b-0">GRZ | {{authService.userData.grzPrice.toFixed(5)}}</h6>
+                <h6 class="text-white font-weight-bolder m-b-0">GRZ | {{authService.priceInfo.grzusd.toFixed(5)}}</h6>
               </div>
               <div class="col text-right" style="margin-top: -4px;">
                 <div class="border-navy-hover" (click)="openModal('unread-grz-notifications')"
@@ -388,7 +389,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRZ | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.grzMetric.CurrentProfit}}</h6>
+                <h6 class="text-white mb-0">${{algoService.grzMetric.CurrentProfit.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -479,7 +480,7 @@
                 </div>
                 <p class="mb-0">
                   Approximately
-                  <countdown [config]="countdownConfig"></countdown>
+                  <countdown [config]="authService.countdownConfig"></countdown>
                   Seconds Until <br> GRY/USD Value Update
                 </p>
               </div>
