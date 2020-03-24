@@ -11,7 +11,7 @@ import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
 import {CountdownConfig} from 'ngx-countdown/src/countdown.config';
 import {AlgoPositionModel} from '../../data/models/algoPositionModel';
-import { AlgoService } from 'src/app/system/algo.service';
+import { AlgoService, AlgoMetric, AlgoMetrics } from 'src/app/system/algo.service';
 import { ClosePosition } from 'src/app/system/algo-position.model';
 import { AuthService } from '../services/auth.service';
 import * as moment from 'moment';
@@ -35,6 +35,14 @@ export class ActivityComponent implements OnInit, OnChanges {
   isSortedUpByPositionValue: boolean;
   isSortedUpByPositionProfit: boolean;
   isSortedUpByROI: boolean;
+
+  roi24: number = 0
+  roi7d: number = 0
+  roi: number = 0
+
+  roi24Cnt: number = 0
+  roi7dCnt: number = 0
+  
   activityTabs = [
     {
       id: 'openAlgoPositions',
@@ -70,13 +78,24 @@ export class ActivityComponent implements OnInit, OnChanges {
     private algoService: AlgoService,
     private authService: AuthService,
     private http: HttpClient,
-    private loadingService: LoadingService,
+    private loadingService: LoadingService,    
   ) {
     //this.populateOpenAlgoPositionsArray();   
     this.algoService.algoPositions$.subscribe(positions => {
       //this.positions = positions   
       let totalValueGRZ = 0 
       let totalValueGRZProfit = 0 
+      let positionClosed = true
+
+//       minimum = 1,439 minutes
+// maximum = 1,441 minutes
+
+// **7 days %ROI for GRY 1, 2, 3
+// basis = All Open Algo Positions per UID
+// ---
+// Average of all Open Algo Positions from a single user id meeting the following "duration" conditions
+// minimum = 10,079 minutes
+// maximum = 10,081 minutes
       this.algoService.openPositions = positions.filter(pos => {
         if (pos.status == "OPEN"){
           //pos.current_position_ROI_per = pos['current_position_ROI_%']        
@@ -86,14 +105,68 @@ export class ActivityComponent implements OnInit, OnChanges {
           } else {
             pos.url = ""
           }   
-          totalValueGRZ += pos.current_position_value_$ 
-          totalValueGRZProfit += pos.current_position_ROI_$  
+          if (this.algoService.closeGrayllId === pos.grayll_transaction_id){
+            positionClosed = false
+          }
+
+          switch (pos.algorithm_type){
+            case "GRZ":
+              // totalValueGRZ += pos.current_position_value_$ 
+              // totalValueGRZProfit += pos.current_position_ROI_$  
+              // // if (this.algoService.closeGrayllId === pos.grayll_transaction_id){
+              // //   positionClosed = false
+              // // }
+              // if (pos.duration <= 1441){
+              //   this.algoService.grzMetric.OneDayPercent += pos.current_position_ROI_$
+              //   this.algoService.grzMetric.OneDayCnt++
+              // }
+              // if (pos.duration <= 10081){
+              //   this.algoService.grzMetric.SevenDayPercent += pos.current_position_ROI_$
+              //   this.algoService.grzMetric.SevenDayCnt++
+              // }
+              // this.algoService.grzMetric.ROI += pos.current_position_ROI_$
+              this.calculateMetrics(pos, this.algoService.grzMetric)
+              break
+            case "GRY 1":
+              this.calculateMetrics(pos, this.algoService.gry1Metric)             
+              break
+            case "GRY 2":
+              this.calculateMetrics(pos, this.algoService.gry2Metric)             
+              break
+            case "GRY 3":
+              this.calculateMetrics(pos, this.algoService.gry3Metric)             
+              break
+
+          }          
           return pos
         }        
       })
-      this.algoService.grzMetric.TotalValue = totalValueGRZ
-      this.algoService.grzMetric.CurrentProfit = totalValueGRZProfit
-      this.algoService.grzMetric.Positions = this.algoService.openPositions.length
+
+      if (this.algoService.closeGrayllId && positionClosed === true){
+        this.loadingService.hide()
+        this.algoService.closeGrayllId = ''
+      }
+
+      if (this.algoService.closeAll && this.algoService.openPositions.length == 0){
+        this.loadingService.hide()
+        this.algoService.closeAll = false
+        this.authService.pushCloseAllEnd(true)
+      }
+      
+      // if (this.algoService.grzMetric.OneDayCnt > 0){
+      //       this.algoService.grzMetric.OneDayPercent = this.algoService.grzMetric.OneDayPercent/this.algoService.grzMetric.OneDayCnt
+      // }
+      // if (this.algoService.grzMetric.SevenDayCnt > 0){
+      //   this.algoService.grzMetric.SevenDayPercent = this.algoService.grzMetric.SevenDayPercent/this.algoService.grzMetric.SevenDayCnt
+      // }      
+
+      // this.algoService.grzMetric.TotalValue = totalValueGRZ
+      // this.algoService.grzMetric.CurrentProfit = totalValueGRZProfit
+      // this.algoService.grzMetric.Positions = this.algoService.openPositions.length
+      this.updateAverageMetric(this.algoService.grzMetric)
+      this.updateAverageMetric(this.algoService.gry1Metric)
+      this.updateAverageMetric(this.algoService.gry3Metric)
+      this.updateAverageMetric(this.algoService.gry2Metric)
 
       this.algoService.closePositions = positions.filter(pos => {
         if (pos.status != "OPEN"){          
@@ -131,10 +204,41 @@ export class ActivityComponent implements OnInit, OnChanges {
     })
   }
 
+  calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){
+    metric.TotalValue += pos.current_position_value_$ 
+    metric.ROI += pos.current_position_ROI_$
+    metric.TotalValue += pos.current_position_value_$
+    metric.Positions +=1
+             
+    if (pos.duration <= 1440*60){
+      metric.OneDayPercent += pos.current_position_ROI_$
+      metric.OneDayCnt++
+    }
+    if (pos.duration <= 10080*60){
+      metric.SevenDayPercent += pos.current_position_ROI_$
+      metric.SevenDayCnt++
+    }
+    
+  }
+
+  updateAverageMetric(metric : AlgoMetrics){
+    if (metric.OneDayCnt > 0){
+      metric.OneDayPercent = metric.OneDayPercent/metric.OneDayCnt
+    }
+    if (metric.SevenDayCnt > 0){
+      metric.SevenDayPercent = metric.SevenDayPercent/metric.SevenDayCnt
+    }
+    if (metric.Positions > 0){
+      metric.ROI = metric.CurrentProfit/metric.Positions
+    }
+  }
+  
+
   closePosition(position){
     this.loadingService.show()
     let grzusd = this.authService.priceInfo.grzusd
     let grxusd = this.authService.priceInfo.grxusd
+    this.algoService.closeGrayllId = position.grayll_transaction_id
     if (position.algorithm_type === 'GRZ'){
         
       let close_position_total_$ = position.open_position_value_$ + (grzusd - position.open_value_GRZ)*position.open_position_value_$/position.open_value_GRZ
@@ -147,11 +251,11 @@ export class ActivityComponent implements OnInit, OnChanges {
 
       let close_position_total_GRX = close_position_total_$/grxusd
       let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
-      let  close_position_ROI_percent_GROSS = close_position_ROI_$*100/position.open_position_value_$
-      let  close_position_ROI_percent_NET = (close_position_value_$  - position.open_position_value_$)*100/position.open_position_value_$      
+      let close_position_ROI_percent_GROSS = close_position_ROI_$*100/position.open_position_value_$
+      let close_position_ROI_percent_NET = (close_position_value_$  - position.open_position_value_$)*100/position.open_position_value_$      
       
-      this.http.post(environment.grz_api_url + 'api/v1/grz/position/close', {
-        user_id: this.authService.userInfo.Uid,            
+      this.http.post(environment.grz_api_url + 'api/v1/grz/position/close',
+        {user_id: this.authService.userInfo.Uid,            
         open_stellar_transaction_id: position.open_stellar_transaction_id,
         open_position_timestamp: position.open_position_timestamp,
         grayll_transaction_id: position.grayll_transaction_id,        
@@ -178,7 +282,9 @@ export class ActivityComponent implements OnInit, OnChanges {
       }).subscribe( res => {
         console.log(res)
         //this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
-        this.loadingService.hide()
+        // setInterval(() => {
+        //   this.loadingService.hide()
+        // }, 1500);        
       },
       e => {
        // this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
@@ -204,11 +310,13 @@ export class ActivityComponent implements OnInit, OnChanges {
       }).subscribe( 
         res => {
         //this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
-        this.loadingService.hide()
+        setTimeout(() => {
+          this.loadingService.hide()
+        }, 1500);   
       },
       e => {
        // this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
-        this.loadingService.hide()
+       this.loadingService.hide()
       })
     }
   }

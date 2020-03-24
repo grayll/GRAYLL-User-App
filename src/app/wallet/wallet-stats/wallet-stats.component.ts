@@ -69,8 +69,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   // grxUsdEqui: string = ''
   SecKey: string = ''
 
-  askPrice: number = 0;
-  bidPrice: number = 0;
+  //askPrice: number = 0;
+  //bidPrice: number = 0;
 
   private subs = new SubSink();
 
@@ -120,16 +120,16 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.observeRevealSecretKey();
     //get ask, bid, last prices
-    axios.get(environment.ask_bid_prices)
-    .then( res => {
-      var ask : number = res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
-      let bid : number = res.data.bids[0].price_r.d/res.data.bids[0].price_r.n
-      this.askPrice = +(ask.toFixed(7))// res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
-      this.bidPrice = +(bid.toFixed(7))//res.data.bids[0].price_r.d/res.data.bids[0].price_r.n
-    })
-    .catch(e => {
-      console.log('can not get ask/bid price: ', e)
-    })
+    // axios.get(environment.ask_bid_prices)
+    // .then( res => {
+    //   var ask : number = res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
+    //   let bid : number = res.data.bids[0].price_r.d/res.data.bids[0].price_r.n
+    //   this.askPrice = +(ask.toFixed(7))// res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
+    //   this.bidPrice = +(bid.toFixed(7))//res.data.bids[0].price_r.d/res.data.bids[0].price_r.n
+    // })
+    // .catch(e => {
+    //   console.log('can not get ask/bid price: ', e)
+    // })
   }
 
   ngOnDestroy(): void {
@@ -187,9 +187,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       // check setting whether direct purchase on admin account
       console.log('grxPrice:', this.grxPrice , this.authService.priceInfo.xlmgrx , this.authService.userInfo.SellingPrice)
       console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent, dexAmount, superAdminAmount)
-      if (+this.grxPrice >= this.authService.priceInfo.xlmgrx && +this.grxPrice >= this.authService.userInfo.SellingPrice){
+      if (+this.grxPrice > this.authService.priceInfo.xlmgrx_ask && +this.grxPrice >= this.authService.userInfo.SellingPrice){
         if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){        
-          console.log('Direct purchase from super admin')
+          console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet, this.authService.getSecretKey())
           // purchase directly from grayll super admin        
           if (superAdminAmount > 0){
             // buy all from grayll super admin
@@ -199,7 +199,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
             .then( txHash => {
               this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:xlmAmount}).then(resp => {
                 // update fund
-                //console.log('verifyTx: ', resp)
+                console.log('verifyTx: ', resp)
                 this.loadingService.hide()
                 let msg 
                 if (resp.errCode === environment.SUCCESS){
@@ -214,7 +214,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
                 this.loadingService.hide()
               })              
             }).catch(e => {
-              let msg = 'Buy order could not be submitted! Please retry!'   
+              let msg = 'Buy order could not be submitted! Please retry1!'   
               this.snotifyService.simple(msg);        
               this.loadingService.hide()
             })            
@@ -509,7 +509,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if (this.authService.getMaxAvailableXLM() - this.reservedTrade > 0){
       this.isPopulateMaxXLM = true
       this.XLMValueForm = this.authService.getMaxAvailableXLM() - this.reservedTrade
-      this.grxPrice = this.bidPrice.toFixed(7)  
+      //this.grxPrice = this.bidPrice.toFixed(7)  
+      this.grxPrice =  this.authService.priceInfo.xlmgrx_bid.toFixed(7)
       this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7)
     } else {
       this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')    
@@ -521,7 +522,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if (this.authService.getMaxAvailableGRX() > 0){
       this.isPopulateMaxGRX = true
       this.grxAmount = this.authService.getMaxAvailableGRX().toFixed(7)  
-      this.grxPrice = this.askPrice.toFixed(7)    
+      //this.grxPrice = this.askPrice.toFixed(7)    this.authService.priceInfo.xlmgrx_ask
+      this.grxPrice =  this.authService.priceInfo.xlmgrx_ask.toFixed(7)  
       this.XLMValueForm = +(+this.grxAmount*+this.grxPrice).toFixed(7)
     }
   }

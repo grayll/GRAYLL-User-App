@@ -81,7 +81,8 @@ export class NoticeDataService {
     //return this.afs.collection(ref, queryFn).snapshotChanges().pipe(
     return this.afs.collection(ref, queryFn).snapshotChanges(['added']).pipe(
       map(actions => actions.map(a => {
-        //const data = a.payload.doc.data();
+        
+        //console.log('a.payload.doc.data():', a.payload.doc.data())
         const data = a.payload.doc.data() as Notice;
         const id = a.payload.doc.id;
         const doc = a.payload.doc;
@@ -93,7 +94,7 @@ export class NoticeDataService {
         }
         let url = this.txUrl + a.payload.doc.data()["txId"]
         let counters = this.trimAddress(a.payload.doc.data()["counter"])
-        //console.log('a.payload.doc.data():', a.payload.doc.data())
+       
         return { id, doc, url, counters, times, ...data };     
 
       }))
@@ -223,7 +224,7 @@ export class NoticeDataService {
       .subscribe(data => {
         if (data.length && data.length > 0){
           this.latestEntryGeneral = data[data.length - 1].doc;
-          console.log(data[data.length - 1].doc.data())
+          //console.log(data[data.length - 1].doc.data())
           this._generalData.next(data);
         }
       });
@@ -239,7 +240,25 @@ export class NoticeDataService {
       .subscribe(data => {
         if (data.length && data.length > 0){
           this.latestEntryAlgo = data[data.length - 1].doc;
-          console.log(data[data.length - 1].doc.data())
+          //console.log(data[data.length - 1].doc.data())
+          this._algoData.next(data);
+        }
+      });
+  }
+
+  firstAlgoType(path:string, limit:number, type:string) {
+    this._algoData = new BehaviorSubject([]);
+    //this.data = this._data.asObservable().subscribe(res => this.allData.push(res));
+    this.algoData = this._algoData.asObservable()
+  
+    const scoresRef = this.getCollection(path, ref => ref
+      .where('type', '==', type)
+      //.orderBy('time', 'desc')
+      .limit(limit))
+      .subscribe(data => {
+        if (data.length && data.length > 0){
+          this.latestEntryAlgo = data[data.length - 1].doc;
+          //console.log(data[data.length - 1].doc.data())
           this._algoData.next(data);
         }
       });

@@ -39,7 +39,7 @@ export interface AlgoPosition {id?: number;
 }
 
 export interface OpenPosition {
-  grayll_transaction_id: number;
+  grayll_transaction_id: string;
   open_stellar_transaction_id: number;
   algorithm_type:string
   time?: string,
@@ -51,16 +51,20 @@ export interface OpenPosition {
   open_position_total_GRX: number
   open_position_value_GRZ: number
   open_position_value_GRX: number
+  open_value_GRZ: number
+  open_value_GRX: number
+  open_value_GRY?: number
 
   duration?: number
   status: string
 
   current_value_GRX?: number
   current_value_GRZ?: number
+  current_value_GRY?: number
   current_position_value_$?: number
   current_position_value_GRX?: number
   current_position_ROI_$?: number
-  current_position_ROI_per?: number  
+  current_position_ROI_percent?: number  
 }
 
 export interface ClosePosition extends OpenPosition{
@@ -68,6 +72,7 @@ export interface ClosePosition extends OpenPosition{
   close_position_total_$?: number
   close_position_total_GRX?: number
   close_position_value_GRZ?: number
+  close_position_value_GRY?: number
 
   close_position_fee_$?: number
   close_performance_fee_$?: number
@@ -76,7 +81,7 @@ export interface ClosePosition extends OpenPosition{
   close_position_value_GRX?: number
   close_position_ROI_$?: number
 
-  close_position_ROI_per?: number
+  close_position_ROI_percent?: number
   close_stellar_transaction_id?: number;
 }
 

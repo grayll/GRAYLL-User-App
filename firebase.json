@@ -5,16 +5,12 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],    
+    ],
     "rewrites": [
       {
-        "source": "/api/**",
-        "function": "Federation"
-      },
-      {
-        "source": "/**",
-        "destination": "index.html"
-      }      
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   }
 }

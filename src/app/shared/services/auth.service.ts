@@ -15,9 +15,9 @@ import { CountdownConfig } from 'ngx-countdown/src/countdown.config';
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
   OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
 
-export interface Prices {xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
+export interface Prices {xlmgrx_ask:number; xlmgrx_bid: number; xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
 export interface Prices1 {xlmp: number; grxp: number;gryp: number;grzp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
-export interface PriceInfo {xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number;}
+export interface PriceInfo {xlmgrx_ask:number; xlmgrx_bid: number; xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number;}
 
 @Injectable({
   providedIn: 'root' 
@@ -29,7 +29,7 @@ export class AuthService {
   userMetaStore:  UserMeta = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
   OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true}
 
-  priceInfo: PriceInfo = {xlmusd: 0, grxusd: 0, xlmgrx: 0, gryusd: 0,grzusd: 0}
+  priceInfo: PriceInfo = {xlmgrx_ask:0, xlmgrx_bid:0, xlmusd: 0, grxusd: 0, xlmgrx: 0, gryusd: 0,grzusd: 0}
   
   tfa$ = new BehaviorSubject<any>({})
   hash: string
@@ -53,7 +53,7 @@ export class AuthService {
   userMeta$ : Observable<UserMeta>
   countdownConfig: CountdownConfig 
 
-
+  closeAllEnd:Subject<boolean>
   constructor(    
     public router: Router,  
     public ngZone: NgZone, // NgZone service to remove outside scope warning
@@ -157,15 +157,19 @@ export class AuthService {
         this.userData.gryPrice = data.gryusd
         this.userData.grzPrice = data.grzusd
         this.userData.grxusdPrice = data.grxusd
-        this.userInfo.SellingWallet = data.sellingWallet
-        this.userInfo.SellingPercent = data.sellingPercent
-        this.userInfo.SellingPrice = data.sellingPrice
-
+        if (this.userInfo){
+          this.userInfo.SellingWallet = data.sellingWallet
+          this.userInfo.SellingPercent = data.sellingPercent
+          this.userInfo.SellingPrice = data.sellingPrice
+        }
+       
         this.priceInfo.grxusd = data.grxusd
         this.priceInfo.xlmgrx = data.xlmgrx  
         this.priceInfo.xlmusd = data.xlmusd
         this.priceInfo.gryusd = data.gryusd
         this.priceInfo.grzusd = data.grzusd
+        this.priceInfo.xlmgrx_ask = data.xlmgrx_ask
+        this.priceInfo.xlmgrx_bid = data.xlmgrx_bid
         this.countdownConfig =  {
           leftTime: 60,
           template: '$!s!',
@@ -196,6 +200,20 @@ export class AuthService {
       this.shouldReload = new Subject()
     }
     this.shouldReload.next(shouldReload)
+  }
+
+  subCloseAllEnd(){
+    if (!this.closeAllEnd){
+      this.closeAllEnd = new Subject()
+    }
+    return this.closeAllEnd.asObservable()
+  }
+
+  pushCloseAllEnd(closeAllEnd){
+    if (!this.closeAllEnd){
+      this.closeAllEnd = new Subject()
+    }
+    this.closeAllEnd.next(closeAllEnd)
   }
 
   getUserInfoMsg(){

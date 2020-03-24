@@ -142,10 +142,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     // Send read ids to server
     if (this.readWalletNoticeIds.length > 0 || this.readGeneralNoticeIds.length > 0 || this.readAlgoNoticeIds.length > 0){
-      console.log('this.readWalletNoticeIds', this.readWalletNoticeIds)
-      this.http.post(`api/v1/users/updateReadNotices`, 
-      {walletIds:this.readWalletNoticeIds, algoIds:this.readAlgoNoticeIds, generalIds:this.readGeneralNoticeIds}).
+      //console.log('this.readAlgoNoticeIds', this.readAlgoNoticeIds)
+      this.http.post(`api/v1/users/updateReadNotices`, {walletIds:this.readWalletNoticeIds, algoIds:this.readAlgoNoticeIds, 
+        generalIds:this.readGeneralNoticeIds, 
+        urgrz:this.authService.userMetaStore.UrGRZ, urgry1:this.authService.userMetaStore.UrGRY1,
+        urgry2:this.authService.userMetaStore.UrGRY2, urgry3:this.authService.userMetaStore.UrGRY3}).
       subscribe(res => {
+        console.log('updateReadNotices', res)
         if ((res as any).errCode == environment.SUCCESS){         
           console.log("Updated read notice ids")
         }        
@@ -186,7 +189,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.algoNotifications = (res as any).algos.map(item => {
         let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
         item.time = time
-        item.url = url + item.txId 
+        //item.url = url + item.txId 
         return item
       })
       this.algoNotificationsToShow = this.algoNotifications   
@@ -237,7 +240,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   markAsRead(collPath: string, notice:any) {
     //console.log('notice-com:markAsRead')
     if (!notice.isRead) {
-      //console.log('notice-com:markAsRead not isread')
+      console.log('notice-com:markAsRead not isread')
       notice.isRead = true;       
       if (collPath.includes('wallet')){
         if (this.authService.userMetaStore.UrWallet - 1 >= 0){
@@ -248,9 +251,23 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         this.readWalletNoticeIds.push(notice.id)
       } else if(collPath.includes('algo')){
         // need to check type of notice: gry1,2,3 gryz
-        // if (this.authService.userMetaStore.UrAlgo - 1 >= 0){
-        //   this.authService.userMetaStore.UrAlgo = this.authService.userMetaStore.UrAlgo - 1
-        // }
+        if (!notice.type || notice.type.includes('GRZ')){
+          if (this.authService.userMetaStore.UrGRZ - 1 >= 0){
+            this.authService.userMetaStore.UrGRZ = this.authService.userMetaStore.UrGRZ - 1
+          }
+        } else if (notice.type.includes('GRY 1')){
+          if (this.authService.userMetaStore.UrGRY1 - 1 >= 0){
+            this.authService.userMetaStore.UrGRY1 = this.authService.userMetaStore.UrGRY1 - 1
+          }
+        } else if(notice.type.includes('GRY 2')){
+          if (this.authService.userMetaStore.UrGRY2 - 1 >= 0){
+            this.authService.userMetaStore.UrGRY2 = this.authService.userMetaStore.UrGRY2 - 1
+          }
+        } else if(notice.type.includes('GRY 3')){
+          if (this.authService.userMetaStore.UrGRY3 - 1 >= 0){
+            this.authService.userMetaStore.UrGRY3 = this.authService.userMetaStore.UrGRY3 - 1
+          }
+        }        
         this.readAlgoNoticeIds.push(notice.id)
       } else if(collPath.includes('general')){
         if (this.authService.userMetaStore.UrGeneral - 1 >= 0){
