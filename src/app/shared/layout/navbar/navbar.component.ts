@@ -173,49 +173,10 @@ export class NavbarComponent implements OnDestroy, OnInit {
         console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
         
       }) 
-    }
-
-    
-    //this.checkForUpdates(true)
-
-    //this.initFireStoreDb()
-    
-    // this.afW.db('default').object('orders/2bqgQjiXfAHdZrGFqtzF')
-    //   .valueChanges()
-    //   .subscribe(data => {
-    //     console.log('APPTEST:', data)
-    //   })
-      // this.afW.db('default').object('prices/794retePzavE19bTcMaH')
-      // .valueChanges()
-      // .subscribe(data => {
-      //   console.log('APPTEST:', data)        
-      // })
+    }    
   }
   
-  // checkForUpdates(isFirstCheck: boolean): void {
-  //   console.log('checkForUpdates()');
-  //   this.updates.available.subscribe(event => 
-  //   {
-  //     this.swService.show()
-  //   });
-  //   if (this.updates.isEnabled) {
-  //       // Required to enable updates on Windows and ios.
-  //       this.updates.activateUpdate();
-  //       if (isFirstCheck){
-  //         this.updates.checkForUpdate().then(() => {
-  //           console.log('Checking for updates');
-  //         });
-  //       } 
-  //       this.subsink.add(interval(2 * 60 * 1000).subscribe(() => {
-  //         console.log('run interval 2 minutes');
-  //         this.updates.checkForUpdate().then(() => {
-  //             console.log('3Checking for update');
-  //         });
-  //       }));
-  //   }
-  //   // Important: on Safari (ios) Heroku doesn't auto redirect links to their https which allows the installation of the pwa like usual
-  //   // but it deactivates the swUpdate. So make sure to open your pwa on safari like so: https://example.com then (install/add to home)
-  // }
+  
 
   // initFireStoreDb(){    
   //   var app = firebase.initializeApp(environment.dbs.systemtest, 'grayll-system-test');

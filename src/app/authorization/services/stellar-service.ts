@@ -353,7 +353,7 @@ export class StellarService {
                 // 6. Build and sign transaction with both source and destination keypairs
                 .setTimeout(180).build()
                 tx.sign(source)                
-                //let xdr = tx.toXDR('base64')   
+                let xdr = tx.toXDR('base64')   
                 //console.log('Tx xdr', xdr)            
                 this.horizon.submitTransaction(tx).then( resp => {
                     console.log('resp: ', resp.hash);

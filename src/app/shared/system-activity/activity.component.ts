@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, HostListener} from '@angular/core';
 import {
   faArrowAltCircleDown,
   faCaretDown, faCaretUp,
@@ -18,6 +18,7 @@ import * as moment from 'moment';
 import { LoadingService } from '../services/loading.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import {SubSink} from 'subsink'
 
 @Component({
   selector: 'app-activity',
@@ -28,6 +29,8 @@ export class ActivityComponent implements OnInit, OnChanges {
 
   @Input() activeTabId: string;
   @Input() showCompletedOrdersLink: boolean;
+
+  subsink: SubSink
 
   openAlgoPositions: AlgoPositionModel[] = [];
 
@@ -80,22 +83,18 @@ export class ActivityComponent implements OnInit, OnChanges {
     private http: HttpClient,
     private loadingService: LoadingService,    
   ) {
+    this.subsink = new SubSink()
     //this.populateOpenAlgoPositionsArray();   
-    this.algoService.algoPositions$.subscribe(positions => {
+    this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {
       //this.positions = positions   
       let totalValueGRZ = 0 
       let totalValueGRZProfit = 0 
       let positionClosed = true
+      this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROI:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROI:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROI:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROI:0, OneDayCnt:0, SevenDayCnt:0}
 
-//       minimum = 1,439 minutes
-// maximum = 1,441 minutes
-
-// **7 days %ROI for GRY 1, 2, 3
-// basis = All Open Algo Positions per UID
-// ---
-// Average of all Open Algo Positions from a single user id meeting the following "duration" conditions
-// minimum = 10,079 minutes
-// maximum = 10,081 minutes
       this.algoService.openPositions = positions.filter(pos => {
         if (pos.status == "OPEN"){
           //pos.current_position_ROI_per = pos['current_position_ROI_%']        
@@ -201,11 +200,10 @@ export class ActivityComponent implements OnInit, OnChanges {
         } 
         return pos       
       })
-    })
+    }))
   }
 
-  calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){
-    metric.TotalValue += pos.current_position_value_$ 
+  calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){   
     metric.ROI += pos.current_position_ROI_$
     metric.TotalValue += pos.current_position_value_$
     metric.Positions +=1
@@ -229,7 +227,7 @@ export class ActivityComponent implements OnInit, OnChanges {
       metric.SevenDayPercent = metric.SevenDayPercent/metric.SevenDayCnt
     }
     if (metric.Positions > 0){
-      metric.ROI = metric.CurrentProfit/metric.Positions
+      metric.ROI = metric.ROI/metric.Positions
     }
   }
   
@@ -385,14 +383,9 @@ export class ActivityComponent implements OnInit, OnChanges {
     //this.populateOpenAlgoPositionsArray();
   }
 
-  getCountdownConfigFor(duration: number): CountdownConfig {
-    return {
-      leftTime: duration * 13,
-      demand: false,
-      template: '$!h!:$!m! | $!d!',
-      effect: null
-    };
-  }
-
   
+  @HostListener('window:beforeunload')
+  ngOnDestroy():void {
+    this.subsink.unsubscribe()    
+  }  
 }

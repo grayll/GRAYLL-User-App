@@ -30,7 +30,7 @@
                 <div class="input-group-prepend">
                   <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                 </div>
-                <input type="text" [(ngModel)]="algoPosition.usdValue" (keyup)="usdAmountChange()"
+                <input type="text" [(ngModel)]="algoPosition.usdValue" (keyup)="usdAmountChange()" [value]="calculateAmount()"
                        class="fixed-input-height text-light form-control form-control-no-border bg-purple border-0" placeholder="USD Value (Minimum $10.00)">
               </div>
             </div>
@@ -41,7 +41,7 @@
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
                           </span>
                 </div>
-                <input type="text" class="fixed-input-height text-light form-control form-control-no-border border-0 bg-purple" (keyup)="itemAmountChange()"
+                <input type="text" class="fixed-input-height text-light form-control form-control-no-border border-0 bg-purple" 
                        [placeholder]="selectedTab.id + ' | ' + selectedTab.value + ' Amount'" [(ngModel)]="algoPosition.itemAmount">
               </div>
             </div>
@@ -70,7 +70,7 @@
               </div>
               <p class="mb-0">
                 Approximately
-                <countdown [config]="authService.countdownConfig"></countdown>
+                <countdown [config]="authService.countdownConfigs[0]"></countdown>
                 Seconds Until <br> GRY/USD Value Update
               </p>
             </div>
@@ -99,7 +99,7 @@
               <p class="mb-0">
                 Approximately
                 <!-- <countdown [config]="countdownConfig"></countdown> -->
-                <countdown [config]="authService.countdownConfig"></countdown>
+                <countdown [config]="authService.countdownConfigs[1]"></countdown>
                 Seconds Until <br> GRZ/USD Value Update
               </p>
             </div>
@@ -114,7 +114,7 @@
                 </div>
                 <input type="text" class="fixed-input-height text-light
                     form-control form-control-no-border bg-purple border-0"
-                    (keyup)="grxAmountChange()"   placeholder="GRX Amount" [(ngModel)]="algoPosition.grxAmount">
+                    (keyup)="grxAmountChange()" [value]="calculateAmount()"  placeholder="GRX Amount" [(ngModel)]="algoPosition.grxAmount">
               </div>
             </div>
           </div>
@@ -189,7 +189,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 1 | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.gry1Metric.CurrentProfit.toFixed(5)}}</h6>
+                <h6 class="text-white mb-0">${{algoService.gry1Metric.ROI.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -255,7 +255,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 2 | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.gry2Metric.CurrentProfit.toFixed(5)}}</h6>
+                <h6 class="text-white mb-0">${{algoService.gry2Metric.ROI.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -324,7 +324,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 3 | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.gry3Metric.CurrentProfit.toFixed(5)}}</h6>
+                <h6 class="text-white mb-0">${{algoService.gry3Metric.ROI.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -389,7 +389,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRZ | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.grzMetric.CurrentProfit.toFixed(5)}}</h6>
+                <h6 class="text-white mb-0">${{algoService.grzMetric.ROI.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -443,7 +443,7 @@
                   <div class="input-group-prepend">
                     <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                   </div>
-                  <input type="text" [(ngModel)]="algoPosition.usdValue"
+                  <input type="text" [(ngModel)]="algoPosition.usdValue" (keyup)="usdAmountChange()" [value]="calculateAmount()"
                          class="fixed-input-height text-light form-control form-control-no-border bg-purple border-0" placeholder="USD Value (Minimum $10.00)">
                 </div>
               </div>
@@ -460,24 +460,7 @@
               </div>
             </div>
             <div class="col-md-12 text-center mt-3">
-              <div class="border-navy">
-                <!-- <p class="font-weight-bolder">
-                  Current Value GRY/USD | $0.09042
-                </p>
-                <div class="d-flex align-items-center px-1">
-                  <div>
-                    <h6 class="font-weight-lighter text-white">% 24h</h6>
-                    <h6 class="text-white font-weight-lighter">11.12</h6>
-                  </div>
-                  <div class="ml-auto  text-right">
-                    <h6 class="font-weight-lighter text-white">% 7d</h6>
-                    <h6 class="text-white font-weight-lighter">-0.12</h6>
-                  </div>
-                  <div class="ml-auto  text-right">
-                    <h6 class="font-weight-lighter text-white">% ROI</h6>
-                    <h6 class="text-white font-weight-lighter">1,009.45</h6>
-                  </div>
-                </div> -->
+              <div class="border-navy">                
                 <p class="font-weight-bolder">
                   Current Value GRY/USD | {{authService.priceInfo.gryusd.toFixed(5)}}
                 </p>
@@ -497,10 +480,10 @@
                     <h6 *ngIf="grydb" class="text-white font-weight-lighter">{{grydb.roi.toFixed(2)}}</h6>
                     <h6 *ngIf="!grydb" class="text-white font-weight-lighter"></h6>
                   </div>  
-				 </div>
+				        </div>
                 <p class="mb-0">
                   Approximately
-                  <countdown [config]="authService.countdownConfig"></countdown>
+                  <countdown [config]="authService.countdownConfigs[0]"></countdown>
                   Seconds Until <br> GRY/USD Value Update
                 </p>
               </div>
@@ -515,7 +498,7 @@
                   </div>
                   <input type="text" class="fixed-input-height text-light
                     form-control form-control-no-border bg-purple border-0"
-                         placeholder="GRX Amount" [(ngModel)]="GRXValue">
+                         placeholder="GRX Amount" (keyup)="grxAmountChange()" [value]="calculateAmount()" [(ngModel)]="algoPosition.grxAmount">
                 </div>
               </div>
             </div>
@@ -589,7 +572,7 @@
             </div>
             <div class="col text-right">
               <h6 class="text-white font-weight-bolder">Current GRY 1 | Profits</h6>
-              <h6 class="text-white mb-0">${{algoService.gry1Metric.CurrentProfit.toFixed(5)}}</h6>
+              <h6 class="text-white mb-0">${{algoService.gry1Metric.ROI.toFixed(5)}}</h6>
             </div>
           </div>
 
@@ -655,7 +638,7 @@
             </div>
             <div class="col text-right">
               <h6 class="text-white font-weight-bolder">Current GRY 2 | Profits</h6>
-              <h6 class="text-white mb-0">{{algoService.gry2Metric.CurrentProfit.toFixed(5)}}</h6>
+              <h6 class="text-white mb-0">{{algoService.gry2Metric.ROI.toFixed(5)}}</h6>
             </div>
           </div>
 
@@ -722,7 +705,7 @@
             </div>
             <div class="col text-right">
               <h6 class="text-white font-weight-bolder">Current GRY 3 | Profits</h6>
-              <h6 class="text-white mb-0">${{algoService.gry3Metric.CurrentProfit.toFixed(5)}}</h6>
+              <h6 class="text-white mb-0">${{algoService.gry3Metric.ROI.toFixed(5)}}</h6>
             </div>
           </div>
 
@@ -788,7 +771,7 @@
             </div>
             <div class="col text-right">
               <h6 class="text-white font-weight-bolder">Current GRZ | Profits</h6>
-              <h6 class="text-white mb-0">${{algoService.grzMetric.CurrentProfit.toFixed(5)}}</h6>
+              <h6 class="text-white mb-0">${{algoService.grzMetric.ROI.toFixed(5)}}</h6>
             </div>
           </div>
 

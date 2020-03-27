@@ -1,10 +1,10 @@
 export class AlgoPositionModel {
   constructor(
-    public id?: number,
+    //public id?: string,
     public item?: string,
     public usdValue?: any,
     public itemAmount?: any,
-    public token?: number,
+    public token?: string,
     public grxAmount?: any,
     public grxPrice?: number, 
     public itemPrice?: number,

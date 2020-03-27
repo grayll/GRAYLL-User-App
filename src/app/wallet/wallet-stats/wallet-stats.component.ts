@@ -189,13 +189,14 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent, dexAmount, superAdminAmount)
       if (+this.grxPrice > this.authService.priceInfo.xlmgrx_ask && +this.grxPrice >= this.authService.userInfo.SellingPrice){
         if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){        
-          console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet, this.authService.getSecretKey())
+          //console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet, this.authService.getSecretKey())
           // purchase directly from grayll super admin        
           if (superAdminAmount > 0){
             // buy all from grayll super admin
             let xlmAmount = superAdminAmount*+this.grxPrice
+            console.log('xlmAmount:', xlmAmount)
             this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
-              xlmAmount.toString(), this.stellarService.nativeAsset, '')
+              xlmAmount.toFixed(7), this.stellarService.nativeAsset, '')
             .then( txHash => {
               this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:xlmAmount}).then(resp => {
                 // update fund
@@ -214,7 +215,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
                 this.loadingService.hide()
               })              
             }).catch(e => {
-              let msg = 'Buy order could not be submitted! Please retry1!'   
+              console.log(e)
+              let msg = 'Buy order could not be submitted. Please retry!'   
               this.snotifyService.simple(msg);        
               this.loadingService.hide()
             })            
@@ -227,7 +229,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
       if (dexAmount > 0){
         console.log('dexAmount.toString()', dexAmount.toString())
-        this.stellarService.buyOrder(this.authService.getSecretKey(), this.grxPrice, dexAmount.toString()).then( res => {
+        this.stellarService.buyOrder(this.authService.getSecretKey(), this.grxPrice, dexAmount.toFixed(7)).then( res => {
           console.log(res)
           if (!this.stellarService.allOffers){
             this.stellarService.allOffers = []
@@ -235,7 +237,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           let matchType = 0
           let msg = 'Buy order submitted successfully.'
           if (res.offerResults[0].currentOffer){
-            console.log('res.offerResults[0].currentOffer', res.offerResults[0].currentOffer)
+            //console.log('res.offerResults[0].currentOffer', res.offerResults[0].currentOffer)
             let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
               this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore)
   
@@ -263,7 +265,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           if (e.toString().includes('status code 400')){
             this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')  
           } else {
-            this.snotifyService.simple('Buy order could not be submitted! Please retry!')
+            this.snotifyService.simple('Buy order could not be submitted. Please retry!')
           } 
         })  
       }     

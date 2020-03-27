@@ -10,14 +10,15 @@ import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { createHash } from 'crypto';
 import { UserInfo, Setting } from 'src/app/models/user.model';
 import { CountdownConfig } from 'ngx-countdown/src/countdown.config';
+import * as moment from 'moment';
 
 
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
   OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
 
-export interface Prices {xlmgrx_ask:number; xlmgrx_bid: number; xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
+export interface Prices {price_updated?: string; xlmgrx_ask:number; xlmgrx_bid: number; xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
 export interface Prices1 {xlmp: number; grxp: number;gryp: number;grzp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
-export interface PriceInfo {xlmgrx_ask:number; xlmgrx_bid: number; xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number;}
+export interface PriceInfo {price_updated?: string; xlmgrx_ask:number; xlmgrx_bid: number; xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number;}
 
 @Injectable({
   providedIn: 'root' 
@@ -51,7 +52,10 @@ export class AuthService {
   // UserMeta
   balanceUpdateCount: number = 0
   userMeta$ : Observable<UserMeta>
-  countdownConfig: CountdownConfig 
+  countdownConfigs: CountdownConfig[] 
+
+  gryUpdatedAt: number
+  grzUpdatedAt: number
 
   closeAllEnd:Subject<boolean>
   constructor(    
@@ -61,7 +65,21 @@ export class AuthService {
     public stellarService: StellarService,  
     private afs: AngularFirestore,      
   ) {    
-   
+    this.countdownConfigs = [{
+      leftTime: 60,
+      template: '$!s!',
+      effect: null,
+      demand: false
+    },
+    {
+      leftTime: 60,
+      template: '$!s!',
+      effect: null,
+      demand: false
+    }    
+  ]
+    this.gryUpdatedAt = moment.now()
+    this.grzUpdatedAt = moment.now()
   }
 
   getUserMeta(){
@@ -75,22 +93,9 @@ export class AuthService {
         this.userMetaStore.UrGRZ = data.UrGRZ >= 0? data.UrGRZ:0
         this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
         this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
-        this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
-       
+        this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime       
 
-        if (this.balanceUpdateCount > 0 && this.userMetaStore.XLM > 0 ){
-          console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
-          console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
-          this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-          this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
-          this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
-          this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
-          this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
-        } 
-        this.balanceUpdateCount++
-        console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)
-        
-        // if (this.isGetBalance && !this.userMetaStore.ShouldReload && data.XLM > 0){
+        // if (this.balanceUpdateCount > 0 && this.userMetaStore.XLM > 0 ){
         //   console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
         //   console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
         //   this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
@@ -98,48 +103,23 @@ export class AuthService {
         //   this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
         //   this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
         //   this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
-        // }
-       
+        // } 
+
+        this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
+        this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
+        this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
+        this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
+        this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
+
+        this.balanceUpdateCount++
+        console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
         console.log('GETUSERMETA:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
         this._userMeta.next(data)
       })
     }
   }
-  getUserMeta1(){
-    if (this.userMetaStore.ShouldReload){
-      this._userMeta = new Subject<UserMeta>()
-      this.userMeta = this._userMeta.asObservable()
-      this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(data => {        
-        this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
-        this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
-        this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
-        this.userMetaStore.UrGRZ= data.UrGRZ >= 0? data.UrGRZ:0
-        this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
-        this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
-        this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime
-
-        if (!this.userMetaStore.ShouldReload){
-          console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
-          console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
-          this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-          this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
-          this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
-          this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
-          this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
-        }
-
-        // if (!(this.userMetaStore.GRX > 0 || this.userMetaStore.XLM > 0)){        
-        //   this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-        //   this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
-        // }
-        console.log('GETUSERMETA-FIRSTLOAD:', this.userMetaStore)
-        this.userMetaStore.ShouldReload = false
-        this._userMeta.next(data)
-      })
-    }
-  }
-
+ 
   subUserMeta(){    
     //this._userMeta = new Subject<UserMeta>()
     //this.userMeta = this._userMeta.asObservable()
@@ -170,12 +150,31 @@ export class AuthService {
         this.priceInfo.grzusd = data.grzusd
         this.priceInfo.xlmgrx_ask = data.xlmgrx_ask
         this.priceInfo.xlmgrx_bid = data.xlmgrx_bid
-        this.countdownConfig =  {
-          leftTime: 60,
-          template: '$!s!',
-          effect: null,
-          demand: false
-        };
+        if (this.priceInfo.price_updated != data.price_updated){
+          if (data.price_updated === 'gryusd'){
+            //console.log('update gry')
+            this.gryUpdatedAt = moment.now()
+            60 - (moment.now() - this.gryUpdatedAt)/1000
+            this.countdownConfigs[0] = {
+              leftTime: 60,
+              template: '$!s!',
+              effect: null,
+              demand: false
+            } 
+            
+          } else {
+            //console.log('update grz')
+            this.grzUpdatedAt = moment.now()
+            this.countdownConfigs[1] = {
+              leftTime: 60,
+              template: '$!s!',
+              effect: null,
+              demand: false
+            }
+            
+          }
+          this.priceInfo.price_updated = data.price_updated
+        }        
         console.log('STREAM-price:', data)        
        
       })
