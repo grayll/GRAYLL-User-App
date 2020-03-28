@@ -198,7 +198,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
             this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
               xlmAmount.toFixed(7), this.stellarService.nativeAsset, '')
             .then( txHash => {
-              this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:xlmAmount}).then(resp => {
+              this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:+xlmAmount.toFixed(7)}).then(resp => {
                 // update fund
                 console.log('verifyTx: ', resp)
                 this.loadingService.hide()
