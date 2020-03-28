@@ -185,16 +185,16 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
 
   calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){  
     console.log('CALCULATE-pos.current_position_ROI_$:', pos.current_position_ROI_$) 
-    metric.CurrentProfit += +pos.current_position_ROI_$
-    metric.TotalValue += +pos.current_position_value_$
+    metric.CurrentProfit = FPC.add(metric.CurrentProfit,pos.current_position_ROI_$) 
+    metric.TotalValue = FPC.add(metric.TotalValue, pos.current_position_value_$)
     metric.Positions +=1
              
     if (pos.duration <= 1440*60){
-      metric.OneDayPercent += +pos.current_position_ROI_$
+      metric.OneDayPercent = FPC.add(metric.OneDayPercent, pos.current_position_ROI_$)
       metric.OneDayCnt++
     }
     if (pos.duration <= 10080*60){
-      metric.SevenDayPercent += +pos.current_position_ROI_$
+      metric.SevenDayPercent = FPC.add(metric.SevenDayPercent, pos.current_position_ROI_$)
       metric.SevenDayCnt++
     }
     
@@ -220,19 +220,22 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     let grxusd = this.authService.priceInfo.grxusd
     this.algoService.closeGrayllId = position.grayll_transaction_id
     if (position.algorithm_type === 'GRZ'){
-        
-      let close_position_total_$ = position.open_position_value_$ + (grzusd - position.open_value_GRZ)*position.open_position_value_$/position.open_value_GRZ
-      let close_position_fee_$ = close_position_total_$*0.003
-      let close_position_ROI_$ = close_position_total_$  - position.open_position_value_$
+      let roi = FPC.mult(FPC.sub(grzusd, position.open_value_GRZ), position.open_position_value_$)/position.open_value_GRZ
+      let close_position_total_$ = position.open_position_value_$ + roi
+      let close_position_fee_$ = FPC.mult(close_position_total_$, 0.003)
+      let close_position_ROI_$ = FPC.sub(close_position_total_$, position.open_position_value_$)
       let close_performance_fee_$ = 0
-      if (close_position_ROI_$ - close_position_fee_$ > 0) {
-        close_performance_fee_$ =  (close_position_ROI_$ - close_position_fee_$ ) * 0.18
+      if (FPC.sub(close_position_ROI_$, close_position_fee_$) > 0) {
+        close_performance_fee_$ =  FPC.mult(FPC.sub(close_position_ROI_$, close_position_fee_$), 0.18)
       }
 
       let close_position_total_GRX = close_position_total_$/grxusd
-      let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
-      let close_position_ROI_percent_GROSS = close_position_ROI_$*100/position.open_position_value_$
-      let close_position_ROI_percent_NET = (close_position_value_$  - position.open_position_value_$)*100/position.open_position_value_$      
+      let close_position_value_$ = FPC.sub(close_position_total_$, close_position_fee_$, close_performance_fee_$)
+      let close_position_ROI_percent_GROSS = FPC.mult(close_position_ROI_$, 100)/position.open_position_value_$
+      let close_position_ROI_percent_NET = FPC.mult(FPC.sub(close_position_value_$, position.open_position_value_$), 100)/position.open_position_value_$  
+      
+      // console.log('close_position_value_$', close_position_value_$)
+      // console.log('close_position_total_$', close_position_total_$)
       
       this.http.post(environment.grz_api_url + 'api/v1/grz/position/close',
         {user_id: this.authService.userInfo.Uid,            
@@ -255,16 +258,12 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         close_position_total_GRX:  close_position_total_GRX,
         close_position_total_GRZ:   close_position_total_$/grzusd,
         close_position_fee_$:      close_position_fee_$,
-        close_position_fee_GRX:      close_position_total_GRX*0.003,
+        close_position_fee_GRX:      FPC.mult(close_position_total_GRX, 0.003),
         close_performance_fee_$:   close_performance_fee_$,
         close_performance_fee_GRX: close_performance_fee_$/grxusd     
 
       }).subscribe( res => {
-        console.log(res)
-        //this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
-        // setInterval(() => {
-        //   this.loadingService.hide()
-        // }, 1500);        
+        console.log(res)             
       },
       e => {
        // this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
