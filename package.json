@@ -48,6 +48,7 @@
     "firebase": "^6.6.2",
     "firebase-admin": "^8.6.1",
     "flag-icon-css": "^3.3.0",
+    "floating-point-calculator": "^1.1.4",
     "font-awesome": "^4.7.0",
     "form-persistence": "^2.0.5",
     "global": "^4.4.0",

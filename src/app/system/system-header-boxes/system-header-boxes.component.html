@@ -71,7 +71,7 @@
               <p class="mb-0">
                 Approximately
                 <countdown [config]="authService.countdownConfigs[0]"></countdown>
-                Seconds Until <br> GRY/USD Value Update
+                Seconds Until <br> GRY/USD Rate Update
               </p>
             </div>
             <div class="border-navy" *ngIf="this.selectedTab.id === 'GRZ'">
@@ -100,7 +100,7 @@
                 Approximately
                 <!-- <countdown [config]="countdownConfig"></countdown> -->
                 <countdown [config]="authService.countdownConfigs[1]"></countdown>
-                Seconds Until <br> GRZ/USD Value Update
+                Seconds Until <br> GRZ/USD Rate Update
               </p>
             </div>
           </div>
@@ -145,7 +145,9 @@
               <div class="col">
                 <h6 class="text-white font-weight-bolder">
                   GRY 1 | Balthazar
-                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                  <a href="http://support.grayll.io/en/articles/3840363-what-is-the-gry-1-balthazar-algorithm" class="navy-link mt-1" target="_blank">
+                    <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                  </a>
                 </h6>
                 <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.priceInfo.gryusd.toFixed(5)}}</h6>
               </div>
@@ -175,7 +177,7 @@
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1Metric.ROI.toFixed(5)}}</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1Metric.ROIPercent.toFixed(5)}}</h6>
               </div>
             </div>
             <div class="row mt-3 px-1">
@@ -189,7 +191,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 1 | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.gry1Metric.ROI.toFixed(5)}}</h6>
+                <h6 class="text-white mb-0">${{algoService.gry1Metric.CurrentProfit.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -211,7 +213,9 @@
               <div class="col">
                 <h6 class="text-white font-weight-bolder">
                   GRY 2 | Kaspar
-                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                  <a href="http://support.grayll.io/en/articles/3840433-what-is-the-gry-2-kaspar-algorithm" class="navy-link mt-1" target="_blank">
+                    <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                  </a>
                 </h6>
                 <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.priceInfo.gryusd.toFixed(5)}}</h6>
               </div>
@@ -241,7 +245,7 @@
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry2Metric.ROI.toFixed(5)}}</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry2Metric.ROIPercent.toFixed(5)}}</h6>
               </div>
             </div>
             <div class="row mt-3 px-1">
@@ -255,7 +259,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 2 | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.gry2Metric.ROI.toFixed(5)}}</h6>
+                <h6 class="text-white mb-0">${{algoService.gry2Metric.CurrentProfit.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -280,7 +284,9 @@
               <div class="col">
                 <h6 class="text-white font-weight-bolder">
                   GRY 3 | Melkior
-                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                  <a href="http://support.grayll.io/en/articles/3840435-what-is-the-gry-3-melkior-algorithm" class="navy-link mt-1" target="_blank">
+                    <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                  </a>
                 </h6>
                 <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.priceInfo.gryusd.toFixed(5)}}</h6>
               </div>
@@ -310,7 +316,7 @@
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry3Metric.ROI.toFixed(5)}}</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gry3Metric.ROIPercent.toFixed(5)}}</h6>
               </div>
             </div>
             <div class="row mt-3 px-1">
@@ -324,7 +330,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRY 3 | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.gry3Metric.ROI.toFixed(5)}}</h6>
+                <h6 class="text-white mb-0">${{algoService.gry3Metric.CurrentProfit.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -344,10 +350,14 @@
           <div class="card-body gradient-box">
             <div class="row px-1 mb-3">
               <div class="col">
+                
                 <h6 class="text-white font-weight-bolder">
-                  GRZ | Arkady
-                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                  GRZ | Arkady                  
+                  <a href="https://support.grayll.io/en/articles/3607187-what-is-the-grz-arkady-algorithm" class="navy-link mt-1" target="_blank">
+                    <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                  </a>
                 </h6>
+                
                 <h6 class="text-white font-weight-bolder m-b-0">GRZ | {{authService.priceInfo.grzusd.toFixed(5)}}</h6>
               </div>
               <div class="col text-right" style="margin-top: -4px;">
@@ -375,7 +385,7 @@
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-bolder text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.ROI.toFixed(5)}}</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.ROIPercent.toFixed(5)}}</h6>
               </div>
             </div>
             <div class="row mt-3 px-1">
@@ -389,7 +399,7 @@
               </div>
               <div class="col text-right">
                 <h6 class="text-white font-weight-bolder">Current GRZ | Profits</h6>
-                <h6 class="text-white mb-0">${{algoService.grzMetric.ROI.toFixed(5)}}</h6>
+                <h6 class="text-white mb-0">${{algoService.grzMetric.CurrentProfit.toFixed(5)}}</h6>
               </div>
             </div>
 
@@ -484,7 +494,7 @@
                 <p class="mb-0">
                   Approximately
                   <countdown [config]="authService.countdownConfigs[0]"></countdown>
-                  Seconds Until <br> GRY/USD Value Update
+                  Seconds Until <br> GRY/USD Rate Update
                 </p>
               </div>
             </div>
@@ -527,8 +537,10 @@
           <div class="row px-1 mb-3">
             <div class="col">
               <h6 class="text-white font-weight-bolder">
-                GRY 1 | Balthazar
-                <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                GRY 1 | Balthazar                
+                <a href="http://support.grayll.io/en/articles/3840363-what-is-the-gry-1-balthazar-algorithm" class="navy-link mt-1" target="_blank">
+                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                </a>
               </h6>
               <h6 class="text-white font-weight-bolder m-b-0">GRY | ${{authService.priceInfo.gryusd.toFixed(5)}}</h6>
             </div>
@@ -558,7 +570,7 @@
             </div>
             <div class="ml-auto  text-right">
               <h6 class="font-weight-bolder text-white">% ROI</h6>
-              <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1Metric.ROI.toFixed(5)}}</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1Metric.ROIPercent.toFixed(5)}}</h6>
             </div>
           </div>
           <div class="row mt-3 px-1">
@@ -572,7 +584,7 @@
             </div>
             <div class="col text-right">
               <h6 class="text-white font-weight-bolder">Current GRY 1 | Profits</h6>
-              <h6 class="text-white mb-0">${{algoService.gry1Metric.ROI.toFixed(5)}}</h6>
+              <h6 class="text-white mb-0">${{algoService.gry1Metric.CurrentProfit.toFixed(5)}}</h6>
             </div>
           </div>
 
@@ -594,7 +606,9 @@
             <div class="col">
               <h6 class="text-white font-weight-bolder">
                 GRY 2 | Kaspar
-                <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                <a href="http://support.grayll.io/en/articles/3840433-what-is-the-gry-2-kaspar-algorithm" class="navy-link mt-1" target="_blank">
+                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                </a>
               </h6>
               <h6 class="text-white font-weight-bolder m-b-0">GRY | ${{authService.priceInfo.gryusd.toFixed(5)}}</h6>
             </div>
@@ -624,7 +638,7 @@
             </div>
             <div class="ml-auto  text-right">
               <h6 class="font-weight-bolder text-white">% ROI</h6>
-              <h6 class="text-white font-weight-lighter m-0">{{algoService.gry2Metric.ROI.toFixed(5)}}</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.gry2Metric.ROIPercent.toFixed(5)}}</h6>
             </div>
           </div>
           <div class="row mt-3 px-1">
@@ -638,7 +652,7 @@
             </div>
             <div class="col text-right">
               <h6 class="text-white font-weight-bolder">Current GRY 2 | Profits</h6>
-              <h6 class="text-white mb-0">{{algoService.gry2Metric.ROI.toFixed(5)}}</h6>
+              <h6 class="text-white mb-0">{{algoService.gry2Metric.CurrentProfit.toFixed(5)}}</h6>
             </div>
           </div>
 
@@ -661,7 +675,9 @@
             <div class="col">
               <h6 class="text-white font-weight-bolder">
                 GRY 3 | Melkior
-                <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                <a href="http://support.grayll.io/en/articles/3840435-what-is-the-gry-3-melkior-algorithm" class="navy-link mt-1" target="_blank">
+                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+                </a>
               </h6>
               <h6 class="text-white font-weight-bolder m-b-0">GRY | ${{authService.priceInfo.gryusd.toFixed(5)}}</h6>
             </div>
@@ -691,7 +707,7 @@
             </div>
             <div class="ml-auto  text-right">
               <h6 class="font-weight-bolder text-white">% ROI</h6>
-              <h6 class="text-white font-weight-lighter m-0">{{algoService.gry3Metric.ROI.toFixed(5)}}</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.gry3Metric.ROIPercent.toFixed(5)}}</h6>
             </div>
           </div>
           <div class="row mt-3 px-1">
@@ -705,7 +721,7 @@
             </div>
             <div class="col text-right">
               <h6 class="text-white font-weight-bolder">Current GRY 3 | Profits</h6>
-              <h6 class="text-white mb-0">${{algoService.gry3Metric.ROI.toFixed(5)}}</h6>
+              <h6 class="text-white mb-0">${{algoService.gry3Metric.CurrentProfit.toFixed(5)}}</h6>
             </div>
           </div>
 
@@ -757,7 +773,7 @@
             </div>
             <div class="ml-auto  text-right">
               <h6 class="font-weight-bolder text-white">% ROI</h6>
-              <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.ROI.toFixed(5)}}</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.ROIPercent.toFixed(5)}}</h6>
             </div>            
           </div>
           <div class="row mt-3 px-1">
@@ -771,7 +787,7 @@
             </div>
             <div class="col text-right">
               <h6 class="text-white font-weight-bolder">Current GRZ | Profits</h6>
-              <h6 class="text-white mb-0">${{algoService.grzMetric.ROI.toFixed(5)}}</h6>
+              <h6 class="text-white mb-0">${{algoService.grzMetric.CurrentProfit.toFixed(5)}}</h6>
             </div>
           </div>
 

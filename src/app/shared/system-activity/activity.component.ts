@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges, HostListener} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, HostListener, OnDestroy} from '@angular/core';
 import {
   faArrowAltCircleDown,
   faCaretDown, faCaretUp,
@@ -19,13 +19,15 @@ import { LoadingService } from '../services/loading.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {SubSink} from 'subsink'
+import FPC from 'floating-point-calculator';
+
 
 @Component({
   selector: 'app-activity',
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss']
 })
-export class ActivityComponent implements OnInit, OnChanges {
+export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() activeTabId: string;
   @Input() showCompletedOrdersLink: boolean;
@@ -90,14 +92,13 @@ export class ActivityComponent implements OnInit, OnChanges {
       let totalValueGRZ = 0 
       let totalValueGRZProfit = 0 
       let positionClosed = true
-      this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROI:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROI:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROI:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROI:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
 
       this.algoService.openPositions = positions.filter(pos => {
-        if (pos.status == "OPEN"){
-          //pos.current_position_ROI_per = pos['current_position_ROI_%']        
+        if (pos.status == "OPEN"){               
           pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
           if (pos.open_stellar_transaction_id) {
             pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id.toString()   
@@ -109,21 +110,7 @@ export class ActivityComponent implements OnInit, OnChanges {
           }
 
           switch (pos.algorithm_type){
-            case "GRZ":
-              // totalValueGRZ += pos.current_position_value_$ 
-              // totalValueGRZProfit += pos.current_position_ROI_$  
-              // // if (this.algoService.closeGrayllId === pos.grayll_transaction_id){
-              // //   positionClosed = false
-              // // }
-              // if (pos.duration <= 1441){
-              //   this.algoService.grzMetric.OneDayPercent += pos.current_position_ROI_$
-              //   this.algoService.grzMetric.OneDayCnt++
-              // }
-              // if (pos.duration <= 10081){
-              //   this.algoService.grzMetric.SevenDayPercent += pos.current_position_ROI_$
-              //   this.algoService.grzMetric.SevenDayCnt++
-              // }
-              // this.algoService.grzMetric.ROI += pos.current_position_ROI_$
+            case "GRZ":             
               this.calculateMetrics(pos, this.algoService.grzMetric)
               break
             case "GRY 1":
@@ -151,21 +138,14 @@ export class ActivityComponent implements OnInit, OnChanges {
         this.algoService.closeAll = false
         this.authService.pushCloseAllEnd(true)
       }
-      
-      // if (this.algoService.grzMetric.OneDayCnt > 0){
-      //       this.algoService.grzMetric.OneDayPercent = this.algoService.grzMetric.OneDayPercent/this.algoService.grzMetric.OneDayCnt
-      // }
-      // if (this.algoService.grzMetric.SevenDayCnt > 0){
-      //   this.algoService.grzMetric.SevenDayPercent = this.algoService.grzMetric.SevenDayPercent/this.algoService.grzMetric.SevenDayCnt
-      // }      
-
-      // this.algoService.grzMetric.TotalValue = totalValueGRZ
-      // this.algoService.grzMetric.CurrentProfit = totalValueGRZProfit
-      // this.algoService.grzMetric.Positions = this.algoService.openPositions.length
+     
       this.updateAverageMetric(this.algoService.grzMetric)
       this.updateAverageMetric(this.algoService.gry1Metric)
       this.updateAverageMetric(this.algoService.gry3Metric)
       this.updateAverageMetric(this.algoService.gry2Metric)
+
+      console.log('this.algoService.openPositions', this.algoService.openPositions)
+      console.log('this.algoService.grzMetric', this.algoService.grzMetric)
 
       this.algoService.closePositions = positions.filter(pos => {
         if (pos.status != "OPEN"){          
@@ -178,7 +158,7 @@ export class ActivityComponent implements OnInit, OnChanges {
           return pos
         }        
       })
-      console.log('this.algoService.closePositions', this.algoService.closePositions)
+      //console.log('this.algoService.closePositions', this.algoService.closePositions)
       this.algoService.allPositions = positions.filter(pos => {
         if (pos.status == "OPEN"){
           //pos.current_position_ROI_per = pos['current_position_ROI_%']        
@@ -203,23 +183,25 @@ export class ActivityComponent implements OnInit, OnChanges {
     }))
   }
 
-  calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){   
-    metric.ROI += pos.current_position_ROI_$
-    metric.TotalValue += pos.current_position_value_$
+  calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){  
+    console.log('CALCULATE-pos.current_position_ROI_$:', pos.current_position_ROI_$) 
+    metric.CurrentProfit += +pos.current_position_ROI_$
+    metric.TotalValue += +pos.current_position_value_$
     metric.Positions +=1
              
     if (pos.duration <= 1440*60){
-      metric.OneDayPercent += pos.current_position_ROI_$
+      metric.OneDayPercent += +pos.current_position_ROI_$
       metric.OneDayCnt++
     }
     if (pos.duration <= 10080*60){
-      metric.SevenDayPercent += pos.current_position_ROI_$
+      metric.SevenDayPercent += +pos.current_position_ROI_$
       metric.SevenDayCnt++
     }
     
   }
 
   updateAverageMetric(metric : AlgoMetrics){
+    console.log('CALCULATE-metric.CurrentProfit-positions:', metric.CurrentProfit, metric.Positions) 
     if (metric.OneDayCnt > 0){
       metric.OneDayPercent = metric.OneDayPercent/metric.OneDayCnt
     }
@@ -227,7 +209,7 @@ export class ActivityComponent implements OnInit, OnChanges {
       metric.SevenDayPercent = metric.SevenDayPercent/metric.SevenDayCnt
     }
     if (metric.Positions > 0){
-      metric.ROI = metric.ROI/metric.Positions
+      metric.ROIPercent = metric.CurrentProfit/metric.Positions
     }
   }
   

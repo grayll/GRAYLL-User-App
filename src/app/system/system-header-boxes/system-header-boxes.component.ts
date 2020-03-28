@@ -219,10 +219,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
           
           this.algoPosition.itemPrice = this.authService.priceInfo.gryusd
         }
-        // if (this.algoPosition.usdValue && +this.algoPosition.usdValue < 10) {
-        //   this.errorService.handleError(null, 'Please enter a value of ~$10 or more in one of the fields.');
-        //   return this.algoPosition.grxAmount;
-        // }
+        
         if (this.algoPosition.grxAmount > this.authService.getMaxAvailableGRX()) {
           this.errorService.handleError(null, 'Insufficient balance. Please deposit more GRX to open position.');
           return this.algoPosition.grxAmount;
@@ -306,7 +303,6 @@ export class SystemHeaderBoxesComponent implements OnInit {
     this.algoPosition.token = algoItem.token;
       
     if (this.selectedTab.id === 'GRZ' ){
-
       if (this.algoPosition.usdValue && this.isValidNumber(this.algoPosition.usdValue) ){
         this.algoPosition.itemAmount = this.algoPosition.usdValue/this.authService.priceInfo.grzusd        
       }    
@@ -324,7 +320,6 @@ export class SystemHeaderBoxesComponent implements OnInit {
         this.algoPosition.itemAmount = this.algoPosition.usdValue/this.authService.priceInfo.gryusd
       }
       this.algoPosition.itemPrice = this.authService.priceInfo.gryusd
-
       this.authService.countdownConfigs[0] =  {
         leftTime: 60 - (moment.now() - this.authService.gryUpdatedAt)/1000,
         template: '$!s!',
