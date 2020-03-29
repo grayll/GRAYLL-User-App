@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { LoadingService } from '../../services/loading.service';
 
 @Component({
   selector: 'app-xlm-loan-popup',
@@ -39,6 +40,7 @@ export class XlmLoanPopupComponent implements OnInit {
     private authService: AuthService,
     private stellarService: StellarService,
     private http: HttpClient,
+    private loadingService: LoadingService,
 
   ) {
     //this.user = this.userService.getUser();
@@ -121,6 +123,7 @@ export class XlmLoanPopupComponent implements OnInit {
     // })  
   }
   async payOffLoan() { 
+
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
@@ -133,7 +136,7 @@ export class XlmLoanPopupComponent implements OnInit {
     let asset = this.stellarService.nativeAsset   
 
     console.log('payOffLoan')
-    
+    this.loadingService.show()
     //this.authService.GetSecretKey(this.password).then(async SecKey => {      
      // console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
       let loanPaidId = this.authService.GetLoadPaidLedgerId()
@@ -164,17 +167,19 @@ export class XlmLoanPopupComponent implements OnInit {
               this.success = true;
               this.authService.userInfo.LoanPaidStatus = 2
               this.updateFund()
-              
+              this.loadingService.hide()
               // remove additional signer
 
             } else {
               this.error = true;
               this.success = false;
+              this.loadingService.hide()
             }
           })          
         } catch (e){
           this.error = true;
           this.success = false;
+          this.loadingService.hide()
         }      
         // this.stellarService.sendAsset(SecKey, loanerAddress, loanAmount, asset, '')
         // .then( ledger => {
@@ -230,11 +235,13 @@ export class XlmLoanPopupComponent implements OnInit {
         this.authService.userInfo.LoanPaidStatus = 2
         //this.sharedService.setLoanPaid(); 
         this.updateFund()
+        this.loadingService.hide()
       },
       err => {
         console.log('verify ledger exp: ', err)
         this.error = true;
         this.success = false;
+        this.loadingService.hide()
       } 
     )    
   }

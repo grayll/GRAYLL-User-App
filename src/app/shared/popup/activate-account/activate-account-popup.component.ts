@@ -164,7 +164,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
                 this.success = true;    
                 this.authService.userData.PublicKey = res.keypair.publicKey()                     
                 this.authService.secretKey = res.keypair.rawSecretKey()
-                
+                this.authService.userInfo.LoanPaidStatus = 1
                 this.authService.userInfo.EnSecretKey =  enSecret.EnSecretKey
                 this.authService.userInfo.SecretKeySalt = enSecret.Salt
                 this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, 

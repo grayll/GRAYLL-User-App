@@ -40,7 +40,7 @@ export interface AlgoPosition {id?: number;
 
 export interface OpenPosition {
   grayll_transaction_id: string;
-  open_stellar_transaction_id: number;
+  open_stellar_transaction_id: string;
   algorithm_type:string
   time?: string,
   url?: string,
@@ -82,7 +82,7 @@ export interface ClosePosition extends OpenPosition{
   close_position_ROI_$?: number
 
   close_position_ROI_percent?: number
-  close_stellar_transaction_id?: number;
+  close_stellar_transaction_id?: string;
 }
 
 export interface AlgoModel {id?: number;

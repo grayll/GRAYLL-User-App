@@ -57,6 +57,8 @@ export class AuthService {
   gryUpdatedAt: number
   grzUpdatedAt: number
 
+
+
   closeAllEnd:Subject<boolean>
   constructor(    
     public router: Router,  
@@ -80,12 +82,13 @@ export class AuthService {
   ]
     this.gryUpdatedAt = moment.now()
     this.grzUpdatedAt = moment.now()
+    
   }
 
   getUserMeta(){
     if (this.userMetaStore.ShouldReload){
-      this._userMeta = new Subject<UserMeta>()
-      this.userMeta = this._userMeta.asObservable()
+     this._userMeta = new Subject<UserMeta>()
+     this.userMeta = this._userMeta.asObservable()
       this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(data => {        
         this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
         this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
@@ -95,30 +98,49 @@ export class AuthService {
         this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
         this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime       
 
-        // if (this.balanceUpdateCount > 0 && this.userMetaStore.XLM > 0 ){
-        //   console.log('GETUSERMETA:XLM', this.userMetaStore.XLM)
-        //   console.log('GETUSERMETA:GRX', this.userMetaStore.GRX)
-        //   this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-        //   this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
-        //   this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
-        //   this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
-        //   this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
-        // } 
-
-        this.userMetaStore.GRX = data.GRX > 0? Number(data.GRX):0
-        this.userMetaStore.XLM = data.XLM > 0? Number(data.XLM):0
-        this.userMetaStore.OpenOrders = data.OpenOrders > 0? Number(data.OpenOrders):0
-        this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? Number(data.OpenOrdersXLM):0
-        this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? Number(data.OpenOrdersGRX):0
+        this.userMetaStore.GRX = data.GRX >= 0? data.GRX:0
+        this.userMetaStore.XLM = data.XLM >= 0? data.XLM:0
+        this.userMetaStore.OpenOrders = data.OpenOrders > 0? data.OpenOrders:0
+        this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? data.OpenOrdersXLM:0
+        this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? data.OpenOrdersGRX:0
 
         this.balanceUpdateCount++
         console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
         console.log('GETUSERMETA:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
-        this._userMeta.next(data)
+       // this._userMeta.next(data)
       })
     }
   }
+
+  getUserMetaNew(){
+    this.userMeta = this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges()
+    if (this.userMetaStore.ShouldReload){    
+    //  this.userMeta = this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges()
+     this.userMeta.subscribe(data => {        
+        this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
+        this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
+        this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
+        this.userMetaStore.UrGRZ = data.UrGRZ >= 0? data.UrGRZ:0
+        this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
+        this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
+        this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime       
+
+        this.userMetaStore.GRX = data.GRX >= 0? data.GRX:0
+        this.userMetaStore.XLM = data.XLM >= 0? data.XLM:0
+        this.userMetaStore.OpenOrders = data.OpenOrders > 0? data.OpenOrders:0
+        this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? data.OpenOrdersXLM:0
+        this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? data.OpenOrdersGRX:0
+
+        this.balanceUpdateCount++
+        console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
+        console.log('GETUSERMETA:', this.userMetaStore)
+        this.userMetaStore.ShouldReload = false
+       // this._userMeta.next(data)
+      })
+    }
+  }
+ 
  
   subUserMeta(){    
     //this._userMeta = new Subject<UserMeta>()
@@ -129,8 +151,8 @@ export class AuthService {
 
   streamPrices(){
     if (this.userMetaStore.ShouldReload){
-      this._userMeta = new Subject<UserMeta>()
-      this.userMeta = this._userMeta.asObservable()
+      //this._userMeta = new Subject<UserMeta>()
+      //this.userMeta = this._userMeta.asObservable()
       this.afs.doc<Prices>('price_update/'+this.priceDoc).valueChanges().subscribe(data => {        
         this.userData.xlmPrice = data.xlmusd
         this.userData.grxPrice = data.xlmgrx

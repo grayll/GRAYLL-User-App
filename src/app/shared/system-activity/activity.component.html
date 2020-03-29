@@ -200,7 +200,7 @@
       <td class="width-91px">{{position.close_position_ROI_$.toFixed(5)}}</td>
       <td class="width-51px">{{position.close_position_ROI_percent.toFixed(5)}}%</td>
       <td class="width-101px">{{position.grayll_transaction_id}}</td>
-      <td class="width-101px">{{position.close_stellar_transaction_id}}</td>
+      <td class="width-101px">{{position.close_stellar_transaction_id.slice(-8)}}</td>
       <td class="width-53px"><a href={{position.url}} target="_blank" class="purple-link">Details</a></td>
     </tr>
     </tbody>
@@ -298,7 +298,7 @@
       <td class="width-101px">{{position.grayll_transaction_id}}</td>
 
       <td *ngIf="position.status === 'OPEN'" class="width-101px">{{position.open_stellar_transaction_id}}</td>
-      <td *ngIf="position.status != 'OPEN'" class="width-101px">{{position.close_stellar_transaction_id}}</td>
+      <td *ngIf="position.status != 'OPEN'" class="width-101px">{{position.close_stellar_transaction_id.slice(-8)}}</td>
       
       <td class="text-center width-41px">
         <a href={{position.url}} target="_blank">

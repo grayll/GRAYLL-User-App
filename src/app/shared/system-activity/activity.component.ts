@@ -101,7 +101,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         if (pos.status == "OPEN"){               
           pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
           if (pos.open_stellar_transaction_id) {
-            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id.toString()   
+            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id  
           } else {
             pos.url = ""
           }   
@@ -184,7 +184,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){  
-    console.log('CALCULATE-pos.current_position_ROI_$:', pos.current_position_ROI_$) 
+    //console.log('CALCULATE-pos.current_position_ROI_$:', pos.current_position_ROI_$) 
     metric.CurrentProfit = FPC.add(metric.CurrentProfit,pos.current_position_ROI_$) 
     metric.TotalValue = FPC.add(metric.TotalValue, pos.current_position_value_$)
     metric.Positions +=1
@@ -201,7 +201,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updateAverageMetric(metric : AlgoMetrics){
-    console.log('CALCULATE-metric.CurrentProfit-positions:', metric.CurrentProfit, metric.Positions) 
+    //console.log('CALCULATE-metric.CurrentProfit-positions:', metric.CurrentProfit, metric.Positions) 
     if (metric.OneDayCnt > 0){
       metric.OneDayPercent = metric.OneDayPercent/metric.OneDayCnt
     }
