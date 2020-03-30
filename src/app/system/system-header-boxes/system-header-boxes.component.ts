@@ -74,7 +74,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
   // Font Awesome Icons
   faInfo = faInfoCircle;
   faBell = faBell;
-
+  
   constructor(
     private router: Router,
     private sharedService: SharedService,
@@ -173,18 +173,18 @@ export class SystemHeaderBoxesComponent implements OnInit {
     this.errorService.clearError()
     switch(this.itemChange){
       case 'usdAmountChange':
-        if (this.algoPosition.usdValue && !this.isValidNumber(this.algoPosition.usdValue)) {
-          this.errorService.handleError(null, 'Please enter a valid USD Value.');
+        if (!this.algoPosition.usdValue){
           this.algoPosition.itemAmount = ''
+          this.algoPosition.grxAmount = ''
           return '';
         }
-        // if (+this.algoPosition.usdValue < 10 ) {
-        //   this.errorService.handleError(null, 'Please enter a value of ~$10 or more in USD Value.');
-        //   this.algoPosition.itemAmount = ''
-        //   this.algoPosition.grxAmount = ''
-        //   return this.algoPosition.usdValue;
-        // }
-  
+        if (this.algoPosition.usdValue && !this.isValidNumber(this.algoPosition.usdValue) ) {
+          this.errorService.handleError(null, 'Please enter a valid USD Value.');
+          this.algoPosition.itemAmount = ''
+
+          return '';
+        }
+          
         if (this.selectedTab.id === 'GRZ'){
           this.algoPosition.itemAmount = (this.algoPosition.usdValue/this.authService.priceInfo.grzusd).toFixed(7)         
           this.algoPosition.itemPrice = this.authService.priceInfo.grzusd
@@ -203,14 +203,20 @@ export class SystemHeaderBoxesComponent implements OnInit {
         this.algoPosition.grxPrice = this.authService.priceInfo.grxusd
         return this.algoPosition.usdValue      
       case 'grxAmountChange':
-        if (this.algoPosition.grxAmount && !this.isValidNumber(this.algoPosition.grxAmount)) {
-          this.errorService.handleError(null, 'Please enter a valid GRX Amount Value.');
+        if (!this.algoPosition.grxAmount){
           this.algoPosition.itemAmount = ''
+          this.algoPosition.usdValue = ''
           return '';
         }
         
-        this.algoPosition.usdValue = +(+this.algoPosition.grxAmount*this.authService.priceInfo.grxusd).toFixed(7)
-        //this.algoPosition.positionValue = this.algoPosition.usdValue - +this.selectedTab.fee*this.algoPosition.usdValue
+        if (this.algoPosition.grxAmount && !this.isValidNumber(this.algoPosition.grxAmount)) {
+          this.errorService.handleError(null, 'Please enter a valid GRX Amount Value.');
+          this.algoPosition.itemAmount = ''
+          this.algoPosition.usdValue = ''
+          return '';
+        }
+        
+        this.algoPosition.usdValue = +(+this.algoPosition.grxAmount*this.authService.priceInfo.grxusd).toFixed(7)        
         if (this.selectedTab.id === 'GRZ'){
           this.algoPosition.itemAmount = (this.algoPosition.usdValue/this.authService.priceInfo.grzusd).toFixed(7)          
           this.algoPosition.itemPrice = this.authService.priceInfo.grzusd
