@@ -149,8 +149,8 @@
           <td>0%</td>
           <td>{{item.xlmp}}</td>
           <td>{{item.totalxlm}}</td>
-          <td>{{item.priceusd}}</td>
-          <td>{{item.totalusd}}</td>
+          <td>{{item.priceusd.toFixed(7)}}</td>
+          <td>{{item.totalusd.toFixed(7)}}</td>
           <td>
             <a href="javascript:void(0)" (click)='cancelOffer(item)' class="purple-link">
               <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
@@ -294,8 +294,8 @@
           <!-- <td>0%</td> -->
           <td>{{item.xlmp}}</td>
           <td>{{item.totalxlm}}</td>
-          <td>{{item.priceusd}}</td>
-          <td>{{item.totalusd}}</td>
+          <td>{{item.priceusd.toFixed(7)}}</td>
+          <td>{{item.totalusd.toFixed(7)}}</td>
           <td><a href="{{item.url}}" target="_blank" class="purple-link">Details</a></td>
         </tr>    
       </tbody>
