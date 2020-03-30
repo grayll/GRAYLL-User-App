@@ -136,46 +136,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
   executeBuy(){
-        //this.authService.GetSecretKey(null).then(SecKey => {    
-      console.log('this.stellarService.allOffers:', this.stellarService.allOffers) 
-      // let xdr = await this.stellarService.getBuyOfferXdr(this.authService.userInfo.PublicKey, this.grxPrice, this.grxAmount)
-      // this.authService.makeTransaction(xdr, "buy").subscribe(res => {
-      //   console.log(res)
-      //   if ((res as any).errCode == "tx_success"){
-      //     let txenv = this.stellarService.parseXdr((res as any).xdrResult)
-      //     if (!this.stellarService.allOffers){
-      //       this.stellarService.allOffers = []
-      //     }
-      //     let matchType = 0
-      //     let msg = 'Buy order submitted successfully.'
-      //     //console.log('txenv:', txenv)
-          
-      //     let txenvobj = txenv.result()
-      //     //console.log('txenvobj:', txenvobj)
-      //     if (txenv.result().value()[0].value().value().success().offer().value()){
-      //       //console.log('res.offerResults[0].currentOffer', txenvobj.offerResults[0].currentOffer)
-      //       let of = this.stellarService.parseXdrOffer(txenv.result().value()[0].value().value().success().offer().value(), 
-      //         this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore, true)
-              
-      //       this.stellarService.allOffers.push(of)    
-      //       //console.log('this.stellarService.allOffers:', this.stellarService.allOffers)             
-      //       this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
-      //       matchType += 1
-      //     } 
-      //     if (txenv.result().value()[0].value().value().success().offersClaimed() && txenv.result().value()[0].value().value().success().offersClaimed().length > 0) {
-      //       //console.log('res.offerResults', txenv.offerResults)
-      //       //this.stellarService.parseClaimedOffer(txenv.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)          
-      //       matchType += 2
-      //     }
-      //     if (matchType == 3){
-      //       msg = 'Buy order has been partially matched and executed!'
-      //     } else if (matchType == 2){
-      //       msg = 'Buy order has been matched and executed!'
-      //     }
-      //     this.snotifyService.simple(msg);          
-      //   }
-      // }) 
-
+       
+      console.log('this.stellarService.allOffers:', this.stellarService.allOffers)      
       this.loadingService.show()
       var dexAmount = +this.grxAmount
       var superAdminAmount = 0
@@ -189,7 +151,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent, dexAmount, superAdminAmount)
       if (+this.grxPrice > this.authService.priceInfo.xlmgrx_ask && +this.grxPrice >= this.authService.userInfo.SellingPrice){
         if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){        
-          //console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet, this.authService.getSecretKey())
+          console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet,this.authService.getSecretKey())
           // purchase directly from grayll super admin        
           if (superAdminAmount > 0){
             // buy all from grayll super admin
@@ -198,7 +160,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
             this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
               xlmAmount.toFixed(7), this.stellarService.nativeAsset, '')
             .then( txHash => {
-              this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:+xlmAmount.toFixed(7)}).then(resp => {
+              this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:+xlmAmount.toFixed(7), 
+                grxUsd:+this.grxPrice*this.authService.priceInfo.xlmusd, totalUsd:+xlmAmount.toFixed(7)*this.authService.priceInfo.xlmusd}).then(resp => {
                 // update fund
                 console.log('verifyTx: ', resp)
                 this.loadingService.hide()
@@ -208,6 +171,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
                 } else {
                   msg = 'Buy order could not be submitted! Please retry!'             
                 }
+
                 this.loadingService.hide()
                 this.snotifyService.simple(msg); 
               }).catch( e => {
