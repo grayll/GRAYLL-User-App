@@ -519,6 +519,14 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     }
   }
 
+  calculateUsdValue(){
+    if (this.grxAmount && this.grxPrice){
+     return ((+this.grxAmount)*(+this.grxPrice)*this.authService.priceInfo.xlmusd).toFixed(7)
+    } else {
+      return ""
+    }
+  }
+
   populateMaxGRX() {
     this.isPopulateMaxXLM = false
     if (this.authService.getMaxAvailableGRX() > 0){
