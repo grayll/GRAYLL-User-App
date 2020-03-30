@@ -12,10 +12,10 @@
           </div>
           <div class="d-inline-block text-white align-middle wallet-box">
             <span class="text-light font-16">Wallet Balance</span>
-            <h5 class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(3)}}</h5>
+            <h5 class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(7)}}</h5>
             <small>
               <a href="javascript:void(0)" class="white-link" [routerLink]="[{outlets: {popup: 'xlm-balance-status'}}]">
-                2.1 XLM Reserved (${{(2*this.authService.userData.xlmPrice).toFixed(3)}})
+                2.1 XLM Reserved (${{(2*this.authService.userData.xlmPrice).toFixed(7)}})
               </a>
             </small>
           </div>
@@ -29,7 +29,7 @@
             <span class="font-16"> {{this.authService.calPercentGRX()}}% GRX</span>
             <br>
             <h5 class="p-font">
-              {{'$' + (this.authService.grxInUsd().toFixed(3))}}
+              {{'$' + (this.authService.grxInUsd().toFixed(7))}}
             </h5>
           </div>
           <div class="col text-right">
@@ -39,7 +39,7 @@
             <span class="font-16"> {{this.authService.calPercentXLM()}}% XLM</span>
             <br>
             <h5 class="mb-0 p-font">
-              {{'$' + (this.authService.xlmInUsd()).toFixed(3)}}
+              {{'$' + (this.authService.xlmInUsd()).toFixed(7)}}
             </h5>
           </div>
         </div>
@@ -62,7 +62,7 @@
             </div>
             <div class="d-inline-block text-white align-middle wallet-box">
               <span class="text-light font-16" routerLink="/system/overview">Algo System Balance</span>
-              <h5 class="text-light font-weight-bolder">${{(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl).toFixed(3)}}</h5>
+              <h5 class="text-light font-weight-bolder">${{(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl).toFixed(7)}}</h5>
             </div>
           </div>
 
@@ -210,7 +210,7 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(7)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -270,7 +270,7 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(7)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -305,7 +305,7 @@
             </div>
             <div class="d-inline-block text-white align-middle wallet-box">
               <span class="text-light font-16">Wallet Balance</span>
-              <h5 class="text-light font-weight-bolder">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(3)}}</h5>
+              <h5 class="text-light font-weight-bolder">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(7)}}</h5>
             </div>
           </div>
 
@@ -317,7 +317,7 @@
               <span class="font-16"> {{this.authService.calPercentGRX()}}% GRX</span>
               <br>
               <h5 class="p-font">
-               {{'$' + (this.authService.grxInUsd().toFixed(3))}}
+               {{'$' + (this.authService.grxInUsd().toFixed(7))}}
               </h5>
             </div>
             <div class="col text-right">
@@ -327,7 +327,7 @@
               <span class="font-16"> {{this.authService.calPercentXLM()}}% XLM</span>
               <br>
               <h5 class="mb-0 p-font">
-                {{'$' + (this.authService.xlmInUsd().toFixed(3))}}
+                {{'$' + (this.authService.xlmInUsd().toFixed(7))}}
               </h5>
             </div>
           </div>
@@ -495,7 +495,7 @@
                       <div class="input-group-prepend">
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
-                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(7)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">
@@ -556,7 +556,7 @@
                       <div class="input-group-prepend">
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
-                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(3)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(7)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">

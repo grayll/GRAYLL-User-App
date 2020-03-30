@@ -499,7 +499,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7)       
       return this.XLMValueForm
     } else if (!this.isPopulateMaxXLM && this.grxAmount && this.grxPrice) {      
-      this.XLMValueForm =  (+this.grxAmount)*(+this.grxPrice)
+      this.XLMValueForm =  +((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
       //return (+this.grxAmount)*(+this.grxPrice)
     } else {
       //console.log('calXLMAmount 4')
