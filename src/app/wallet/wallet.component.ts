@@ -21,8 +21,7 @@ export class WalletComponent implements OnInit, OnDestroy {
     public sharedService: SharedService,
     public stellarService: StellarService,
     public authService: AuthService,
-    private snotifyService: SnotifyService,
-    //updates: SwUpdate, push: SwPush
+    private snotifyService: SnotifyService    
   ) {
     this.pageId = "wallet"  
     this.shouldReload = false     
@@ -34,10 +33,7 @@ export class WalletComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     window.scroll(0, 0);
-    this.changeBackgroundColor(true);
-    // this.stellarService.loadAccount(this.authService.userData.PublicKey).then(acc => {
-    //   this.stellarService.account = acc
-    // })
+    this.changeBackgroundColor(true);   
   }
   @HostListener('window:beforeunload')
   ngOnDestroy(): void {

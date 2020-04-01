@@ -18,6 +18,10 @@ import {NgxFlagIconCssModule} from 'ngx-flag-icon-css';
 import {DepositPopupComponent} from './deposit-popup/deposit-popup.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
+import { AuthService } from '../shared/services/auth.service';
+import { StellarService } from '../authorization/services/stellar-service';
+import { AlgoService } from '../system/algo.service';
+import { NoticeDataService } from '../notifications/notifications.dataservice';
 
 @NgModule({
   declarations: [
@@ -41,6 +45,6 @@ import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/
     PopupModule,
     NgxFlagIconCssModule,
     QRCodeModule
-  ]
+  ],  
 })
 export class DashboardModule { }

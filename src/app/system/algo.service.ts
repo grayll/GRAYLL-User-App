@@ -60,9 +60,32 @@ export class AlgoService {
     private afs: AngularFirestore,   
     private authService: AuthService,   
   ) {    
-    this.algoPositionCollection = afs.collection<ClosePosition>('algo_positions/users/'+this.authService.userData.Uid);
-    this.algoPositions$ = this.algoPositionCollection.valueChanges();
+    // this.algoPositionCollection = afs.collection<ClosePosition>('algo_positions/users/'+this.authService.userData.Uid);
+    // this.algoPositions$ = this.algoPositionCollection.valueChanges();
   
+  }
+
+  subsAlgoPositions(){
+    this.algoPositionCollection = this.afs.collection<ClosePosition>('algo_positions/users/'+this.authService.userData.Uid);
+    this.algoPositions$ = this.algoPositionCollection.valueChanges();
+  }
+
+  resetServiceData(){
+    this.algoMetric = {GRYs: 0, GRZs: 0, GRYBl: 0, GRZBl: 0, TotalAccountBl: 0, 
+      TotalAccountProfit: 0, TotalOpenPosition: 0, PercentGRX: 0, PercentXLM: 0, GRXInUsd: 0, XLMInUsd: 0}
+      this.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+    this.allPositions  = []
+    this.openPositions  = []
+    this.closePositions = []
+    this.closeGrayllId = null
+    this.closeAll = false
+    
+    this.algoPositions$ = null
+    this.algoPositionCollection = null    
+    this.noticeId = null
   }
 
   // initFireStoreDb(){    

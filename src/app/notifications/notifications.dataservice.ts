@@ -10,7 +10,6 @@ import { AuthService } from '../shared/services/auth.service';
 @Injectable({
   providedIn: 'root'
 })
-
 export class NoticeDataService {
 
   private _data: BehaviorSubject<NoticeId[]>;
@@ -46,6 +45,30 @@ export class NoticeDataService {
     url = url + 'search?term='
     this.txUrl = url
     this._markAsRead = new Subject<{}>()
+  }
+
+  resetServiceData(){
+    this._data = null
+    this.data = null
+    this.dataPaymentsSync = null
+
+    this._algoData = null
+    this.algoData = null
+
+    this._generalData = null
+    this.generalData = null
+    
+    this._dataTrade = null
+    this.dataTrade = null
+    this.dataTradeSync = null
+    
+    this._markAsRead = null
+
+    this.latestEntry = null
+    this.latestEntryGeneral = null
+    this.latestEntryAlgo = null
+    this.latestEntryTrade = null
+    this.txUrl = null
   }
 
   pushMarkRead(value:any){

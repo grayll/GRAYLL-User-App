@@ -3,6 +3,7 @@ import {AlgoNotificationModel} from '../../notifications/notification.model';
 import {faChevronCircleUp, faPlusCircle} from '@fortawesome/free-solid-svg-icons';
 import {Router} from '@angular/router';
 import * as moment from 'moment'
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-algo-notification-item',

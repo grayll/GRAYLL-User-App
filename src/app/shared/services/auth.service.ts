@@ -11,6 +11,7 @@ import { createHash } from 'crypto';
 import { UserInfo, Setting } from 'src/app/models/user.model';
 import { CountdownConfig } from 'ngx-countdown/src/countdown.config';
 import * as moment from 'moment';
+import {SubSink} from 'subsink'
 
 
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
@@ -30,7 +31,7 @@ export class AuthService {
   userMetaStore:  UserMeta = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
   OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true}
 
-  priceInfo: PriceInfo = {xlmgrx_ask:0, xlmgrx_bid:0, xlmusd: 0, grxusd: 0, xlmgrx: 0, gryusd: 0,grzusd: 0}
+  priceInfo: PriceInfo = {xlmgrx_ask:0, xlmgrx_bid:0, xlmusd: 0, grxusd: 0, xlmgrx: 0, gryusd: 0, grzusd: 0}
   
   tfa$ = new BehaviorSubject<any>({})
   hash: string
@@ -56,10 +57,51 @@ export class AuthService {
 
   gryUpdatedAt: number
   grzUpdatedAt: number
-
-
-
   closeAllEnd:Subject<boolean>
+
+  subsink:SubSink
+
+  resetServiceData(){
+    this.userData = null
+    this.userInfo = null
+    this.userInfoMsg = null
+    this.userMeta = null
+    this.userMeta$ = null
+    
+    this.countdownConfigs = null
+    this.gryUpdatedAt = null
+    this.grzUpdatedAt = null
+    this.closeAllEnd = null
+    this.hash = null
+    this.seedData = null
+
+    this.loanPaidLedgerId = null
+    this.openOrders = 0
+    this.secretKey = null
+
+    this.userMetaStore = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
+      OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true}
+
+    this.priceInfo = {xlmgrx_ask:0, xlmgrx_bid:0, xlmusd: 0, grxusd: 0, xlmgrx: 0, gryusd: 0,grzusd: 0}
+
+    this.countdownConfigs = [{
+        leftTime: 60,
+        template: '$!s!',
+        effect: null,
+        demand: false
+      },
+      {
+        leftTime: 60,
+        template: '$!s!',
+        effect: null,
+        demand: false
+      }    
+    ]
+    this.gryUpdatedAt = moment.now()
+    this.grzUpdatedAt = moment.now()    
+    this.subsink = null
+  }
+  
   constructor(    
     public router: Router,  
     public ngZone: NgZone, // NgZone service to remove outside scope warning
@@ -68,28 +110,33 @@ export class AuthService {
     private afs: AngularFirestore,      
   ) {    
     this.countdownConfigs = [{
-      leftTime: 60,
-      template: '$!s!',
-      effect: null,
-      demand: false
-    },
-    {
-      leftTime: 60,
-      template: '$!s!',
-      effect: null,
-      demand: false
-    }    
-  ]
+        leftTime: 60,
+        template: '$!s!',
+        effect: null,
+        demand: false
+      },
+      {
+        leftTime: 60,
+        template: '$!s!',
+        effect: null,
+        demand: false
+      }    
+    ]
     this.gryUpdatedAt = moment.now()
     this.grzUpdatedAt = moment.now()
-    
+    this.subsink = new SubSink()
   }
+
+ 
 
   getUserMeta(){
     if (this.userMetaStore.ShouldReload){
      this._userMeta = new Subject<UserMeta>()
      this.userMeta = this._userMeta.asObservable()
-      this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(data => {        
+     if (!this.subsink){
+      this.subsink = new SubSink()
+     }
+     this.subsink.add(this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(data => {        
         this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
         this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
         this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
@@ -109,7 +156,7 @@ export class AuthService {
         console.log('GETUSERMETA:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
        // this._userMeta.next(data)
-      })
+      }))
     }
   }
 
@@ -153,7 +200,7 @@ export class AuthService {
     if (this.userMetaStore.ShouldReload){
       //this._userMeta = new Subject<UserMeta>()
       //this.userMeta = this._userMeta.asObservable()
-      this.afs.doc<Prices>('price_update/'+this.priceDoc).valueChanges().subscribe(data => {        
+      this.subsink.add(this.afs.doc<Prices>('price_update/'+this.priceDoc).valueChanges().subscribe(data => {        
         this.userData.xlmPrice = data.xlmusd
         this.userData.grxPrice = data.xlmgrx
         this.userData.gryPrice = data.gryusd
@@ -199,14 +246,16 @@ export class AuthService {
         }        
         console.log('STREAM-price:', data)        
        
-      })
+      }))
     }
   }
   
   updateUserMeta(){
-    this.userMetaStore.GRX = Number(this.userMetaStore.GRX)
-    this.userMetaStore.XLM = Number(this.userMetaStore.XLM)
-    this.afs.doc('users_meta/'+this.userData.Uid).update(this.userMetaStore)
+    if (this.userMetaStore && this.userData){
+      this.userMetaStore.GRX = Number(this.userMetaStore.GRX)
+      this.userMetaStore.XLM = Number(this.userMetaStore.XLM)
+      this.afs.doc('users_meta/'+this.userData.Uid).update(this.userMetaStore)
+    }
   }
 
   subShouldReload(){
@@ -282,7 +331,7 @@ export class AuthService {
 
   DecryptLocalSecret(){
     if (!this.secretKey){
-      if (this.userInfo && this.userData){
+      if (this.userInfo && this.userData){        
         this.stellarService.decryptSecretKey(this.userInfo.LocalKey, 
           {Salt: this.userInfo.SecretKeySalt, EnSecretKey:this.userData.EnSecretKey}, secretKey => {        
           this.secretKey = secretKey

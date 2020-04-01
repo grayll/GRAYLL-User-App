@@ -17,6 +17,8 @@ import { UserInfo, Setting } from 'src/app/models/user.model'
 import { PwaService } from 'src/app/pwa.service';
 import { StellarService } from '../services/stellar-service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { AlgoService } from 'src/app/system/algo.service';
+import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
 
 
 @Component({
@@ -44,15 +46,19 @@ export class LoginComponent {
   get password() { return this.loginForm.get('password'); }
 
   constructor(
+    public authService: AuthService,
+    public algoService: AlgoService,
+    public noticeService: NoticeDataService,
+    public stellarService: StellarService,
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
     private router: Router,
-    public authService: AuthService, 
+    
     private recaptchaV3Service: ReCaptchaV3Service,
     public notificationsService: NotificationsService,
     public http: HttpClient,   
     public Pwa: PwaService,
-    public stellarService: StellarService,
+    
     private loadingService: LoadingService,
     private ngZone:NgZone) {
     	this.browserPlatform = this.Pwa.getBrowserPlatform();
@@ -61,7 +67,10 @@ export class LoginComponent {
 
   ngOnInit(): void {
     this.buildForm();    
-    //console.log('Init of login: ', this.authService.GetLocalUserData())
+    this.algoService.resetServiceData()
+    this.authService.resetServiceData()
+    this.stellarService.resetServiceData()
+    this.noticeService.resetServiceData()
   }
 
   buildForm(): void {

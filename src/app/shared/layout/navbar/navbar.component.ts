@@ -17,6 +17,8 @@ import { SwUpdateNotifyService } from '../../sw-update-notifiy/sw-update-notify.
 //import { AngularFireWrapper } from '../../services/angularfire.service';
 import * as firebase from 'firebase/app';
 import { AngularFireDatabase } from '@angular/fire/database';
+import { AlgoService } from 'src/app/system/algo.service';
+import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
 
 @Component({
   selector: 'app-navbar',
@@ -50,16 +52,21 @@ export class NavbarComponent implements OnDestroy, OnInit {
    
   constructor(
     public authService: AuthService,
+    public algoService: AlgoService,
+    public noticeService: NoticeDataService,
+    public stellarService: StellarService,
+
     private router: Router,
     private ngZone:NgZone,
     public notificationsService: NotificationsService,
     public push: SwPush,
     public updates: SwUpdate,
-    public stellarService: StellarService,
+    
     private http: HttpClient,
    // private snotifyService: SnotifyService,
     public popupService: PopupService,   
     public swService: SwUpdateNotifyService,
+   
     //private afW: AngularFireWrapper,
     
   ) {
@@ -116,30 +123,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
       //this.streaming()  
     } 
     
-    this.subsink = new SubSink()
-    // this.subsink.add(push.messages.subscribe(msg => {
-    //   let data = (msg as any).notification      
-    //   if (data.type === 'wallet'){
-    //     console.log('navbar.UrWallet:', this.authService.userData.UrWallet)       
-    //     this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
-    //     console.log('navbar.UrWallet1:', this.authService.userData.UrWallet)       
-    //     if (data.asset === 'XLM'){
-    //       let amount = +data.amount
-    //       this.authService.userMetaStore.XLM = (this.authService.userMetaStore.XLM + amount).toFixed(7)
-    //     } else if( data.asset === 'GRX' || data.asset === 'GRXT'){
-    //       let amount = +data.amount
-    //       console.log('navbar.amount:', data.amount)
-    //       console.log('navbar.subscribe:totalGRX0:', this.authService.userMetaStore.GRX)
-    //       this.authService.userMetaStore.GRX = (+this.authService.userMetaStore.GRX + amount).toFixed(7)
-    //       console.log('navbar.subscribe:totalGRX1:', this.authService.userMetaStore.GRX)
-    //     }            
-    //   } else if (data.type === 'algo'){
-    //     this.authService.userData.UrAlgo = +this.authService.userData.UrAlgo + 1
-    //   } else if (data.type === 'general'){
-    //     this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral + 1
-    //   }
-    //   this.authService.SetLocalUserData() 
-    // }));    
+    this.subsink = new SubSink()     
   }
 
   ngOnInit(){
@@ -324,8 +308,16 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
   signOut(){  
     this.isSignout = true
+    this.authService.subsink.unsubscribe()
+    if (this.authService.userMetaStore.OpenOrders > 0){
+      this.authService.updateUserMeta()
+    }
     localStorage.removeItem('grayll-user');    
     localStorage.removeItem('grayll-user-meta'); 
+    this.algoService.resetServiceData()
+    this.authService.resetServiceData()
+    this.stellarService.resetServiceData()
+    this.noticeService.resetServiceData()
     this.ngZone.run(()=> {
       this.router.navigateByUrl('/')
     })

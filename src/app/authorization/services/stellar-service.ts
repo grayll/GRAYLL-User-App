@@ -8,13 +8,16 @@ import axios from 'axios';
 import { Observable, Subject } from 'rxjs';
 var StellarSdk = require('stellar-sdk');
 import * as moment from 'moment';
+import { AuthService } from 'src/app/shared/services/auth.service';
 var naclutil = require('tweetnacl-util');
 const bip39 = require('bip39')
 const nacl = require('tweetnacl')
 const scrypt = require('scrypt-async');
 
 
-@Injectable()
+@Injectable({
+    providedIn: 'root' 
+  })
 export class StellarService {   
     
     interruptStep = 0;
@@ -40,6 +43,16 @@ export class StellarService {
         if (!this.allOffers){
             this.allOffers = []
         }
+    }
+
+    resetServiceData(){
+        this.horizon = null
+        this.accountData = null
+        this.userAccount = null
+        this.allOffers = []
+        this.trades = []
+        this.account = null
+        this.horizon = new StellarSdk.Server(environment.horizon_url)  
     }
 
     public observePrices(): Observable<number[]> {
@@ -315,27 +328,6 @@ export class StellarService {
         return tx.toXDR('base64')                      
     }
 
-    // createPurchaseContract(){
-    //     let transaction = new StellarSdk.TransactionBuilder(escrowAccount)
-    //     .addOperation(StellarSdk.Operation.setOptions({
-    //         signer: { 
-    //             ed25519PublicKey: houseKeypair.publicKey(),
-    //             weight: 1
-    //         }
-    //     }))
-    //     .addOperation(StellarSdk.Operation.setOptions({
-    //         masterWeight: 0,
-    //         lowThreshold: 2,
-    //         medThreshold: 2,
-    //         highThreshold: 2,
-    //         signer: {
-    //             ed25519PublicKey: contractorKeypair.publicKey(),
-    //             weight: 1
-    //         }
-    //     }))
-    //     .build();
-    // }
-
     sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string): Promise<any> {
         return new Promise((resolve, reject) => {
            let source = StellarSdk.Keypair.fromSecret(accSeed);            
@@ -414,7 +406,7 @@ export class StellarService {
     }
 
     buyOrder(accSeed: string, p: string, amount: string): Promise<any> {
-        console.log('buy: ', p, amount)
+        //console.log('buy: ', p, amount)
         return new Promise((resolve, reject) => {
             let source = StellarSdk.Keypair.fromSecret(accSeed);            
                 //this.horizon.loadAccount(source.publicKey()).then(account => {                
@@ -433,7 +425,7 @@ export class StellarService {
                 
                 // 7. Submit transaction to network
                 let xdr = tx.toXDR('base64')
-                console.log('submitTransaction xdr', xdr)                 
+                //console.log('submitTransaction xdr', xdr)                 
                 this.horizon.submitTransaction(tx).then( res => {                    
                     resolve(res)
                 }).catch( err => {
@@ -455,7 +447,7 @@ export class StellarService {
           return new StellarSdk.Asset(asset.assetCode, issuer);
         }
       }
-    parseClaimedOffer(offersClaimed, grxXlmP, xlmP, userData:any){
+    parseClaimedOffer(offersClaimed, grxXlmP, xlmP, userMetaStore:any){
         var time = moment().subtract(1, 'seconds').local().format('DD/MM/YYYY HH:mm:ss')
         offersClaimed.forEach(item => {
             // buy GRX sold XLM
@@ -466,14 +458,14 @@ export class StellarService {
                 let totalxlm = ''
                 if (item.assetSold.type === "native" ){                
                     if (item.assetBought.type === environment.ASSET){
-                        userData.totalGRX = +userData.totalGRX + +item.amountBought
+                        //userData.totalGRX = +userData.totalGRX + +item.amountBought
                         type = 'BUY' 
                         asset = item.assetBought.asset                
                     } else {
                         type = 'SELL' 
                     }
-                    userData.totalXLM = +userData.totalXLM - +item.amountSold
-                    userData.totalGRX = +userData.totalGRX + +item.amountBought
+                    userMetaStore.XLM = Number(userMetaStore.XLM) + +item.amountSold
+                    userMetaStore.GRX = Number(userMetaStore.GRX) - +item.amountBought
                     amount = item.amountBought
                     totalxlm = item.amountSold
                 } else if(item.assetSold.assetCode && item.assetSold.assetCode === environment.ASSET) { // sell grx buy xlm
@@ -482,8 +474,8 @@ export class StellarService {
                     } else {
                         type = 'BUY'
                     }
-                    userData.totalXLM = +userData.totalXLM + +item.amountBought
-                    userData.totalGRX = +userData.totalGRX - +item.amountSold
+                    userMetaStore.XLM = Number(userMetaStore.XLM) - +item.amountBought
+                    userMetaStore.GRX = Number(userMetaStore.GRX) + +item.amountSold
                     amount = item.amountSold
                     totalxlm = item.amountBought
                 }
@@ -568,7 +560,7 @@ export class StellarService {
         // return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
         // totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, cachedOffer: cachedOffer, index:index}
     }
-    parseOffer(of, grxP:number, xlmP:number,index: number, userData:any){        
+    parseOffer(of, grxP:number, xlmP:number,index: number, userMetaStore:any){        
         let type = 'BUY'
         let asset
         
@@ -592,7 +584,7 @@ export class StellarService {
                 price: of.price,
                 offerId: of.offerId               
             });
-            userData.OpenOrdersGRX = +userData.OpenOrdersGRX + +of.amount
+            userMetaStore.OpenOrdersGRX = +userMetaStore.OpenOrdersGRX + +of.amount
             offerData = {time: time, type:type, asset:asset, amount:of.amount, xlmp: grxXlmP, 
               totalxlm: of.amount*grxXlmP, priceusd: grxXlmP*xlmP, totalusd: of.amount*grxXlmP*xlmP, 
               cachedOffer: cachedOffer, index:index,  realAmount: +of.amount, assetType:'GRX'}
@@ -605,12 +597,12 @@ export class StellarService {
                 price: of.price,
                 offerId: of.offerId                
             });            
-            userData.OpenOrdersXLM = +userData.OpenOrdersXLM + +of.amount
+            userMetaStore.OpenOrdersXLM = +userMetaStore.OpenOrdersXLM + +of.amount
             offerData = {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 
               totalxlm: of.amount, priceusd: grxXlmP*xlmP, totalusd: of.amount*xlmP, 
               cachedOffer: cachedOffer, index:index, realAmount: +of.amount, assetType:'XLM'}
         }  
-        console.log('parseOffer-userMeta', userData)     
+        
         return offerData       
         
         // return {time: time, type:type, asset:asset, amount:of.amount/grxXlmP, xlmp: grxXlmP, 

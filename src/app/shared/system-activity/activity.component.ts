@@ -87,6 +87,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   ) {
     this.subsink = new SubSink()
     //this.populateOpenAlgoPositionsArray();   
+    this.algoService.subsAlgoPositions()
     this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {
       //this.positions = positions   
       let totalValueGRZ = 0 
@@ -214,7 +215,6 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   
-
   closePosition(position){
     this.loadingService.show()
     let grzusd = this.authService.priceInfo.grzusd
@@ -226,9 +226,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)
       
       let close_position_fee_$ = close_position_total_$*0.003
-      let close_position_ROI_$ = close_position_total_$ - position.open_position_value_$      
-     
-      
+      let close_position_ROI_$ = close_position_total_$ - position.open_position_value_$       
 
       let close_performance_fee_$ = 0
       let netRoi = close_position_ROI_$ - close_position_fee_$
