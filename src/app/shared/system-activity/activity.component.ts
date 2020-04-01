@@ -185,18 +185,19 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
 
   calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){  
     //console.log('CALCULATE-pos.current_position_ROI_$:', pos.current_position_ROI_$) 
-    metric.CurrentProfit = FPC.add(metric.CurrentProfit,pos.current_position_ROI_$) 
+    metric.CurrentProfit = FPC.add(metric.CurrentProfit, pos.current_position_ROI_$) 
     metric.TotalValue = FPC.add(metric.TotalValue, pos.current_position_value_$)
     metric.Positions +=1
              
     if (pos.duration <= 1440*60){
-      metric.OneDayPercent = FPC.add(metric.OneDayPercent, pos.current_position_ROI_$)
+      metric.OneDayPercent = FPC.add(metric.OneDayPercent, pos.current_position_ROI_percent)
       metric.OneDayCnt++
     }
     if (pos.duration <= 10080*60){
-      metric.SevenDayPercent = FPC.add(metric.SevenDayPercent, pos.current_position_ROI_$)
+      metric.SevenDayPercent = FPC.add(metric.SevenDayPercent, pos.current_position_ROI_percent)
       metric.SevenDayCnt++
     }
+    metric.ROIPercent = FPC.add(metric.ROIPercent, pos.current_position_ROI_percent)
     
   }
 
@@ -209,7 +210,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       metric.SevenDayPercent = metric.SevenDayPercent/metric.SevenDayCnt
     }
     if (metric.Positions > 0){
-      metric.ROIPercent = metric.CurrentProfit/metric.Positions
+      metric.ROIPercent = metric.ROIPercent/metric.Positions
     }
   }
   
@@ -220,22 +221,31 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     let grxusd = this.authService.priceInfo.grxusd
     this.algoService.closeGrayllId = position.grayll_transaction_id
     if (position.algorithm_type === 'GRZ'){
-      let roi = FPC.mult(FPC.sub(grzusd, position.open_value_GRZ), position.open_position_value_$)/position.open_value_GRZ
-      let close_position_total_$ = position.open_position_value_$ + roi
-      let close_position_fee_$ = FPC.mult(close_position_total_$, 0.003)
-      let close_position_ROI_$ = FPC.sub(close_position_total_$, position.open_position_value_$)
+            
+      //let close_position_total_$1 = position.open_position_value_$ * (((grzusd - position.open_value_GRZ)/position.open_value_GRZ) + 1)
+      let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)
+      
+      let close_position_fee_$ = close_position_total_$*0.003
+      let close_position_ROI_$ = close_position_total_$ - position.open_position_value_$      
+     
+      
+
       let close_performance_fee_$ = 0
-      if (FPC.sub(close_position_ROI_$, close_position_fee_$) > 0) {
-        close_performance_fee_$ =  FPC.mult(FPC.sub(close_position_ROI_$, close_position_fee_$), 0.18)
+      let netRoi = close_position_ROI_$ - close_position_fee_$
+      if (netRoi > 0) {
+        close_performance_fee_$ =  netRoi * 0.18
       }
 
       let close_position_total_GRX = close_position_total_$/grxusd
-      let close_position_value_$ = FPC.sub(close_position_total_$, close_position_fee_$, close_performance_fee_$)
-      let close_position_ROI_percent_GROSS = FPC.mult(close_position_ROI_$, 100)/position.open_position_value_$
-      let close_position_ROI_percent_NET = FPC.mult(FPC.sub(close_position_value_$, position.open_position_value_$), 100)/position.open_position_value_$  
+      let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
+      let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ
+      //let close_position_ROI_percent_GROSS = (close_position_ROI_$ * 100)/position.open_position_value_$
+      let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
       
-      // console.log('close_position_value_$', close_position_value_$)
-      // console.log('close_position_total_$', close_position_total_$)
+      console.log('close_position_ROI_$', close_position_ROI_$)
+      console.log("close_position_value_GRX:", close_position_value_$/grxusd)
+      console.log('close_position_total_$', close_position_total_$)
+      console.log('close_position_ROI_percent', close_position_ROI_percent)
       
       this.http.post(environment.grz_api_url + 'api/v1/grz/position/close',
         {user_id: this.authService.userInfo.Uid,            
@@ -250,15 +260,15 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         close_position_value_$:       close_position_value_$,
         close_position_value_GRX:     close_position_value_$/grxusd,
         close_position_ROI_$:         close_position_ROI_$,
-        close_position_ROI_percent:   close_position_ROI_percent_GROSS,
+        close_position_ROI_percent:   close_position_ROI_percent,
         close_position_ROI_percent_NET:   close_position_ROI_percent_NET,
         current_position_ROI_$:       close_position_ROI_$,
-        current_position_ROI_percent: close_position_ROI_percent_GROSS,
+        current_position_ROI_percent: close_position_ROI_percent,
         close_position_total_$:    close_position_total_$,
         close_position_total_GRX:  close_position_total_GRX,
         close_position_total_GRZ:   close_position_total_$/grzusd,
         close_position_fee_$:      close_position_fee_$,
-        close_position_fee_GRX:      FPC.mult(close_position_total_GRX, 0.003),
+        close_position_fee_GRX:      close_position_fee_$/grxusd,
         close_performance_fee_$:   close_performance_fee_$,
         close_performance_fee_GRX: close_performance_fee_$/grxusd     
 
