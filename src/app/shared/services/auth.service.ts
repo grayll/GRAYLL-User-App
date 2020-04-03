@@ -15,7 +15,27 @@ import {SubSink} from 'subsink'
 
 
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
-  OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number}
+  OpenOrdersXLM: number; GRX: number; XLM: number; ShouldReload?: boolean; TokenExpiredTime?:number
+  total_grz_close_positions_ROI_$: number;
+  total_grz_current_position_ROI_$: number;
+  total_grz_current_position_value_$: number;
+  total_grz_open_positions: number;
+
+  total_gry1_close_positions_ROI_$: number;
+  total_gry1_current_position_ROI_$: number;
+  total_gry1_current_position_value_$: number;
+  total_gry1_open_positions: number;
+
+  total_gry2_close_positions_ROI_$: number;
+  total_gry2_current_position_ROI_$: number;
+  total_gry2_current_position_value_$: number;
+  total_gry2_open_positions: number;
+
+  total_gry3_close_positions_ROI_$: number;
+  total_gry3_current_position_ROI_$: number;
+  total_gry3_current_position_value_$: number;
+  total_gry3_open_positions: number;
+}
 
 export interface Prices {price_updated?: string; xlmgrx_ask:number; xlmgrx_bid: number; xlmusd: number; grxusd: number; xlmgrx: number; gryusd: number;grzusd: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
 export interface Prices1 {xlmp: number; grxp: number;gryp: number;grzp: number; sellingWallet: string; sellingPercent: number; sellingPrice:number}
@@ -29,7 +49,12 @@ export class AuthService {
   _userMeta: Subject<UserMeta>
   userMeta:  Observable<UserMeta>
   userMetaStore:  UserMeta = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
-  OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true}
+    OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true,
+    total_grz_close_positions_ROI_$:0, total_grz_current_position_value_$:0, total_grz_open_positions:0, total_grz_current_position_ROI_$:0,
+    total_gry1_close_positions_ROI_$:0, total_gry1_current_position_value_$:0, total_gry1_open_positions:0, total_gry1_current_position_ROI_$:0,
+    total_gry2_close_positions_ROI_$:0, total_gry2_current_position_value_$:0, total_gry2_open_positions:0, total_gry2_current_position_ROI_$:0,
+    total_gry3_close_positions_ROI_$:0, total_gry3_current_position_value_$:0, total_gry3_open_positions:0, total_gry3_current_position_ROI_$:0
+  }
 
   priceInfo: PriceInfo = {xlmgrx_ask:0, xlmgrx_bid:0, xlmusd: 0, grxusd: 0, xlmgrx: 0, gryusd: 0, grzusd: 0}
   
@@ -80,7 +105,11 @@ export class AuthService {
     this.secretKey = null
 
     this.userMetaStore = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
-      OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true}
+      OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true,
+      total_grz_close_positions_ROI_$:0, total_grz_current_position_value_$:0, total_grz_open_positions:0, total_grz_current_position_ROI_$:0,
+      total_gry1_close_positions_ROI_$:0, total_gry1_current_position_value_$:0, total_gry1_open_positions:0, total_gry1_current_position_ROI_$:0,
+      total_gry2_close_positions_ROI_$:0, total_gry2_current_position_value_$:0, total_gry2_open_positions:0, total_gry2_current_position_ROI_$:0,
+      total_gry3_close_positions_ROI_$:0, total_gry3_current_position_value_$:0, total_gry3_open_positions:0, total_gry3_current_position_ROI_$:0}
 
     this.priceInfo = {xlmgrx_ask:0, xlmgrx_bid:0, xlmusd: 0, grxusd: 0, xlmgrx: 0, gryusd: 0,grzusd: 0}
 
@@ -125,6 +154,12 @@ export class AuthService {
     this.gryUpdatedAt = moment.now()
     this.grzUpdatedAt = moment.now()
     this.subsink = new SubSink()
+    this.userMetaStore = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
+      OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true,
+      total_grz_close_positions_ROI_$:0, total_grz_current_position_value_$:0, total_grz_open_positions:0, total_grz_current_position_ROI_$:0,
+      total_gry1_close_positions_ROI_$:0, total_gry1_current_position_value_$:0, total_gry1_open_positions:0, total_gry1_current_position_ROI_$:0,
+      total_gry2_close_positions_ROI_$:0, total_gry2_current_position_value_$:0, total_gry2_open_positions:0, total_gry2_current_position_ROI_$:0,
+      total_gry3_close_positions_ROI_$:0, total_gry3_current_position_value_$:0, total_gry3_open_positions:0, total_gry3_current_position_ROI_$:0}
   }
 
  
@@ -151,11 +186,31 @@ export class AuthService {
         this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? data.OpenOrdersXLM:0
         this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? data.OpenOrdersGRX:0
 
+        this.userMetaStore.total_grz_close_positions_ROI_$ = +(data.total_grz_close_positions_ROI_$ ? data.total_grz_close_positions_ROI_$ : 0).toFixed(5)
+        this.userMetaStore.total_grz_current_position_ROI_$ = +(data.total_grz_current_position_ROI_$ ? data.total_grz_current_position_ROI_$: 0).toFixed(5)
+        this.userMetaStore.total_grz_current_position_value_$ = +(data.total_grz_current_position_value_$ ? data.total_grz_current_position_value_$: 0).toFixed(5)
+        this.userMetaStore.total_grz_open_positions = +(data.total_grz_open_positions ? data.total_grz_open_positions: 0).toFixed(5)
+
+        this.userMetaStore.total_gry1_close_positions_ROI_$ = +(data.total_gry1_close_positions_ROI_$ ? data.total_gry1_close_positions_ROI_$: 0).toFixed(5)
+        this.userMetaStore.total_gry1_current_position_ROI_$ = +(data.total_gry1_current_position_ROI_$ ? data.total_gry1_current_position_ROI_$: 0).toFixed(5)
+        this.userMetaStore.total_gry1_current_position_value_$ = +(data.total_gry1_current_position_value_$ ? data.total_gry1_current_position_value_$ : 0).toFixed(5)
+        this.userMetaStore.total_gry1_open_positions = +(data.total_gry1_open_positions ? data.total_gry1_open_positions: 0).toFixed(5)
+
+        this.userMetaStore.total_gry2_close_positions_ROI_$ = +(data.total_gry2_close_positions_ROI_$ ? data.total_gry2_close_positions_ROI_$: 0).toFixed(5)
+        this.userMetaStore.total_gry2_current_position_ROI_$ = +(data.total_gry2_current_position_ROI_$ ? data.total_gry2_current_position_ROI_$: 0).toFixed(5)
+        this.userMetaStore.total_gry2_current_position_value_$ = +(data.total_gry2_current_position_value_$ ? data.total_gry2_current_position_value_$: 0).toFixed(5)
+        this.userMetaStore.total_gry2_open_positions = +(data.total_gry2_open_positions ? data.total_gry2_open_positions: 0).toFixed(5)
+
+        this.userMetaStore.total_gry3_close_positions_ROI_$ = +(data.total_gry3_close_positions_ROI_$ ?  data.total_gry3_close_positions_ROI_$: 0).toFixed(5)
+        this.userMetaStore.total_gry3_current_position_ROI_$ = +(data.total_gry3_current_position_ROI_$ ? data.total_gry3_current_position_ROI_$: 0).toFixed(5)
+        this.userMetaStore.total_gry3_current_position_value_$ = +(data.total_gry3_current_position_value_$ ? data.total_gry3_current_position_value_$: 0).toFixed(5)
+        this.userMetaStore.total_gry3_open_positions = +(data.total_gry3_open_positions ? data.total_gry3_open_positions: 0).toFixed(5)
+
         this.balanceUpdateCount++
         console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
         console.log('GETUSERMETA:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
-       // this._userMeta.next(data)
+       
       }))
     }
   }
@@ -199,7 +254,11 @@ export class AuthService {
   streamPrices(){
     if (this.userMetaStore.ShouldReload){
       //this._userMeta = new Subject<UserMeta>()
-      //this.userMeta = this._userMeta.asObservable()
+//       //this.userMeta = this._userMeta.asObservable()
+//       total_grz_close_positions_ROI_$: 0.002045274482904702
+// total_grz_current_position_ROI_$: 0
+// total_grz_current_position_value_$: 19.94
+// total_grz_open_positions: 2
       this.subsink.add(this.afs.doc<Prices>('price_update/'+this.priceDoc).valueChanges().subscribe(data => {        
         this.userData.xlmPrice = data.xlmusd
         this.userData.grxPrice = data.xlmgrx
@@ -244,7 +303,8 @@ export class AuthService {
           }
           this.priceInfo.price_updated = data.price_updated
         }        
-        console.log('STREAM-price:', data)        
+        console.log('STREAM-price:', data)  
+        //this.userInfo.grz_close_positions_ROI_$ =       
        
       }))
     }
@@ -386,7 +446,9 @@ export class AuthService {
     //   data.LoanPaidStatus, data.Tfa, data.Expire, setting, data.PublicKey)
 
       this.userInfo = {Uid: data.Uid, EnSecretKey: data.EnSecretKey, SecretKeySalt: data.SecretKeySalt, 
-        LoanPaidStatus: data.LoanPaidStatus, Tfa: data.Tfa, Expire: data.Expire,Setting: setting, PublicKey: data.PublicKey, LocalKey: data.LocalKey}
+        LoanPaidStatus: data.LoanPaidStatus, Tfa: data.Tfa, Expire: data.Expire,Setting: setting, PublicKey: data.PublicKey, LocalKey: data.LocalKey,
+      }
+
       return this.userInfo
   }
 

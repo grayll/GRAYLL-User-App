@@ -85,13 +85,9 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     private http: HttpClient,
     private loadingService: LoadingService,    
   ) {
-    this.subsink = new SubSink()
-    //this.populateOpenAlgoPositionsArray();   
+    this.subsink = new SubSink()    
     this.algoService.subsAlgoPositions()
-    this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {
-      //this.positions = positions   
-      let totalValueGRZ = 0 
-      let totalValueGRZProfit = 0 
+    this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {           
       let positionClosed = true
       this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
       this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
@@ -145,8 +141,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       this.updateAverageMetric(this.algoService.gry3Metric)
       this.updateAverageMetric(this.algoService.gry2Metric)
 
-      console.log('this.algoService.openPositions', this.algoService.openPositions)
-      console.log('this.algoService.grzMetric', this.algoService.grzMetric)
+      // console.log('this.algoService.openPositions', this.algoService.openPositions)
+      // console.log('this.algoService.grzMetric', this.algoService.grzMetric)
 
       this.algoService.closePositions = positions.filter(pos => {
         if (pos.status != "OPEN"){          
