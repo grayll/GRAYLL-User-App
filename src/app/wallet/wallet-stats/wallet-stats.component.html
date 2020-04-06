@@ -12,10 +12,10 @@
           </div>
           <div class="d-inline-block text-white align-middle wallet-box">
             <span class="text-light font-16">Wallet Balance</span>
-            <h5 class="text-light font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(7)}}</h5>
+            <h5 class="text-light font-weight-bolder mb-0">${{(this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(3)}}</h5>
             <small>
               <a href="javascript:void(0)" class="white-link" [routerLink]="[{outlets: {popup: 'xlm-balance-status'}}]">
-                2.1 XLM Reserved (${{(2*this.authService.userData.xlmPrice).toFixed(7)}})
+                2.1 XLM Reserved (${{(2*this.authService.priceInfo.xlmusd).toFixed(5)}})
               </a>
             </small>
           </div>
@@ -29,7 +29,7 @@
             <span class="font-16"> {{this.authService.calPercentGRX()}}% GRX</span>
             <br>
             <h5 class="p-font">
-              {{'$' + (this.authService.grxInUsd().toFixed(7))}}
+              ${{this.authService.grxInUsd().toFixed(3)}}
             </h5>
           </div>
           <div class="col text-right">
@@ -39,7 +39,7 @@
             <span class="font-16"> {{this.authService.calPercentXLM()}}% XLM</span>
             <br>
             <h5 class="mb-0 p-font">
-              {{'$' + (this.authService.xlmInUsd()).toFixed(7)}}
+              ${{(this.authService.xlmInUsd()).toFixed(3)}}
             </h5>
           </div>
         </div>
@@ -62,7 +62,7 @@
             </div>
             <div class="d-inline-block text-white align-middle wallet-box">
               <span class="text-light font-16" routerLink="/system/overview">Algo System Balance</span>
-              <h5 class="text-light font-weight-bolder">${{(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl).toFixed(7)}}</h5>
+              <h5 class="text-light font-weight-bolder">${{(authService.getAlgoBalance()).toFixed(3)}}</h5>
             </div>
           </div>
 
@@ -71,22 +71,20 @@
               <i class="text-yellow font-16">
                 <fa-icon [icon]="faCircle"></fa-icon>
               </i>
-              <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl > 0" class="font-16">{{algoService.algoMetric.GRYBl*100/(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl)}}% GRY</span>
-              <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl === 0" class="font-16"> 0% GRY</span>
+              <span class="font-16">{{authService.calPercentGRY()}}% GRY</span>              
               <br>
               <h5 class="p-font">
-                ${{algoService.algoMetric.GRYBl}}
+                ${{authService.getGRYBalance().toFixed(3)}}
               </h5>
             </div>
             <div class="col text-right">
               <i class="text-pink font-16">
                 <fa-icon [icon]="faCircle"></fa-icon>
               </i>
-              <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl > 0" class="font-16"> {{algoService.algoMetric.GRZBl*100/(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl)}}% GRY</span>
-              <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl === 0" class="font-16"> 0% GRZ</span>
+              <span class="font-16">{{authService.calPercentGRZ()}}% GRZ</span>              
               <br>
               <h5 class="p-font">
-                ${{algoService.algoMetric.GRZBl}}
+                ${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}
               </h5>
             </div>
           </div>
@@ -306,7 +304,7 @@
             </div>
             <div class="d-inline-block text-white align-middle wallet-box">
               <span class="text-light font-16">Wallet Balance</span>
-              <h5 class="text-light font-weight-bolder">{{'$' + (this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(7)}}</h5>
+              <h5 class="text-light font-weight-bolder">${{(this.authService.xlmInUsd() + this.authService.grxInUsd()).toFixed(3)}}</h5>
             </div>
           </div>
 
@@ -318,7 +316,7 @@
               <span class="font-16"> {{this.authService.calPercentGRX()}}% GRX</span>
               <br>
               <h5 class="p-font">
-               {{'$' + (this.authService.grxInUsd().toFixed(7))}}
+               ${{this.authService.grxInUsd().toFixed(3)}}
               </h5>
             </div>
             <div class="col text-right">
@@ -328,7 +326,7 @@
               <span class="font-16"> {{this.authService.calPercentXLM()}}% XLM</span>
               <br>
               <h5 class="mb-0 p-font">
-                {{'$' + (this.authService.xlmInUsd().toFixed(7))}}
+                ${{this.authService.xlmInUsd().toFixed(3)}}
               </h5>
             </div>
           </div>
@@ -342,8 +340,7 @@
               <button [routerLink]="[{outlets: {popup: 'withdraw'}}]"
                       class="btn btn-purple" (click)="goToTop()">Withdraw</button>
             </div>
-          </div>
-
+          </div>          
           <div class="mobile-bottom-border" routerLink="/system/overview" style="outline: none!important">
             <div class="w-auto c-cost mt-5">
               <div class="d-inline-block align-middle text-purple">
@@ -351,7 +348,7 @@
               </div>
               <div class="d-inline-block text-white align-middle wallet-box">
                 <span class="text-light font-16" routerLink="/system/overview">Algo System Balance</span>
-                <h5 class="text-light font-weight-bolder">1234</h5>
+                <h5 class="text-light font-weight-bolder">{{authService.getAlgoBalance().toFixed(3)}}</h5>
               </div>
             </div>
 
@@ -359,28 +356,25 @@
               <div class="col">
                 <i class="text-yellow font-16">
                   <fa-icon [icon]="faCircle"></fa-icon>
-                </i>
-                <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl > 0" class="font-16">{{algoService.algoMetric.GRYBl*100/(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl)}}% GRY</span>
-                <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl === 0" class="font-16">0% GRY</span>
+                </i>                
+                <span class="font-16">{{authService.calPercentGRY()}}% GRY GRY</span>
                 <br>
                 <h5  class="p-font">
-                  ${{algoService.algoMetric.GRYBl}}
+                  ${{authService.getGRYBalance().toFixed(3)}}
                 </h5>
               </div>
               <div class="col text-right">
                 <i class="text-pink font-16">
                   <fa-icon [icon]="faCircle"></fa-icon>
-                </i>
-                <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl > 0" class="font-16">{{algoService.algoMetric.GRZBl*100/(algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl)}}% GRZ</span>
-                <span *ngIf="algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl === 0" class="font-16">0% GRZ</span>
+                </i>                
+                <span>{{authService.calPercentGRZ()}}% GRZ</span>
                 <br>
                 <h5 class="p-font">
-                  ${{algoService.algoMetric.GRZBl}}
+                  ${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}
                 </h5>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </ng-template>

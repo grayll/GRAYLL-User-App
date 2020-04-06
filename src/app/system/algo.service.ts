@@ -38,6 +38,7 @@ export class AlgoService {
   gry1Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
   gry2Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
   gry3Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+  gryMetric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
 
   public fsdb:any
 
@@ -116,7 +117,16 @@ export class AlgoService {
   }
 
   getTotalAccountBl(){
-      return this.authService.grxInUsd() + this.authService.xlmInUsd() + this.algoMetric.GRYBl + this.algoMetric.GRZBl
+      return this.authService.grxInUsd() + this.authService.xlmInUsd() + this.authService.userMetaStore.total_grz_current_position_value_$
+       + this.authService.userMetaStore.total_gry1_current_position_value_$ + this.authService.userMetaStore.total_gry2_current_position_value_$
+       + this.authService.userMetaStore.total_gry3_current_position_value_$ 
+  }
+
+  getTotalProfit(){
+    return this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
+    this.authService.userMetaStore.total_gry2_current_position_ROI_$ + this.authService.userMetaStore.total_gry2_close_positions_ROI_$+
+    this.authService.userMetaStore.total_gry3_current_position_ROI_$ + this.authService.userMetaStore.total_gry3_close_positions_ROI_$+
+    this.authService.userMetaStore.total_grz_current_position_ROI_$ + this.authService.userMetaStore.total_grz_close_positions_ROI_$
   }
 
   get algoPositions(){

@@ -252,13 +252,7 @@ export class AuthService {
   }
 
   streamPrices(){
-    if (this.userMetaStore.ShouldReload){
-      //this._userMeta = new Subject<UserMeta>()
-//       //this.userMeta = this._userMeta.asObservable()
-//       total_grz_close_positions_ROI_$: 0.002045274482904702
-// total_grz_current_position_ROI_$: 0
-// total_grz_current_position_value_$: 19.94
-// total_grz_open_positions: 2
+    if (this.userMetaStore.ShouldReload){   
       this.subsink.add(this.afs.doc<Prices>('price_update/'+this.priceDoc).valueChanges().subscribe(data => {        
         this.userData.xlmPrice = data.xlmusd
         this.userData.grxPrice = data.xlmgrx
@@ -304,8 +298,7 @@ export class AuthService {
           this.priceInfo.price_updated = data.price_updated
         }        
         console.log('STREAM-price:', data)  
-        //this.userInfo.grz_close_positions_ROI_$ =       
-       
+        
       }))
     }
   }
@@ -559,7 +552,34 @@ export class AuthService {
     )    
     })
   }
-  
+  saveUserMetaStore() {     
+    this.http.post(`api/v1/users/saveUserMetaData`, {
+      total_grz_current_position_ROI_$: this.userMetaStore.total_grz_current_position_ROI_$,
+      total_grz_current_position_value_$:  this.userMetaStore.total_grz_current_position_value_$,    
+      total_grz_open_positions:       this.userMetaStore.total_grz_open_positions,          
+                                              
+      total_gry1_current_position_ROI_$ :    this.userMetaStore.total_gry1_current_position_ROI_$,  
+      total_gry1_current_position_value_$ :   this.userMetaStore.total_gry1_current_position_value_$,
+      total_gry1_open_positions  :           this.userMetaStore.total_gry1_open_positions,  
+                                              
+      total_gry2_current_position_ROI_$ :    this.userMetaStore.total_gry2_current_position_ROI_$,  
+      total_gry2_current_position_value_$ :   this.userMetaStore.total_gry2_current_position_value_$,
+      total_gry2_open_positions  :           this.userMetaStore.total_gry2_open_positions ,          
+                                              
+      total_gry3_current_position_ROI_$ :    this.userMetaStore.total_gry3_current_position_ROI_$,  
+      total_gry3_current_position_value_$ :   this.userMetaStore.total_gry3_current_position_value_$,
+      total_gry3_open_positions  :           this.userMetaStore.total_gry3_open_positions                 
+    })    
+    .subscribe(
+      resp => {
+        console.log('saveUserMetaData res: ', resp)  
+      },
+      err => {        
+        console.log('saveUserMetaData err: ', err)        
+      } 
+    )    
+    
+  }
   verifyTfaAuth(token: any, pwd: any, exp: Number) {       
     return this.http.post(`api/v1/users/verifytoken`,  { token: token, secret:pwd, expire:exp})         
   }
@@ -661,8 +681,8 @@ export class AuthService {
     if (this.userMetaStore.GRX === 0){
       return 100
     } else {
-      return Math.round(this.userMetaStore.XLM*this.userData.xlmPrice*100/(this.userMetaStore.XLM*this.userData.xlmPrice + 
-        this.userMetaStore.GRX*this.userData.grxPrice*this.userData.xlmPrice))
+      return Math.round(this.userMetaStore.XLM*this.priceInfo.xlmusd*100/(this.userMetaStore.XLM*this.priceInfo.xlmusd + 
+        this.userMetaStore.GRX*this.userData.grxPrice*this.priceInfo.xlmusd))
     }
   }
   calPercentGRX(){
@@ -672,11 +692,49 @@ export class AuthService {
       return 0
     }
   }
+  getGRYBalance(){
+    return this.userMetaStore.total_gry1_current_position_value_$ + this.userMetaStore.total_gry2_current_position_value_$ + 
+    this.userMetaStore.total_gry3_current_position_value_$
+  }
+  getAlgoBalance(){
+    return this.getGRYBalance() + this.userMetaStore.total_grz_current_position_value_$
+  }
+  calPercentGRY(){
+    let totalgry = this.getGRYBalance()
+    if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+      return 0
+    } else {
+      return Math.round(totalgry*100/(totalgry + this.userMetaStore.total_grz_current_position_value_$))
+    }
+  }
+  calPercentGRZ(){
+    let totalgry = this.getGRYBalance()
+    if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+      return 0
+    } else {
+      return 100 - this.calPercentGRY()
+    }
+  }
+  getTotalOpenPosition(){
+    return this.userMetaStore.total_gry1_open_positions + this.userMetaStore.total_gry2_open_positions + 
+    this.userMetaStore.total_gry3_open_positions + this.userMetaStore.total_grz_open_positions
+  }
+  getTotalAccountValue(){
+    return this.xlmInUsd() + this.grxInUsd() + this.getAlgoBalance()
+  }
+  getGRYProfit(){
+    return this.userMetaStore.total_gry1_current_position_ROI_$ + this.userMetaStore.total_gry1_close_positions_ROI_$ +
+    this.userMetaStore.total_gry2_current_position_ROI_$ + this.userMetaStore.total_gry2_close_positions_ROI_$ +
+    this.userMetaStore.total_gry3_current_position_ROI_$ + this.userMetaStore.total_gry3_close_positions_ROI_$
+  }
+  getTotalAccountProfit(){
+    return this.getGRYProfit() + this.userMetaStore.total_grz_close_positions_ROI_$ + this.userMetaStore.total_grz_current_position_ROI_$
+  }
   grxInUsd(){
-    return this.userMetaStore.GRX*this.userData.grxPrice*this.userData.xlmPrice
+    return this.userMetaStore.GRX*this.userData.grxPrice*this.priceInfo.xlmusd
   }
   xlmInUsd(){
-    return this.userMetaStore.XLM*this.userData.xlmPrice
+    return this.userMetaStore.XLM*this.priceInfo.xlmusd
   }
   getMaxAvailableXLM(){
     let bl 
@@ -690,8 +748,7 @@ export class AuthService {
     }
     return bl
   }
-  getMaxAvailableGRX(){
-    //console.log('this.userMetaStore.', this.userMetaStore)
+  getMaxAvailableGRX(){    
     return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX
   }
   /* Setting up user data when sign in with username/password, 
@@ -705,13 +762,12 @@ export class AuthService {
   //   })
   // }
   // Sign out 
-  SignOut() {
-    
-    localStorage.removeItem('user');    
-    this.userData = null  
-    this.ngZone.run(()=> {
-      this.router.navigateByUrl('/login')      
-    })
-  }
+  // SignOut() {    
+  //   localStorage.removeItem('user');    
+  //   this.userData = null  
+  //   this.ngZone.run(()=> {
+  //     this.router.navigateByUrl('/login')      
+  //   })
+  // }
 
 }

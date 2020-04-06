@@ -8,30 +8,28 @@
           </div>
           <div class="d-inline-block text-white align-middle">
             <span class="text-light font-16">Algo System Balance</span>
-            <h5 class="text-light font-weight-bolder">${{algoService.algoMetric.GRYBl + algoService.algoMetric.GRZBl}}</h5>
+            <h5 class="text-light font-weight-bolder">${{(authService.getAlgoBalance()).toFixed(3)}}</h5>
           </div>
         </div>
         <div class="row mt-2">
           <div class="col-6 mt-4">
             <i class="text-yellow font-16">
               <fa-icon [icon]="faCircle"></fa-icon>
-            </i>
-            <span class="font-16 text-white" *ngIf="this.algoService.algoMetric.GRYBl + this.algoService.algoMetric.GRZBl > 0"> {{this.algoService.algoMetric.GRYBl/(this.algoService.algoMetric.GRYBl + this.algoService.algoMetric.GRZBl)}}% GRY</span>
-            <span class="font-16 text-white" *ngIf="this.algoService.algoMetric.GRYBl + this.algoService.algoMetric.GRZBl <= 0"> 0% GRY</span>
+            </i>            
+            <span class="font-16 text-white"> {{authService.calPercentGRY()}}% GRY</span>
             <br>
             <p class="font-weight-bolder p-font text-white">
-              ${{this.algoService.algoMetric.GRYBl.toFixed(3)}}
+              ${{authService.getGRYBalance().toFixed(3)}}
             </p>
           </div>
           <div class="col-6 mt-4 text-right">
             <i class="m-r-5 text-white font-16">
               <fa-icon [icon]="faCircle"></fa-icon>
-            </i>
-            <span class="font-16 text-white" *ngIf="this.algoService.algoMetric.GRYBl + this.algoService.algoMetric.GRZBl > 0"> {{this.algoService.algoMetric.GRZBl/(this.algoService.algoMetric.GRYBl + this.algoService.algoMetric.GRZBl)}}% GRZ</span>
-            <span class="font-16 text-white" *ngIf="this.algoService.algoMetric.GRYBl + this.algoService.algoMetric.GRZBl <= 0"> 0% GRZ</span>
+            </i>            
+            <span class="font-16 text-white">{{authService.calPercentGRZ()}}% GRZ</span>
             <br>
             <p class="m-b-0 font-weight-bolder p-font text-white">
-              ${{this.algoService.algoMetric.GRZBl.toFixed(3)}}
+              ${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}
             </p>
           </div>
         </div>

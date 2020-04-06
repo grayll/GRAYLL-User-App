@@ -5,7 +5,7 @@
         <div class="d-flex align-items-center mb-3 pl-lg-4 pl-md-4">
           <div>
             <h6 class="text-white font-weight-bolder">GRX</h6>
-            <h6 class="text-white font-weight-bolder m-b-0">${{(this.authService.userData.xlmPrice*this.authService.userData.grxPrice).toFixed(3)}}</h6>
+            <h6 class="text-white font-weight-bolder m-b-0">${{(this.authService.priceInfo.grxusd).toFixed(5)}}</h6>
           </div>
           <div class="ml-auto mr-3 text-right">
             <h6 class="text-white font-weight-bolder">Balance</h6>
@@ -15,17 +15,17 @@
         <div class="d-flex align-items-center pl-lg-4 pl-md-4">
           <div>
             <h6 class="font-weight-lighter text-white">% 24h</h6>
-            <h6 *ngIf="grxdb" class="text-white font-weight-lighter m-0">{{grxdb.day.toFixed(2)}}</h6>
+            <h6 *ngIf="grxdb" class="text-white font-weight-lighter m-0">{{grxdb.day.toFixed(5)}}</h6>
             <h6 *ngIf="!grxdb" class="text-white font-weight-lighter m-0"></h6>
           </div>
           <div class="ml-auto mr-3 text-right">
             <h6 class="font-weight-lighter text-white">% 7d</h6>
-            <h6 *ngIf="grxdb"  class="text-white font-weight-lighter m-0">{{grxdb.sevendays.toFixed(2)}}</h6>
+            <h6 *ngIf="grxdb"  class="text-white font-weight-lighter m-0">{{grxdb.sevendays.toFixed(5)}}</h6>
             <h6 *ngIf="!grxdb"  class="text-white font-weight-lighter m-0"></h6>
           </div>
           <div class="ml-auto mr-3 text-right">
             <h6 class="font-weight-lighter text-white">% ROI</h6>
-            <h6 *ngIf="grxdb"  class="text-white font-weight-lighter m-0">{{grxdb.roi.toFixed(2)}}</h6>
+            <h6 *ngIf="grxdb"  class="text-white font-weight-lighter m-0">{{grxdb.roi.toFixed(5)}}</h6>
             <h6 *ngIf="!grxdb"  class="text-white font-weight-lighter m-0"></h6>
           </div>
         </div>
@@ -38,28 +38,28 @@
         <div class="d-flex align-items-center mb-3 pl-lg-4 pl-md-4">
           <div>
             <h6 class="text-white font-weight-bolder">GRY</h6>
-            <h6 *ngIf="grydb" class="text-white font-weight-bolder m-b-0">${{grydb.price.toFixed(3)}}</h6>
+            <h6 *ngIf="grydb" class="text-white font-weight-bolder m-b-0">${{grydb.price.toFixed(5)}}</h6>
             <h6 *ngIf="!grydb" class="text-white font-weight-bolder m-b-0">$</h6>
           </div>
           <div class="ml-auto mr-3 text-right">
             <h6 class="text-white font-weight-bolder">Balance</h6>
-            <h6 class="text-white font-weight-bolder">${{algoService.algoMetric.GRYBl}}</h6>
+            <h6 class="text-white font-weight-bolder">${{authService.getGRYBalance().toFixed(3)}}</h6>
           </div>
         </div>
         <div class="d-flex align-items-center pl-lg-4 pl-md-4">
           <div>
             <h6 class="font-weight-lighter text-white">% 24h</h6>
-            <h6 *ngIf="grydb" class="text-white font-weight-lighter m-0">{{grydb.day.toFixed(2)}}</h6>
+            <h6 *ngIf="grydb" class="text-white font-weight-lighter m-0">{{grydb.day.toFixed(5)}}</h6>
             <h6 *ngIf="!grydb" class="text-white font-weight-lighter m-0"></h6>
           </div>
           <div class="ml-auto mr-3 text-right">
             <h6 class="font-weight-lighter text-white">% 7d</h6>
-            <h6 *ngIf="grydb"  class="text-white font-weight-lighter m-0">{{grydb.sevendays.toFixed(2)}}</h6>
+            <h6 *ngIf="grydb"  class="text-white font-weight-lighter m-0">{{grydb.sevendays.toFixed(5)}}</h6>
             <h6 *ngIf="!grydb"  class="text-white font-weight-lighter m-0"></h6>
           </div>
           <div class="ml-auto mr-3 text-right">
             <h6 class="font-weight-lighter text-white">% ROI</h6>
-            <h6 *ngIf="grydb"  class="text-white font-weight-lighter m-0">{{grydb.roi.toFixed(2)}}</h6>
+            <h6 *ngIf="grydb"  class="text-white font-weight-lighter m-0">{{grydb.roi.toFixed(5)}}</h6>
             <h6 *ngIf="!grydb"  class="text-white font-weight-lighter m-0"></h6>
           </div>
         </div>
@@ -72,28 +72,28 @@
         <div class="d-flex align-items-center mb-3 pl-lg-4 pl-md-4">
           <div>
             <h6 class="text-white font-weight-bolder">GRZ</h6>
-            <h6 *ngIf="grzdb" class="text-white font-weight-bolder m-b-0">${{grzdb.price.toFixed(3)}}</h6>
+            <h6 *ngIf="grzdb" class="text-white font-weight-bolder m-b-0">${{grzdb.price.toFixed(5)}}</h6>
             <h6 *ngIf="!grydb" class="text-white font-weight-bolder m-b-0">$</h6>
           </div>
           <div class="ml-auto mr-3 text-right">
             <h6 class="text-white font-weight-bolder">Balance</h6>
-            <h6 class="text-white font-weight-bolder">${{algoService.algoMetric.GRZBl}}</h6>
+            <h6 class="text-white font-weight-bolder">${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}</h6>
           </div>
         </div>
         <div class="d-flex align-items-center pl-lg-4 pl-md-4">
           <div>
             <h6 class="font-weight-lighter text-white">% 24h</h6>
-            <h6 *ngIf="grzdb" class="text-white font-weight-lighter m-0">{{grzdb.day.toFixed(2)}}</h6>
+            <h6 *ngIf="grzdb" class="text-white font-weight-lighter m-0">{{grzdb.day.toFixed(5)}}</h6>
             <h6 *ngIf="!grzdb" class="text-white font-weight-lighter m-0"></h6>
           </div>
           <div class="ml-auto mr-3 text-right">
             <h6 class="font-weight-lighter text-white">% 7d</h6>
-            <h6 *ngIf="grzdb"  class="text-white font-weight-lighter m-0">{{grzdb.sevendays.toFixed(2)}}</h6>
+            <h6 *ngIf="grzdb"  class="text-white font-weight-lighter m-0">{{grzdb.sevendays.toFixed(5)}}</h6>
             <h6 *ngIf="!grzdb"  class="text-white font-weight-lighter m-0"></h6>
           </div>
           <div class="ml-auto mr-3 text-right">
             <h6 class="font-weight-lighter text-white">% ROI</h6>
-            <h6 *ngIf="grzdb"  class="text-white font-weight-lighter m-0">{{grzdb.roi.toFixed(2)}}</h6>
+            <h6 *ngIf="grzdb"  class="text-white font-weight-lighter m-0">{{grzdb.roi.toFixed(5)}}</h6>
             <h6 *ngIf="!grzdb"  class="text-white font-weight-lighter m-0"></h6>
           </div>
         </div>

@@ -93,6 +93,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
       this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
       this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gryMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
 
       this.algoService.openPositions = positions.filter(pos => {
         if (pos.status == "OPEN"){               
@@ -111,15 +112,20 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
               this.calculateMetrics(pos, this.algoService.grzMetric)
               break
             case "GRY 1":
-              this.calculateMetrics(pos, this.algoService.gry1Metric)             
+              this.calculateMetrics(pos, this.algoService.gry1Metric)     
+              // Calculate total gry metric
+              this.calculateMetrics(pos, this.algoService.gryMetric)
               break
             case "GRY 2":
-              this.calculateMetrics(pos, this.algoService.gry2Metric)             
+              this.calculateMetrics(pos, this.algoService.gry2Metric)
+              // Calculate total gry metric
+              this.calculateMetrics(pos, this.algoService.gryMetric)          
               break
             case "GRY 3":
-              this.calculateMetrics(pos, this.algoService.gry3Metric)             
+              this.calculateMetrics(pos, this.algoService.gry3Metric)
+              // Calculate total gry metric
+              this.calculateMetrics(pos, this.algoService.gryMetric)          
               break
-
           }          
           return pos
         }        
@@ -136,11 +142,11 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         this.authService.pushCloseAllEnd(true)
       }
      
-      this.updateAverageMetric(this.algoService.grzMetric)
-      this.updateAverageMetric(this.algoService.gry1Metric)
-      this.updateAverageMetric(this.algoService.gry3Metric)
-      this.updateAverageMetric(this.algoService.gry2Metric)
-
+      this.updateAverageMetric(this.algoService.grzMetric, "grz")
+      this.updateAverageMetric(this.algoService.gry1Metric, "gry1")      
+      this.updateAverageMetric(this.algoService.gry2Metric, "gry2")
+      this.updateAverageMetric(this.algoService.gry3Metric, "gry3")
+      
       // console.log('this.algoService.openPositions', this.algoService.openPositions)
       // console.log('this.algoService.grzMetric', this.algoService.grzMetric)
 
@@ -198,7 +204,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     
   }
 
-  updateAverageMetric(metric : AlgoMetrics){
+  updateAverageMetric(metric : AlgoMetrics, type: string){
     //console.log('CALCULATE-metric.CurrentProfit-positions:', metric.CurrentProfit, metric.Positions) 
     if (metric.OneDayCnt > 0){
       metric.OneDayPercent = metric.OneDayPercent/metric.OneDayCnt
@@ -208,6 +214,28 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     }
     if (metric.Positions > 0){
       metric.ROIPercent = metric.ROIPercent/metric.Positions
+    }
+
+    switch(type){
+      case "grz":
+        this.authService.userMetaStore.total_grz_open_positions = this.algoService.grzMetric.Positions
+        this.authService.userMetaStore.total_grz_current_position_ROI_$ = this.algoService.grzMetric.CurrentProfit
+        this.authService.userMetaStore.total_grz_current_position_value_$ = this.algoService.grzMetric.TotalValue      
+        break
+      case "gry1":
+        this.authService.userMetaStore.total_gry1_open_positions = this.algoService.gry1Metric.Positions
+        this.authService.userMetaStore.total_gry1_current_position_ROI_$ = this.algoService.gry1Metric.CurrentProfit
+        this.authService.userMetaStore.total_gry1_current_position_value_$ = this.algoService.gry1Metric.TotalValue
+      case "gry2":
+        this.authService.userMetaStore.total_gry2_open_positions = this.algoService.gry2Metric.Positions
+        this.authService.userMetaStore.total_gry2_current_position_ROI_$ = this.algoService.gry2Metric.CurrentProfit
+        this.authService.userMetaStore.total_gry2_current_position_value_$ = this.algoService.gry2Metric.TotalValue
+        break
+      case "gry3":
+        this.authService.userMetaStore.total_gry3_open_positions = this.algoService.gry3Metric.Positions
+        this.authService.userMetaStore.total_gry3_current_position_ROI_$ = this.algoService.gry3Metric.CurrentProfit
+        this.authService.userMetaStore.total_gry3_current_position_value_$ = this.algoService.gry3Metric.TotalValue
+        break  
     }
   }
   
@@ -371,6 +399,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   
   @HostListener('window:beforeunload')
   ngOnDestroy():void {
+    // update user meta store related to grz gry metric
+    this.authService.saveUserMetaStore()
     this.subsink.unsubscribe()    
   }  
 }

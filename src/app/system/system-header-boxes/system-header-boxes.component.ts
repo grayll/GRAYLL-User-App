@@ -386,7 +386,6 @@ export class SystemHeaderBoxesComponent implements OnInit {
 
     
   private openPopup() {
-   
     
     //console.log('this.algoPosition:', this.algoPosition)
     if (this.selectedTab.id != 'GRZ'){
