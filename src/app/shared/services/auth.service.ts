@@ -748,7 +748,8 @@ export class AuthService {
     }
     return bl
   }
-  getMaxAvailableGRX(){    
+  getMaxAvailableGRX(){  
+    //console.log('getMaxAvailableGRX-', this.userMetaStore.GRX, this.userMetaStore.OpenOrdersGRX)  
     return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX
   }
   /* Setting up user data when sign in with username/password, 

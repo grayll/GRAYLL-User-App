@@ -130,6 +130,10 @@ export class NavbarComponent implements OnDestroy, OnInit {
     if (!this.authService.userData){      
       this.authService.GetLocalUserData()
     } 
+    // Add email for Intercom
+    (<any>window).Intercom('boot', {
+      email: this.authService.userData.Email,
+    });
    
     if (this.authService.userMetaStore.XLM === 0){      
       this.authService.GetLocalUserMeta()      
