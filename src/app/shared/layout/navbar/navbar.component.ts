@@ -132,7 +132,10 @@ export class NavbarComponent implements OnDestroy, OnInit {
     } 
     // Add email for Intercom
     (<any>window).Intercom('boot', {
+      app_id: "v9vzre42",    
+      user_hash: this.authService.userData.Hmac,
       email: this.authService.userData.Email,
+      name: this.authService.userData.Name,
     });
    
     if (this.authService.userMetaStore.XLM === 0){      

@@ -70,7 +70,12 @@ export class LoginComponent {
     this.algoService.resetServiceData()
     this.authService.resetServiceData()
     this.stellarService.resetServiceData()
-    this.noticeService.resetServiceData()
+    this.noticeService.resetServiceData();
+
+      // Add email for Intercom
+      (<any>window).Intercom('boot', {
+        app_id: "v9vzre42",       
+      });
   }
 
   buildForm(): void {
