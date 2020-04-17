@@ -12,6 +12,7 @@ import { ReCaptchaV3Service } from 'ng-recaptcha';
 import * as naclutil from 'tweetnacl-util'
 import {environment} from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
   selector: 'app-register',
@@ -37,6 +38,7 @@ export class RegisterComponent implements OnInit {
     private recaptchaV3Service: ReCaptchaV3Service,
     private ngZone:NgZone,
     private http: HttpClient,
+    private loadingService: LoadingService,
   ) {
    
   }
@@ -135,6 +137,7 @@ registerClicked() {
   //     })    
   //   })        
   // }
+  this.loadingService.show()
   this.recaptchaV3Service.execute('register')
     .subscribe((token) => {
       // Verify token 
@@ -150,24 +153,28 @@ registerClicked() {
           }
                    
           this.http.post(`api/v1/accounts/register`, userData)             
-          .subscribe(res => {  
+          .subscribe(res => { 
+            this.loadingService.hide() 
             if ((res as any).errCode == environment.EMAIL_IN_USED)  {
               let content = "The email entered is already registered."
               this.errorService.handleError(null, content)
               this.registerForm.reset() 
-            } else {    
+            } else {              
               this.ngZone.run(() => {                    
-                this.router.navigate(['/login/confirm-email'], { state: { email: this.registerForm.value['email'],
+                this.router.navigate(['/confirm-email'], { state: { email: this.registerForm.value['email'],
                   name: this.registerForm.value['name']}})
               }) 
             }
           },
           error => {
+            this.loadingService.hide()
             console.log(error) 
             this.registerForm.reset()              
             this.errorService.handleError(null, `Currently, registration can't be processed. Please try again later!`)     
           })
         }
+      }).catch(e => {
+        this.loadingService.hide()
       })
     })
   }  

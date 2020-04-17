@@ -34,6 +34,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from 'src/app/shared/services/auth.interceptor';
+import { AngularFireWrapper } from './shared/services/angularfire.service';
+import { AngularFireDatabase, AngularFireDatabaseModule } from '@angular/fire/database';
 
 declare var Hammer: any;
 
@@ -51,8 +53,7 @@ export class MyHammerConfig extends HammerGestureConfig  {
   declarations: [
     AppComponent,
     NotFoundComponent,
-    ErrorPageComponent,
-    
+    ErrorPageComponent,    
   ],
   imports: [
     BrowserModule,
@@ -68,12 +69,11 @@ export class MyHammerConfig extends HammerGestureConfig  {
     RecaptchaV3Module,
     NgxPasswordToggleModule,
     NgxUiLoaderModule,
-    ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production}),   
-    AngularFireModule.initializeApp(environment.firebase),
- 	  AngularFirestoreModule,
+    AngularFireDatabaseModule,
+    ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production}),  	  
   ],
   providers: [
-    ErrorService, AuthService, StellarService,
+    ErrorService, AuthService, StellarService, AngularFireWrapper,
     { provide: 'SnotifyToastConfig', useValue: NotifierConfig},
     { provide: RECAPTCHA_V3_SITE_KEY, useValue: '6LfYI7EUAAAAAGYF0RFiE6p28pfDCkXFXE1REW0w' },
      SnotifyService,

@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { Router } from '@angular/router';
 import {SnotifyService} from 'ng-snotify';
 import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
+import { LoadingService } from '../../services/loading.service';
 
 @Component({
   selector: 'app-cancel-active-orders-popup',
@@ -25,6 +26,7 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
     private router: Router,
     private snotifyService: SnotifyService,
     private dataService: NoticeDataService,
+    private loadingService: LoadingService,
   ) { 
     // if (!this.authService.hash){
     //   this.isCachedPass = false
@@ -35,7 +37,7 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
     this.popupService.open(this.modal);
   }
 
-  async cancelAllOrders(){
+  async cancelAllOrders1(){
     let cachedOffers = this.stellarService.allOffers.map(item => item.cachedOffer)
     
       try {   
@@ -71,39 +73,57 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
       }, 500);
     
   }
-  cancelAllOrders1(){
-    let pwd = this.authService.hash
-    if (!this.authService.hash){
-      pwd = this.password
-    } 
-    this.authService.GetSecretKey(pwd).then(SecKey => {   
-      if (SecKey != ''){
-        this.authService.hash = this.password
+  cancelAllOrders(){
+    
+      // this.stellarService.cancelOffers(this.authService.getSecretKey(), this.stellarService.allOffers, this.authService.userData).then (res => {
+
+      // }).catch(e => {
+      //     this.stellarService.allOffers.splice(0, this.stellarService.allOffers.length)
+      //     this.popupService.close();
+      //     this.authService.userMetaStore.OpenOrders = 0            
+      //     this.stellarService.allOffers.forEach(item => {
+      //       if (item.assetType === 'GRX'){
+      //         this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX + item.realAmount
+      //       } else if (item.assetType === 'XLM'){
+      //         this.authService.userMetaStore.XLM = +this.authService.userMetaStore.XLM + item.realAmount
+      //       }
+      //     })
+      // })
+
+      
+        this.loadingService.show()
         let promises = []
         this.stellarService.allOffers.forEach(item => {
-          promises.push(this.stellarService.cancelOffer(SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType))
+          promises.push(this.stellarService.cancelOfferForAll(this.authService.getSecretKey(), item.cachedOffer))          
         });
 
         Promise.all(promises).then(()=> {
-          this.stellarService.allOffers.splice(0, this.stellarService.allOffers.length)
+          //this.stellarService.allOffers.splice(0, this.stellarService.allOffers.length)
           this.popupService.close();
-          this.authService.userData.OpenOrders = 0
-          this.authService.SetLocalUserData()
-          }
-        ).catch(e => {
+          this.authService.userMetaStore.OpenOrders = 0            
+          this.stellarService.allOffers.forEach(item => {
+            if (item.assetType === 'XLM'){
+              this.authService.userMetaStore.OpenOrdersXLM = +this.authService.userMetaStore.OpenOrdersXLM + item.realAmount
+            } else {
+              this.authService.userMetaStore.OpenOrdersGRX = +this.authService.userMetaStore.OpenOrdersGRX + item.realAmount
+            } 
+          })
+          this.loadingService.hide()
+          this.stellarService.allOffers = []
+        }).catch(e => {
           console.log('cancelAllOffer error:', e)
           if (e.toString().includes('status code 400')){
             this.snotifyService.simple('Insufficient funds to cancel this order! Please add more funds to your account.')  
           } else {
             this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
-          }          
+          }     
+          this.loadingService.hide()     
         }) 
-      } else {
-        this.snotifyService.simple('Please enter a valid password!')
-      }            
-    }).catch( err => {
-      this.snotifyService.simple('Please enter a valid password!')
-    })
+        
+                 
+    // }).catch( err => {
+    //   this.snotifyService.simple('Please enter a valid password!')
+    // })
   }
 
 }

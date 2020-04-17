@@ -8,6 +8,7 @@ import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { environment } from 'src/environments/environment'
 import {ErrorService} from '../../../../shared/error/error.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
   selector: 'app-review-withdraw-popup',
@@ -33,6 +34,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     private stellarService: StellarService,
     private authService: AuthService,
     private errorService: ErrorService,
+    private loadingService: LoadingService,
   ) {}
 
   ngOnInit() {
@@ -98,7 +100,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     // }      
   }
 
-  async sendAsset(amount, asset, memo){ 
+  async sendAsset1(amount, asset, memo){ 
     //this.authService.GetSecretKey(this.password).then(async SecKey => {        
       if (this.multiSigEnable && this.twoFaCode){
         this.authService.verifyTfaAuth(this.password, this.twoFaCode, 0)
@@ -202,77 +204,82 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
         
 }
 
-  sendAsset1(amount, asset, memo){ 
-      this.authService.GetSecretKey(this.password).then(SecKey => {        
-        if (this.multiSigEnable && this.twoFaCode){
-          this.authService.verifyTfaAuth(this.password, this.twoFaCode, 0)
-          .subscribe(res => {           
-            if ((res as any).valid === true ){                 
-              this.stellarService.sendAsset(SecKey, this.withdrawModel.address, 
-              amount.toString(), asset, memo).then(ledger => {
-                if (ledger <= 0){
-                  this.error()
-                } else {
-                  this.popupService.close()
-                  .then(() => {
-                    if (asset.code === 'XLM'){
-                      this.authService.userMetaStore.XLM = this.authService.userMetaStore.XLM - amount
-                    } else {
-                      this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX - amount
-                    }
-                    setTimeout(() => {
-                      this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
-                    }, 50);
-                  })
-                }
-              }).catch( e => {
-                this.error()
-                console.log('Send asset error: ', e)
-              })                        
-            } else {        
-              switch ((res as any).errCode){
-                case environment.TOKEN_INVALID:
-                    this.error()
-                  //this.errorService.handleError(null, '2FA code is invalid! Please retry.')
-                  break;
-                case environment.INVALID_UNAME_PASSWORD:
-                    this.error()
-                  //this.errorService.handleError(null, 'Invalid username or password!')
-                  break;
-                default:
-                    this.error()
-                  //this.errorService.handleError(null, 'Multisignature could not be enabled! Please retry.')
-                  break;
-              }       
-            }     
-          },
-          err => {
-            //this.errorService.handleError(null, '2FA code is invalid! Please retry.')
-          })
-        } else if (!this.multiSigEnable) {
-          // console.log('sendAsset:', SecKey,
-          //  this.withdrawModel.address, amount.toString(), asset)
+  sendAsset(amount, asset, memo){ 
+    this.loadingService.show()   
+    let SecKey =  this.authService.getSecretKey()
+    if (this.multiSigEnable && this.twoFaCode){
+      this.authService.verifyTfaAuth(this.password, this.twoFaCode, 0)
+      .subscribe(res => {           
+        if ((res as any).valid === true ){                 
           this.stellarService.sendAsset(SecKey, this.withdrawModel.address, 
-            amount.toString(), asset, memo)
-          .then(ledger => {
-            if (ledger <= 0){
-              this.error()
-            } else {
-              this.popupService.close()
-              .then(() => {
-                setTimeout(() => {
-                  this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
-                }, 50);
-              })
-            }
+          amount.toString(), asset, memo).then(ledger => {
+            this.loadingService.hide()
+            this.popupService.close()
+            .then(() => {              
+              if (asset.code === 'XLM'){
+                console.log('asset.code', asset.code)
+                this.authService.userMetaStore.XLM = +this.authService.userMetaStore.XLM - +amount
+              } else {
+                console.log('asset.code1', asset.code)
+                this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX - +amount
+              }
+              
+              setTimeout(() => {
+                this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
+              }, 50);
+            })
           }).catch( e => {
             this.error()
             console.log('Send asset error: ', e)
-          }) 
-        } 
-    }).catch( err => {
-      this.error()
-    })      
+            this.loadingService.hide()
+          })                        
+        } else {        
+          switch ((res as any).errCode){            
+            case environment.TOKEN_INVALID:
+                this.error()
+              //this.errorService.handleError(null, '2FA code is invalid! Please retry.')
+              break;
+            case environment.INVALID_UNAME_PASSWORD:
+                this.error()
+              //this.errorService.handleError(null, 'Invalid username or password!')
+              break;
+            default:
+                this.error()
+              //this.errorService.handleError(null, 'Multisignature could not be enabled! Please retry.')
+              break;
+          }   
+          this.loadingService.hide()    
+        }     
+      },
+      err => {
+        //this.errorService.handleError(null, '2FA code is invalid! Please retry.')
+      })
+    } else if (!this.multiSigEnable) {
+      // console.log('sendAsset:', SecKey,
+      //  this.withdrawModel.address, amount.toString(), asset)
+      this.loadingService.show()
+      this.stellarService.sendAsset(SecKey, this.withdrawModel.address, amount.toString(), asset, memo)
+      .then(ledger => {
+        this.loadingService.hide()
+        this.popupService.close()        
+        .then(() => {
+          
+          if (asset.code === 'XLM'){
+            console.log('asset.code', asset.code)
+            this.authService.userMetaStore.XLM = +this.authService.userMetaStore.XLM - +amount
+          } else {
+            console.log('asset.code1', asset.code)
+            this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX - +amount
+          }
+          setTimeout(() => {
+            this.router.navigate(['/wallet/overview', {outlets: {popup: 'withdraw-success'}}]);
+          }, 50);
+        })
+      }).catch( e => {
+        this.error()
+        console.log('Send asset error: ', e)
+      }) 
+    }        
   }
 
   error() {

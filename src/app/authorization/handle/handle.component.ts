@@ -204,7 +204,7 @@ export class HandleComponent implements OnInit {
     if (this.handleForm.invalid) {        
         return;
     }
-    this.ngZone.run(() => {
+    //this.ngZone.run(() => {
       this.http.post(`api/v1/accounts/resetpassword`, 
         { oobCode: this.actionCode, newPassword:this.handleForm.value['password']})             
       .subscribe(res => {  
@@ -231,7 +231,7 @@ export class HandleComponent implements OnInit {
         this.message = 'Can not reset password right now. Please try again later!'
         this.errorService.handleError(null, this.message);
       })      
-    })    
+    //})    
   }
 
   get f() { return this.handleForm.controls; }

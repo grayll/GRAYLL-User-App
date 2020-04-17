@@ -22,8 +22,7 @@
             </span>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip"
-            (click)="isNavbarCollapsed = !isNavbarCollapsed">
+        <li class="nav-item" data-toggle="tooltip" (click)="isNavbarCollapsed = !isNavbarCollapsed">
           <a href="javascript:void(0)" class="nav-link" routerLink="/wallet/overview" alt="WALLET">
             <span class="d-inline d-md-none mr-2">Wallet</span>
             <fa-icon [icon]="faWallet" size="lg"></fa-icon>
@@ -35,16 +34,14 @@
             </span>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" routerLink="/data/overview"
-            (click)="isNavbarCollapsed = !isNavbarCollapsed">
-          <a href="javascript:void(0)" class="nav-link" alt="DATA">
+        <li class="nav-item" data-toggle="tooltip" (click)="isNavbarCollapsed = !isNavbarCollapsed">
+          <a href="javascript:void(0)" class="nav-link" routerLink="/data/overview" alt="DATA">
             <span class="d-inline d-md-none mr-2">Data</span>
             <fa-icon [icon]="faChartBar" size="lg"></fa-icon>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" routerLink="/notifications/overview"
-            (click)="isNavbarCollapsed = !isNavbarCollapsed">
-          <a href="javascript:void(0)" alt="NOTIFICATIONS" class="nav-link">
+        <li class="nav-item" data-toggle="tooltip" (click)="isNavbarCollapsed = !isNavbarCollapsed">
+          <a href="javascript:void(0)" alt="NOTIFICATIONS" class="nav-link" routerLink="/notifications/overview">
             <span class="d-inline d-md-none mr-2">Notifications</span>
             <fa-icon [icon]="faBell" size="lg"></fa-icon>
             <span *ngIf="this.authService.userMetaStore" class="badge bg-yellow text-light badge-number">
@@ -55,16 +52,15 @@
             </span>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" routerLink="/settings/profile"
-            (click)="isNavbarCollapsed = !isNavbarCollapsed">
-          <a href="javascript:void(0)" class="nav-link" alt="SETTINGS">
+        <li class="nav-item" data-toggle="tooltip" (click)="isNavbarCollapsed = !isNavbarCollapsed">
+          <a href="javascript:void(0)" class="nav-link" alt="SETTINGS" routerLink="/settings/profile">
             <span class="d-inline d-md-none mr-2">Settings</span>
             <fa-icon [icon]="faUser" size="lg"></fa-icon>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" title="SIGN OUT" routerLink="/">
+        <li class="nav-item" data-toggle="tooltip" title="SIGN OUT" >
             <!-- (click)="isNavbarCollapsed = !isNavbarCollapsed"> --> 
-            <a (click)="signOut()" href="javascript:void(0)"  class="nav-link" alt="SIGN OUT">
+            <a (click)="signOut()" href="javascript:void(0)"  class="nav-link" alt="SIGN OUT" routerLink="/">
               <span class="d-inline d-md-none mr-2">Sign Out</span>
               <fa-icon [icon]="faPowerOff" size="lg"></fa-icon>
             </a>

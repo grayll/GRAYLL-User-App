@@ -24,10 +24,10 @@
 </div>
 
 <div class="bg-gradient text-light"
-     *ngIf="selectedTab && (selectedTab.id === 'openAlgoPositions' || selectedTab.id === 'allAlgoPositions')">
+     *ngIf="selectedTab && (selectedTab.id === 'openAlgoPositions')">
   <div class="row justify-content-center align-items-center mb-1 p-2">
     <div class="col-md-2 col-xs">
-      <span class="align-middle font-weight-bolder font-14">Open Algo Positions (1)</span>
+      <span class="align-middle font-weight-bolder font-14">Open Algo Positions ({{algoService.openPositions.length}})</span>
     </div>
     <div class="col" [routerLink]="['/system/overview', {outlets: {popup: 'cancel-algo-positions'}}]" style="outline: none;">
       <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
@@ -52,8 +52,7 @@
   </div>
 </div>
 
-<div class="table-responsive bg-gradient text-light pull-top"
-     *ngIf="selectedTab && (selectedTab.id === 'openAlgoPositions' || selectedTab.id === 'allAlgoPositions')">
+<div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab && (selectedTab.id === 'openAlgoPositions')">
   <table class="table mb-0">
     <thead>
     <tr class="font-weight-bolder font-10 text-light">
@@ -89,27 +88,32 @@
     <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
       <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
     </div>
-    <tr *ngFor="let position of openAlgoPositions">
-      <td class="width-91px">{{position.openDate}}</td>
+    <tr *ngFor="let position of algoService.openPositions">
+      <td class="width-91px">{{position.time}}</td>
       <td class="width-51px">{{position.status}}</td>
-      <td class="width-71px">
+      <!-- <td class="width-71px">
         <countdown [config]="getCountdownConfigFor(position.duration)"></countdown>
-      </td>
-      <td class="width-61px">{{position.algorithm}}</td>
-      <td class="width-73px">{{position.priceGRX}}</td>
-      <td class="width-73px">{{position.priceUSD}}</td>
-      <td class="width-91px">{{position.positionValueUSD}}</td>
-      <td class="width-91px">{{position.positionProfitUSD}}</td>
-      <td class="width-51px">{{position.roi}}%</td>
-      <td class="width-101px">{{position.grayllTransactionId}}</td>
-      <td class="width-101px">{{position.stellarTransactionId}}</td>
+      </td> -->
+      <td class="width-71px">{{position.duration_string}}</td>
+      <td class="width-61px">{{position.algorithm_type}}</td>
+      <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
+      <td class="width-73px">{{position.open_value_GRZ.toFixed(5)}}</td>
+      <td class="width-91px">{{position.current_position_value_$.toFixed(5)}}</td>
+      <td class="width-91px">{{position.current_position_ROI_$.toFixed(5)}}</td>
+      <td class="width-51px">{{position.current_position_ROI_percent.toFixed(5)}}%</td>
+      <!-- <td class="width-91px">{{(position.open_position_value_GRZ*authService.userData.grzPrice).toFixed(3)}}</td>
+      <td class="width-91px">{{(position.open_position_value_GRZ*(authService.userData.grzPrice - position.open_value_GRZ)).toFixed(3)}}</td>
+      <td class="width-51px">{{((authService.userData.grzPrice - position.open_value_GRZ)*100/position.open_value_GRZ).toFixed(3)}}%</td> -->
+
+      <td class="width-101px">{{position.grayll_transaction_id}}</td>
+      <td class="width-101px">{{position.open_stellar_transaction_id}}</td>
       <td class="text-center width-41px">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
+        <a href={{position.url}} target="_blank" >
           <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
         </a>
       </td>
       <td class="width-61px">
-        <a href="javascript:void(0)" class="purple-link">
+        <a href="javascript:void(0)" class="purple-link" (click)='closePosition(position)'>
           <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
           <span class="ml-1 cancel text-danger">Close</span>
         </a>
@@ -120,11 +124,10 @@
 </div>
 
 <div class="bg-gradient text-light" *ngIf="selectedTab">
-  <div class="row justify-content-center align-items-center mb-1 p-2 pt-4"
-       *ngIf="selectedTab.id === 'closedAlgoPositions' || selectedTab.id === 'allAlgoPositions'">
+  <div class="row justify-content-center align-items-center mb-1 p-2 pt-4" *ngIf="selectedTab.id === 'closedAlgoPositions' ">
     <hr class="m-0 py-2 w-100" style="border-color: #fff;">
     <div class="col-md-2 col-xs">
-      <span class="align-middle font-14 font-weight-bolder">Closed Algo Positions (10)</span><br>
+      <span class="align-middle font-14 font-weight-bolder">Closed Algo Positions ({{algoService.closePositions.length}})</span><br>
       <span class="text-light font-10 font-weight-bolder">Most Recent Closed Positions</span>
     </div>
     <div class="col">
@@ -152,8 +155,7 @@
   </div>
 </div>
 
-<div class="table-responsive bg-gradient text-light pull-top"
-     *ngIf="selectedTab && (selectedTab.id === 'closedAlgoPositions' || selectedTab.id === 'allAlgoPositions')">
+<div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab && (selectedTab.id === 'closedAlgoPositions')">
   <table class="table mb-0">
     <thead>
     <tr class="font-weight-bolder font-10 text-light">
@@ -185,95 +187,136 @@
     <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
       <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
     </div>
-    <tr>
-      <td class="width-91px">18/08/2019 04:14</td>
-      <td class="width-51px">CLOSED</td>
-      <td class="width-71px">23:59 | 12</td>
-      <td class="width-61px">GRY 1</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-91px">2,110,000,000.55555</td>
-      <td class="width-91px">1,000,000,000.55555</td>
-      <td class="width-51px">110.22%</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-53px"><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
-    </tr>
+    <tr *ngFor="let position of algoService.closePositions">
+      <td class="width-91px">{{position.time}}</td>
+      <td class="width-51px">{{position.status}}</td>
+      <!-- <td class="width-71px"><countdown [config]="getCountdownConfigFor(position.duration)"></countdown></td> -->
+      <td class="width-71px">{{position.duration_string}}</td>
+      <td class="width-61px">{{position.algorithm_type}}</td>
 
-    <tr>
-      <td class="width-91px">18/08/2019 04:14</td>
-      <td class="width-51px">CLOSED</td>
-      <td class="width-71px">23:59 | 12</td>
-      <td class="width-61px">GRY 1</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-91px">2,110,000,000.55555</td>
-      <td class="width-91px">1,000,000,000.55555</td>
-      <td class="width-51px">110.22%</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-53px"><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
+      <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
+      <td class="width-73px">{{position.open_value_GRZ.toFixed(5)}}</td>
+      <td class="width-91px">{{position.close_position_value_$}}</td>
+      <td class="width-91px">{{position.close_position_ROI_$.toFixed(5)}}</td>
+      <td class="width-51px">{{position.close_position_ROI_percent.toFixed(5)}}%</td>
+      <td class="width-101px">{{position.grayll_transaction_id}}</td>
+      <td class="width-101px">{{position.close_stellar_transaction_id.slice(-8)}}</td>
+      <td class="width-53px"><a href={{position.url}} target="_blank" class="purple-link">Details</a></td>
     </tr>
+    </tbody>
+  </table>  
+</div>
 
-    <tr>
-      <td class="width-91px">18/08/2019 04:14</td>
-      <td class="width-51px">CLOSED</td>
-      <td class="width-71px">23:59 | 12</td>
-      <td class="width-61px">GRY 1</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-91px">2,110,000,000.55555</td>
-      <td class="width-91px">1,000,000,000.55555</td>
-      <td class="width-51px">110.22%</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-53px"><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
+<!-- all position -->
+<div class="bg-gradient text-light"
+     *ngIf="selectedTab && (selectedTab.id === 'allAlgoPositions')">
+  <div class="row justify-content-center align-items-center mb-1 p-2">
+    <div class="col-md-2 col-xs">
+      <span class="align-middle font-weight-bolder font-14">All Algo Positions ({{algoService.allPositions.length}})</span>
+    </div>
+    <div class="col" [routerLink]="['/system/overview', {outlets: {popup: 'cancel-algo-positions'}}]" style="outline: none;">
+      <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+      <span class="ml-1 cancel text-danger">Close All Algo Positions</span>
+    </div>
+    <div class="col">
+      <div class="row">
+        <div class="col search">
+          <div class="input-group">
+            <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                   type="search" style="border-color: #40278C!important">
+            <span class="input-group-append">
+              <div class="input-group-text bg-transparent">
+                <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+              </div>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col d-none d-md-block"></div>
+  </div>
+</div>
+
+<div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab && (selectedTab.id === 'allAlgoPositions')">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th class="width-91px">Open Date</th>
+      <th class="width-51px">Status</th>
+      <th class="width-71px">Duration</th>
+      <th class="width-61px">Algorithm</th>
+      <th class="width-73px">Price (GRX)</th>
+      <th class="width-73px">Price (USD)</th>
+      <th (click)="sortByPositionValue()" class="cancel width-91px">
+        Position Value
+        <br>
+        (USD)<fa-icon [icon]="faSortByPositionValue" style="color: #40278C;"></fa-icon>
+      </th>
+      <th (click)="sortByPositionProfit()" class="cancel width-91px">
+        Position Profit
+        <br>
+        (USD)
+        <fa-icon [icon]="faSortByPositionProfit" style="color: #40278C;"></fa-icon>
+      </th>
+      <th (click)="sortByROI()" class="cancel width-51px">
+        ROI
+        <fa-icon [icon]="faSortByROI" style="color: #40278C;"></fa-icon>
+      </th>
+      <th class="width-101px">GRAYLL <br> Transaction ID</th>
+      <th class="width-101px">Stellar <br> Transaction ID</th>
+      <th class="width-41px">Info</th>
+      <th class="width-61px">Actions</th>
     </tr>
+    </thead>
 
-    <tr>
-      <td class="width-91px">18/08/2019 04:14</td>
-      <td class="width-51px">CLOSED</td>
-      <td class="width-71px">23:59 | 12</td>
-      <td class="width-61px">GRY 1</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-91px">2,110,000,000.55555</td>
-      <td class="width-91px">1,000,000,000.55555</td>
-      <td class="width-51px">110.22%</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-53px"><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
-    </tr>
+    <tbody class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [scrollWindow]="false">
+    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+    </div>
+    <tr *ngFor="let position of algoService.allPositions">
+      <td class="width-91px">{{position.time}}</td>
+      <td class="width-51px">{{position.status}}</td>
+      <!-- <td class="width-71px">
+        <countdown [config]="getCountdownConfigFor(position.duration)"></countdown>
+      </td> -->
+      <td class="width-71px">{{position.duration_string}}</td>
+      <td class="width-61px">{{position.algorithm_type}}</td>
+      <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
+      <td class="width-73px">{{position.open_value_GRZ.toFixed(5)}}</td>
+      <td *ngIf="position.status === 'OPEN'" class="width-91px">{{position.current_position_value_$}}</td>
+      <td *ngIf="position.status === 'OPEN'" class="width-91px">{{position.current_position_ROI_$.toFixed(5)}}</td>
+      <td *ngIf="position.status === 'OPEN'" class="width-51px">{{position.current_position_ROI_percent.toFixed(5)}}%</td>
 
-    <tr>
-      <td class="width-91px">18/08/2019 04:14</td>
-      <td class="width-51px">CLOSED</td>
-      <td class="width-71px">23:59 | 12</td>
-      <td class="width-61px">GRY 1</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-91px">2,110,000,000.55555</td>
-      <td class="width-91px">1,000,000,000.55555</td>
-      <td class="width-51px">110.22%</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-53px"><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
-    </tr>
+      <!-- <td *ngIf="position.status === 'OPEN'" class="width-91px">{{(position.open_position_value_GRZ*authService.userData.grzPrice).toFixed(3)}}</td>
+      <td *ngIf="position.status === 'OPEN'" class="width-91px">{{(position.open_position_value_GRZ*(authService.userData.grzPrice - position.open_value_GRZ)).toFixed(3)}}</td>
+      <td *ngIf="position.status === 'OPEN'" class="width-51px">{{((authService.userData.grzPrice - position.open_value_GRZ)*100/position.open_value_GRZ).toFixed(3)}}%</td> -->
 
-    <tr>
-      <td class="width-91px">18/08/2019 04:14</td>
-      <td class="width-51px">CLOSED</td>
-      <td class="width-71px">23:59 | 12</td>
-      <td class="width-61px">GRY 1</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-73px">0.14500</td>
-      <td class="width-91px">2,110,000,000.55555</td>
-      <td class="width-91px">1,000,000,000.55555</td>
-      <td class="width-51px">110.22%</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-101px">0108181408618385411</td>
-      <td class="width-53px"><a href="https://stellar.expert/explorer/public" target="_blank" class="purple-link">Details</a></td>
+      <td *ngIf="position.status != 'OPEN'" class="width-91px">{{position.close_position_value_$.toFixed(5)}}</td>
+      <td *ngIf="position.status != 'OPEN'" class="width-91px">{{position.close_position_ROI_$.toFixed(5)}}</td>
+      <td *ngIf="position.status != 'OPEN'" class="width-51px">{{position.close_position_ROI_percent.toFixed(5)}}%</td>
+
+      <td class="width-101px">{{position.grayll_transaction_id}}</td>
+
+      <td *ngIf="position.status === 'OPEN'" class="width-101px">{{position.open_stellar_transaction_id}}</td>
+      <td *ngIf="position.status != 'OPEN'" class="width-101px">{{position.close_stellar_transaction_id.slice(-8)}}</td>
+      
+      <td class="text-center width-41px">
+        <a href={{position.url}} target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+      <td *ngIf="position.status === 'OPEN'"  class="width-61px">
+        <a href="javascript:void(0)" class="purple-link" (click)='closePosition(position)'>
+          <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+          <span class="ml-1 cancel text-danger">Close</span>
+        </a>
+      </td>
+      <td *ngIf="position.status != 'OPEN'" class="width-61px">
+        
+      </td>
     </tr>
     </tbody>
   </table>
 </div>
+
+

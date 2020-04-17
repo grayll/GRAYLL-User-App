@@ -1,0 +1,16 @@
+<div class="sw-notify-wrapper" *ngIf="isNotify">
+  <div class="sw-main">
+    <div class="sw-group bg-purple">
+      <div class="sw-group-logo bg-purple">
+        <img alt="GRAYLL Logo" class="small-grayll-icon" src="assets/images/logo.png">
+      </div>
+      <div class="sw-group-text bg-purple">
+        <span>New version of the GRAYLL App is available.</span>
+      </div>
+      <div class="border-0 bg-purple text-btn">
+        <button class="refresh-btn btn btn-purple" (click)="refresh()">REFRESH</button>
+        <button class="close-btn btn" (click)="close()">X</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -8,7 +8,7 @@
         <h6 class="font-weight-bolder">{{notification.title}}</h6>
       </div>
       <div class="col text-right font-12">
-        {{notification.time}}
+        {{notification.time*1000 | date:'h:mm | d/M/yyyy'}}
       </div>
     </div>
     <div class="row">
@@ -25,9 +25,12 @@
           {{notification.body}}
         </div>
         <p class="font-12 mb-0">
-          <a href="javascript:void(0)" class="white-link" (click)="goTo('/system/activity')">
-            Position ID | {{notification.txId}}
+          <a href="{{notification.url}}" class="white-link" target="_blank">
+            Stellar | Transaction ID
           </a>
+          <!-- <a href="{{notification.url}}" target="_blank" class="white-link">
+            PAYOFF LOAN
+          </a> -->
         </p>
       </div>
     </div>

@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import {SharedService} from './shared/shared.service';
-import {SwPush} from "@angular/service-worker";
+import {SwPush, SwUpdate} from "@angular/service-worker";
 import {Router} from '@angular/router';
+import { AlgoliaService } from './algolia.service';
+import { SwUpdateNotifyService } from './shared/sw-update-notifiy/sw-update-notify.service';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -21,16 +24,55 @@ export class AppComponent {
   //         event.waitUntil(clients.openWindow(event.notification.data.url));
   //     }
   // });
-  constructor(public sharedService: SharedService,
+  constructor(public sharedService: SharedService, private algolia: AlgoliaService,
     private swPush: SwPush,
-    private router: Router,) {
-    this.swPush.notificationClicks.subscribe( noticeData =>
-      {        
-        const url = noticeData.notification.data.url
-        // window.open(url, '_blank');
-        // console.log('data.url: ' + url);
-        //this.router.navigate(noticeData.notification.data.url)
-        window.open(noticeData.notification.data.url, '_blank');
-     });
+    private router: Router,
+    public updates: SwUpdate,
+   
+    public swService: SwUpdateNotifyService,
+    ) {
+      this.algolia.init();
+      this.checkForUpdates(true)
+    // this.swPush.notificationClicks.subscribe( noticeData =>
+    //   {        
+    //     const url = noticeData.notification.data.url
+    //     // window.open(url, '_blank');
+    //     // console.log('data.url: ' + url);
+    //     //this.router.navigate(noticeData.notification.data.url)
+    //     window.open(noticeData.notification.data.url, '_blank');
+    //  });
+  }
+
+  // ngOnInit() {
+  //   // Get the instance of the Intercom and insert the logged in user info, we will insert the user email
+  //   // dynamically after we complete the user login or sign up flow.
+  //   (<any>window).Intercom('boot', {
+  //     email: 'xyz@gmail.com',
+  //     });
+  // }
+
+  checkForUpdates(isFirstCheck: boolean): void {
+    //console.log('checkForUpdates()');
+    this.updates.available.subscribe(event => 
+    {
+      this.swService.show()
+    });
+    if (this.updates.isEnabled) {
+        // Required to enable updates on Windows and ios.
+        this.updates.activateUpdate();
+        if (isFirstCheck){
+          this.updates.checkForUpdate().then(() => {
+            //console.log('Checking for updates');
+          });
+        } 
+        interval(1 * 60 * 1000).subscribe(() => {
+          //console.log('run interval 2 minutes');
+          this.updates.checkForUpdate().then(() => {
+              //console.log('3Checking for update');
+          });
+        });
+    }
+    // Important: on Safari (ios) Heroku doesn't auto redirect links to their https which allows the installation of the pwa like usual
+    // but it deactivates the swUpdate. So make sure to open your pwa on safari like so: https://example.com then (install/add to home)
   }
 }

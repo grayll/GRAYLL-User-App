@@ -13,6 +13,12 @@ import { interval, Subject } from 'rxjs';
 var StellarSdk = require('stellar-sdk');
 import {SnotifyService} from 'ng-snotify';
 import {PopupService} from 'src/app/shared/popup/popup.service';
+import { SwUpdateNotifyService } from '../../sw-update-notifiy/sw-update-notify.service';
+//import { AngularFireWrapper } from '../../services/angularfire.service';
+import * as firebase from 'firebase/app';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { AlgoService } from 'src/app/system/algo.service';
+import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
 
 @Component({
   selector: 'app-navbar',
@@ -42,38 +48,34 @@ export class NavbarComponent implements OnDestroy, OnInit {
   // Indicate shown update new version to users
   // If already shown not show again.
   shownUpdate: boolean = false
+  isSignout:boolean = false
    
   constructor(
     public authService: AuthService,
+    public algoService: AlgoService,
+    public noticeService: NoticeDataService,
+    public stellarService: StellarService,
+
     private router: Router,
     private ngZone:NgZone,
     public notificationsService: NotificationsService,
     public push: SwPush,
     public updates: SwUpdate,
-    public stellarService: StellarService,
+    
     private http: HttpClient,
-    private snotifyService: SnotifyService,
+   // private snotifyService: SnotifyService,
     public popupService: PopupService,   
+    public swService: SwUpdateNotifyService,
+   
+    //private afW: AngularFireWrapper,
     
   ) {
-
-    
-    // if (!this.authService.userData){
-    //   console.log('NAV.GetLocalUserData()')
-    //   this.authService.GetLocalUserData()
-    // } 
-    // console.log('NAV.userMetaStore:', this.authService.userMetaStore)
-    // if (!this.authService.userMetaStore || (this.authService.userMetaStore && this.authService.userMetaStore.XLM === 0)){      
-    //   this.authService.GetLocalUserMeta()
-    //   console.log('NAV.userMetaStore1:', this.authService.userMetaStore)
-    // } else {
-    //   console.log('NAV.userMetaStore:not load fromlocal')
-    // }   
-  
-    this.server = new StellarSdk.Server(environment.horizon_url);
-        
+       
+    this.server = new StellarSdk.Server(environment.horizon_url);      
+    this.authService.isGetBalance = false  
     // get user meta data
     this.authService.getUserMeta()
+        
     this.authService.streamPrices()
     if (this.authService.userMetaStore.TokenExpiredTime) {
       this.scheduleCheckTokenExpiry()
@@ -89,11 +91,11 @@ export class NavbarComponent implements OnDestroy, OnInit {
     if (!this.authService.userInfo){this.http.post(`api/v1/users/getUserInfo`, {})
       .subscribe(res => {
         let data = (res as any)        
-        if (data.errCode == environment.SUCCESS){ 
-          console.log('NAV-getUserInfo')   
+        if (data.errCode == environment.SUCCESS){           
           this.authService.ParseUserInfo(data)
+          //console.log('NAV-getUserInfo', this.authService.userInfo)  
           this.authService.pushUserInfoMsg(this.authService.userInfo)
-          //this.streaming()          
+          this.authService.DecryptLocalSecret()                 
         } else {
           console.log('getUserInfo-userInfo failed') 
         }     
@@ -106,6 +108,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
           if (data.errCode == environment.SUCCESS){            
             this.authService.ParseUserInfo(data)
             this.authService.pushUserInfoMsg(this.authService.userInfo)
+            this.authService.DecryptLocalSecret()
             // streaming payment and trade
             //this.streaming() 
           } else {
@@ -118,37 +121,22 @@ export class NavbarComponent implements OnDestroy, OnInit {
       })
     } else {
       //this.streaming()  
-    }    
-    this.subsink = new SubSink()
-    // this.subsink.add(push.messages.subscribe(msg => {
-    //   let data = (msg as any).notification      
-    //   if (data.type === 'wallet'){
-    //     console.log('navbar.UrWallet:', this.authService.userData.UrWallet)       
-    //     this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
-    //     console.log('navbar.UrWallet1:', this.authService.userData.UrWallet)       
-    //     if (data.asset === 'XLM'){
-    //       let amount = +data.amount
-    //       this.authService.userMetaStore.XLM = (this.authService.userMetaStore.XLM + amount).toFixed(7)
-    //     } else if( data.asset === 'GRX' || data.asset === 'GRXT'){
-    //       let amount = +data.amount
-    //       console.log('navbar.amount:', data.amount)
-    //       console.log('navbar.subscribe:totalGRX0:', this.authService.userMetaStore.GRX)
-    //       this.authService.userMetaStore.GRX = (+this.authService.userMetaStore.GRX + amount).toFixed(7)
-    //       console.log('navbar.subscribe:totalGRX1:', this.authService.userMetaStore.GRX)
-    //     }            
-    //   } else if (data.type === 'algo'){
-    //     this.authService.userData.UrAlgo = +this.authService.userData.UrAlgo + 1
-    //   } else if (data.type === 'general'){
-    //     this.authService.userData.UrGeneral = +this.authService.userData.UrGeneral + 1
-    //   }
-    //   this.authService.SetLocalUserData() 
-    // }));    
+    } 
+    
+    this.subsink = new SubSink()     
   }
 
   ngOnInit(){
     if (!this.authService.userData){      
       this.authService.GetLocalUserData()
     } 
+    // Add email for Intercom
+    (<any>window).Intercom('boot', {
+      app_id: "v9vzre42",    
+      user_hash: this.authService.userData.Hmac,
+      email: this.authService.userData.Email,
+      name: this.authService.userData.Name,
+    });
    
     if (this.authService.userMetaStore.XLM === 0){      
       this.authService.GetLocalUserMeta()      
@@ -170,84 +158,43 @@ export class NavbarComponent implements OnDestroy, OnInit {
           this.authService.userMetaStore.GRX = (balances as any).grx;
           this.authService.userMetaStore.XLM = (balances as any).xlm;
         }
-        // this.authService.userData.xlmPrice = xlmPrice
-        // this.authService.userData.grxPrice = grxPrice
-        // this.authService.SetLocalUserData()
-        // console.log('NAV.this.authService.userData.xlmPrice:', this.authService.userData.xlmPrice)
+        
+        this.authService.isGetBalance = true
         console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
         console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
         
       }) 
-    }
+    }    
+  }
+  
+  
 
-    //this.promptUser()    
-    this.checkForUpdates(true)
-    this.subsink.add(this.popupService.observeUpdate().subscribe( valid => {
-      console.log('subcribe reload')
-      this.shownUpdate = false
-      window.location.reload()
-    }))
-  }
-  
-  // ngOnInit1(){
-  //   console.log('navbar.subscribe', this.ComId)
-  //   if (this.ComId != 'notification'){
-  //     Promise.all([
-  //       this.stellarService.getCurrentGrxPrice1(),
-  //       this.stellarService.getCurrentXlmPrice1(),
-  //       this.stellarService.getAccountBalance(this.authService.userData.PublicKey)
-  //       .catch(err => {
-  //         // Notify internet connection.
-  //         //this.snotifyService.simple('Please check your internet connection.')
-  //         console.log(err)
-  //       })
-  //     ])
-  //     .then(([ grxPrice, xlmPrice, balances ]) => {         
-  //       this.authService.userMetaStore.GRX = (balances as any).grx;
-  //       this.authService.userMetaStore.XLM = (balances as any).xlm;
-  //       this.authService.userData.xlmPrice = xlmPrice
-  //       this.authService.userData.grxPrice = grxPrice
-  //       this.authService.SetLocalUserData()
-        
-  //       console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
-  //       console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
-        
-  //     }) 
-  //   }    
+  // initFireStoreDb(){    
+  //   var app = firebase.initializeApp(environment.dbs.systemtest, 'grayll-system-test');
+  //   let db = firebase.firestore(app);
+  //   db.collection('algo_positions/GRZ/algo_positions_open/').onSnapshot(snapshot => {
+      
+  //     snapshot.docChanges().forEach(function(change) {
+  //       if (change.type === "added") {
+  //           console.log("New: ", change.doc.data());
+  //       }
+  //       if (change.type === "modified") {
+  //           console.log("Modified: ", change.doc.data());
+  //       }
+  //       if (change.type === "removed") {
+  //           console.log("Removed: ", change.doc.data());
+  //       }
+  //     });
+  //   })
   // }
-  
-  checkForUpdates(isFirstCheck: boolean): void {
-    console.log('checkForUpdates()');
-    this.updates.available.subscribe(event => 
-    {
-      if (!this.shownUpdate){
-        this.promptUser()
-        this.shownUpdate = true
-      }      
-      console.log('Show new version url: ', this.router.url)
-      //this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
-      //this.popupService.open(this.router.url + "(popup)")
-    });
-    if (this.updates.isEnabled) {
-        // Required to enable updates on Windows and ios.
-        this.updates.activateUpdate();
-        if (isFirstCheck){
-          this.updates.checkForUpdate().then(() => {
-            console.log('Checking for updates');
-          });
-        } 
-        this.subsink.add(interval(2 * 60 * 1000).subscribe(() => {
-          console.log('run interval 2 minutes');
-          this.updates.checkForUpdate().then(() => {
-              console.log('2Checking for update');
-          });
-        }));
-    }
-    // Important: on Safari (ios) Heroku doesn't auto redirect links to their https which allows the installation of the pwa like usual
-    // but it deactivates the swUpdate. So make sure to open your pwa on safari like so: https://example.com then (install/add to home)
-  }
 
   promptUser(): void {
+    console.log('Update is available')
+    //this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
+    this.router.navigate(['/swnotify'])
+  }
+
+  promptUser1(): void {
     console.log('Update is available')
     if(confirm("New version of the GRAYLL App is available. Refresh?")) {
       this.updates.activateUpdate().then(() => {          
@@ -359,15 +306,27 @@ export class NavbarComponent implements OnDestroy, OnInit {
   @HostListener('window:beforeunload')
   ngOnDestroy():void {
     this.subsink.unsubscribe()
-    console.log('destroy:', this.authService.userMetaStore)
-    this.authService.SetLocalUserData()
-    this.authService.SetLocalUserMeta()
+    
+    if (!this.isSignout){
+      this.authService.SetLocalUserData()
+      this.authService.SetLocalUserMeta()
+    }
   }
 
-  signOut(){       
+  signOut(){  
+    this.isSignout = true
+    this.authService.subsink.unsubscribe()
+    if (this.authService.userMetaStore.OpenOrders > 0){
+      this.authService.updateUserMeta()
+    }
     localStorage.removeItem('grayll-user');    
+    localStorage.removeItem('grayll-user-meta'); 
+    this.algoService.resetServiceData()
+    this.authService.resetServiceData()
+    this.stellarService.resetServiceData()
+    this.noticeService.resetServiceData()
     this.ngZone.run(()=> {
-      this.router.navigateByUrl('/login')
+      this.router.navigateByUrl('/')
     })
   }
 }

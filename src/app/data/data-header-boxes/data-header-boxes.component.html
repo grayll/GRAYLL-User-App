@@ -6,7 +6,7 @@
         <div class="d-flex">
           <div class="px-3" routerLink="/wallet/overview" style="outline: none;">
             <span>Total Account Value</span>
-            <h5 class="font-weight-bolder bottom-border-navy-animated mb-0">${{algoService.getTotalAccountBl().toFixed(3)}}</h5>
+            <h5 class="font-weight-bolder bottom-border-navy-animated mb-0">${{authService.getTotalAccountValue().toFixed(3)}}</h5>
           </div>
           <div class="ml-auto">
             <div class="line-chart m-b-40 chart">
@@ -28,7 +28,7 @@
             </div>
             <div class="ml-auto text-right">
               <h6 class="text-white font-weight-bolder">Balance</h6>
-              <h6 class="text-white font-weight-bolder mb-0">{{'$' + (this.authService.xlmInUsd().toFixed(3))}}</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{this.authService.xlmInUsd().toFixed(3)}}</h6>
             </div>
           </div>
         </div>
@@ -43,7 +43,7 @@
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Balance</h6>
-              <h6 class="text-white font-weight-bolder mb-0">{{'$' + (this.authService.grxInUsd().toFixed(2))}}</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{this.authService.grxInUsd().toFixed(3)}}</h6>
             </div>
           </div>
         </div>
@@ -54,11 +54,11 @@
               <h6 class="text-white font-weight-bolder">
                 GRY | <span class="font-italic">3xMagi</span>
               </h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{authService.priceInfo.gryusd.toFixed(7)}}</h6>
             </div>
             <div class="ml-auto text-right">
               <h6 class="text-white font-weight-bolder">Value</h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{authService.getGRYBalance().toFixed(3)}}</h6>
             </div>
           </div>
         </div>
@@ -69,11 +69,11 @@
               <h6 class="text-white font-weight-bolder">
                 GRZ | <span class="font-italic">Arkady</span>
               </h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{authService.priceInfo.grzusd.toFixed(7)}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Value</h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}</h6>
             </div>
           </div>
         </div>
@@ -87,7 +87,7 @@
         <div class="d-flex">
           <div class="bottom-border-navy-animated px-3" style="outline: none;" routerLink="/system/overview">
             <span>Total Algo Profits</span>
-            <h5 class="font-weight-bolder mb-0">$0</h5>
+            <h5 class="font-weight-bolder mb-0">${{algoService.getTotalProfit().toFixed(3)}}</h5>
           </div>
           <div class="ml-auto">
             <div class="line-chart chart">
@@ -105,26 +105,26 @@
               <h6 class="text-white font-weight-bolder">
                 GRY | <span class="font-italic">3xMagi</span>
               </h6>
-              <h6 class="text-white font-weight-bolder">${{algoService.algoMetric.GRYBl}}</h6>
+              <h6 class="text-white font-weight-bolder">${{authService.priceInfo.gryusd.toFixed(7)}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Profits</h6>
-              <h6 class="text-white font-weight-bolder">$0</h6>
+              <h6 class="text-white font-weight-bolder">${{authService.getGRYProfit().toFixed(3)}}</h6>
             </div>
           </div>
 
-          <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center">            
             <div>
               <h6 class="font-weight-lighter text-white">% 24h</h6>
-              <h6 class="text-white font-weight-lighter m-0">0</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.gryMetric.OneDayPercent.toFixed(5)}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="font-weight-lighter text-white">% 7d</h6>
-              <h6 class="text-white font-weight-lighter m-0">0</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.gryMetric.SevenDayPercent.toFixed(5)}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="font-weight-lighter text-white">% ROI</h6>
-              <h6 class="text-white font-weight-lighter m-0">0</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.gryMetric.ROIPercent.toFixed(5)}}</h6>
             </div>
           </div>
         </div>
@@ -135,30 +135,30 @@
               <h6 class="text-white font-weight-bolder">
                 GRZ | <span class="font-italic">Arkady</span>
               </h6>
-              <h6 class="text-white font-weight-bolder">${{algoService.algoMetric.GRZBl}}</h6>
+              <h6 class="text-white font-weight-bolder">${{authService.priceInfo.grzusd.toFixed(5)}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Profits</h6>
-              <h6 class="text-white font-weight-bolder">$0</h6>
+              <h6 class="text-white font-weight-bolder">${{(authService.userMetaStore.total_grz_current_position_ROI_$ + 
+                authService.userMetaStore.total_grz_close_positions_ROI_$).toFixed(3)}}</h6>
             </div>
           </div>
 
           <div class="d-flex align-items-center">
             <div>
               <h6 class="font-weight-lighter text-white">% 24h</h6>
-              <h6 class="text-white font-weight-lighter m-0">0</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.OneDayPercent.toFixed(5)}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="font-weight-lighter text-white">% 7d</h6>
-              <h6 class="text-white font-weight-lighter m-0">0</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.SevenDayPercent.toFixed(5)}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="font-weight-lighter text-white">% ROI</h6>
-              <h6 class="text-white font-weight-lighter m-0">0</h6>
+              <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.ROIPercent.toFixed(5)}}</h6>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -168,7 +168,8 @@
         <div class="d-flex">
           <div class="bottom-border-navy-animated px-3" style="outline: none;" routerLink="/system/overview">
             <span>Total Open Algo Positions</span>
-            <h5 class="font-weight-bolder mb-0">0</h5>
+            <h5 class="font-weight-bolder mb-0">
+              {{authService.getTotalOpenPosition()}}</h5>
           </div>
           <div class="ml-auto">
             <div class="line-chart m-b-40 chart">
@@ -186,11 +187,11 @@
               <h6 class="text-white font-weight-bolder">
                 GRY 1 | <span class="font-italic">Balthazar</span>
               </h6>
-              <h6 class="text-white mb-0">Positions | {{algoService.algoMetric.GRYs}}</h6>
+              <h6 class="text-white mb-0">Positions | {{authService.userMetaStore.total_gry1_open_positions}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Value</h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{authService.userMetaStore.total_gry1_current_position_value_$.toFixed(3)}}</h6>
             </div>
           </div>
         </div>
@@ -201,11 +202,11 @@
               <h6 class="text-white font-weight-bolder">
                 GRY 2 | <span class="font-italic">Kaspar</span>
               </h6>
-              <h6 class="text-white mb-0">Positions | {{algoService.algoMetric.GRYs}}</h6>
+              <h6 class="text-white mb-0">Positions | {{authService.userMetaStore.total_gry2_open_positions}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Value</h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{authService.userMetaStore.total_gry2_current_position_value_$.toFixed(3)}}</h6>
             </div>
           </div>
         </div>
@@ -216,11 +217,11 @@
               <h6 class="text-white font-weight-bolder">
                 GRY 3 | <span class="font-italic">Melkior</span>
               </h6>
-              <h6 class="text-white mb-0">Positions | {{algoService.algoMetric.GRYs}}</h6>
+              <h6 class="text-white mb-0">Positions | {{authService.userMetaStore.total_gry3_open_positions}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Value</h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{authService.userMetaStore.total_gry3_current_position_value_$.toFixed(3)}}</h6>
             </div>
           </div>
         </div>
@@ -231,11 +232,11 @@
               <h6 class="text-white font-weight-bolder">
                 GRZ | <span class="font-italic">Arkady</span>
               </h6>
-              <h6 class="text-white mb-0">Positions | {{algoService.algoMetric.GRZs}}</h6>
+              <h6 class="text-white mb-0">Positions | {{authService.userMetaStore.total_grz_open_positions}}</h6>
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Value</h6>
-              <h6 class="text-white font-weight-bolder mb-0">$0</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}</h6>
             </div>
           </div>
         </div>
@@ -254,7 +255,7 @@
           <div class="d-flex justify-content-center">
             <div class="text-center mobile-bottom-border" routerLink="/wallet/overview" style="outline: none;">
               <span>Total Account Value</span>
-              <h5 class="font-weight-bolder mb-0">${{algoService.getTotalAccountBl().toFixed(3)}}</h5>
+              <h5 class="font-weight-bolder mb-0">${{authService.getTotalAccountValue().toFixed(3)}}</h5>
             </div>
           </div>
           <div class="chart mx-auto" style="max-width:130px;margin-top:15px;height:65px!important;">
@@ -300,11 +301,11 @@
                 <h6 class="text-white font-weight-bolder">
                   GRY | <span class="font-italic">3xMagi</span>
                 </h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.priceInfo.gryusd.toFixed(7)}}</h6>
               </div>
               <div class="ml-auto text-right">
                 <h6 class="text-white font-weight-bolder">Value</h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.getGRYBalance().toFixed(3)}}</h6>
               </div>
             </div>
           </div>
@@ -315,11 +316,11 @@
                 <h6 class="text-white font-weight-bolder">
                   GRZ | <span class="font-italic">Arkady</span>
                 </h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">$${{authService.priceInfo.grzusd.toFixed(7)}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="text-white font-weight-bolder">Value</h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}</h6>
               </div>
             </div>
           </div>
@@ -333,7 +334,7 @@
           <div class="d-flex justify-content-center">
             <div class="text-center mobile-bottom-border" routerLink="/system/overview" style="outline: none;">
               <span>Total Algo Profits</span>
-              <h5 class="font-weight-bolder mb-0">$0</h5>
+              <h5 class="font-weight-bolder mb-0">${{authService.getTotalAccountProfit().toFixed(3)}}</h5>
             </div>
           </div>
           <div class="chart mx-auto" style="max-width:130px;margin-top:15px;height:65px!important;">
@@ -349,26 +350,27 @@
                 <h6 class="text-white font-weight-bolder">
                   GRY | <span class="font-italic">3xMagi</span>
                 </h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.priceInfo.gryusd.toFixed(7)}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="text-white font-weight-bolder">Profits</h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.getGRYProfit().toFixed(3)}}
+                </h6>
               </div>
             </div>
 
             <div class="d-flex align-items-center">
               <div>
                 <h6 class="font-weight-lighter text-white">% 24h</h6>
-                <h6 class="text-white font-weight-lighter m-0">0</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gryMetric.OneDayPercent.toFixed(5)}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-lighter text-white">% 7d</h6>
-                <h6 class="text-white font-weight-lighter m-0">0</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gryMetric.SevenDayPercent.toFixed(5)}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-lighter text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">0</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.gryMetric.ROIPercent.toFixed(5)}}</h6>
               </div>
             </div>
           </div>
@@ -379,26 +381,27 @@
                 <h6 class="text-white font-weight-bolder">
                   GRZ | <span class="font-italic">Arkady</span>
                 </h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.priceInfo.grzusd.toFixed(7)}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="text-white font-weight-bolder">Profits</h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{(authService.userMetaStore.total_grz_current_position_ROI_$ + 
+                  authService.userMetaStore.total_grz_close_positions_ROI_$).toFixed(3)}}</h6>
               </div>
             </div>
 
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center">              
               <div>
                 <h6 class="font-weight-lighter text-white">% 24h</h6>
-                <h6 class="text-white font-weight-lighter m-0">0</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.OneDayPercent.toFixed(5)}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-lighter text-white">% 7d</h6>
-                <h6 class="text-white font-weight-lighter m-0">0</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.SevenDayPercent.toFixed(5)}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="font-weight-lighter text-white">% ROI</h6>
-                <h6 class="text-white font-weight-lighter m-0">0</h6>
+                <h6 class="text-white font-weight-lighter m-0">{{algoService.grzMetric.ROIPercent.toFixed(5)}}</h6>
               </div>
             </div>
           </div>
@@ -412,7 +415,7 @@
           <div class="d-flex justify-content-center">
             <div class="text-center mobile-bottom-border" routerLink="/system/overview" style="outline: none;">
               <span>Total Open Algo Positions</span>
-              <h5 class="font-weight-bolder mb-0">$0</h5>
+              <h5 class="font-weight-bolder mb-0">{{authService.getTotalOpenPosition()}}</h5>
             </div>
           </div>
           <div class="chart mx-auto" style="max-width:130px;margin-top:15px;height:65px!important;">
@@ -428,11 +431,11 @@
                 <h6 class="text-white font-weight-bolder">
                   GRY 1 | <span class="font-italic">Balthazar</span>
                 </h6>
-                <h6 class="text-white">Positions | 0</h6>
+                <h6 class="text-white">Positions | {{authService.userMetaStore.total_gry1_open_positions}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="text-white font-weight-bolder">Value</h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.userMetaStore.total_gry1_current_position_value_$.toFixed(3)}}</h6>
               </div>
             </div>
           </div>
@@ -443,11 +446,11 @@
                 <h6 class="text-white font-weight-bolder">
                   GRY 2 | <span class="font-italic">Kaspar</span>
                 </h6>
-                <h6 class="text-white">Positions | 0</h6>
+                <h6 class="text-white">Positions | {{authService.userMetaStore.total_gry2_open_positions}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="text-white font-weight-bolder">Value</h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.userMetaStore.total_gry2_current_position_value_$.toFixed(3)}}</h6>
               </div>
             </div>
           </div>
@@ -462,7 +465,7 @@
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="text-white font-weight-bolder">Value</h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.userMetaStore.total_gry3_current_position_value_$.toFixed(3)}}</h6>
               </div>
             </div>
           </div>
@@ -473,11 +476,11 @@
                 <h6 class="text-white font-weight-bolder">
                   GRZ | <span class="font-italic">Arkady</span>
                 </h6>
-                <h6 class="text-white">Positions | 0</h6>
+                <h6 class="text-white">Positions | {{authService.userMetaStore.total_grz_open_positions}}</h6>
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="text-white font-weight-bolder">Value</h6>
-                <h6 class="text-white font-weight-bolder">$0</h6>
+                <h6 class="text-white font-weight-bolder">${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}</h6>
               </div>
             </div>
           </div>

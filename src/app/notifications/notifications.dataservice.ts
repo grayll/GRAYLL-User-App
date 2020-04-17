@@ -5,11 +5,11 @@ import { NoticeId, Notice, Order, OrderId } from './notification.model';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import * as moment from 'moment'
+import { AuthService } from '../shared/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class NoticeDataService {
 
   private _data: BehaviorSubject<NoticeId[]>;
@@ -25,7 +25,7 @@ export class NoticeDataService {
   private _dataTrade: BehaviorSubject<OrderId[]>;
   public dataTrade: Observable<OrderId[]>;
   public dataTradeSync: OrderId[];
-
+  
   private _markAsRead: Subject<any>
 
   latestEntry: any;
@@ -34,7 +34,10 @@ export class NoticeDataService {
   latestEntryTrade: any;
   txUrl:string
   
-  constructor(private afs: AngularFirestore) {
+  constructor(
+    private afs: AngularFirestore,
+    private authService: AuthService,
+    ) {
     let url = 'https://stellar.expert/explorer/public/'
     if (environment.horizon_url.includes('testnet')){
       url = 'https://stellar.expert/explorer/testnet/'
@@ -42,6 +45,30 @@ export class NoticeDataService {
     url = url + 'search?term='
     this.txUrl = url
     this._markAsRead = new Subject<{}>()
+  }
+
+  resetServiceData(){
+    this._data = null
+    this.data = null
+    this.dataPaymentsSync = null
+
+    this._algoData = null
+    this.algoData = null
+
+    this._generalData = null
+    this.generalData = null
+    
+    this._dataTrade = null
+    this.dataTrade = null
+    this.dataTradeSync = null
+    
+    this._markAsRead = null
+
+    this.latestEntry = null
+    this.latestEntryGeneral = null
+    this.latestEntryAlgo = null
+    this.latestEntryTrade = null
+    this.txUrl = null
   }
 
   pushMarkRead(value:any){
@@ -77,7 +104,8 @@ export class NoticeDataService {
     //return this.afs.collection(ref, queryFn).snapshotChanges().pipe(
     return this.afs.collection(ref, queryFn).snapshotChanges(['added']).pipe(
       map(actions => actions.map(a => {
-        //const data = a.payload.doc.data();
+        
+        //console.log('a.payload.doc.data():', a.payload.doc.data())
         const data = a.payload.doc.data() as Notice;
         const id = a.payload.doc.id;
         const doc = a.payload.doc;
@@ -89,11 +117,27 @@ export class NoticeDataService {
         }
         let url = this.txUrl + a.payload.doc.data()["txId"]
         let counters = this.trimAddress(a.payload.doc.data()["counter"])
-        //console.log('a.payload.doc.data():', a.payload.doc.data())
+       
         return { id, doc, url, counters, times, ...data };     
 
       }))
     );
+  }
+
+  parseTransfer(notice){
+    let data = notice as Notice;
+        const id = notice.id;
+        
+        //let times = moment(a.payload.doc.data()["time"]*1000).format('HH:mm | DD/MM/YYYY')
+        let times =  moment.utc(notice.time*1000).local().format('DD/MM/YYYY HH:mm:ss')
+        // let issuer = 'Stellar'
+        // if (notice.asset.includes('GRX')){
+        //   issuer = 'GRAYLL'
+        // }
+        let url = this.txUrl + notice.txId
+        let counters = this.trimAddress(notice.counter)
+        //console.log('a.payload.doc.data():', a.payload.doc.data())
+        return { id, url, counters, times, ...data };     
   }
   getPaymentHistory(path:string, limit:number) {
     this._data = new BehaviorSubject([]);
@@ -118,15 +162,35 @@ export class NoticeDataService {
         const data = a.payload.doc.data() as OrderId;       
         //let times = moment(a.payload.doc.data()["time"]*1000).format('HH:mm | DD/MM/YYYY')
         let ts = a.payload.doc.data()["time"]
-        let times =  moment.utc(ts.seconds*1000).local().format('DD/MM/YYYY HH:mm:ss')
+        let times
+        if (isNaN(ts)){
+          times =  moment.utc(ts.seconds*1000).local().format('DD/MM/YYYY HH:mm:ss')
+        }  else {
+          times =  moment.utc(ts*1000).local().format('DD/MM/YYYY HH:mm:ss')
+        }  
+        //let times =  moment.utc(ts.seconds*1000).local().format('DD/MM/YYYY HH:mm:ss')
         
         let url = this.txUrl + a.payload.doc.data()["offerId"]        
         //console.log('a.payload.doc.data():', a.payload.doc.data())
-        return { url,times, ...data };     
+        return { url, times, ...data };     
 
       }))
     );
   }
+
+  parseTrade(trade){
+    const data = trade as OrderId; 
+    let times
+    if (isNaN(trade.time)){
+      times =  moment.utc(trade.time.seconds*1000).local().format('DD/MM/YYYY HH:mm:ss')
+    }  else {
+      times =  moment.utc(trade.time*1000).local().format('DD/MM/YYYY HH:mm:ss')
+    }  
+    
+    let url = this.txUrl + trade.offerId        
+    return { url, times, ...data };     
+  }
+  
   getTradeHistory(path:string, limit:number) {
     this._dataTrade = new BehaviorSubject([]);    
     this.dataTrade = this._dataTrade.asObservable()
@@ -137,9 +201,14 @@ export class NoticeDataService {
       .subscribe(data => {
         console.log('trade data:', data)
         if (data.length && data.length > 0){
-          this.latestEntryTrade = data[data.length - 1].doc;  
+          this.latestEntryTrade = data[data.length - 1].doc; 
           this.dataTradeSync = data       
           this._dataTrade.next(data);
+          if (this.authService.reload){
+            this.authService.pushShouldReload(true)
+          } else {
+           this.authService.reload = true
+          }
         }
     });
   }
@@ -151,20 +220,20 @@ export class NoticeDataService {
     await this.afs.doc(collPath+ '/' + id).set({isRead:true}, {merge : true})
   }
   // In your first query you subscribe to the collection and save the latest entry
- first(path:string, limit:number) {
-  this._data = new BehaviorSubject([]);
-  //this.data = this._data.asObservable().subscribe(res => this.allData.push(res));
-  this.data = this._data.asObservable()
+  first(path:string, limit:number) {
+    this._data = new BehaviorSubject([]);
+    //this.data = this._data.asObservable().subscribe(res => this.allData.push(res));
+    this.data = this._data.asObservable()
 
-  const scoresRef = this.getCollection(path, ref => ref
-    .orderBy('time', 'desc')
-    .limit(limit))
-    .subscribe(data => {
-      if (data.length && data.length > 0){
-        this.latestEntry = data[data.length - 1].doc;       
-        this._data.next(data);
-      }
-    });
+    const scoresRef = this.getCollection(path, ref => ref
+      .orderBy('time', 'desc')
+      .limit(limit))
+      .subscribe(data => {
+        if (data.length && data.length > 0){
+          this.latestEntry = data[data.length - 1].doc;       
+          this._data.next(data);
+        }
+      }); 
   }
 
   firstGeneral(path:string, limit:number) {
@@ -178,7 +247,7 @@ export class NoticeDataService {
       .subscribe(data => {
         if (data.length && data.length > 0){
           this.latestEntryGeneral = data[data.length - 1].doc;
-          console.log(data[data.length - 1].doc.data())
+          //console.log(data[data.length - 1].doc.data())
           this._generalData.next(data);
         }
       });
@@ -194,7 +263,25 @@ export class NoticeDataService {
       .subscribe(data => {
         if (data.length && data.length > 0){
           this.latestEntryAlgo = data[data.length - 1].doc;
-          console.log(data[data.length - 1].doc.data())
+          //console.log(data[data.length - 1].doc.data())
+          this._algoData.next(data);
+        }
+      });
+  }
+
+  firstAlgoType(path:string, limit:number, type:string) {
+    this._algoData = new BehaviorSubject([]);
+    //this.data = this._data.asObservable().subscribe(res => this.allData.push(res));
+    this.algoData = this._algoData.asObservable()
+  
+    const scoresRef = this.getCollection(path, ref => ref
+      .where('type', '==', type)
+      //.orderBy('time', 'desc')
+      .limit(limit))
+      .subscribe(data => {
+        if (data.length && data.length > 0){
+          this.latestEntryAlgo = data[data.length - 1].doc;
+          //console.log(data[data.length - 1].doc.data())
           this._algoData.next(data);
         }
       });

@@ -13,7 +13,7 @@ export interface Order {
   "offerId":  number; 
 }
 
-export interface OrderId extends Notice { id: string; }
+export interface OrderId extends Order { id: string; }
 
 export class GRY1NotificationModel {
   constructor(

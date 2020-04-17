@@ -14,11 +14,14 @@ import { environment } from 'src/environments/environment';
 import {ActivityResult} from './models/activity-results';
 import {PopupService} from 'src/app/shared/popup/popup.service';
 import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
-import { NoticeId, OrderId } from 'src/app/notifications/notification.model';
-import { Observable } from 'rxjs';
+import { NoticeId, OrderId, Notice, Order } from 'src/app/notifications/notification.model';
+import { Observable, of } from 'rxjs';
+import { LoadingService } from '../services/loading.service';
+import { AccountActivityService } from './account-activity.service';
+import { FormControl } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 var StellarSdk = require('stellar-sdk')
-
 
 @Component({
   selector: 'app-account-activity',
@@ -69,7 +72,12 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
   item: any
   notices: Observable<NoticeId[]>;
   tradess: Observable<OrderId[]>;
-  
+  private debounce: number = 400;
+  isInitData: boolean = true  
+
+  searchControl: FormControl;
+
+  searchResult: any[];
 
   constructor(
     private clipboardService: ClipboardService,
@@ -80,6 +88,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     private sharedService:SharedService,
     private popupService: PopupService,
     private dataService:NoticeDataService,
+    private loadingService: LoadingService,
+    private accountService: AccountActivityService
   ) {
     
     this.subs = new SubSink()
@@ -88,9 +98,10 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
 
     this.stellarService.allOffers = null
     this.stellarService.trades = null 
+    this.authService.reload = false
     this.getAccountOrders(null, true)
     this.getAccTrades()
-
+    
     // Promise.all([
     //   this.getAccountOrders(null, true),
       
@@ -113,32 +124,69 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       console.log(err)
     })
 
-    // this.subs.add(this.popupService.observeValidation().subscribe(valid => {
-    //   if (valid){//cancel
-    //     if (this.item){
-    //       this.cancelCurrentOffer(this.item)    
-    //     }
-    //   }
-    // }))
+    this.isInitData = false
   }
 
+  ngOnInit() {
+    this.setActiveTab();    
+    this.searchControl = new FormControl('');
+    this.searchControl.valueChanges
+      .pipe(debounceTime(this.debounce), distinctUntilChanged())
+      .subscribe(query => {
+        if (query) {          
+          this.accountService.searchData(this.activeTabId, this.authService.userInfo.Uid, query).then(data => {
+            console.log(data.hits)
+            if(this.activeTabId === 'networkHistory'){
+              
+            } else if(this.activeTabId === 'transfers'){
+              this.searchResult = (data.hits as Notice[]).map(item => {
+                return this.dataService.parseTransfer(item)
+              })
+              this.notices = of(this.searchResult)             
+            } else{              
+              this.searchResult = (data.hits as OrderId[]).map(item => {
+                return this.dataService.parseTrade(item)
+              })
+              this.tradess = of(this.searchResult )
+            }
+          }).catch(e => {
+            console.log(e)
+          })
+        }
+      });
 
-  ngOnChanges() {
-    
+    //  this.addDataInFirebase(); 
+
+    // this.openOrders$ = this.accountActivityService.orders.subscribe(res => {
+    //   this.openOrders = [...res];
+    // });
+
+    // this.transfers$ = this.accountActivityService.transfers.subscribe(res => {
+    //   this.transfers = [...res];
+    // });
+
+    // this.networkHistories$ = this.accountActivityService.networkHistory.subscribe(res => {
+    //   this.networkHistories = [...res];
+    // });
+  }
+
+  ngOnChanges() {    
     console.log('change:', this.shouldReload);
+    this.searchResult = []
     this.stellarService.allOffers = null
-    this.getAccountOrders(null, true)
-      // Promise.all([
-      //   this.getAccountOrders(null, true),
-      //   this.getAccountTrades(null)
-      // ]).then(([ofs, trades]) => {
-
-      // }).catch( err => {
-      //   console.log('Error get open order and trade:', err)
-      // })   
-
+    if (this.authService.reload){
+      this.getAccountOrders(null, true)
       this.grxP = +this.authService.userData.grxPrice
       this.xlmP = +this.authService.userData.xlmPrice
+    }
+    // Promise.all([
+    //   this.getAccountOrders(null, true),
+    //   this.getAccountTrades(null)
+    // ]).then(([ofs, trades]) => {
+
+    // }).catch( err => {
+    //   console.log('Error get open order and trade:', err)
+    // }) 
   }
   downloadHistory(){
     console.log('this.selectedTab.id:', this.selectedTab.id)
@@ -165,16 +213,22 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       case "order":
         columns = ['Date',	'Type',	'Asset',	'Amount',	'Filled',	'Price (XLM)',	'Total Price (XLM)',	'Price (USD)',	'Total Price (USD)', 'URL']
         fields = ['times','type','asset','amount', 'filled','xlmp','totalxlm','priceusd', 'totalusd', 'url']
-        fileName = "OrderHistory.PDF"
-        //data = this.offers            
-        //data = this.stellarService.allOffers
-        data = this.dataService.dataTradeSync
+        fileName = "OrderHistory.PDF"        
+        if (this.searchResult.length > 0){
+          data = this.searchResult
+        } else {
+          data = this.dataService.dataTradeSync
+        }        
         break
       case "transfer":
         columns = ['Date',	'Counterparty',	'Asset', 'Issuer',	'Amount', 'Url']
         fields = ['times','counter','asset', 'issuer', 'amount', 'url']
         fileName = "TransferHistory.PDF"
-        data = this.dataService.dataPaymentsSync         
+        if (this.searchResult.length > 0){
+          data = this.searchResult
+        } else {
+          data = this.dataService.dataPaymentsSync      
+        }   
         break
       case "network":
           columns = ['Date',	'Operation', 'ID', 'Amount',	'Asset', 'Account', 'Url']
@@ -189,29 +243,13 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     this.sharedService.savePDF(columns, fields, data, fileName)
   }
   
-  // validateSession(){
-  //   if (this.authService.isTokenExpired()){
-  //     this.snotifyService.simple('Your session has expired! Please login again.'); 
-  //     this.router.navigateByUrl('/login')
-  //     return false
-  //   } 
-  //   if (!this.authService.hash){
-  //     this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
-  //     return false
-  //   }
-  //   return true
-  // }
-
   validateSession(){
     if (this.authService.isTokenExpired()){
       this.snotifyService.simple('Your login session has expired! Please login again.'); 
       this.router.navigateByUrl('/login')
       return false
     } 
-    // if (!this.authService.hash || this.authService.userInfo.Setting.MulSignature){     
-    //   this.router.navigate(['/wallet/overview', {outlets: {popup: 'input-password'}}]);
-    //   return false
-    // }  
+      
     return true  
   }
 
@@ -224,7 +262,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     this.cancelCurrentOffer(this.item)    
       
   }
-  async cancelCurrentOffer(item){    
+  async cancelCurrentOffer1(item){    
       try {   
         let xdr = await this.stellarService.getCancelOfferXdr(this.authService.userInfo.PublicKey, item.cachedOffer)
         this.authService.makeTransaction(xdr, "cancel").subscribe(res => {
@@ -258,22 +296,40 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       }
     
   }
-  cancelCurrentOffer1(item){
-    this.authService.GetSecretKey(null).then(SecKey => {      
-      this.stellarService.cancelOffer(SecKey, item.cachedOffer, this.authService.userData, item.realAmount, item.assetType).then(res=>
-        {               
+  cancelCurrentOffer(item){
+    //this.authService.GetSecretKey(null).then(SecKey => {     
+      this.loadingService.show() 
+      this.stellarService.cancelOffer(this.authService.getSecretKey(), item.cachedOffer, this.authService.userMetaStore, item.realAmount, item.assetType).then(res=>
+        {    
+          console.log('cancelCurrentOffer a', this.authService.userMetaStore, item.assetType, item.realAmount)                 
           this.stellarService.allOffers.splice(item.index, 1)
           if (this.authService.userMetaStore.OpenOrders){
             this.authService.userMetaStore.OpenOrders -=1
-          } else {
-            this.authService.userMetaStore.OpenOrders = 0
-          }
+          } 
           if (this.authService.userMetaStore.OpenOrders < 0){
             this.authService.userMetaStore.OpenOrders = 0
           }
-          this.authService.SetLocalUserData()    
+                   
+          if(item.assetType === 'XLM'){                        
+            this.authService.userMetaStore.OpenOrdersXLM = +this.authService.userMetaStore.OpenOrdersXLM - +item.realAmount
+            console.log('cancelCurrentOffer 21', this.authService.userMetaStore, item.assetType, item.realAmount) 
+          } else {
+            this.authService.userMetaStore.OpenOrdersGRX = +this.authService.userMetaStore.OpenOrdersGRX - +item.realAmount
+          }
+          
+          this.loadingService.hide()
+          // if (this.authService.userMetaStore.OpenOrders){
+          //   this.authService.userMetaStore.OpenOrders -=1
+          // } else {
+          //   this.authService.userMetaStore.OpenOrders = 0
+          // }
+          // if (this.authService.userMetaStore.OpenOrders < 0){
+          //   this.authService.userMetaStore.OpenOrders = 0
+          // }
+          //this.authService.SetLocalUserData()    
         }
       ).catch(e => {
+        this.loadingService.hide()
         console.log('cancelOffer error:', e)
         if (e.toString().includes('status code 400')){
           this.snotifyService.simple('Insufficient funds to cancel this order! Please add more funds to your account.')  
@@ -281,7 +337,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
           this.snotifyService.simple(`The order could not be cancelled! Please retry.`)
         }
       })
-    })
+    //})
   }
 
   parseAsset(asset) {
@@ -304,9 +360,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     }
   }
   
-  ngOnInit() {
-	  this.setActiveTab();
-  }
+ 
   onScrollOpenOrders() {
     if (this.activityResult.openOrderNextURL && this.activityResult.openOrderEmptyResultTimes < 3){
       console.log('onScrollTransfers called get')
@@ -507,6 +561,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
           this.authService.userMetaStore.OpenOrdersGRX = totalOpenGRX    
           this.authService.userMetaStore.OpenOrdersXLM = totalOpenXLM 
         }
+
+        console.log('ACC-ACTIVITY-METASTORE:',this.authService.userMetaStore)
         //this.offers = this.stellarService.allOffers 
         // if (this.stellarService.allOffers ){        
         //   this.stellarService.allOffers = this.stellarService.allOffers.concat(records)
@@ -523,6 +579,9 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
         this.authService.SetLocalUserData() 
       } else {
         this.activityResult.openOrderEmptyResultTimes += 1 
+        this.authService.userMetaStore.OpenOrdersGRX = 0    
+        this.authService.userMetaStore.OpenOrdersXLM = 0 
+        this.authService.userMetaStore.OpenOrders = 0
       }
       //console.log('end getAccountOrders:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
     })
@@ -585,13 +644,14 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
   onTabChange(id: string) {
     console.log('tab: ', id)
     this.selectedTab = this.activityTabs.find((t) => t.id === id);
+    this.activeTabId = id
     switch (id){
       case 'allOrders':
         this.stellarService.allOffers = null
         this.stellarService.trades = null
-        this.getAccountOrders(null, false)
+        this.getAccountOrders(null, true)
         this.getAccTrades()
-        //this.getAccountTrades(null)
+        // this.getAccountTrades(null)
 
         // console.log('start Promise.all:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
         // Promise.all([          

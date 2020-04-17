@@ -19,7 +19,7 @@ import {DisableWalletAppNotificationsSettingsComponent} from './notifications-se
 import {DisableAlgoAppNotificationsSettingsComponent} from './notifications-settings/disable-algo-app-notifications-settings/disable-algo-app-notifications-settings.component';
 import {RevealSecretKeyPopupComponent} from '../shared/popup/reveal-secret-key-popup/reveal-secret-key-popup.component';
 import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
-import {InputPasswordComponent} from '../shared/popup/input-password/input-password.component';
+import {ReActivateAccountComponent} from '../shared/popup/reactivate-account/reactivate-account.component';
 import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
 import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 
@@ -120,8 +120,13 @@ const popupRoutes: Routes = [
     outlet: 'popup'
   },
   {
-    path: 'input-password',
-    component: InputPasswordComponent,
+    path: 'reactivate-account',
+    component: ReActivateAccountComponent,
+    outlet: 'popup'
+  },
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent,
     outlet: 'popup'
   },
   {

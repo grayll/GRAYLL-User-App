@@ -83,7 +83,7 @@ export class DataComponent implements OnInit, OnDestroy {
 
   private loadDataFromRoute() {
     const data = this.activatedRoute.snapshot.data;
-    this.activeTabId = 'wallet-activity';
+    this.activeTabId = 'system-activity';
     this.activeSubTabId = data.subTab;
     console.log('TAB:', data.tab)
     console.log('SUB-TAB:', data.subTab)

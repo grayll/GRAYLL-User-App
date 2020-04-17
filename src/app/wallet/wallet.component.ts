@@ -21,40 +21,19 @@ export class WalletComponent implements OnInit, OnDestroy {
     public sharedService: SharedService,
     public stellarService: StellarService,
     public authService: AuthService,
-    private snotifyService: SnotifyService,
-    //updates: SwUpdate, push: SwPush
+    private snotifyService: SnotifyService    
   ) {
     this.pageId = "wallet"  
-    this.shouldReload = false    
-    // Promise.all([
-    //   this.stellarService.getCurrentGrxPrice1(),
-    //   this.stellarService.getCurrentXlmPrice1(),
-    //   this.stellarService.getAccountData(this.authService.userData.PublicKey)
-    //   .catch(err => {
-    //     // Notify internet connection.
-    //     this.snotifyService.simple('Please check your internet connection!')
-    //     console.log(err)
-    //   })
-    // ])
-    // .then(([ grx, xlm, account ]) => {
-    //   console.log(grx, xlm)      
-    //   this.stellarService.userAccount = account;
-    //   this.stellarService.publishPrices([+grx,+xlm])
-      
-    // })
-
-    this.authService.subShouldReload().subscribe(s => {
-      // if (s === true){
-      //   console.log('update should reload', s)
-      //   this.shouldReload = !this.shouldReload
-      // }
+    this.shouldReload = false     
+    this.authService.subShouldReload().subscribe(s => {    
+      // make change on  shouldReload so OnChange on account activity is triggered
       this.shouldReload = !this.shouldReload
     })
    }
 
   ngOnInit(): void {
     window.scroll(0, 0);
-    this.changeBackgroundColor(true);
+    this.changeBackgroundColor(true);   
   }
   @HostListener('window:beforeunload')
   ngOnDestroy(): void {
