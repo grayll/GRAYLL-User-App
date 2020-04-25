@@ -133,40 +133,25 @@ export class SystemHeaderBoxesComponent implements OnInit {
     )
   }
 
-  populateMaxGRX() {
-    //this.GRXValue = this.totalGRX.toString();
+  populateMaxGRX() {    
     this.algoPosition.grxAmount = this.authService.getMaxAvailableGRX()
-    this.itemChange = 'grxAmountChange' 
-    //this.calculateAmount() 
+    this.itemChange = 'grxAmountChange'    
   }
   
-  usdAmountChange(){
-    // if (this.algoPosition.usdValue && !this.isValidNumber(this.algoPosition.usdValue)) {
-    //   this.errorService.handleError(null, 'Please enter a valid USD Value.');
-    //   return false;
-    // }
-    // console.log('usdAmountChange')
-    this.itemChange = 'usdAmountChange'
-    //this.calculateAmount()   
+  usdAmountChange(){    
+    this.itemChange = 'usdAmountChange'    
   }
   itemAmountChange(){
     if (this.algoPosition.itemAmount && !this.isValidNumber(this.algoPosition.itemAmount)) {
       this.errorService.handleError(null, 'Please enter a valid Amount Value.');
       return false;
-    }
-    //this.itemChange = 'itemAmountChange'
-    console.log('itemAmountChange')
-    //this.calculateAmount()
+    }   
+    console.log('itemAmountChange')    
   }
-  grxAmountChange(){
-    // if (this.algoPosition.grxAmount && !this.isValidNumber(this.algoPosition.grxAmount)) {
-    //   this.errorService.handleError(null, 'Please enter a valid GRX Amount Value.');
-    //   return false;
-    // }
-
+  grxAmountChange(){    
     console.log('grxAmountChange')
     this.itemChange = 'grxAmountChange' 
-    //this.calculateAmount() 
+    
   }
 
   calculateAmount(){
@@ -387,10 +372,10 @@ export class SystemHeaderBoxesComponent implements OnInit {
     
   private openPopup() {
     
-    //console.log('this.algoPosition:', this.algoPosition)
     if (this.selectedTab.id != 'GRZ'){
       return
     }
+   
     this.loadingService.show()
     this.stellarService.sendAsset(this.authService.getSecretKey(), environment.HOT_WALLET_ONE, 
       this.algoPosition.grxAmount.toString(), this.stellarService.grxAsset, '').then( txHash => {
@@ -432,33 +417,51 @@ export class SystemHeaderBoxesComponent implements OnInit {
               this.loadingService.hide()
           },
           e => {
-
             this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
             this.loadingService.hide()
           })
-        } else {
-          return
-          this.http.post(environment.grz_api_url + 'api/v1/gry/position/open', {
+        } else { // post for gry
+          let data = {
             user_id:this.authService.userInfo.Uid,            
             open_stellar_transaction_id:txHash,
             grayll_transaction_id:"0",
             open_position_timestamp:0,
-            //algorithm_type:this.algoPosition.id,
+            algorithm_type:this.selectedTab.id,
             open_value_GRY: this.algoPosition.itemPrice,
             open_value_GRX: this.algoPosition.grxPrice,
             open_position_total_$:+this.algoPosition.usdValue,
             open_position_fee_$:+this.algoPosition.usdValue*+this.selectedTab.fee,
-            open_position_fee_GRX:this.algoPosition.grxAmount*+this.selectedTab.fee,
-    
-            open_position_value_$:this.algoPosition.positionValue,
+            open_position_fee_GRX:+this.algoPosition.grxAmount*+this.selectedTab.fee,
+            duration:0,
+            current_position_ROI_$:0,
+            current_position_ROI_percent:0,            
+            open_position_value_$: this.algoPosition.usdValue - this.algoPosition.usdValue*+this.selectedTab.fee,
             open_position_total_GRX:+this.algoPosition.grxAmount,
-            open_position_value_GRZ:+this.algoPosition.itemAmount,
+            open_position_value_GRY:+this.algoPosition.itemAmount - +this.algoPosition.itemAmount*+this.selectedTab.fee,
             open_position_value_GRX:(+this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee),
-          }).subscribe( 
-            res => {
-              if ((res as any).errCode != environment.SUCCESS){
+          }
+          let url = ''
+          switch(this.selectedTab.id){
+            case "GRY 1":
+              url = environment.gry1_api_url 
+              break
+            case "GRY 2":
+              url = environment.gry2_api_url 
+              break
+            case "GRY 3":
+              url = environment.gry3_api_url 
+              break
+          }
+          this.http.post(url + 'api/v1/gry/position/open', data).subscribe(res => {
+              if ((res as any).errCode != environment.SUCCESS){               
                 this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
               } else {
+                //console.log('res:', res)
+               this.algoPosition.grayllTxId = (res as any).grayllTxId
+               this.algoPosition.stellarTxId = (res as any).stellarTxId
+               this.algoPosition.openFee$ = +this.algoPosition.usdValue*+this.selectedTab.fee
+               this.algoPosition.positionValueGRX = +this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee
+               this.sharedService.openAlgoPosition(this.algoPosition);
                this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
               }
               this.loadingService.hide()
@@ -466,15 +469,13 @@ export class SystemHeaderBoxesComponent implements OnInit {
           e => {
             this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
             this.loadingService.hide()
-          })
+          })          
         }
       }).catch( e => {
         console.log(e)
         this.loadingService.hide()
         this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
-      })    
-      
-    
+      })
   }
 
   

@@ -5,7 +5,8 @@
   <div class="col-11">
     <div class="row mt-1">
       <div class="col">
-        <h6 class="font-weight-bolder">{{notification.title}}</h6>
+        <!-- <h7 class="font-weight-bolder">{{notification.title}}</h7> -->
+        <p class="h7 font-weight-bolder">{{notification.title}}</p>
       </div>
       <div class="col text-right font-12">
         {{notification.time*1000 | date:'h:mm | d/M/yyyy'}}
@@ -14,23 +15,20 @@
     <div class="row">
       <div class="col">
         <div class="row">
-          <div class="col-10">
+          <div class="col-10 font-12">
             {{notification.title}}
           </div>
           <div class="col text-right hover" (click)="expandNotification()">
             <fa-icon [attr.aria-expanded]="!isContentCollapsed" aria-controls="collapsedContent" [icon]="faExpand"></fa-icon>
           </div>
         </div>
-        <div id="collapsedContent" [ngbCollapse]="isContentCollapsed">
+        <div id="collapsedContent" class="font-12" [ngbCollapse]="isContentCollapsed">
           {{notification.body}}
         </div>
-        <p class="font-12 mb-0">
+        <p *ngIf="notification.url" class="font-12 mb-0">
           <a href="{{notification.url}}" class="white-link" target="_blank">
             Stellar | Transaction ID
-          </a>
-          <!-- <a href="{{notification.url}}" target="_blank" class="white-link">
-            PAYOFF LOAN
-          </a> -->
+          </a>          
         </p>
       </div>
     </div>

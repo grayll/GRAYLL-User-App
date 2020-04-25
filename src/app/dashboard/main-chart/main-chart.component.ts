@@ -67,12 +67,12 @@ export class MainChartComponent {
         
         let timeFrame:TimePrice[] = [] 
         data.res.grxusd.forEach(p => {
-          let np = {t: new Date(p.ts*1000), y:p.price}   
+          let np = {t: new Date(p.ts*1000), y:p.price}
           timeFrame.unshift(np)
         });
         this.lineChartData[0].data  = timeFrame        
       }   
-
+      
       if (data.res.gryusd && data.res.gryusd[0]){ 
         
         let timeFrame:TimePrice[] = [] 
@@ -221,7 +221,14 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
         {
           id: 'id-left',
           position: 'left',
-          ticks: { fontColor: 'white' },
+          ticks: { fontColor: 'white' ,
+          callback: label => {            
+            let s = `$ ${label}`
+            if (label.toString().length <= 2 ){              
+              s= `$ ${label}.0`              
+            }            
+            return s
+          }},
           gridLines: { color: 'rgba(255,255,255,0.1)' }                  
         },
         {
@@ -241,7 +248,7 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
       mode: 'nearest',
       callbacks: {
         label: function(tooltipItem, myData) {            
-          return (+tooltipItem.yLabel.toString()).toFixed(9) + ':' + tooltipItem.xLabel as string;
+          return (+tooltipItem.yLabel.toString()).toFixed(4) + ':' + tooltipItem.xLabel as string;
         }
       }
     },

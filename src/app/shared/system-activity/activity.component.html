@@ -97,7 +97,7 @@
       <td class="width-71px">{{position.duration_string}}</td>
       <td class="width-61px">{{position.algorithm_type}}</td>
       <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
-      <td class="width-73px">{{position.open_value_GRZ.toFixed(5)}}</td>
+      <td class="width-73px">{{(position.open_value_GRZ || position.open_value_GRY).toFixed(5)}}</td>
       <td class="width-91px">{{position.current_position_value_$.toFixed(5)}}</td>
       <td class="width-91px">{{position.current_position_ROI_$.toFixed(5)}}</td>
       <td class="width-51px">{{position.current_position_ROI_percent.toFixed(5)}}%</td>
@@ -195,7 +195,7 @@
       <td class="width-61px">{{position.algorithm_type}}</td>
 
       <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
-      <td class="width-73px">{{position.open_value_GRZ.toFixed(5)}}</td>
+      <td class="width-73px">{{(position.open_value_GRZ || position.open_value_GRY).toFixed(5)}}</td>
       <td class="width-91px">{{position.close_position_value_$}}</td>
       <td class="width-91px">{{position.close_position_ROI_$.toFixed(5)}}</td>
       <td class="width-51px">{{position.close_position_ROI_percent.toFixed(5)}}%</td>
@@ -282,7 +282,7 @@
       <td class="width-71px">{{position.duration_string}}</td>
       <td class="width-61px">{{position.algorithm_type}}</td>
       <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
-      <td class="width-73px">{{position.open_value_GRZ.toFixed(5)}}</td>
+      <td class="width-73px">{{(position.open_value_GRZ || position.open_value_GRY).toFixed(5)}}</td>
       <td *ngIf="position.status === 'OPEN'" class="width-91px">{{position.current_position_value_$}}</td>
       <td *ngIf="position.status === 'OPEN'" class="width-91px">{{position.current_position_ROI_$.toFixed(5)}}</td>
       <td *ngIf="position.status === 'OPEN'" class="width-51px">{{position.current_position_ROI_percent.toFixed(5)}}%</td>

@@ -5,7 +5,7 @@
   <div class="col-11">
     <div class="row mt-1">
       <div class="col">
-        <h6 class="font-weight-bolder">{{notification.title}}</h6>
+        <p class="h7 font-weight-bolder">{{notification.title}}</p>
       </div>
       <div class="col text-right font-12">
         {{notification.times}}
@@ -14,14 +14,14 @@
     <div class="row">
       <div class="col">
         <div class="row">
-          <div class="col-10">
+          <div class="col-10 font-12">
             {{notification.title}}
           </div>
           <div class="col text-right hover" (click)="expandNotification()">
             <fa-icon [attr.aria-expanded]="!isContentCollapsed" aria-controls="collapsedContent" [icon]="faExpand"></fa-icon>
           </div>
         </div>
-        <div id="collapsedContent" [ngbCollapse]="isContentCollapsed">
+        <div id="collapsedContent" class="font-12" [ngbCollapse]="isContentCollapsed">
           {{notification.body}}
         </div>
         <p *ngIf="notification.txId" class="font-12 mb-0">
