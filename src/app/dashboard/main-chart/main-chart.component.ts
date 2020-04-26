@@ -229,7 +229,12 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
             }            
             return s
           }},
-          gridLines: { color: 'rgba(255,255,255,0.1)' },                     
+          gridLines: { color: 'rgba(255,255,255,0.1)' },
+          scaleLabel: {
+            display: true,
+            labelString: 'GRYusd',
+            fontColor: 'white',
+          },               
         },
         {
           id: 'id-right',

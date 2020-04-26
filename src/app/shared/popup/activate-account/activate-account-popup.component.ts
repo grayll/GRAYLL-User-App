@@ -129,29 +129,29 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
       'maxlength':     'Password cannot be more than 36 characters long.'
     },    
   };
-  activate() {    
+  activate() {  
+    this.loadingService.show()  
     if (this.isSubmitted){
+      console.log('already clicked')
       return
     }
-    this.isSubmitted = true    
+    this.isSubmitted = true  
     this.errorService.clearError();
     this.onValueChanged()
 
     if (this.authService.hash && this.authService.hash != '' && this.frm.value['password'] != this.authService.hash){
+      this.isSubmitted = false
       this.errorService.handleError(null, "Please enter a valid password!")
       return
     }
-    this.loadingService.show()
-    this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {
-      //console.log('phrase:', res.recoveryPhrase)  
-      
+   
+    this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {      
       this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), '', (enSecret) => { 
-       
+        this.isSubmitted = false
         let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
           enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
               
-        this.http.post(`api/v1/users/validateaccount`, data)
-        .subscribe(resp => {
+        this.http.post(`api/v1/users/validateaccount`, data).subscribe(resp => {
           console.log(resp)
           if ((resp as any).errCode === environment.SUCCESS){                
             this.stellarService.trustAsset(res.keypair.secret()).then(
@@ -184,20 +184,24 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
               }
             ).catch(e => {
               console.log('trustAsset.create error: ', e)
+              this.loadingService.hide()
               this.error = true;
               this.success = false;
               this.loadingService.hide()
             })                                            
           } else if ((resp as any).errCode === environment.INVALID_UNAME_PASSWORD){
+            this.loadingService.hide()
             this.frm.reset()
              this.errorService.handleError(null, "Please enter a valid password!")
           } else {
+            this.loadingService.hide()
             this.frm.reset()
             this.errorService.handleError(null, "The account could not be activated! Please retry.")
           }
-          this.loadingService.hide()
+          
         },
         err => {
+          this.isSubmitted = false
           console.log(err)
           this.error = true;
           this.success = false;

@@ -88,7 +88,7 @@ export class LoginComponent {
       ],
       'password': ['', [
         //Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[$@$!%*#?&])([0-9A-Za-z$@$!%*#?&]+)$'),
-        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
         Validators.minLength(8),
         Validators.maxLength(36)
       ]
@@ -178,7 +178,7 @@ export class LoginComponent {
                 this.authService.userData.grxPrice = data.userMeta.GrxP
                 this.authService.userMetaStore = data.userMeta
                 this.authService.userMetaStore.ShouldReload = true
-                console.log('login - this.authService.userMetaStore: ', this.authService.userMetaStore)
+               // console.log('login - this.authService.userMetaStore: ', this.authService.userMetaStore)
                 this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
                                
                 //store on local storage
@@ -225,12 +225,12 @@ export class LoginComponent {
                                 //console.log('saveEnSecretKeyData error', e)
                                 this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.salt}).subscribe( 
                                   res => {
-                                    console.log('saveEnSecretKeyData', res)
+                                    //console.log('saveEnSecretKeyData', res)
                                     this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
                                       //console.log('login-secretKeyBundle:', secretKeyBundle)
                                       this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
                                       this.authService.SetLocalUserData()
-                                      console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                                      //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                                     })  
                                   },
                                   e => {

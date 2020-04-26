@@ -161,9 +161,7 @@ export class AuthService {
       total_gry2_close_positions_ROI_$:0, total_gry2_current_position_value_$:0, total_gry2_open_positions:0, total_gry2_current_position_ROI_$:0,
       total_gry3_close_positions_ROI_$:0, total_gry3_current_position_value_$:0, total_gry3_open_positions:0, total_gry3_current_position_ROI_$:0}
   }
-
- 
-
+  
   getUserMeta(){
     if (this.userMetaStore.ShouldReload){
      this._userMeta = new Subject<UserMeta>()
@@ -207,8 +205,8 @@ export class AuthService {
         this.userMetaStore.total_gry3_open_positions = +(data.total_gry3_open_positions ? data.total_gry3_open_positions: 0).toFixed(5)
 
         this.balanceUpdateCount++
-        console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
-        console.log('GETUSERMETA:', this.userMetaStore)
+        // console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
+        // console.log('GETUSERMETA:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
        
       }))
@@ -235,10 +233,10 @@ export class AuthService {
         this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? data.OpenOrdersGRX:0
 
         this.balanceUpdateCount++
-        console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
-        console.log('GETUSERMETA:', this.userMetaStore)
+        //console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
+        //console.log('GETUSERMETA:', this.userMetaStore)
         this.userMetaStore.ShouldReload = false
-       // this._userMeta.next(data)
+       
       })
     }
   }
@@ -284,8 +282,7 @@ export class AuthService {
               demand: false
             } 
             
-          } else {
-            //console.log('update grz')
+          } else {            
             this.grzUpdatedAt = moment.now()
             this.countdownConfigs[1] = {
               leftTime: 60,
@@ -297,7 +294,7 @@ export class AuthService {
           }
           this.priceInfo.price_updated = data.price_updated
         }        
-        console.log('STREAM-price:', data)  
+        //console.log('STREAM-price:', data)  
         
       }))
     }
@@ -395,22 +392,17 @@ export class AuthService {
 
   GetSecretKey(pwd):Promise<any>{
     return new Promise((resolve, reject) => {
-      console.log('GetSecretKey')
-      if (this.secretKey){
-        console.log('GetSecretKey1')
+      
+      if (this.secretKey){        
         resolve(this.secretKey)
-      } else {
-        console.log('GetSecretKey2')
+      } else {        
         let password = pwd
-        if (this.hash){
-          console.log('GetSecretKey3')
+        if (this.hash){          
           password = this.hash
         }
-        if (!password){
-          console.log('GetSecretKey4')
+        if (!password){          
           return ''
-        }
-        console.log('GetSecretKey5')
+        }        
         this.stellarService.decryptSecretKey(password, {Salt: this.userInfo.SecretKeySalt, EnSecretKey:this.userInfo.EnSecretKey}, 
           SecKey => {
             if (SecKey != ''){

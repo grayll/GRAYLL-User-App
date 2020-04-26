@@ -671,7 +671,7 @@ export class StellarService {
                         weight: 10                        
                     }
                 }))                 
-                .setTimeout(180)
+                .setTimeout(0)
                 .build()
                 tx.sign(source)  
                 let xdr = tx.toXDR('base64') 
