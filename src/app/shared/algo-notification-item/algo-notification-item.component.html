@@ -27,7 +27,7 @@
         </div>
         <p *ngIf="notification.url" class="font-12 mb-0">
           <a href="{{notification.url}}" class="white-link" target="_blank">
-            Stellar | Transaction ID
+            Stellar | Transaction ID | {{notification.url.substr(51,19)}}
           </a>          
         </p>
       </div>

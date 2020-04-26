@@ -219,7 +219,7 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
       }],
       yAxes: [
         {
-          id: 'id-left',
+          id: 'id-left',                    
           position: 'left',
           ticks: { fontColor: 'white' ,
           callback: label => {            
@@ -229,7 +229,7 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
             }            
             return s
           }},
-          gridLines: { color: 'rgba(255,255,255,0.1)' }                  
+          gridLines: { color: 'rgba(255,255,255,0.1)' },                     
         },
         {
           id: 'id-right',
