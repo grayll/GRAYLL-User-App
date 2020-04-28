@@ -68,7 +68,7 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   private clientValidation(): boolean {
-    var pwdPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?]+)$/;
+    var pwdPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?])([0-9A-Za-z!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?]+)$/;
     let msgs = [   'Password must include at least one letter, one number, one capital and one special character.',
     'Password length must be from 8 to 36 characters long.']
 

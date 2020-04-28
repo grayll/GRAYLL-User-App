@@ -88,8 +88,9 @@ export class LoginComponent {
       ],
       'password': ['', [
         //Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[$@$!%*#?&])([0-9A-Za-z$@$!%*#?&]+)$'),
-        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
-        Validators.minLength(8),
+       // Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+       Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?])([0-9A-Za-z!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?]+)$/), 
+       Validators.minLength(8),
         Validators.maxLength(36)
       ]
     ],
@@ -140,16 +141,17 @@ export class LoginComponent {
   get f() { return this.loginForm.controls; }
 
   loginClicked() {    
-    if (this.submitted){
-      return
-    }
+    // if (this.submitted){
+    //   return
+    // }
+    this.submitted = true;
     this.errorService.clearError()
     this.onValueChanged()     
     // stop here if form is invalid
     if (this.loginForm.invalid) {
       return;
     }
-    this.submitted = true;
+   
     this.loadingService.show()
     // Execute recaptcha
     //console.log('start call recapcha:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))

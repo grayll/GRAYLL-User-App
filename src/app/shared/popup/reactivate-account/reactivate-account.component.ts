@@ -57,10 +57,18 @@ export class ReActivateAccountComponent implements OnInit {
             this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, enSecret.Salt, (secretKeyBundle) => {             
               this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey 
               this.authService.secretKey =  secretKey            
-              this.authService.SetLocalUserData()            
+              this.authService.SetLocalUserData()    
+              
+              //this.authService.userData.PublicKey = res.keypair.publicKey()                     
+                
+                
+                this.authService.userInfo.EnSecretKey =  secretKeyBundle.EnSecretKey 
+                this.authService.userInfo.SecretKeySalt = enSecret.Salt
+                //this.authService.userInfo.PublicKey = res.keypair.publicKey() 
+                this.loadingService.hide()
+                this.popupService.close()
             })  
-            this.loadingService.hide()
-            this.popupService.close()
+           
           } else {
             //this.form.reset()              
             let message = 'Can reactivate account now. Please retry!'

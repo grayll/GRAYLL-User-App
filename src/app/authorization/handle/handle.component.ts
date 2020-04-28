@@ -102,7 +102,7 @@ export class HandleComponent implements OnInit {
   }
   buildForm(): void {
     this.handleForm = this.formBuilder.group({      
-      password: ['', [ Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?+-=\[\]{};':"|,.<>\/?]+)$/),          
+      password: ['', [ Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?])([0-9A-Za-z!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?]+)$/),         
       Validators.minLength(8),
       Validators.maxLength(36)]],      
       confirm: ['', Validators.required]

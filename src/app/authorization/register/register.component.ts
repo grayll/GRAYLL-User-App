@@ -59,8 +59,9 @@ export class RegisterComponent implements OnInit {
         ]
       ],
       'password': ['', [
-          //Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[$@$!%*#?&])([0-9A-Za-z$@$!%*#?&]+)$'),
-        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+          
+       // Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?])([0-9A-Za-z!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?]+)$/),
         Validators.minLength(8),
         Validators.maxLength(36)
        ]
@@ -82,7 +83,7 @@ export class RegisterComponent implements OnInit {
         
         for (const key in control.errors) {
           this.formErrors[field] += messages[key] + ' ';
-        }
+        }        
       }
     }
   }
@@ -120,24 +121,20 @@ export class RegisterComponent implements OnInit {
 get f() { return this.registerForm.controls; }
 
 registerClicked() {
-  if (this.submitted){
-    return
-  }
+  console.log('form clicked')   
   this.submitted = true;
   this.errorService.clearError();
   this.onValueChanged()
   // stop here if form is invalid
   if (this.registerForm.invalid) {
-      console.log('form invalid')
-      this.submitted = false;
+      console.log('form invalid')     
       return;
-  }
- 
-  this.loadingService.show()
+  }  
+  console.log('form valid')   
   
+  this.loadingService.show()
   this.recaptchaV3Service.execute('register')
-    .subscribe(token => {
-      this.submitted = false
+    .subscribe((token) => {
       // Verify token 
       axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
         headers: { Authorization: "Bearer " + token }
@@ -157,9 +154,11 @@ registerClicked() {
               let content = "The email entered is already registered."
               this.errorService.handleError(null, content)
               this.registerForm.reset() 
-            } else { 
-              this.router.navigate(['/confirm-email'], { state: { email: this.registerForm.value['email'],
-              name: this.registerForm.value['name']}})
+            } else {              
+              this.ngZone.run(() => {                    
+                this.router.navigate(['/confirm-email'], { state: { email: this.registerForm.value['email'],
+                  name: this.registerForm.value['name']}})
+              }) 
             }
           },
           error => {
@@ -172,10 +171,6 @@ registerClicked() {
       }).catch(e => {
         this.loadingService.hide()
       })
-    },
-    err => {
-      this.loadingService.hide()
-      this.submitted = false
     })
   }  
 }

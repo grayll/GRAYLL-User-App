@@ -91,7 +91,8 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
   buildForm(): void {    
     this.frm = this.formBuilder.group({      
       'password': ['', [       
-        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+        //Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?])([0-9A-Za-z!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?]+)$/),
         Validators.minLength(8),
         Validators.maxLength(36)
        ]
@@ -130,24 +131,24 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     },    
   };
   activate() {  
-    this.loadingService.show()  
-    if (this.isSubmitted){
-      console.log('already clicked')
-      return
-    }
-    this.isSubmitted = true  
+    //console.log('clicked')
+    // if (this.isSubmitted){
+    //   console.log('already clicked')
+    //   return
+    // }
+    // this.isSubmitted = true  
     this.errorService.clearError();
     this.onValueChanged()
-
+    this.loadingService.show()  
     if (this.authService.hash && this.authService.hash != '' && this.frm.value['password'] != this.authService.hash){
-      this.isSubmitted = false
+      //this.isSubmitted = false
       this.errorService.handleError(null, "Please enter a valid password!")
       return
     }
    
     this.stellarService.makeSeedAndRecoveryPhrase(this.authService.userData.Email, res => {      
       this.stellarService.encryptSecretKey(this.frm.value['password'], res.keypair.rawSecretKey(), '', (enSecret) => { 
-        this.isSubmitted = false
+        //this.isSubmitted = false
         let data = {password:this.frm.value['password'], publicKey: res.keypair.publicKey(), 
           enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
               
@@ -167,9 +168,10 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
                 this.authService.userInfo.LoanPaidStatus = 1
                 this.authService.userInfo.EnSecretKey =  enSecret.EnSecretKey
                 this.authService.userInfo.SecretKeySalt = enSecret.Salt
+                this.authService.userInfo.PublicKey = res.keypair.publicKey()  
                 this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, 
                   res.keypair.rawSecretKey(), this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                  console.log('activate-secretKeyBundle:', secretKeyBundle)
+                  //console.log('activate-secretKeyBundle:', secretKeyBundle)
                   this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
                   this.authService.SetLocalUserData() 
                   this.authService.RemoveSeedData() 
@@ -201,7 +203,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
           
         },
         err => {
-          this.isSubmitted = false
+          //this.isSubmitted = false
           console.log(err)
           this.error = true;
           this.success = false;
@@ -215,7 +217,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
   retry() {
     this.error = false;
     this.success = false;
-    this.isSubmitted = false;
+    //this.isSubmitted = false;
     this.activate()
   }
 

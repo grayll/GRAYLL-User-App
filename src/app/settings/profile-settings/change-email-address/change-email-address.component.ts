@@ -44,7 +44,7 @@ export class ChangeEmailAddressComponent implements OnInit {
       newEmail: [null, [Validators.required, Validators.email]],
       confirmNewEmail: [null, [Validators.required, Validators.email]],
       password: [null, 
-        [ Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+        [ Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?])([0-9A-Za-z!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?]+)$/),
           Validators.minLength(8),
           Validators.maxLength(36)]]
     });
