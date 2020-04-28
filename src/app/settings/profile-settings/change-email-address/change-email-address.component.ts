@@ -40,9 +40,9 @@ export class ChangeEmailAddressComponent implements OnInit {
 
   private initializeForm() {
     this.form = this.formBuilder.group({
-      currentEmail: [null, [Validators.required, Validators.email]],
-      newEmail: [null, [Validators.required, Validators.email]],
-      confirmNewEmail: [null, [Validators.required, Validators.email]],
+      currentEmail: [null, [Validators.required, Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)]],
+      newEmail: [null, [Validators.required, Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)]],
+      confirmNewEmail: [null, [Validators.required, Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)]],
       password: [null, 
         [ Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?])([0-9A-Za-z!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?]+)$/),
           Validators.minLength(8),

@@ -54,13 +54,11 @@ export class RegisterComponent implements OnInit {
       'lname': ['', [Validators.required, Validators.minLength(3),
         Validators.maxLength(50)]],      
       'email': ['', [
-          Validators.required,
-          Validators.email
+          Validators.required,        
+          Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/),
         ]
       ],
-      'password': ['', [
-          
-       // Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?])([0-9A-Za-z!~@#$%^&*()_?\\\\=\\\\+[\]{};':"|,.<>\/?]+)$/),
+      'password': ['', [       
         Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?])([0-9A-Za-z!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?]+)$/),
         Validators.minLength(8),
         Validators.maxLength(36)
@@ -108,7 +106,7 @@ export class RegisterComponent implements OnInit {
     },
     'email': {
       'required':      'Email is required.',
-      'email':         'Email must be a valid email'
+      'pattern':         'Email must be a valid email'
     },
     'password': {
       'required':      'Password is required.',
