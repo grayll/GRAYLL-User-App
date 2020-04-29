@@ -93,7 +93,8 @@ export class TwoFactorComponent {
     .subscribe(res => {
       console.log('verifyTfaAuth-data: ', res)     
       if ((res as any).valid === true ){
-        this.router.navigate(['/settings/profile'])
+        //this.router.navigate(['/settings/profile'])
+        this.router.navigate(['/dashboard/overview'])
         if (this.dontAskForNext30Days){
           console.log('Do not ask for the next 30 days.')          
           this.authService.userInfo.Expire = exp

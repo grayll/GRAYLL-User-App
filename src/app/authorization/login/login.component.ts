@@ -141,9 +141,7 @@ export class LoginComponent {
   get f() { return this.loginForm.controls; }
 
   loginClicked() {    
-    // if (this.submitted){
-    //   return
-    // }
+    
     this.submitted = true;
     this.errorService.clearError()
     this.onValueChanged()     
@@ -182,17 +180,17 @@ export class LoginComponent {
                 this.authService.userMetaStore.ShouldReload = true
                // console.log('login - this.authService.userMetaStore: ', this.authService.userMetaStore)
                 this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
-                               
-                //store on local storage
+                
                 if (this.authService.userInfo.Tfa){
                     //let d = new Date();
                     let curTime = new Date().getTime();
-                    let tfaData = this.authService.GetLocalTfa(this.authService.userInfo.Uid)                    
+                    let tfaData = this.authService.GetLocalTfa(this.authService.userInfo.Uid)  
+                    console.log('LOGIN-',tfaData)                  
                     if (tfaData && tfaData.Expire && this.authService.userInfo.Expire > 0 && curTime <= this.authService.userInfo.Expire &&                          
                         tfaData.Expire === this.authService.userInfo.Expire){                      
                       this.router.navigate(['/dashboard/overview'])
-                    } else {
-                      this.router.navigate(['/login/two-factor'])
+                    } else {                      
+                      this.router.navigate(['/two-factor'])
                     }
                 } else {                  
                   this.router.navigate(['/dashboard/overview'])
@@ -319,12 +317,6 @@ export class LoginComponent {
       return false;
     }
     return true;
-  }
-
-  loginClicked1() {
-    if (!this.clientValidation()) { return; }
-    this.errorService.clearError();
-    this.router.navigate(['/login/two-factor']);
   }
   
   installApp() {

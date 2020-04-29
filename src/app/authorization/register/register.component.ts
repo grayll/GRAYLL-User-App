@@ -62,8 +62,7 @@ export class RegisterComponent implements OnInit {
         Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?])([0-9A-Za-z!~@#$%^&*()`_?\-\=\+\[{}\]\\;':"|,.<>/?]+)$/),
         Validators.minLength(8),
         Validators.maxLength(36)
-       ]
-      ],  
+       ]],  
       });
   }
 
@@ -74,11 +73,9 @@ export class RegisterComponent implements OnInit {
     for (const field in this.formErrors) {
       // clear previous error message (if any)
       this.formErrors[field] = '';
-      const control = form.get(field);    
-      
+      const control = form.get(field);      
       if (control && control.invalid) {        
-        const messages = this.validationMessages[field];       
-        
+        const messages = this.validationMessages[field];        
         for (const key in control.errors) {
           this.formErrors[field] += messages[key] + ' ';
         }        
