@@ -7,6 +7,7 @@ import { HttpClient } from  '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {SnotifyService} from 'ng-snotify';
 import { Router } from '@angular/router';
+import { LoadingService } from '../../services/loading.service';
 
 @Component({
   selector: 'app-confirm-pw',
@@ -28,6 +29,7 @@ export class ConfirmPasswordComponent implements OnInit {
     private authService: AuthService,    
     private http: HttpClient,
     private router: Router,
+    private loadingService: LoadingService,
   ) {    
     
     //this.remainingTime = '5:00'
@@ -75,10 +77,11 @@ export class ConfirmPasswordComponent implements OnInit {
     
     if (this.authService.userInfo.Tfa){
       // Verify 2FA code
+      this.loadingService.show()  
       this.authService.verifyTfaAuth(this.faCode, this.password, -2).subscribe(         
         res => {                 
           if ((res as any).errCode === environment.SUCCESS ){                 
-            this.renewToken()                    
+            this.renewToken('')                    
           } else {        
             switch ((res as any).errCode){
               case environment.TOKEN_INVALID:
@@ -94,21 +97,25 @@ export class ConfirmPasswordComponent implements OnInit {
           this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.')
         })        
     } else {
-      this.authService.GetSecretKey(this.password).then(SecKey => {
-        if (SecKey != ''){
-          // send request api for re-new token
-          this.renewToken()            
-        } else {       
-          this.errorService.handleError(null, 'Please enter the valid password!');
-        }
-      })
+      this.loadingService.show()  
+      this.renewToken(this.password)  
+      // this.authService.DecryptLocalSecret()
+      // this.authService.GetSecretKey(this.password).then(SecKey => {
+      //   if (SecKey != ''){
+      //     // send request api for re-new token
+      //     this.renewToken(this.password)            
+      //   } else {       
+      //     this.errorService.handleError(null, 'Please enter the valid password!');
+      //   }
+      // })
     }
    
   }
 
-  renewToken(){
-    this.http.post("api/v1/users/Renew", {}).subscribe(
-      res => {            
+  renewToken(pwd){
+    this.http.post("api/v1/users/Renew", {password:pwd}).subscribe(
+      res => {     
+        this.loadingService.hide()       
         let data =  (res as any)             
         if (data.errCode === environment.SUCCESS) {
           this.authService.userData.token = data.token
@@ -122,7 +129,8 @@ export class ConfirmPasswordComponent implements OnInit {
           clearInterval(this.x);
         }
       },
-      err => {           
+      err => { 
+        this.loadingService.hide()             
         this.errorService.handleError(null, 'Your renew token may be expired, please signout and login again.');
       }
     )  

@@ -79,8 +79,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     this.authService.streamPrices()
     if (this.authService.userMetaStore.TokenExpiredTime) {
       this.scheduleCheckTokenExpiry()
-    } 
-    else {
+    } else {
       this.authService.userMeta.subscribe(data => {
         console.log('scheduleCheckTokenExpiry-data', data)        
         this.scheduleCheckTokenExpiry()
@@ -272,7 +271,8 @@ export class NavbarComponent implements OnDestroy, OnInit {
       console.log('token is expired, signout')
       this.signOut()
     } else {
-      let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 15*60*1000
+      //let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 15*60*1000
+      let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 3*60*1000
       console.log('remaining time for renew token:', remainTime, this.authService.userMetaStore)
       if (remainTime >= 0){
         setTimeout(()=> {
@@ -280,7 +280,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
           console.log('nav-scheduleCheckTokenExpiry-route:', this.router.url)
           this.ngZone.run(()=>{
             if ( !this.router.url.includes('confirm-password')){
-            this.router.navigate([this.router.url, {outlets: {popup: 'confirm-password'}}]);
+              this.router.navigate([this.router.url, {outlets: {popup: 'confirm-password'}}]);
             }
           })
           console.log('will renew the token')
@@ -315,7 +315,9 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
   signOut(){  
     this.isSignout = true
-    this.authService.subsink.unsubscribe()
+    if (this.authService.subsink){
+      this.authService.subsink.unsubscribe()
+    }
     if (this.authService.userMetaStore.OpenOrders > 0){
       this.authService.updateUserMeta()
     }

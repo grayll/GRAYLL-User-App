@@ -979,26 +979,24 @@ export class StellarService {
         }, 'base64');
     }
     
-    decryptSecretKey(password, enSecretKeyBundle, callback) {
-        //const nonce = new Uint8Array(24);
-        //console.log('pwd', password, enSecretKeyBundle)
-        //console.log('enSecretKeyBundle', enSecretKeyBundle)
-        
-        var secretBox = require('secret-box')
-        scrypt(
-            password,
-            enSecretKeyBundle.Salt,
-            this.logN,
-            this.blockSize,
-            126,
-            this.interruptStep,
-            (derivedKey) => {
-                //const secretKey = secretBox.decrypt(new Buffer(naclutil.decodeBase64(enSecretKeyBundle.EnSecretKey)), new Buffer(derivedKey)) 
-                const secretKey = secretBox.decrypt(new Buffer(naclutil.decodeBase64(enSecretKeyBundle.EnSecretKey)), new Buffer(derivedKey))              
-                //let secretKeyStr =  this.SecretBytesToString(secretKey)     
-                //console.log('decryptSecretKey-secretKeyStr:', secretKeyStr)
-                secretKey ? callback(secretKey) : callback('');
-        }, 'base64');
+    decryptSecretKey(password, enSecretKeyBundle, callback) {       
+        if (enSecretKeyBundle){
+            var secretBox = require('secret-box')
+            scrypt(
+                password,
+                enSecretKeyBundle.Salt,
+                this.logN,
+                this.blockSize,
+                126,
+                this.interruptStep,
+                (derivedKey) => {
+                    //const secretKey = secretBox.decrypt(new Buffer(naclutil.decodeBase64(enSecretKeyBundle.EnSecretKey)), new Buffer(derivedKey)) 
+                    const secretKey = secretBox.decrypt(new Buffer(naclutil.decodeBase64(enSecretKeyBundle.EnSecretKey)), new Buffer(derivedKey))              
+                    //let secretKeyStr =  this.SecretBytesToString(secretKey)     
+                    //console.log('decryptSecretKey-secretKeyStr:', secretKeyStr)
+                    secretKey ? callback(secretKey) : callback('');
+            }, 'base64');
+        }        
     }
 
     hashPassword(password, callback){

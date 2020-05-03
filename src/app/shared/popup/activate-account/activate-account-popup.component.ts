@@ -61,9 +61,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     this.onCloseRedirectTo = '/dashboard/overview';
     if (this.authService.isActivated()){
       this.router.navigateByUrl('/dashboard/overview')
-    } else {
-      console.log(this.authService.userData.PublicKey)
-    }
+    } 
   }
 
   ngOnInit() {

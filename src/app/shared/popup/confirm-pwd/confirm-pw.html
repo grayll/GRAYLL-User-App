@@ -14,8 +14,8 @@
         </p>
         
         <br/>      
-        <input *ngIf="!this.authService.userInfo.Tfa" type="password" class="form-control mx-auto w-75" [(ngModel)]="password" placeholder="Password">
-        <input *ngIf="this.authService.userInfo.Tfa" type="text" class="form-control mx-auto w-75" [(ngModel)]="faCode" placeholder="Two FA Code">         
+        <input *ngIf="!(this.authService.userInfo && this.authService.userInfo.Tfa && this.authService.userInfo.Tfa.Enable)" type="password" class="form-control mx-auto w-75" [(ngModel)]="password" placeholder="Password">
+        <input *ngIf="this.authService.userInfo && this.authService.userInfo.Tfa && this.authService.userInfo.Tfa.Enable" type="text" class="form-control mx-auto w-75" [(ngModel)]="faCode" placeholder="Two FA Code">         
       </div>
     </div>
 

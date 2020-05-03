@@ -154,141 +154,136 @@ export class LoginComponent {
     // Execute recaptcha
     //console.log('start call recapcha:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
     this.recaptchaV3Service.execute('login')
-    .subscribe((token) => {
+    .subscribe(token => {
       // Verify token 
       axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
         headers: { Authorization: "Bearer " + token }
-      })
-      .then(response => {      
-        if (response.data.status === 'success'){    
-          //console.log('recapcha resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-          //this.ngZone.run(() => {     
-            //console.log('login start:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS')) 
-            this.http.post(`api/v1/accounts/login`, {email:this.email.value, password: this.password.value})                
-            .subscribe(res => {  
-              let data =  (res as any)             
-              if (data.errCode === environment.SUCCESS) {
-                //console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                this.authService.ParseUserInfo(data.userBasicInfo)
-                //console.log('decryptSecretKey0:', this.authService.userInfo)
-                this.authService.hash = this.password.value
-                this.authService.userData = data.user
-                this.authService.userData.token = data.token
-                this.authService.userData.xlmPrice = data.userMeta.XlmP
-                this.authService.userData.grxPrice = data.userMeta.GrxP
-                this.authService.userMetaStore = data.userMeta
-                this.authService.userMetaStore.ShouldReload = true
-               // console.log('login - this.authService.userMetaStore: ', this.authService.userMetaStore)
-                this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
-                
-                if (this.authService.userInfo.Tfa){
-                    //let d = new Date();
-                    let curTime = new Date().getTime();
-                    let tfaData = this.authService.GetLocalTfa(this.authService.userInfo.Uid)  
-                    console.log('LOGIN-',tfaData)                  
-                    if (tfaData && tfaData.Expire && this.authService.userInfo.Expire > 0 && curTime <= this.authService.userInfo.Expire &&                          
-                        tfaData.Expire === this.authService.userInfo.Expire){                      
-                      this.router.navigate(['/dashboard/overview'])
-                    } else {                      
-                      this.router.navigate(['/two-factor'])
-                    }
-                } else {                  
-                  this.router.navigate(['/dashboard/overview'])
-                } 
-                this.loadingService.hide()
+      }).then(response => {      
+        if (response.data.status === 'success'){          
+          this.http.post(`api/v1/accounts/login`, {email:this.email.value, password: this.password.value})                
+          .subscribe(res => {  
+            let data =  (res as any)             
+            if (data.errCode === environment.SUCCESS) {
+              //console.log('login resp:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+              this.authService.ParseUserInfo(data.userBasicInfo)
+              //console.log('decryptSecretKey0:', this.authService.userInfo)
+              this.authService.hash = this.password.value
+              this.authService.userData = data.user
+              this.authService.userData.token = data.token
+              this.authService.userData.xlmPrice = data.userMeta.XlmP
+              this.authService.userData.grxPrice = data.userMeta.GrxP
+              this.authService.userMetaStore = data.userMeta
+              this.authService.userMetaStore.ShouldReload = true
+              // console.log('login - this.authService.userMetaStore: ', this.authService.userMetaStore)
+              this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
+              
+              if (this.authService.userInfo.Tfa){
+                  //let d = new Date();
+                  let curTime = new Date().getTime();
+                  let tfaData = this.authService.GetLocalTfa(this.authService.userInfo.Uid)  
+                  console.log('LOGIN-',tfaData)                  
+                  if (tfaData && tfaData.Expire && this.authService.userInfo.Expire > 0 && curTime <= this.authService.userInfo.Expire &&                          
+                      tfaData.Expire === this.authService.userInfo.Expire){                      
+                    this.router.navigate(['/dashboard/overview'])
+                  } else {                      
+                    this.router.navigate(['/two-factor'])
+                  }
+              } else {                  
+                this.router.navigate(['/dashboard/overview'])
+              } 
+              this.loadingService.hide()
 
-                if (this.authService.userInfo && this.authService.userData.PublicKey && this.authService.userInfo.LocalKey){
-                  if (this.authService.userInfo.EnSecretKey.length < 80){                   
-                    //console.log(this.authService.userInfo.SecretKeySalt, this.password.value)
-                    //console.log(this.authService.userInfo.EnSecretKey)
+              if (this.authService.userInfo && this.authService.userData.PublicKey && this.authService.userInfo.LocalKey){
+                if (this.authService.userInfo.EnSecretKey.length < 80){                   
+                  //console.log(this.authService.userInfo.SecretKeySalt, this.password.value)
+                  //console.log(this.authService.userInfo.EnSecretKey)
 
-                    this.stellarService.decryptSecretKey1(this.password.value, 
-                      {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
-                      secretKey => {
-                        if (secretKey != ''){
-                          this.authService.secretKey = secretKey                          
-                          this.stellarService.encryptSecretKey(this.password.value, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                            //console.log('OLD USER-secretKeyBundle:', secretKeyBundle)
-                            this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey
-                            // Save new EnSecretKey and Salt                           
-                            this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.Salt}).subscribe( 
-                              res => {
-                                console.log('saveEnSecretKeyData', res)
-                                this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                                  //console.log('login-secretKeyBundle:', secretKeyBundle)
-                                  this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
-                                  this.authService.SetLocalUserData()
-                                  //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                                })   
-                              },
-                              e => {
-                                //console.log('saveEnSecretKeyData error', e)
-                                this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.salt}).subscribe( 
-                                  res => {
-                                    //console.log('saveEnSecretKeyData', res)
-                                    this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                                      //console.log('login-secretKeyBundle:', secretKeyBundle)
-                                      this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
-                                      this.authService.SetLocalUserData()
-                                      //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                                    })  
-                                  },
-                                  e => {
-                                    console.log('saveEnSecretKeyData error', e)
-                                  }
-                                )  
-                              }
-                            )                            
-                            this.authService.SetLocalUserData()
-                            //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                          })            
-                        } else {
-                          console.log('GetSecretKey7, key invalid')
-                          //reject('')
-                        }
-                      })
-                  } else {
-                    this.stellarService.decryptSecretKey(this.password.value, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
+                  this.stellarService.decryptSecretKey1(this.password.value, 
+                    {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
                     secretKey => {
                       if (secretKey != ''){
-                        this.authService.secretKey = secretKey
-                        // console.log('decryptSecretKey:', secretKey)
-                        // console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                        this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                          //console.log('login-secretKeyBundle:', secretKeyBundle)
-                          this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
+                        this.authService.secretKey = secretKey                          
+                        this.stellarService.encryptSecretKey(this.password.value, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                          //console.log('OLD USER-secretKeyBundle:', secretKeyBundle)
+                          this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey
+                          // Save new EnSecretKey and Salt                           
+                          this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.Salt}).subscribe( 
+                            res => {
+                              console.log('saveEnSecretKeyData', res)
+                              this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                                //console.log('login-secretKeyBundle:', secretKeyBundle)
+                                this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
+                                this.authService.SetLocalUserData()
+                                //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                              })   
+                            },
+                            e => {
+                              //console.log('saveEnSecretKeyData error', e)
+                              this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.salt}).subscribe( 
+                                res => {
+                                  //console.log('saveEnSecretKeyData', res)
+                                  this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                                    //console.log('login-secretKeyBundle:', secretKeyBundle)
+                                    this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
+                                    this.authService.SetLocalUserData()
+                                    //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                                  })  
+                                },
+                                e => {
+                                  console.log('saveEnSecretKeyData error', e)
+                                }
+                              )  
+                            }
+                          )                            
                           this.authService.SetLocalUserData()
                           //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
                         })            
                       } else {
-                        //console.log('GetSecretKey7')
+                        console.log('GetSecretKey7, key invalid')
                         //reject('')
                       }
                     })
-                  }
+                } else {
+                  this.stellarService.decryptSecretKey(this.password.value, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
+                    secretKey => {
+                    if (secretKey != ''){
+                      this.authService.secretKey = secretKey
+                      // console.log('decryptSecretKey:', secretKey)
+                      // console.log('decryptSecretKey res:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                      this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
+                        //console.log('login-secretKeyBundle:', secretKeyBundle)
+                        this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
+                        this.authService.SetLocalUserData()
+                        //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+                      })            
+                    } else {
+                      //console.log('GetSecretKey7')
+                      //reject('')
+                    }
+                  })
                 }
-              
-              } else if ((res as any).errCode === environment.INVALID_UNAME_PASSWORD){
-                this.showError('Invalid email or password!')                                 
-              }  else if((res as any).errCode === environment.UNVERIFIED)  {    
-                this.showError('Please verify your email before logging in.')                                
-              }  else if((res as any).errCode === environment.IP_CONFIRM) {    
-                this.showError('Please confirm your IP address via the link sent to your email.')                                
-              }              
-            },
-            error => {              
-              console.log(error)                       
-              this.showError(null)                             
-            })                
-          //}); 
-          
+              }            
+            } else if ((res as any).errCode === environment.INVALID_UNAME_PASSWORD){
+              this.showError('Invalid email or password!')                                 
+            }  else if((res as any).errCode === environment.UNVERIFIED)  {    
+              this.showError('Please verify your email before logging in.')                                
+            }  else if((res as any).errCode === environment.IP_CONFIRM) {    
+              this.showError('Please confirm your IP address via the link sent to your email.')                                
+            }              
+          },
+          error => {              
+            console.log(error)                       
+            this.showError(null)                             
+          })
         } else {                 
           this.showError(null)              
         }
-      })
-      .catch(err => { 
+      }).catch(err => { 
         this.showError(null)        
       })   
+    },
+    e => { // can not load recapcha     
+      this.showError(null)
     });
   }
 
