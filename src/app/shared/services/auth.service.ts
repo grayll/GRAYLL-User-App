@@ -161,7 +161,11 @@ export class AuthService {
       total_gry2_close_positions_ROI_$:0, total_gry2_current_position_value_$:0, total_gry2_open_positions:0, total_gry2_current_position_ROI_$:0,
       total_gry3_close_positions_ROI_$:0, total_gry3_current_position_value_$:0, total_gry3_open_positions:0, total_gry3_current_position_ROI_$:0}
   }
-  
+  unSubUserMeta(){
+    if (this.subsink){
+      this.subsink.unsubscribe()
+     }
+  }
   getUserMeta(){
     if (this.userMetaStore.ShouldReload){
      this._userMeta = new Subject<UserMeta>()

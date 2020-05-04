@@ -12,7 +12,7 @@
         <label for="xlmBalance" class="text-purple">
           Current XLM Balance
         </label>
-        <input disabled id="xlmBalance" type="text" class="form-control purple-input disabled-input" [value]="this.authService.getMaxAvailableXLM() + ' XLM'">
+        <input disabled id="xlmBalance" type="text" class="form-control purple-input disabled-input" [value]="this.authService.getMaxAvailableXLM().toFixed(5) + ' XLM'">
       </div>
       <div class="col-12 text-right">
         <small class="text-purple">2.1 XLM Reserved</small>
@@ -28,7 +28,7 @@
         <label for="difference" class="text-purple">
           XLM Balance After Loan Payment
         </label>
-        <input disabled id="difference" type="text" class="form-control purple-input disabled-input" [value]="this.authService.getMaxAvailableXLM() - this.XLMLoanValue > 0 ? (this.authService.getMaxAvailableXLM() - this.XLMLoanValue).toString() + ' XLM' : '0 XLM'">
+        <input disabled id="difference" type="text" class="form-control purple-input disabled-input" [value]="this.authService.getMaxAvailableXLM() - this.XLMLoanValue > 0 ? (this.authService.getMaxAvailableXLM() - this.XLMLoanValue).toFixed(5) + ' XLM' : '0 XLM'">
       </div>
       <!-- <div *ngIf="!this.authService.hash" class="col-12">
         <label for="password" class="text-purple">

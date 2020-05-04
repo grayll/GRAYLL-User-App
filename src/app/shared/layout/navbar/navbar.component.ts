@@ -80,8 +80,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     if (this.authService.userMetaStore.TokenExpiredTime) {
       this.scheduleCheckTokenExpiry()
     } else {
-      this.authService.userMeta.subscribe(data => {
-        console.log('scheduleCheckTokenExpiry-data', data)        
+      this.authService.userMeta.subscribe(data => {             
         this.scheduleCheckTokenExpiry()
       })
     }
@@ -91,8 +90,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
       .subscribe(res => {
         let data = (res as any)        
         if (data.errCode == environment.SUCCESS){           
-          this.authService.ParseUserInfo(data)
-          //console.log('NAV-getUserInfo', this.authService.userInfo)  
+          this.authService.ParseUserInfo(data)          
           this.authService.pushUserInfoMsg(this.authService.userInfo)
           this.authService.DecryptLocalSecret()                 
         } else {
@@ -187,109 +185,45 @@ export class NavbarComponent implements OnDestroy, OnInit {
   //   })
   // }
 
-  promptUser(): void {
-    console.log('Update is available')
-    //this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
-    this.router.navigate(['/swnotify'])
-  }
+  // promptUser(): void {
+  //   console.log('Update is available')
+  //   //this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
+  //   this.router.navigate(['/swnotify'])
+  // }
 
-  promptUser1(): void {
-    console.log('Update is available')
-    if(confirm("New version of the GRAYLL App is available. Refresh?")) {
-      this.updates.activateUpdate().then(() => {          
-          window.location.reload();
-      });
-    }
-  }
-
-  // streaming payments of account
-  // streaming trade for get grx,xlm price
-  streaming(){
-    if (this.authService.userInfo.PublicKey){
-      console.log('start streaming payments:');
-      this.server.payments()
-      .forAccount(this.authService.userInfo.PublicKey)
-      .cursor('now')
-      .stream({
-        onmessage: (message)=> {          
-          // this.authService.userData.UrWallet = +this.authService.userData.UrWallet + 1 
-          // console.log('navbar.UrWallet1:', this.authService.userData.UrWallet) 
-          
-          // let amount = Number.parseFloat(message.amount.toString())     
-          // if (message.from === this.authService.userInfo.PublicKey) {
-          //   amount = - Number.parseFloat(message.amount.toString())
-          // } 
-          let amount = +(message.amount)     
-          if (message.from === this.authService.userInfo.PublicKey) {
-            amount = - +(message.amount)
-          }   
-          if (message.asset_type === 'native'){       
-            console.log('navbar.subscribe:totalXLM:', this.authService.userMetaStore.XLM)   
-            this.authService.userMetaStore.XLM = +this.authService.userMetaStore.XLM + amount
-            console.log('navbar.subscribe:totalXLM1:', this.authService.userMetaStore.XLM)  
-          } else if( message.asset_code === 'GRX' || message.asset_code === 'GRXT'){         
-            console.log('navbar.amount:', message.amount)
-            console.log('navbar.subscribe:totalGRX0:', this.authService.userMetaStore.GRX)
-            this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX + amount            
-            console.log('navbar.subscribe:totalGRX1:', this.authService.userMetaStore.GRX)
-          }   
-        },
-      });
-    }
-
-    this.server.trades().cursor('now').stream({
-      onmessage:(message) => {
-        //console.log('trade:', message);
-        //base_asset_type=native&counter_asset_type=credit_alphanum4&counter_asset_code=USD&counter_asset_issuer=GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX&order=desc&limit=1',
-        if (message.base_asset_type === 'native' && message.counter_asset_code === 'USD' && message.counter_asset_issuer==='GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX'){
-          this.authService.userData.xlmPrice = message.price.n/message.price.d
-          console.log('trade usd:', this.authService.userData.xlmPrice);
-        }
-        //base_asset_type=native&counter_asset_type=credit_alphanum4&counter_asset_code=USD&counter_asset_issuer=GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX&order=desc&limit=1',
-        if (message.base_asset_type === 'native' && message.counter_asset_code === environment.ASSET && message.counter_asset_issuer === environment.ASSET_ISSUER){
-          this.authService.userData.grxPrice = message.price.d/message.price.n
-          console.log('trade allOffers:', this.stellarService.allOffers);
-          console.log('trade GRX:', message);
-          console.log('trade GRX:', this.authService.userData.grxPrice);          
-        }
- 
-        if (message.counter_account === this.authService.userInfo.PublicKey || message.base_account === this.authService.userInfo.PublicKey){
-          if (this.ComId === "data" || this.ComId === "wallet"){
-            console.log('pushShouldReload')
-            if (this.authService.reload){
-              this.authService.pushShouldReload(true)
-            }
-          }
-          //this.snotifyService.simple('Your order has been matched and executed!');
-        }
-      }
-    })  
-  }
+  // promptUser1(): void {
+  //   console.log('Update is available')
+  //   if(confirm("New version of the GRAYLL App is available. Refresh?")) {
+  //     this.updates.activateUpdate().then(() => {          
+  //         window.location.reload();
+  //     });
+  //   }
+  // }
 
   scheduleCheckTokenExpiry(){ 
+   // console.log('scheduleCheckTokenExpiry')
     if (this.authService.isTokenExpired()){
-      console.log('token is expired, signout')
+      //console.log('token is expired, signout')
       this.signOut()
     } else {
-      //let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 15*60*1000
-      let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 3*60*1000
+      let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 15*60*1000
+      //let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 3*60*1000
       console.log('remaining time for renew token:', remainTime, this.authService.userMetaStore)
       if (remainTime >= 0){
         setTimeout(()=> {
           //will renew the token
-          console.log('nav-scheduleCheckTokenExpiry-route:', this.router.url)
-          this.ngZone.run(()=>{
-            if ( !this.router.url.includes('confirm-password')){
-              this.router.navigate([this.router.url, {outlets: {popup: 'confirm-password'}}]);
-            }
-          })
-          console.log('will renew the token')
+          //console.log('nav-scheduleCheckTokenExpiry-route:', this.router.url)
+          if ( !this.router.url.includes('confirm-password') && !this.router.url.includes('login')){
+            this.router.navigate([this.router.url, {outlets: {popup: 'confirm-password'}}]);
+          } else {
+            console.log('will renew the token')
+          }
         }, remainTime)
       }
 
       // // Schedule to logout
       let logoutTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime() + 2)
-      console.log('remaining time for logoutTime:', logoutTime, this.authService.userMetaStore.TokenExpiredTime)
+      //console.log('remaining time for logoutTime:', logoutTime, this.authService.userMetaStore.TokenExpiredTime)
       if (logoutTime >= 0){
         setTimeout(()=> {
           //will renew the token
@@ -297,7 +231,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
             console.log('token is expired')
             this.signOut()
           } else {
-            console.log('token already renew')
+            //console.log('token already renew')
           }          
         }, logoutTime)
       }

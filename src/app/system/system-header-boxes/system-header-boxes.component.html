@@ -127,7 +127,7 @@
               </div>
               <div class="col">
                 <a class="navy-link-white" href="javascript:void(0)" (click)="populateMaxGRX()">
-                  Max Available GRX: {{this.authService.getMaxAvailableGRX()}}
+                  Max Available GRX: {{this.authService.getMaxAvailableGRX().toFixed(5)}}
                 </a>
               </div>
             </div>
@@ -521,7 +521,7 @@
                 </div>
                 <div class="col">
                   <a class="navy-link-white" href="javascript:void(0)" (click)="populateMaxGRX()">
-                    Max Available GRX: {{totalGRX}}
+                    Max Available GRX: {{this.authService.getMaxAvailableGRX().toFixed(5)}}
                   </a>
                 </div>
               </div>

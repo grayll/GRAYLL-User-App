@@ -48,7 +48,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     
     if (!this.authService.userInfo){
       this.authService.getUserInfoMsg().subscribe(userInfo => {
-        console.log('DashboardComponent:', userInfo)
+        
         if (!this.authService.isActivated()){     
           console.log('Account is not activated:') 
           this.showActivationPopup();
