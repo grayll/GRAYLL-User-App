@@ -171,16 +171,16 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       }
       url = url + 'search?term='
       this.walletNotificationsToShow = (res as any).wallets.map(item => {
-        let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
-        item.time = time
+        // let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
+        // item.time = time
         item.url = url + item.txId 
         return item
       })
       this.walletNotifications = this.walletNotificationsToShow
 
       this.systemNotifications = (res as any).generals.map(item => {
-        let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
-        item.time = time
+        // let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
+        // item.time = time
         //item.url = url + item.txId 
         return item
       })

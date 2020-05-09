@@ -163,7 +163,9 @@ export class LoginComponent {
           this.http.post(`api/v1/accounts/login`, {email:this.email.value, password: this.password.value})                
           .subscribe(res => {  
             let data =  (res as any)             
-            if (data.errCode === environment.SUCCESS) {             
+            if (data.errCode === environment.SUCCESS) { 
+              console.log('user', data.user)  
+                
               this.authService.ParseUserInfo(data.userBasicInfo)              
               this.authService.hash = this.password.value
               this.authService.userData = data.user

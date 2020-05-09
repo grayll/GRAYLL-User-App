@@ -6,28 +6,28 @@
         <p class="mb-0">Send selected report(s):</p>
         <div class="form-check form-check-inline">
           <label class="cont">None
-            <input type="radio" name="frequency" value="None" [(ngModel)]="report.frequency"
+            <input type="radio" name="frequency" value="None" [(ngModel)]="report.Frequency"
             (change)="choose('None')">
             <span class="radio"></span>
           </label>
       </div>
         <div class="form-check form-check-inline">          
           <label class="cont">Daily
-            <input type="radio" name="frequency" value="Daily" [(ngModel)]="report.frequency"
+            <input type="radio" name="frequency" value="Daily" [(ngModel)]="report.Frequency"
             (change)="choose('Daily')">
             <span class="radio"></span>
           </label>
         </div>
         <div class="form-check form-check-inline">
           <label class="cont">Weekly
-            <input type="radio" name="frequency" value="Weekly" [(ngModel)]="report.frequency"
+            <input type="radio" name="frequency" value="Weekly" [(ngModel)]="report.Frequency"
             (change)="choose('Weekly')">
             <span class="radio"></span>
           </label>
         </div>
         <div class="form-check form-check-inline">
           <label class="cont">Monthly
-            <input type="radio" name="frequency" value="Monthly" [(ngModel)]="report.frequency"
+            <input type="radio" name="frequency" value="Monthly" [(ngModel)]="report.Frequency"
             (change)="choose('Monthly')">
             <span class="radio"></span>
           </label>
@@ -45,28 +45,28 @@
         <p class="mb-1">Select the reports you would like to receive to stay up to date on the performance of your GRAYLL account: </p>
         <div class="form-check form-check-inline">
           <label class="checkbox">
-            <input type="checkbox" id="walletBalance" [(ngModel)]="report.walletBalance" (click)="check('walletBalance')"/>
+            <input type="checkbox" id="walletBalance" [(ngModel)]="report.WalletBalance" (click)="check('WalletBalance')"/>
             <span class="default"></span>
           </label>
           <label for="walletBalance" class="form-check-label">Wallet Balance</label>
         </div>
         <div class="form-check form-check-inline">
           <label class="checkbox">
-            <input type="checkbox" id="accountValue" [(ngModel)]="report.accountValue" (click)="check('accountValue')"/>
+            <input type="checkbox" id="accountValue" [(ngModel)]="report.AccountValue" (click)="check('accountValue')"/>
             <span class="default"></span>
           </label>
           <label for="accountValue" class="form-check-label">Account Value</label>
         </div>
         <div class="form-check form-check-inline">
           <label class="checkbox">
-            <input type="checkbox" id="accountProfit" [(ngModel)]="report.accountProfit" (click)="check('accountProfit')"/>
+            <input type="checkbox" id="accountProfit" [(ngModel)]="report.AccountProfit" (click)="check('accountProfit')"/>
             <span class="default"></span>
           </label>
           <label for="accountProfit" class="form-check-label">Account Profit</label>
         </div>
         <div class="form-check form-check-inline ml-1">
           <label class="checkbox">
-            <input type="checkbox" id="openPosition" [(ngModel)]="report.openPosition" (click)="check('openPosition')"/>
+            <input type="checkbox" id="openPosition" [(ngModel)]="report.OpenPosition" (click)="check('openPosition')"/>
             <span class="default"></span>
           </label>
           <label for="openPosition" class="form-check-label">Open Position</label>
@@ -86,13 +86,19 @@
             <div class="form-group row">
               <label class="col-sm-12 col-form-label">Select Region Time</label>
               <div class="col-sm-12" id="country">
-                <ng-select [items]="countries"
-                           [searchable]="false"
-                           [clearable]="false">
+                
+                <!-- <ng-select name="timeZone" [ngModel]="selectedTz" (ngModelChange)="timeZoneChanged($event)">
+                  <option *ngFor="let tz of tzNames" [value]="tz">
+                    {{ tz }}
+                  </option>
+                </ng-select> -->
+                <ng-select [items]="tzNames" [ngModel]="selectedTz" (ngModelChange)="timeZoneChanged($event)"
+                  [searchable]="true"
+                  [clearable]="false">
                 </ng-select>
               </div>
             </div>
-            <p class="text-center region-time">UTC 00:00</p>
+            <p class="text-center">UTC {{timeZoneOffet}}</p>
           </div>
           <div class="col-md-7 text-center">
             <div class="form-group mb-0 row">
@@ -101,7 +107,7 @@
                 <ngb-timepicker [(ngModel)]="reportTime"></ngb-timepicker>
               </div>
             </div>
-            <p>UTC Report Time 00:00</p>
+            <p>UTC Report Time {{getUtcHour()}}</p>
           </div>
         </div>
       </div>

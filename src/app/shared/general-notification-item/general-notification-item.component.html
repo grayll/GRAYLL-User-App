@@ -8,7 +8,7 @@
         <p class="h7 font-weight-bolder">{{notification.title}}</p>
       </div>
       <div class="col text-right font-12">
-        {{notification.times}}
+        {{notification.time*1000 | date:'h:mm | d/M/yyyy'}}
       </div>
     </div>
     <div class="row">

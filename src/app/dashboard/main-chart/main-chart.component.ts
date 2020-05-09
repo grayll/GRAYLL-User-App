@@ -19,7 +19,7 @@ export class MainChartComponent {
 
   isFirstLoad:boolean = true
   subs: Subscription[] = [];
-  today: String
+  today: any
   @ViewChild(BaseChartDirective) chart: BaseChartDirective;
   timespanFilter = [
     {
@@ -99,7 +99,9 @@ export class MainChartComponent {
     private router: Router,
     private dataService: ChartDataService
   ) {
-    this.today = moment(new Date()).format('H:mm | D MMM YYYY')
+    moment.locale('en-gb');
+    //this.today = moment(new Date()).format('H:mm | D MMM YYYY')
+    this.today =new Date()
     // After first load, will register with time frame change
     //Chart.defaults.scale.gridLines.display = false;
     this.getFrameData()    
@@ -107,7 +109,8 @@ export class MainChartComponent {
 
   ngOnInit() {
     setInterval( () => { 
-           this.today = moment(new Date()).format('h:mm | D MMM YYYY')
+           //this.today = moment(new Date()).format('h:mm | D MMM YYYY')
+           this.today = new Date()
     }, 60000);
   }
 
@@ -232,7 +235,7 @@ public lineChartOptions: (ChartOptions & { annotation: any }) = {
           gridLines: { color: 'rgba(255,255,255,0.1)' },
           scaleLabel: {
             display: true,
-            labelString: 'GRYusd',
+            labelString: 'GRXusd',
             fontColor: 'white',
           },               
         },
