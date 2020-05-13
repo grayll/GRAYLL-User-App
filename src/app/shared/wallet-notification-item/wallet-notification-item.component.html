@@ -25,7 +25,7 @@
           {{notification.body}}
         </div>
         <p *ngIf="notification.txId" class="font-12 mb-0">
-          <a href="{{notification.url}}" target="_blank" class="white-link">
+          <a href="{{'https://stellar.expert/explorer/public/search?term=' + notification.txId}}" target="_blank" class="white-link">
             Stellar | Transaction ID | {{notification.txId}}
           </a>
         </p>

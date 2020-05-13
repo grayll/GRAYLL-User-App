@@ -64,21 +64,34 @@ export class DataSettingsComponent implements OnInit, OnDestroy {
     if (offsetMinutes == 0){
       return "00:00"
     }
-    this.timeZoneOffet = (offsetMinutes/60).toString().padStart(2, '0') + ":" + "00"
     
+    let utcMinute = offsetMinutes % 60
     let utcHour = 0
-    if (offsetMinutes > 0){
-      utcHour = this.report.TimeHour - offsetMinutes/60
-      if (utcHour < 0){
-        utcHour = 24 + utcHour
-      } 
-    } else {
-      utcHour = this.report.TimeHour  - offsetMinutes/60
-      if (utcHour < 0){
-        utcHour = 24 + utcHour
-      } 
+    utcHour = this.report.TimeHour  - (offsetMinutes/60>>0)
+    if (utcHour < 0){
+      utcHour = 24 + utcHour
     }
-    this.utcTime = utcHour.toString().padStart(2, '0') + ":"+ this.report.TimeMinute.toString().padStart(2, '0')
+    // if (offsetMinutes > 0){
+    //   utcHour = this.report.TimeHour - (offsetMinutes/60>>0)
+    //   if (utcHour < 0){
+    //     utcHour = 24 + utcHour
+    //   } 
+    // } else {
+    //   utcHour = this.report.TimeHour  - (offsetMinutes/60>>0)
+    //   if (utcHour < 0){
+    //     utcHour = 24 + utcHour
+    //   } 
+    // }
+    if (offsetMinutes > 0){
+      this.utcTime = utcHour.toString().padStart(2, '0') + ":" + this.report.TimeMinute.toString().padStart(2, '0')
+      this.timeZoneOffet = '+' + (offsetMinutes/60>>0).toString().padStart(2, '0') + ":" + '00'
+      //this.timeZoneOffet = '+' + (offsetMinutes/60>>0).toString().padStart(2, '0') + ":" + utcMinute.toString().padStart(2, '0')
+    } else {
+      this.utcTime = utcHour.toString().padStart(2, '0') + ":" + this.report.TimeMinute.toString().padStart(2, '0')
+      this.timeZoneOffet = '-' + (0 - (offsetMinutes/60>>0)).toString().padStart(2, '0') + ":" + '00'
+      //this.timeZoneOffet = '-' + (0 - (offsetMinutes/60>>0)).toString().padStart(2, '0') + ":" + utcMinute.toString().padStart(2, '0')
+    }
+    
     return this.utcTime
 
   }
@@ -109,6 +122,7 @@ export class DataSettingsComponent implements OnInit, OnDestroy {
     //this.timeZoneOffet = moment.tz(this.report.TimeZone).utcOffset()/60 + ":" + "00"
     this.getUtcHour()
     this.isChanged = true
+    
   }
 
   // public testReport(){

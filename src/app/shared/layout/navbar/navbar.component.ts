@@ -163,49 +163,16 @@ export class NavbarComponent implements OnDestroy, OnInit {
       }) 
     }    
   }
-  
-  
-
-  // initFireStoreDb(){    
-  //   var app = firebase.initializeApp(environment.dbs.systemtest, 'grayll-system-test');
-  //   let db = firebase.firestore(app);
-  //   db.collection('algo_positions/GRZ/algo_positions_open/').onSnapshot(snapshot => {
-      
-  //     snapshot.docChanges().forEach(function(change) {
-  //       if (change.type === "added") {
-  //           console.log("New: ", change.doc.data());
-  //       }
-  //       if (change.type === "modified") {
-  //           console.log("Modified: ", change.doc.data());
-  //       }
-  //       if (change.type === "removed") {
-  //           console.log("Removed: ", change.doc.data());
-  //       }
-  //     });
-  //   })
-  // }
-
-  // promptUser(): void {
-  //   console.log('Update is available')
-  //   //this.router.navigate([this.router.url, {outlets: {popup: 'confirm-new-version'}}]);
-  //   this.router.navigate(['/swnotify'])
-  // }
-
-  // promptUser1(): void {
-  //   console.log('Update is available')
-  //   if(confirm("New version of the GRAYLL App is available. Refresh?")) {
-  //     this.updates.activateUpdate().then(() => {          
-  //         window.location.reload();
-  //     });
-  //   }
-  // }
 
   scheduleCheckTokenExpiry(){ 
-   // console.log('scheduleCheckTokenExpiry')
+   console.log('scheduleCheckTokenExpiry')
     if (this.authService.isTokenExpired()){
       //console.log('token is expired, signout')
       this.signOut()
     } else {
+      if (!this.authService.userMetaStore || !this.authService.userMetaStore.TokenExpiredTime || this.authService.userMetaStore.TokenExpiredTime==0){
+        return
+      }
       let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 15*60*1000
       //let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 3*60*1000
       console.log('remaining time for renew token:', remainTime, this.authService.userMetaStore)
@@ -213,7 +180,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
         setTimeout(()=> {
           //will renew the token
           //console.log('nav-scheduleCheckTokenExpiry-route:', this.router.url)
-          if ( !this.router.url.includes('confirm-password') && !this.router.url.includes('login')){
+          if ( !this.router.url.includes('confirm-password') || !this.router.url.includes('login')){
             this.router.navigate([this.router.url, {outlets: {popup: 'confirm-password'}}]);
           } else {
             console.log('will renew the token')
@@ -256,13 +223,13 @@ export class NavbarComponent implements OnDestroy, OnInit {
       this.authService.updateUserMeta()
     }
     localStorage.removeItem('grayll-user');    
-    localStorage.removeItem('grayll-user-meta'); 
+    localStorage.removeItem('grayll-user-meta');
     this.algoService.resetServiceData()
     this.authService.resetServiceData()
     this.stellarService.resetServiceData()
     this.noticeService.resetServiceData()
-    this.ngZone.run(()=> {
-      this.router.navigateByUrl('/')
-    })
+    
+    //this.router.navigateByUrl('/', {skipLocationChange: false}).then(()=> this.router.navigate(['/']));    
+    this.router.navigateByUrl('');
   }
 }

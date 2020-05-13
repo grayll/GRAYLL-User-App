@@ -403,6 +403,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
             open_position_value_GRZ:+this.algoPosition.itemAmount - +this.algoPosition.itemAmount*+this.selectedTab.fee,
             open_position_value_GRX:(+this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee),
           }).subscribe(res => {
+              console.log(res)
               if ((res as any).errCode != environment.SUCCESS){               
                 this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
               } else {
@@ -417,6 +418,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
               this.loadingService.hide()
           },
           e => {
+            console.log('ex:', e)
             this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
             this.loadingService.hide()
           })

@@ -90,7 +90,7 @@ export class AuthService {
     this.userData = null
     this.userInfo = null
     this.userInfoMsg = null
-    this.userMeta = null
+    this.userMeta = null    
     this.userMeta$ = null
     
     this.countdownConfigs = null

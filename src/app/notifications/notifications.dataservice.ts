@@ -92,9 +92,10 @@ export class NoticeDataService {
         let times = moment(a.payload.doc.data()["time"]*1000).format('HH:mm | DD/MM/YYYY')
         //console.log('id', id)
         if (a.payload.doc.data()["txId"]){
-          let url = this.txUrl + a.payload.doc.data()["txId"]
+          let url = this.txUrl + a.payload.doc.data()["txId"]          
           return { id, doc, url, times, ...data };
-        } else {          
+        } else {  
+             
           return { id, doc, times, ...data };
         }       
       }))

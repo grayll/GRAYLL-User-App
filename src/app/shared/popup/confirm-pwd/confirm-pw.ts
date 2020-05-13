@@ -34,7 +34,12 @@ export class ConfirmPasswordComponent implements OnInit {
     
     //this.remainingTime = '5:00'
     this.x = setInterval(()=> {
-
+      console.log('setInterval-confirm-pwd')
+      if (!this.authService.userMetaStore || !this.authService.userMetaStore.TokenExpiredTime){
+        clearInterval(this.x); 
+        this.popupService.close()   
+        return
+      }
       // Get today's date and time
       var now = new Date().getTime();    
       // Find the distance between now and the count down date
@@ -49,14 +54,14 @@ export class ConfirmPasswordComponent implements OnInit {
       this.remainingTime = minutes + "m - " + seconds + "s "; 
     
       // If the count down is finished, write some text
-      if (distance < 0) {
-        clearInterval(this.x); 
-        this.popupService.close().then(()=>{
-          this.signOut()
+      if (distance < 0) { 
+        this.ngZone.run(()=>{      
+          this.popupService.close()    
+          clearInterval(this.x); 
+          this.signOut()        
         })       
       }
-    }, 1000);
-    //this.scheduleCheckTokenExpiry()
+    }, 1000);    
   }
 
   ngOnInit() {
@@ -65,9 +70,8 @@ export class ConfirmPasswordComponent implements OnInit {
   }
   signOut(){       
     localStorage.removeItem('grayll-user');    
-    this.ngZone.run(()=> {
-      this.router.navigateByUrl('/login')
-    })
+    //this.router.navigateByUrl('/')
+    this.router.navigate(['/', {outlets: { popup: null}}])
   }
   submit() {    
     this.errorService.clearError();   

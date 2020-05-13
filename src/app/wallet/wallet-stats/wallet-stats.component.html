@@ -348,7 +348,7 @@
               </div>
               <div class="d-inline-block text-white align-middle wallet-box">
                 <span class="text-light font-16" routerLink="/system/overview">Algo System Balance</span>
-                <h5 class="text-light font-weight-bolder">{{authService.getAlgoBalance().toFixed(3)}}</h5>
+                <h5 class="text-light font-weight-bolder">${{authService.getAlgoBalance().toFixed(3)}}</h5>
               </div>
             </div>
 
@@ -357,7 +357,7 @@
                 <i class="text-yellow font-16">
                   <fa-icon [icon]="faCircle"></fa-icon>
                 </i>                
-                <span class="font-16">{{authService.calPercentGRY()}}% GRY GRY</span>
+                <span class="font-16">{{authService.calPercentGRY()}}% GRY</span>
                 <br>
                 <h5  class="p-font">
                   ${{authService.getGRYBalance().toFixed(3)}}
