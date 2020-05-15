@@ -100,21 +100,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     this.stellarService.trades = null 
     this.authService.reload = false
     this.getAccountOrders(null, true)
-    this.getAccTrades()
+    this.getAccTrades()    
     
-    // Promise.all([
-    //   this.getAccountOrders(null, true),
-      
-    //   //this.getAccountTrades(null)
-    // ]).then(([ofs, trades]) => {
-      
-    // }).catch( err => {
-    //   console.log('Error get open order and trade:', err)
-    // }) 
-    
-    // this.getAccountOrders(null, true),
-    // this.getAccountTrades(null)
-
     this.grxP = +this.authService.userData.grxPrice
     this.xlmP = +this.authService.userData.xlmPrice
     this.stellarService.getAccountData(this.authService.userData.PublicKey)
@@ -432,11 +419,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
               amount = '+' + item.amount
             }
             counter = this.trimAddress(counter) // counter.slice(0, 6) + '...' + counter.slice( counter.length-7, counter.length-1)
-            let url = 'https://stellar.expert/explorer/public/'
-            if (environment.horizon_url.includes('testnet')){
-              url = 'https://stellar.expert/explorer/testnet/'
-            }
-            url = url + 'search?term='+item.id 
+            let url = 'https://stellar.expert/explorer/public/search?term='+item.id 
+            
             return {time:time, counter:counter, asset: asset, issuer: issuer, amount: amount, url:url }
           }
         })  
@@ -475,11 +459,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
           let amount = '-'
           let account = '-'
           let asset = 'XLM'
-          let url = 'https://stellar.expert/explorer/public/'
-          if (environment.horizon_url.includes('testnet')){
-            url = 'https://stellar.expert/explorer/testnet/'
-          }
-          url = url + 'search?term='+item.id
+          let url = 'https://stellar.expert/explorer/public/search?term='+item.id
+                    
           if (item.type === 'create_account'){
             op = 'Credited'                  
             amount = '+' + item.starting_balance
@@ -563,12 +544,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
         }
 
         console.log('ACC-ACTIVITY-METASTORE:',this.authService.userMetaStore)
-        //this.offers = this.stellarService.allOffers 
-        // if (this.stellarService.allOffers ){        
-        //   this.stellarService.allOffers = this.stellarService.allOffers.concat(records)
-        // } else {
-        //   this.stellarService.allOffers = records
-        // }
+        
         this.stellarService.allOffers = records
         if (pms.data._links.next.href){
           this.activityResult.openOrderNextURL = pms.data._links.next.href
@@ -611,10 +587,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
             }   
           }          
           
-          let url = 'https://stellar.expert/explorer/public/'
-          if (environment.horizon_url.includes('testnet')){
-            url = 'https://stellar.expert/explorer/testnet/'
-          }
+          let url = 'https://stellar.expert/explorer/public/'          
           url = url+'ledger/'+of.counter_offer_id
           
           let grxXlmP = of.price.d/of.price.n
@@ -650,18 +623,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
         this.stellarService.allOffers = null
         this.stellarService.trades = null
         this.getAccountOrders(null, true)
-        this.getAccTrades()
-        // this.getAccountTrades(null)
-
-        // console.log('start Promise.all:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-        // Promise.all([          
-        //   this.getAccountOrders(null, false),
-        //   this.getAccountTrades(null)
-        // ]).then(([ofs, trades]) => {
-        //   console.log('end Promise.all:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))          
-        // }).catch( err => {
-        //   console.log('Error get open order and trade:', err)
-        // }) 
+        this.getAccTrades()        
         break;
       case 'transfers':
         this.getAccPayments()

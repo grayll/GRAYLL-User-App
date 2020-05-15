@@ -624,7 +624,7 @@ export class StellarService {
         return axios.get(url)        
     }
     getNetworkHistory(account: string, limit: number, nextURL: string){
-        let url = `${environment.horizon_url}/accounts/${account}/operations?limit=${limit}&order=asc`
+        let url = `https://horizon.stellar.org/accounts/${account}/operations?limit=${limit}&order=asc`
         if (nextURL){
             url = nextURL
         }

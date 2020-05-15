@@ -149,6 +149,10 @@ registerClicked() {
               let content = "The email entered is already registered."
               this.errorService.handleError(null, content)
               this.registerForm.reset() 
+            } else if ((res as any).errCode == environment.EMAIL_INVALID){
+              let content = "The email entered is invalid."
+              this.errorService.handleError(null, content)
+              this.registerForm.reset() 
             } else {              
               this.ngZone.run(() => {                    
                 this.router.navigate(['/confirm-email'], { state: { email: this.registerForm.value['email'],

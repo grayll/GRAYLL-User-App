@@ -38,12 +38,7 @@ export class NoticeDataService {
     private afs: AngularFirestore,
     private authService: AuthService,
     ) {
-    let url = 'https://stellar.expert/explorer/public/'
-    if (environment.horizon_url.includes('testnet')){
-      url = 'https://stellar.expert/explorer/testnet/'
-    }
-    url = url + 'search?term='
-    this.txUrl = url
+      this.txUrl = 'https://stellar.expert/explorer/public/search?term='    
     this._markAsRead = new Subject<{}>()
   }
 
@@ -68,7 +63,7 @@ export class NoticeDataService {
     this.latestEntryGeneral = null
     this.latestEntryAlgo = null
     this.latestEntryTrade = null
-    this.txUrl = null
+    this.txUrl = 'https://stellar.expert/explorer/public/search?term='
   }
 
   pushMarkRead(value:any){
