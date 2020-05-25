@@ -20,6 +20,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {SubSink} from 'subsink'
 import FPC from 'floating-point-calculator';
+import { SharedService } from '../shared.service';
 
 
 @Component({
@@ -83,7 +84,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     private algoService: AlgoService,
     private authService: AuthService,
     private http: HttpClient,
-    private loadingService: LoadingService,    
+    private loadingService: LoadingService,
+    private sharedService:SharedService,
   ) {
     this.subsink = new SubSink()    
     this.algoService.subsAlgoPositions()
@@ -185,6 +187,58 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       })
     }))
   }
+  downloadHistory1(){
+    console.log('this.selectedTab.id:', this.selectedTab.id)    
+    switch(this.selectedTab.id){
+      case 'allOrders':
+        this.download('order')
+        break
+      case 'transfers':
+        this.download('transfer')
+        break
+      case 'networkHistory':
+        this.download('network')
+        break
+    }
+  }
+  download(table:string){
+    var fields = []
+    var columns = []
+    var fileName = ''
+    var data:any
+    switch (table){
+      case "order":
+        columns = ['Date',	'Type',	'Asset',	'Amount',	'Filled',	'Price (XLM)',	'Total Price (XLM)',	'Price (USD)',	'Total Price (USD)', 'URL']
+        fields = ['times','type','asset','amount', 'filled','xlmp','totalxlm','priceusd', 'totalusd', 'url']
+        fileName = "OrderHistory.PDF"        
+        // if (this.searchResult.length > 0){
+        //   data = this.searchResult
+        // } else {
+        //   data = this.dataService.dataTradeSync
+        // }        
+        break
+      case "transfer":
+        columns = ['Date',	'Counterparty',	'Asset', 'Issuer',	'Amount', 'Url']
+        fields = ['times','counter','asset', 'issuer', 'amount', 'url']
+        fileName = "TransferHistory.PDF"
+        // if (this.searchResult.length > 0){
+        //   data = this.searchResult
+        // } else {
+        //   data = this.dataService.dataPaymentsSync      
+        // }   
+        break
+      case "network":
+          columns = ['Date',	'Operation', 'ID', 'Amount',	'Asset', 'Account', 'Url']
+          fields = ['time','op', 'id', 'amount', 'asset', 'account', 'url']
+          fileName = "NetworkHistory.PDF"
+          //data = this.operations          
+        break
+      default:
+        console.log('invalid table name')
+        return 
+    }
+    this.sharedService.savePDF(columns, fields, data, fileName)
+  }
 
   calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){  
     //console.log('CALCULATE-pos.current_position_ROI_$:', pos.current_position_ROI_$) 
@@ -241,12 +295,11 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   
   closePosition(position){
     this.loadingService.show()
-    let grzusd = this.authService.priceInfo.grzusd
+    
     let grxusd = this.authService.priceInfo.grxusd
     this.algoService.closeGrayllId = position.grayll_transaction_id
     if (position.algorithm_type === 'GRZ'){
-            
-      //let close_position_total_$1 = position.open_position_value_$ * (((grzusd - position.open_value_GRZ)/position.open_value_GRZ) + 1)
+      let grzusd = this.authService.priceInfo.grzusd
       let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)
       
       let close_position_fee_$ = close_position_total_$*0.003
@@ -302,9 +355,9 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         this.loadingService.hide()
       })
     } else {
-      
+      let gryusd = this.authService.priceInfo.gryusd
       let url = ''
-      switch(this.selectedTab.id){
+      switch(position.algorithm_type){
         case "GRY 1":
           url = environment.gry1_api_url 
           break
@@ -315,75 +368,26 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
           url = environment.gry3_api_url 
           break
       }
+
+      console.log(url)
       
-      let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)      
-      let close_position_fee_$ = close_position_total_$*0.003
-      let close_position_ROI_$ = close_position_total_$ - position.open_position_value_$       
-
-      let close_performance_fee_$ = 0
-      let netRoi = close_position_ROI_$ - close_position_fee_$
-      if (netRoi > 0) {
-        close_performance_fee_$ =  netRoi * 0.18
-      }
-
-      let close_position_total_GRX = close_position_total_$/grxusd
-      let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
-      let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ      
-      let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
-
-      let data = {user_id: this.authService.userInfo.Uid,            
+      let data = {user_id: this.authService.userInfo.Uid,   
+        open_position_value_$:position.open_position_value_$,         
         open_stellar_transaction_id: position.open_stellar_transaction_id,
         open_position_timestamp: position.open_position_timestamp,
         grayll_transaction_id: position.grayll_transaction_id,        
         algorithm_type: position.algorithm_type,
         
         close_value_GRX:              grxusd,
-        close_value_GRZ:              grzusd,
-        close_position_value_$:       close_position_value_$,
-        close_position_value_GRX:     close_position_value_$/grxusd,
-        close_position_ROI_$:         close_position_ROI_$,
-        close_position_ROI_percent:   close_position_ROI_percent,
-        close_position_ROI_percent_NET:   close_position_ROI_percent_NET,
-        current_position_ROI_$:       close_position_ROI_$,
-        current_position_ROI_percent: close_position_ROI_percent,
-        close_position_total_$:    close_position_total_$,
-        close_position_total_GRX:  close_position_total_GRX,
-        close_position_total_GRZ:   close_position_total_$/grzusd,
-        close_position_fee_$:      close_position_fee_$,
-        close_position_fee_GRX:      close_position_fee_$/grxusd,
-        close_performance_fee_$:   close_performance_fee_$,
-        close_performance_fee_GRX: close_performance_fee_$/grxusd
-      }
-      this.http.post(url + 'api/v1/gry/position/close', data).subscribe(res => {
+        close_value_GRY:              gryusd,
         
-      })
-      // this.http.post(environment.gry1_api_url + 'api/v1/gry/position/close', {
-      //   user_id: this.authService.userInfo.Uid,            
-      //   open_stellar_transaction_id: position.open_stellar_transaction_id,
-      //   grayll_transaction_id: position.grayll_transaction_id,        
-      //   algorithm_type: position.algorithm_type,
-
-      //   // gry_price_$: this.algoPosition.itemPrice,
-      //   // grx_price_$: this.algoPosition.grxPrice,
-      //   // open_position_total_$:+this.algoPosition.usdValue,
-      //   // open_position_fee_$:+this.algoPosition.usdValue*+this.selectedTab.fee,
-      //   // open_position_fee_GRX:this.algoPosition.grxAmount*+this.selectedTab.fee,
-
-      //   // open_position_value_$:this.algoPosition.positionValue,
-      //   // open_position_total_GRX:+this.algoPosition.grxAmount,
-      //   // open_position_value_GRZ:+this.algoPosition.itemAmount,
-      //   // open_position_value_GRX:(+this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee),
-      // }).subscribe( 
-      //   res => {
-      //   //this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
-      //   setTimeout(() => {
-      //     this.loadingService.hide()
-      //   }, 1500);   
-      // },
-      // e => {
-      //  // this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
-      //  this.loadingService.hide()
-      // })
+      }
+      this.http.post(url + 'api/v1/gry/position/close', data).subscribe( res => {
+        console.log(res)             
+      },
+      e => {       
+        this.loadingService.hide()
+      })     
     }
   }
 

@@ -42,7 +42,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
       name: 'GRY | 1',
       value: 'Balthazar',
       token: 'GRY',
-      tabName: 'Balthzr',
+      tabName: 'Balthazar',
       fee: 0.018
     },
     {
@@ -93,7 +93,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
     this.algoPosition = new AlgoPositionModel();
     this.algoPosition.token = this.algoItems[0].token
     this.algoPosition.item = this.algoItems[0].name
-
+    
     this.authService.countdownConfigs[0] =  {
       leftTime: 60 - (moment.now() - this.authService.gryUpdatedAt)/1000,
       template: '$!s!',
@@ -338,6 +338,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
     //   this.errorService.handleError(null, 'Please enter a value of ~$10 or more in one of the fields.');
     //   return false;
     // }
+    console.log('clientValidation:', this.algoPosition)
     if (this.algoPosition.usdValue && !this.isValidNumber(this.algoPosition.usdValue)) {
       this.errorService.handleError(null, 'Please enter a valid USD Value.');
       return false;
@@ -372,9 +373,9 @@ export class SystemHeaderBoxesComponent implements OnInit {
     
   private openPopup() {
     
-    if (this.selectedTab.id != 'GRZ'){
-      return
-    }
+    // if (this.selectedTab.id != 'GRZ'){
+    //   return
+    // }
    
     this.loadingService.show()
     this.stellarService.sendAsset(this.authService.getSecretKey(), environment.HOT_WALLET_ONE, 

@@ -330,9 +330,8 @@ export class StellarService {
 
     sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string): Promise<any> {
         return new Promise((resolve, reject) => {
-           let source = StellarSdk.Keypair.fromSecret(accSeed);            
-        //    this.horizon.loadAccount(source.publicKey())
-        //    .then( account => {      
+           let source = StellarSdk.Keypair.fromSecret(accSeed);   
+           
                                                       
                 let tx = new StellarSdk.TransactionBuilder(this.account, 
                     {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})               
@@ -610,14 +609,14 @@ export class StellarService {
     }
     // // https://horizon-testnet.stellar.org/accounts/GCLPAXUV7XWZNLJQIQ3723ZBA2WFQHEGBQ3TFDUPRL733FDM5HV7KPOO/offers
     getOffer(account: string, limit: number, nextURL: string){
-        let url = `${environment.horizon_url}/accounts/${account}/offers?limit=${limit}&order=desc`
+        let url = `${environment.horizon_url}accounts/${account}/offers?limit=${limit}&order=desc`
         if (nextURL){
             url = nextURL
         }
         return axios.get(url)       
     }
     getPayment(account: string, limit: number, nextURL: string){
-        let url = `${environment.horizon_url}/accounts/${account}/payments?limit=${limit}&order=desc`
+        let url = `${environment.horizon_url}accounts/${account}/payments?limit=${limit}&order=desc`
         if (nextURL){
             url = nextURL
         }
@@ -631,11 +630,11 @@ export class StellarService {
         return axios.get(url)        
     }
     getTrade(account: string, limit: number, nextURL: string){
-        let url = `${environment.horizon_url}/accounts/${account}/trades?limit=${limit}&order=desc`
+        let url = `${environment.horizon_url}accounts/${account}/trades?limit=${limit}&order=desc`
         if (nextURL){
             url = nextURL
         }
-        return axios.get(url)       
+        return axios.get(url)  
     }
     
     verifyPublicKey(secretKey, publicKey): boolean{
