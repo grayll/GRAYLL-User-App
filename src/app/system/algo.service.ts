@@ -47,6 +47,7 @@ export class AlgoService {
   closePositions: ClosePosition[] = []
   closeGrayllId: string
   closeAll: boolean
+  closingAllAlgo: string = ''
 
   public algoPositions$: Observable<ClosePosition[]>;
   algoPositionCollection: AngularFirestoreCollection<ClosePosition>;

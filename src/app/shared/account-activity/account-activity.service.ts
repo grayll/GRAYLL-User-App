@@ -60,14 +60,13 @@ export class AccountActivityService {
     else if(type==='transfers'){
       this.index = this.algolia.initializeIndex('transfers-ua');
     }
-    else{
+    else if(type==='allOrders'){
       this.index = this.algolia.initializeIndex('orders-ua');
     }
-    return this.index.search(keyword)
-    
-    // return this.index.search(keyword, {
-    //   filters: 'uid:'+uid
-    // })
+    else if(type==='algoPosition'){
+      this.index = this.algolia.initializeIndex('algoPosition-ua');
+    }
+    return this.index.search(keyword)     
   }
   
   addOrder(item: OrderModel) {

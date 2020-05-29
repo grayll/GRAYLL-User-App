@@ -38,7 +38,6 @@ export class SharedService {
       rows.push(fieldData)
     });
 
-
     doc.autoTable(
       columns,
       rows,
@@ -46,7 +45,7 @@ export class SharedService {
         styles: {
           fontSize: 6
         },
-        headerStyles: {
+        headStyles: {
           cellWidth: 'wrap',
           fillColor: [64, 39, 140],
           fontSize: 6,
@@ -57,34 +56,79 @@ export class SharedService {
     doc.save(fileName);
   }
 
-  savePDF2(columns, fields, data:any, fileName: string) {
-    var doc = new jsPDF({orientation: 'landscape'});    
+  saveAlgoPDF(columns, fields, data: any, fileName: string) {
+    var doc = new jsPDF({ orientation: 'landscape' });
     var rows = [];
+    
     data.forEach(item => {
-      let fieldData = []
+      let fieldData = []      
       fields.forEach(fieldName => {
-        fieldData.push(item[fieldName])
+        
+        switch (fieldName){
+          case 'open_value_GRZ':
+            if (item[fieldName]){
+              fieldData.push(item[fieldName].toFixed(5))
+            } else {
+              fieldData.push(item['open_value_GRY'].toFixed(5))
+            }            
+            break
+          case 'close_position_value_$':
+            if (item['status'] == 'OPEN'){
+              fieldData.push(item['current_position_value_$'].toFixed(5))
+            } else {
+              fieldData.push(item[fieldName].toFixed(5))
+            }              
+            break
+          case 'close_position_ROI_$':
+            if (item['status'] == 'OPEN'){
+              fieldData.push(item['current_position_ROI_$'].toFixed(5))
+            } else {
+              fieldData.push(item[fieldName].toFixed(5))
+            }
+            break
+          case 'close_position_ROI_percent':
+            if (item['status'] == 'OPEN'){
+              fieldData.push(item['current_position_ROI_percent'].toFixed(5))
+            } else {
+              fieldData.push(item[fieldName].toFixed(5))
+            }
+            break
+          case 'close_stellar_transaction_id':
+            if (item['status'] == 'OPEN'){
+              fieldData.push(item['open_stellar_transaction_id'])
+            } else {
+              fieldData.push(item[fieldName])
+            }
+            break            
+            default:
+            if (fieldName == 'open_value_GRX' || fieldName == 'current_position_value_$' || fieldName == 'current_position_ROI_$' || fieldName == 'current_position_ROI_percent'){
+              fieldData.push(item[fieldName].toFixed(5))
+            } else {
+              fieldData.push(item[fieldName])
+            }
+            break
+        }        
       });
       rows.push(fieldData)
-    })
-
-    doc.autoTable(columns, rows);
+    });
+    console.log(rows)
+    doc.autoTable(
+      columns,
+      rows,
+      {
+        styles: {
+          fontSize: 6
+        },
+        headStyles: {
+          cellWidth: 'wrap',
+          fillColor: [64, 39, 140],
+          fontSize: 6,
+          fontStyle: 'normal'
+        }       
+      }
+    );
     doc.save(fileName);
-  }
-  
-
-  // public getLoanPaid() { 
-  //   // if (!this.authService.userData){
-  //   //   this.authService.GetLocalUserData()
-  //   // }
-  //   if (this.authService.userData && !this.authService.userData.LoanPaidStatus){      
-  //     return false
-  //   } 
-  //   if (this.authService.userData && this.authService.userData.LoanPaidStatus === 2){      
-  //     return true
-  //   }    
-  //   return false;
-  // }
+  }  
 
   // Wallet page - Withdraw popup
   public setWithdrawModel(model: WithdrawModel) {

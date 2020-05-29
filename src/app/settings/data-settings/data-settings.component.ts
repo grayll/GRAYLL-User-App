@@ -4,7 +4,7 @@ import {NgbTimeStruct} from '@ng-bootstrap/ng-bootstrap';
 //const ct = require('countries-and-timezones');
 //const timezone = require('isdcode-country-timezone');
 import moment from 'moment-timezone';
-import { Moment } from 'moment';
+//import { Moment } from 'moment';
 
 //import 'moment-range';
 import 'moment/locale/fr';

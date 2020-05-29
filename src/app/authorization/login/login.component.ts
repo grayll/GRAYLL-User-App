@@ -40,7 +40,7 @@ export class LoginComponent {
   firefoxguide: boolean = false;
   submitted = false;
   message: string;
-   
+  honeypot: any = "";
 
   get email() { return this.loginForm.get('email'); }
   get password() { return this.loginForm.get('password'); }
@@ -147,6 +147,9 @@ export class LoginComponent {
     this.onValueChanged()     
     // stop here if form is invalid
     if (this.loginForm.invalid) {
+      return;
+    }
+    if (this.honeypot) {
       return;
     }
    

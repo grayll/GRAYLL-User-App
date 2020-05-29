@@ -29,7 +29,7 @@ var StellarSdk = require('stellar-sdk')
   styleUrls: ['./account-activity.component.scss'],
   //changeDetection: ChangeDetectionStrategy.OnPush, 
 })
-export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
+export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() showMoreDetails: boolean;
   @Input() activeTabId: string;
@@ -120,7 +120,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
     this.searchControl.valueChanges
       .pipe(debounceTime(this.debounce), distinctUntilChanged())
       .subscribe(query => {
-        if (query) {          
+        if (query) {  
+          console.log('query:',query)        
           this.accountService.searchData(this.activeTabId, this.authService.userInfo.Uid, query).then(data => {
             console.log(data.hits)
             if(this.activeTabId === 'networkHistory'){
@@ -130,31 +131,17 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
                 return this.dataService.parseTransfer(item)
               })
               this.notices = of(this.searchResult)             
-            } else{              
+            } else {              
               this.searchResult = (data.hits as OrderId[]).map(item => {
                 return this.dataService.parseTrade(item)
               })
-              this.tradess = of(this.searchResult )
+              this.tradess = of(this.searchResult)
             }
           }).catch(e => {
             console.log(e)
           })
         }
-      });
-
-    //  this.addDataInFirebase(); 
-
-    // this.openOrders$ = this.accountActivityService.orders.subscribe(res => {
-    //   this.openOrders = [...res];
-    // });
-
-    // this.transfers$ = this.accountActivityService.transfers.subscribe(res => {
-    //   this.transfers = [...res];
-    // });
-
-    // this.networkHistories$ = this.accountActivityService.networkHistory.subscribe(res => {
-    //   this.networkHistories = [...res];
-    // });
+      });    
   }
 
   ngOnChanges() {    
@@ -166,14 +153,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy,OnChanges {
       this.grxP = +this.authService.userData.grxPrice
       this.xlmP = +this.authService.userData.xlmPrice
     }
-    // Promise.all([
-    //   this.getAccountOrders(null, true),
-    //   this.getAccountTrades(null)
-    // ]).then(([ofs, trades]) => {
-
-    // }).catch( err => {
-    //   console.log('Error get open order and trade:', err)
-    // }) 
+    
   }
   downloadHistory(){
     console.log('this.selectedTab.id:', this.selectedTab.id)

@@ -1,12 +1,5 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges, HostListener, OnDestroy} from '@angular/core';
-import {
-  faArrowAltCircleDown,
-  faCaretDown, faCaretUp,
-  faCopy,
-  faInfoCircle,
-  faSearch,
-  faTimesCircle
-} from '@fortawesome/free-solid-svg-icons';
+
 import {ClipboardService} from 'ngx-clipboard';
 import {SnotifyService} from 'ng-snotify';
 import {CountdownConfig} from 'ngx-countdown/src/countdown.config';
@@ -21,7 +14,10 @@ import { environment } from 'src/environments/environment';
 import {SubSink} from 'subsink'
 import FPC from 'floating-point-calculator';
 import { SharedService } from '../shared.service';
-
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import {faArrowAltCircleDown, faCopy, faInfoCircle, faSearch, faTimesCircle, faCaretDown, faCaretUp} from '@fortawesome/free-solid-svg-icons';
+import { FormControl } from '@angular/forms';
+import { AccountActivityService } from '../account-activity/account-activity.service';
 
 @Component({
   selector: 'app-activity',
@@ -64,6 +60,16 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     }
   ];
 
+//dropdown items
+  dropdownItems = [
+    "Close All Algo Positions GRZ",
+    "Close All Algo Positions GRY 1",
+    "Close All Algo Positions GRY 2",
+    "Close All Algo Positions GRY 3"
+  ];
+
+  //variable to be sent to the modal
+  algoName: any = 'Close All Algo Positions GRZ';
   // Font Awesome Icons
   faDownload = faArrowAltCircleDown;
   faClose = faTimesCircle;
@@ -78,6 +84,12 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   openPositions: ClosePosition[] = []
   closePositions: ClosePosition[] = []
 
+  private debounce: number = 400;
+  isInitData: boolean = true  
+
+  searchControl: FormControl;
+  searchResult: any[];
+
   constructor(
     private clipboardService: ClipboardService,
     private snotifyService: SnotifyService,
@@ -86,6 +98,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     private http: HttpClient,
     private loadingService: LoadingService,
     private sharedService:SharedService,
+    private accountService: AccountActivityService,
   ) {
     this.subsink = new SubSink()    
     this.algoService.subsAlgoPositions()
@@ -138,12 +151,34 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         this.algoService.closeGrayllId = ''
       }
 
-      if (this.algoService.closeAll && this.algoService.openPositions.length == 0){
-        this.loadingService.hide()
-        this.algoService.closeAll = false
-        this.authService.pushCloseAllEnd(true)
-      }
-     
+      // if (this.algoService.closeAll && this.algoService.openPositions.length == 0){
+      //   this.loadingService.hide()
+      //   this.algoService.closeAll = false
+      //   this.authService.pushCloseAllEnd(true)
+      // }
+      switch (this.algoService.closingAllAlgo){
+        case "GRZ":             
+          if (this.algoService.grzMetric.Positions == 0) {
+            this.authService.pushCloseAllEnd(true)
+          }
+          break
+        case "GRY 1":
+          if (this.algoService.gry1Metric.Positions == 0) {
+            this.authService.pushCloseAllEnd(true)
+          }
+          break
+        case "GRY 2":
+          if (this.algoService.gry2Metric.Positions == 0) {
+            this.authService.pushCloseAllEnd(true)
+          }
+          break
+        case "GRY 3":
+          if (this.algoService.gry3Metric.Positions == 0) {
+            this.authService.pushCloseAllEnd(true)
+          }      
+          break
+      } 
+          
       this.updateAverageMetric(this.algoService.grzMetric, "grz")
       this.updateAverageMetric(this.algoService.gry1Metric, "gry1")      
       this.updateAverageMetric(this.algoService.gry2Metric, "gry2")
@@ -153,51 +188,103 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       // console.log('this.algoService.grzMetric', this.algoService.grzMetric)
 
       this.algoService.closePositions = positions.filter(pos => {
-        if (pos.status != "OPEN"){          
+        if (pos.status == "CLOSED"){          
           pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          if (pos.close_stellar_transaction_id) {
-            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString()   
-          } else {
-            pos.url = ""
-          } 
+          pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString() 
           return pos
         }        
       })
       //console.log('this.algoService.closePositions', this.algoService.closePositions)
       this.algoService.allPositions = positions.filter(pos => {
-        if (pos.status == "OPEN"){
-          //pos.current_position_ROI_per = pos['current_position_ROI_%']        
-          pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          if (pos.open_stellar_transaction_id) {
-            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id.toString()   
-          } else {
-            pos.url = ""
-          }          
-        }   
+        // if (pos.status == "OPEN"){
+        //   //pos.current_position_ROI_per = pos['current_position_ROI_%']        
+        //   pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
+        //   if (pos.open_stellar_transaction_id) {
+        //     pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id.toString()   
+        //   } else {
+        //     pos.url = ""
+        //   }          
+        // }   
         if (pos.status != "OPEN"){
           //pos.close_position_ROI_per = pos['close_position_ROI_%']
           pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          if (pos.close_stellar_transaction_id) {
-            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString()   
-          } else {
-            pos.url = ""
-          }        
+          pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString()  
+          return pos 
         } 
-        return pos       
+          
       })
     }))
   }
-  downloadHistory1(){
-    console.log('this.selectedTab.id:', this.selectedTab.id)    
+ 
+  ngOnInit() {
+    this.setActiveTab();
+    this.searchControl = new FormControl('');
+    this.searchControl.valueChanges
+      .pipe(debounceTime(this.debounce), distinctUntilChanged())
+      .subscribe(query => {
+        if (query) {  
+                  
+          this.accountService.searchData('algoPosition', this.authService.userInfo.Uid, query).then(data => {            
+            this.searchResult = data.hits          
+            if (this.selectedTab.id === 'closedAlgoPositions'){
+              
+              this.algoService.closePositions = this.searchResult.filter(pos => {
+                if (pos.status != "OPEN"){          
+                  pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
+                  if (pos.close_stellar_transaction_id) {
+                    pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString()   
+                  } else {
+                    pos.url = ""
+                  } 
+                  return pos
+                }        
+              })
+              console.log(this.algoService.closePositions)
+            } else if (this.selectedTab.id === 'allAlgoPositions'){
+              
+              //console.log('this.algoService.closePositions', this.algoService.closePositions)
+              this.algoService.allPositions = this.searchResult.filter(pos => {
+                if (pos.status == "OPEN"){
+                  //pos.current_position_ROI_per = pos['current_position_ROI_%']        
+                  pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
+                  if (pos.open_stellar_transaction_id) {
+                    pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id.toString()   
+                  } else {
+                    pos.url = ""
+                  }          
+                }   
+                if (pos.status != "OPEN"){
+                  //pos.close_position_ROI_per = pos['close_position_ROI_%']
+                  pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
+                  if (pos.close_stellar_transaction_id) {
+                    pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString()   
+                  } else {
+                    pos.url = ""
+                  }        
+                } 
+                return pos       
+              })
+              console.log(this.algoService.allPositions)
+            }
+
+            
+          }).catch(e => {
+            console.log(e)
+          })
+        }
+      }); 
+  }
+  downloadHistory(){
+    //console.log('this.selectedTab.id:', this.selectedTab.id)    
     switch(this.selectedTab.id){
-      case 'allOrders':
-        this.download('order')
+      case 'openAlgoPositions':
+        this.download('openAlgoPositions')
         break
-      case 'transfers':
-        this.download('transfer')
+      case 'closedAlgoPositions':
+        this.download('closedAlgoPositions')
         break
-      case 'networkHistory':
-        this.download('network')
+      case 'allAlgoPositions':
+        this.download('allAlgoPositions')
         break
     }
   }
@@ -207,37 +294,44 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     var fileName = ''
     var data:any
     switch (table){
-      case "order":
-        columns = ['Date',	'Type',	'Asset',	'Amount',	'Filled',	'Price (XLM)',	'Total Price (XLM)',	'Price (USD)',	'Total Price (USD)', 'URL']
-        fields = ['times','type','asset','amount', 'filled','xlmp','totalxlm','priceusd', 'totalusd', 'url']
-        fileName = "OrderHistory.PDF"        
+      case "openAlgoPositions":
+        columns = ['Open Date',	'Status',	'Duration',	'Algorithm',	'Price (GRX)',	'Price (USD)',	'Position Value',	'Position Profit','ROI', 'GRAYLL Transaction ID','Stellar Transaction ID', 'Info']
+        fields = ['time','status','duration_string','algorithm_type', 'open_value_GRX','open_value_GRZ','current_position_value_$','current_position_ROI_$', 'current_position_ROI_percent', 'grayll_transaction_id', 'open_stellar_transaction_id', 'url']
+        fileName = "OpenAlgoPositions.PDF"        
         // if (this.searchResult.length > 0){
         //   data = this.searchResult
         // } else {
         //   data = this.dataService.dataTradeSync
-        // }        
-        break
-      case "transfer":
-        columns = ['Date',	'Counterparty',	'Asset', 'Issuer',	'Amount', 'Url']
-        fields = ['times','counter','asset', 'issuer', 'amount', 'url']
-        fileName = "TransferHistory.PDF"
-        // if (this.searchResult.length > 0){
-        //   data = this.searchResult
-        // } else {
-        //   data = this.dataService.dataPaymentsSync      
         // }   
+        data = this.algoService.openPositions     
         break
-      case "network":
-          columns = ['Date',	'Operation', 'ID', 'Amount',	'Asset', 'Account', 'Url']
-          fields = ['time','op', 'id', 'amount', 'asset', 'account', 'url']
-          fileName = "NetworkHistory.PDF"
-          //data = this.operations          
+      case "closedAlgoPositions":
+        columns = ['Open Date',	'Status',	'Duration',	'Algorithm',	'Price (GRX)',	'Price (USD)',	'Position Value',	'Position Profit','ROI', 'GRAYLL Transaction ID','Stellar Transaction ID', 'Info']
+        fields = ['time','status','duration_string','algorithm_type', 'open_value_GRX','open_value_GRZ','close_position_value_$','close_position_ROI_$', 'close_position_ROI_percent', 'grayll_transaction_id', 'close_stellar_transaction_id', 'url']
+        fileName = "ClosedAlgoPositions.PDF"  
+        if (this.searchResult.length > 0){
+          data = this.searchResult
+        } else {
+          data = this.algoService.closePositions
+        }   
+        
+        break
+      case "allAlgoPositions":
+        columns = ['Open Date',	'Status',	'Duration',	'Algorithm',	'Price (GRX)',	'Price (USD)',	'Position Value',	'Position Profit','ROI', 'GRAYLL Transaction ID','Stellar Transaction ID', 'Info']
+        fields = ['time','status','duration_string','algorithm_type', 'open_value_GRX','open_value_GRZ','close_position_value_$','close_position_ROI_$', 'close_position_ROI_percent', 'grayll_transaction_id', 'close_stellar_transaction_id', 'url']
+        fileName = "AllAlgoPositions.PDF" 
+        if (this.searchResult.length > 0){
+          data = this.searchResult
+        } else {
+          data = this.algoService.allPositions
+        }   
+              
         break
       default:
         console.log('invalid table name')
         return 
     }
-    this.sharedService.savePDF(columns, fields, data, fileName)
+    this.sharedService.saveAlgoPDF(columns, fields, data, fileName)
   }
 
   calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){  
@@ -313,8 +407,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
 
       let close_position_total_GRX = close_position_total_$/grxusd
       let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
-      let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ
-      //let close_position_ROI_percent_GROSS = (close_position_ROI_$ * 100)/position.open_position_value_$
+      let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ      
       let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
       
       console.log('close_position_ROI_$', close_position_ROI_$)
@@ -326,7 +419,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         {user_id: this.authService.userInfo.Uid,            
         open_stellar_transaction_id: position.open_stellar_transaction_id,
         open_position_timestamp: position.open_position_timestamp,
-        grayll_transaction_id: position.grayll_transaction_id,        
+        grayll_transaction_id: position.grayll_transaction_id,     
         algorithm_type: position.algorithm_type,
         
         close_value_GRX:              grxusd,
@@ -368,9 +461,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
           url = environment.gry3_api_url 
           break
       }
-
-      console.log(url)
-      
+           
       let data = {user_id: this.authService.userInfo.Uid,   
         open_position_value_$:position.open_position_value_$,         
         open_stellar_transaction_id: position.open_stellar_transaction_id,
@@ -390,23 +481,31 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       })     
     }
   }
-
-  ngOnInit() {
-    this.setActiveTab();
-  }
+ 
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('ngOnChanges-',changes)
+    console.log('ngOnChanges-', changes.activeTabId)
     if (changes.activeTabId && changes.activeTabId.currentValue) {
+     
       this.selectedTab = this.activityTabs.find((t) => t.id === changes.activeTabId.currentValue);
     }
+    this.searchResult = []
   }
 
   private setActiveTab() {
-    if (this.activeTabId && this.activeTabId !== 'allOrders' && this.activeTabId !== 'transfers' && this.activeTabId !== 'networkHistory') {
+    if (this.activeTabId && this.activeTabId !== 'openAlgoPositions' && this.activeTabId !== 'closedAlgoPositions' && this.activeTabId !== 'allAlgoPositions') {
+      console.log('setActiveTab-',this.activeTabId)
       this.selectedTab = this.activityTabs.find((t) => t.id === this.activeTabId);
     } else {
       this.selectedTab = this.activityTabs[0];
     }
+    // if (!this.activeTabId) {
+    //   this.selectedTab = this.activityTabs.find((t) => t.id === this.activeTabId);
+    // } else {
+    //   this.selectedTab = this.activityTabs[0];
+    // }
+    console.log('setActiveTab:', this.selectedTab)
   }
 
   sortByPositionValue() {
@@ -440,8 +539,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onTabChange(id: string) {
-    this.selectedTab = this.activityTabs.find((t) => t.id === id);
-    console.log(this.selectedTab)
+    this.selectedTab = this.activityTabs.find((t) => t.id === id);    
   }
 
   copySuccess(account: string) {

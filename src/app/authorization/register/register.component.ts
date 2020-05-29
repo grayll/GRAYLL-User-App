@@ -27,9 +27,7 @@ export class RegisterComponent implements OnInit {
   keyIcon  = faKey;
   registerForm: FormGroup;
   message: string;
-  // get name() { return this.registerForm.get('name') }
-  // get email() { return this.registerForm.get('email'); }
-  // get password() { return this.registerForm.get('password'); }
+  honeypot: any = ''
 
   constructor(
     private formBuilder: FormBuilder,
@@ -125,6 +123,9 @@ registerClicked() {
       console.log('form invalid')     
       return;
   }  
+  if (this.honeypot) {
+    return;
+  }
   console.log('form valid')   
   
   this.loadingService.show()

@@ -10,7 +10,7 @@ import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/
 
 const popupRoutes: Routes = [
   {
-    path: 'cancel-algo-positions',
+    path: 'cancel-algo-positions/:name',
     component: CancelAlgoPositionsComponent,
     outlet: 'popup'
   },

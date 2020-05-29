@@ -5,8 +5,9 @@ import { AuthService } from '../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { LoadingService } from '../../services/loading.service';
 import { environment } from 'src/environments/environment';
-import { Observable, forkJoin, from } from 'rxjs';
+import { Observable, forkJoin, from, Subscription } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router'
 
 @Component({
   selector: 'app-cancel-algo-positions',
@@ -16,24 +17,36 @@ import { concatMap } from 'rxjs/operators';
 export class CancelAlgoPositionsComponent implements OnInit {
   
   @ViewChild('content') modal;
-  
+  algoName: any = '';
+  subs: Subscription
   constructor(
     public popupService: PopupService,
     private algoService: AlgoService,
     private authService: AuthService,
     private http: HttpClient,
     private loadingService: LoadingService,
+     private route: ActivatedRoute,
   ) { }
   
   ngOnInit() {
     this.popupService.open(this.modal);
-    this.authService.subCloseAllEnd().subscribe( end => {
-      this.loadingService.hide()
-      this.popupService.close()
+    this.route.params.subscribe((param) => {
+      let params = param.name;
+      let index = params.indexOf("GR");
+      this.algoName = params.substring(index, params.length);
     })
+    this.subs = this.authService.subCloseAllEnd().subscribe( end => {
+      this.algoService.closingAllAlgo = ''
+      this.closePopup()
+    })
+    this.algoService.closingAllAlgo = ''
   }
   
   closeAll(){
+    if (this.algoService.openPositions.length == 0){
+      this.popupService.close()
+      return
+    }
     this.loadingService.show()
     let grzusd = this.authService.priceInfo.grzusd
     let grxusd = this.authService.priceInfo.grxusd
@@ -43,11 +56,10 @@ export class CancelAlgoPositionsComponent implements OnInit {
     let closePositionsDataGry1 = []
     let closePositionsDataGry2 = []
     let closePositionsDataGry3 = []
-    let urls = []
-
-    this.algoService.openPositions.forEach( position => {
+    
+    this.algoService.openPositions.forEach( position => {      
       if (position.algorithm_type === 'GRZ'){ 
-        //==
+       
         let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)
       
         let close_position_fee_$ = close_position_total_$*0.003
@@ -105,16 +117,13 @@ export class CancelAlgoPositionsComponent implements OnInit {
         }
         
         switch(position.algorithm_type){
-          case "GRY 1":
-            
+          case "GRY 1":            
             closePositionsDataGry1.push(data)
             break
-          case "GRY 2":
-           
+          case "GRY 2":           
             closePositionsDataGry2.push(data)
             break
-          case "GRY 3":
-           
+          case "GRY 3":           
             closePositionsDataGry3.push(data)
             break
         }       
@@ -123,93 +132,105 @@ export class CancelAlgoPositionsComponent implements OnInit {
 
     
 
-    let postDatas = []
+    // let postDatas = []
     
-    if (closePositionsData.length > 0) {      
-      this.algoService.closeAll = true
-      postDatas.push({url:environment.grz_api_url + 'api/v1/grz/position/closeAll',data: {action:"CLOSEALL", data: closePositionsData}})
-    }  
-    if (closePositionsDataGry1.length > 0) {      
-      this.algoService.closeAll = true
-      postDatas.push({url:environment.gry1_api_url + 'api/v1/gry/position/closeAll',data: {action:"CLOSEALL", data: closePositionsDataGry1}})
-    }  
-    if (closePositionsDataGry2.length > 0) {      
-      this.algoService.closeAll = true
-      postDatas.push({url:environment.gry2_api_url + 'api/v1/gry/position/closeAll', data:{action:"CLOSEALL", data: closePositionsDataGry2}})
-    }  
-    if (closePositionsDataGry3.length > 0) {      
-      this.algoService.closeAll = true
-      postDatas.push({url:environment.gry3_api_url + 'api/v1/gry/position/closeAll', data:{action:"CLOSEALL", data: closePositionsDataGry3}})
-    } 
-    if (this.algoService.closeAll){
-      from(postDatas).pipe(
-        concatMap(postData => 
-          this.http.post(postData.url, postData.data)
-        )
-      ).subscribe(
-        res => { console.log(res)},
-          err => { console.log(err)}     
-      );
-    }
-    // if (this.algoService.closeAll){
-    //   forkJoin(postData).subscribe(results => {
-    //     this.loadingService.hide()
-    //     console.log(results)
-    //     // results[0] is our character
-    //     // results[1] is our character homeworld
-    //     //results[0].homeworld = results[1];
-    //     //this.loadedCharacter = results[0];
-    //   }, e => {
-    //     this.loadingService.hide()
-    //   });
-    // }
-
-    // if (closePositionsData.length > 0) {
-    //   //console.log('closePositionsData:', closePositionsData)
+    // if (closePositionsData.length > 0) {      
     //   this.algoService.closeAll = true
-    //   this.http.post(environment.grz_api_url + 'api/v1/grz/position/closeAll', {action:"CLOSEALL", data: closePositionsData}).subscribe(
-    //     res => {
-    //       this.loadingService.hide()         
-    //     },
-    //     e => {
-    //       this.loadingService.hide() 
-    //     }
-    //   )
+    //   postDatas.push({url:environment.grz_api_url + 'api/v1/grz/position/closeAll',data: {action:"CLOSEALL", data: closePositionsData}})
     // }  
     // if (closePositionsDataGry1.length > 0) {      
     //   this.algoService.closeAll = true
-    //   this.http.post(environment.gry1_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry1}).subscribe(
-    //     res => {
-    //       this.loadingService.hide()        
-    //     },
-    //     e => {
-    //       this.loadingService.hide()
-    //     }
-    //   )
+    //   postDatas.push({url:environment.gry1_api_url + 'api/v1/gry/position/closeAll',data: {action:"CLOSEALL", data: closePositionsDataGry1}})
     // }  
     // if (closePositionsDataGry2.length > 0) {      
     //   this.algoService.closeAll = true
-    //   this.http.post(environment.gry2_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry2}).subscribe(
-    //     res => {
-    //       this.loadingService.hide()         
-    //     },
-    //     e => {
-    //       this.loadingService.hide()
-    //     }
-    //   )
+    //   postDatas.push({url:environment.gry2_api_url + 'api/v1/gry/position/closeAll', data:{action:"CLOSEALL", data: closePositionsDataGry2}})
     // }  
     // if (closePositionsDataGry3.length > 0) {      
     //   this.algoService.closeAll = true
-    //   this.http.post(environment.gry3_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry3}).subscribe(
-    //     res => {
-    //       this.loadingService.hide()          
-    //     },
-    //     e => {
-    //       this.loadingService.hide()
-    //     }
-    //   )
+    //   postDatas.push({url:environment.gry3_api_url + 'api/v1/gry/position/closeAll', data:{action:"CLOSEALL", data: closePositionsDataGry3}})
     // } 
+      
+      switch (this.algoName) {
+        case 'GRZ':
+          if (closePositionsData.length > 0){
+            this.algoService.closingAllAlgo = this.algoName
+            this.http.post(environment.grz_api_url + 'api/v1/grz/position/closeAll', {action:"CLOSEALL", data: closePositionsData}).subscribe(
+              res => { 
+                if ((res as any).errCode != environment.SUCCESS){
+                  this.closePopup()
+                }
+              },
+                err => { this.closePopup(); console.log(err)}     
+            );
+          } else {
+            this.closePopup()
+          }
+          break
+        case 'GRY 1':
+          if (closePositionsDataGry1.length > 0){
+            this.algoService.closingAllAlgo = this.algoName
+            this.http.post(environment.gry1_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry1}).subscribe(
+              res => { 
+                if ((res as any).errCode != environment.SUCCESS){
+                  this.closePopup()
+                }
+              },
+                err => { this.closePopup(); console.log(err)}     
+            );
+          } else {
+            this.closePopup()
+          }
+          break
+        case 'GRY 2':
+          if (closePositionsDataGry2.length > 0){
+            this.algoService.closingAllAlgo = this.algoName
+            this.http.post(environment.gry2_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry2}).subscribe(
+              res => { 
+                if ((res as any).errCode != environment.SUCCESS){
+                  this.closePopup()
+                }
+              },
+                err => { this.closePopup(); console.log(err)}     
+            );
+          } else {
+            this.closePopup()
+          }
+          break
+        case 'GRY 3':
+          if (closePositionsDataGry3.length > 0){
+            this.http.post(environment.gry3_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry3}).subscribe(
+              res => { 
+                if ((res as any).errCode != environment.SUCCESS){
+                  this.closePopup()
+                }
+              },
+                err => { this.closePopup(); console.log(err)}     
+            );
+          } else {
+            this.closePopup()
+          }
+          break
+      }
+    
+    // if (this.algoService.closeAll){
+    //   from(postDatas).pipe(
+    //     concatMap(postData => 
+    //       this.http.post(postData.url, postData.data)
+    //     )
+    //   ).subscribe(
+    //     res => { console.log(res)},
+    //       err => { console.log(err)}     
+    //   );
+    // }   
 
+  }
+  closePopup(){
+    this.loadingService.hide()
+    this.popupService.close()
+    if (this.subs){
+      this.subs.unsubscribe()
+    }
   }
 
 }

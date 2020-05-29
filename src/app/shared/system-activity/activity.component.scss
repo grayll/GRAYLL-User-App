@@ -1,90 +1,149 @@
 .purple-link {
-  color: #40278C!important;
+    color: #40278C!important;
 }
 
 .purple-link:hover {
-  color: #CFA256!important;
-  cursor: pointer!important;
+    color: #CFA256!important;
+    cursor: pointer!important;
 }
 
 .cancel:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .pull-top {
-  margin-top: -4px!important;
+    margin-top: -4px!important;
 }
 
-input{
-  border:none;
-  background-color: transparent;
+input {
+    border: none;
+    background-color: transparent;
 }
 
 fa-icon:hover {
-  cursor: pointer!important;
+    cursor: pointer!important;
 }
 
 .search .input-group-text {
-  border-color: #40278C;
-  border-left: 0;
+    border-color: #40278C;
+    border-left: 0;
 }
 
 :host ::ng-deep .nav-pills {
-  .nav-link {
-    border-radius: 0;
-    opacity: 0.7;
-    font-size: 0.9rem;
-    color: #40278C!important;
-    border-bottom: 2px solid transparent!important;
-
-    &.active {
-      opacity: 1;
-      background-color: transparent;
-      border-bottom: 2px solid #40278C!important;
+    .nav-link {
+        border-radius: 0;
+        opacity: 0.7;
+        font-size: 0.9rem;
+        color: #40278C!important;
+        border-bottom: 2px solid transparent!important;
+        &.active {
+            opacity: 1;
+            background-color: transparent;
+            border-bottom: 2px solid #40278C!important;
+        }
     }
-  }
 }
 
 :host ::ng-deep ul.nav-pills {
-  justify-content: center!important;
+    justify-content: center!important;
 }
 
-table, thead, tbody {
-  overflow-x: hidden;
+table,
+thead,
+tbody {
+    overflow-x: hidden;
 }
 
 tbody {
-  display: block;
-  height: 20rem;
-  overflow: hidden scroll;
+    display: block;
+    height: 20rem;
+    overflow: hidden scroll;
 }
+
 thead,
 tbody tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 td {
-  width: auto;
+    width: auto;
 }
+
 
 /* width */
+
 ::-webkit-scrollbar {
-  width: 3px;
+    width: 3px;
 }
+
 
 /* Track */
+
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+    background: #f1f1f1;
 }
+
 
 /* Handle */
+
 ::-webkit-scrollbar-thumb {
-  background: #888;
+    background: #888;
 }
 
+
 /* Handle on hover */
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+    background: #555;
+}
+
+::ng-deep #algoDropdown .ng-option {
+    color: white!important;
+    background-image: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+    height: 36px!important;
+    // width: 300px!important;
+    width: 100%!important;
+}
+
+::ng-deep #algoDropdown .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
+    background-color: #e8cbc0!important;
+    color: #40278C!important;
+    height: 36px!important;
+    // width: 300px!important;
+    width: 100%!important;
+}
+
+::ng-deep #algoDropdown .ng-select {
+    color: white!important;
+    height: 36px!important;
+    // width: 300px!important;
+    width: 100%!important;
+}
+
+::ng-deep #algoDropdown .ng-select-container {
+    background-image: linear-gradient(to right, #636fa4, #e8cbc0) !important;
+    color: white!important;
+    height: 36px!important;
+    // width: 300px!important;
+    width: 100%!important;
+    border-radius: 4px!important;
+    border: 0!important;
+}
+
+::ng-deep #algoDropdown .ng-select.ng-select-single .ng-select-container .ng-value-container .ng-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: red;
+}
+
+#algoDropdown {
+    padding: 3px
+}
+
+.submit-btn {
+    min-width: 0px !important;
+    width: 100%;
 }

@@ -332,6 +332,12 @@ export class AuthService {
     }
     return this.closeAllEnd.asObservable()
   }
+  unsubCloseAllEnd(){
+    if (this.closeAllEnd){
+      this.closeAllEnd.unsubscribe()
+    }
+    
+  }
 
   pushCloseAllEnd(closeAllEnd){
     if (!this.closeAllEnd){
