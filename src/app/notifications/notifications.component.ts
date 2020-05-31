@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild, HostListener} from '@angular/core';
-import {faBell, faExclamationTriangle, faSearch} from '@fortawesome/free-solid-svg-icons';
+import {faBell, faExclamationTriangle, faSearch, faCheckCircle} from '@fortawesome/free-solid-svg-icons';
 import {AlgoNotificationModel, GeneralNotificationModel, WalletNotificationModel, Notice, NoticeId} from './notification.model';
 import {NotificationsService} from './notifications.service';
 import {NgbCarousel} from '@ng-bootstrap/ng-bootstrap';
@@ -14,7 +14,8 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { NoticeDataService} from './notifications.dataservice'
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { LoadingService } from '../shared/services/loading.service';
 
 
 @Component({
@@ -48,9 +49,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   // Font Awesome Icons
   faWarning = faExclamationTriangle;
   faBell = faBell;
+  faCheckCircle = faCheckCircle;
   faSearch = faSearch;
   pageId: string
-
+  notifiType: any = '';
   private noticeColl: AngularFirestoreCollection<Notice>;
   notices: Observable<NoticeId[]>;
   noticesAlgo: Observable<NoticeId[]>;
@@ -70,8 +72,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     public sharedService: SharedService,
     public authService: AuthService,
     private http: HttpClient,
+    private loadingService: LoadingService,
     private afs: AngularFirestore,
     public dataService:NoticeDataService,
+    public modalService: NgbModal,
   ) {
     // Get notices from server
     this.pageId = "notification"
@@ -81,7 +85,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.algoPath = 'notices/algo/'+this.authService.userData.Uid
     this.generalPath = 'notices/general/'+this.authService.userData.Uid
 
-    console.log(this.walletPath)
+  
     this.dataService.first(this.walletPath, this.limit )
     this.notices = this.dataService.data
 
@@ -91,12 +95,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.dataService.firstGeneral(this.generalPath, this.limit)
     this.noticesGeneral = this.dataService.generalData
 
-    // this.dataService.subsMarkRead().subscribe(async (value) => {
-    //   console.log("received push MarkRead")
-    //   await this.dataService.markAsRead(value.collPath, value.id)
-    // })
-
-    //this.populateNotifications(0, "all");
+   
   }
 
   ngOnInit() {
@@ -165,23 +164,14 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private populateNotifications(cursor:number, noticeType:string) {
     this.http.post(`api/v1/users/notices`, {limit:100, cursor:cursor, noticeType:noticeType})
     .subscribe(res => {      
-      let url = 'https://stellar.expert/explorer/public/'
-      if (environment.horizon_url.includes('testnet')){
-        url = 'https://stellar.expert/explorer/testnet/'
-      }
-      url = url + 'search?term='
-      this.walletNotificationsToShow = (res as any).wallets.map(item => {
-        // let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
-        // item.time = time
+      let url = 'https://stellar.expert/explorer/public/search?term='
+      this.walletNotificationsToShow = (res as any).wallets.map(item => {        
         item.url = url + item.txId 
         return item
       })
       this.walletNotifications = this.walletNotificationsToShow
 
-      this.systemNotifications = (res as any).generals.map(item => {
-        // let time = moment(item.time*1000).format('HH:mm | DD/MM/YYYY')
-        // item.time = time
-        //item.url = url + item.txId 
+      this.systemNotifications = (res as any).generals.map(item => {        
         return item
       })
       this.systemNotificationsToShow = this.systemNotifications
@@ -198,17 +188,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       console.log(e)
     })
   }
-
-  // populateNumberOfUnreadNotifications() {
-  //   this.notificationsService.resetNumberOfAllUnreadNotifications();
-  //   const algoUnread = this.algoNotifications.filter((n) => !n.isRead).length;
-  //   const walletUnread = this.walletNotifications.filter((n) => !n.isRead).length;
-  //   const systemUnread = this.systemNotifications.filter((n) => !n.isRead).length;
-  //   this.notificationsService.increaseNumberOfAllUnreadNotificationsBy(algoUnread + walletUnread + systemUnread);
-  //   this.notificationsService.setNumberOfUnreadAlgoNotifications(algoUnread);
-  //   this.notificationsService.setNumberOfUnreadWalletNotifications(walletUnread);
-  //   this.notificationsService.setNumberOfUnreadSystemNotifications(systemUnread);
-  // }
 
   filterReadAlgoNotifications() {
     if (this.isShowingAllAlgoNotifications) {
@@ -277,6 +256,24 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       }      
     }
   }
+
+  markAllAsRead(confirmModal:any) {
+    this.loadingService.show()
+    this.http.post('api/v1/users/updateAllAsRead/'+this.notifiType, {}).subscribe(res => {
+      console.log(res)
+      this.loadingService.hide()
+      this.modalService.dismissAll()
+      if ((res as any).errCode != environment.SUCCESS){               
+        
+      } else {
+       
+      }      
+    },
+    e => {      
+      this.loadingService.hide()
+      this.modalService.dismissAll()
+    })  
+  }
   
   swipeLeft() {
     this.carousel.next();
@@ -284,6 +281,19 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   swipeRight() {
     this.carousel.prev();
+  }
+  openConfirmModal(modal, type) {    
+    this.notifiType = type;
+    this.modalService.open(modal).result.then(
+      res => {
+        
+        this.notifiType = '';
+      },
+      res => {
+        console.log("!openConfirmModal");
+        this.notifiType = '';
+      }
+    );
   }
 
 }

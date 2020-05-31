@@ -410,10 +410,10 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ      
       let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
       
-      console.log('close_position_ROI_$', close_position_ROI_$)
-      console.log("close_position_value_GRX:", close_position_value_$/grxusd)
-      console.log('close_position_total_$', close_position_total_$)
-      console.log('close_position_ROI_percent', close_position_ROI_percent)
+      // console.log('close_position_ROI_$', close_position_ROI_$)
+      // console.log("close_position_value_GRX:", close_position_value_$/grxusd)
+      // console.log('close_position_total_$', close_position_total_$)
+      // console.log('close_position_ROI_percent', close_position_ROI_percent)
       
       this.http.post(environment.grz_api_url + 'api/v1/grz/position/close',
         {user_id: this.authService.userInfo.Uid,            
@@ -467,8 +467,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         open_stellar_transaction_id: position.open_stellar_transaction_id,
         open_position_timestamp: position.open_position_timestamp,
         grayll_transaction_id: position.grayll_transaction_id,        
-        algorithm_type: position.algorithm_type,
-        
+        algorithm_type: position.algorithm_type,        
         close_value_GRX:              grxusd,
         close_value_GRY:              gryusd,
         
@@ -484,10 +483,9 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
  
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('ngOnChanges-',changes)
-    console.log('ngOnChanges-', changes.activeTabId)
-    if (changes.activeTabId && changes.activeTabId.currentValue) {
-     
+    // console.log('ngOnChanges-',changes)
+    // console.log('ngOnChanges-', changes.activeTabId)
+    if (changes.activeTabId && changes.activeTabId.currentValue) {     
       this.selectedTab = this.activityTabs.find((t) => t.id === changes.activeTabId.currentValue);
     }
     this.searchResult = []
@@ -495,7 +493,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
 
   private setActiveTab() {
     if (this.activeTabId && this.activeTabId !== 'openAlgoPositions' && this.activeTabId !== 'closedAlgoPositions' && this.activeTabId !== 'allAlgoPositions') {
-      console.log('setActiveTab-',this.activeTabId)
+      //console.log('setActiveTab-',this.activeTabId)
       this.selectedTab = this.activityTabs.find((t) => t.id === this.activeTabId);
     } else {
       this.selectedTab = this.activityTabs[0];
@@ -505,7 +503,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     // } else {
     //   this.selectedTab = this.activityTabs[0];
     // }
-    console.log('setActiveTab:', this.selectedTab)
+    //console.log('setActiveTab:', this.selectedTab)
   }
 
   sortByPositionValue() {

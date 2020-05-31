@@ -199,6 +199,7 @@ export class CancelAlgoPositionsComponent implements OnInit {
           break
         case 'GRY 3':
           if (closePositionsDataGry3.length > 0){
+            this.algoService.closingAllAlgo = this.algoName
             this.http.post(environment.gry3_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry3}).subscribe(
               res => { 
                 if ((res as any).errCode != environment.SUCCESS){

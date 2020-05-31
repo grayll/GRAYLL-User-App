@@ -334,11 +334,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
   }
 
   private clientValidation(): boolean {
-    // if (!this.algoPosition.usdValue && !this.algoPosition.itemAmount && !this.algoPosition.grxAmount) {
-    //   this.errorService.handleError(null, 'Please enter a value of ~$10 or more in one of the fields.');
-    //   return false;
-    // }
-    console.log('clientValidation:', this.algoPosition)
+        
     if (this.algoPosition.usdValue && !this.isValidNumber(this.algoPosition.usdValue)) {
       this.errorService.handleError(null, 'Please enter a valid USD Value.');
       return false;

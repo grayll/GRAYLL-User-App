@@ -78,7 +78,7 @@ export class NoticeDataService {
   // You need to return the doc to get the current cursor.
   getCollection(ref, queryFn?): Observable<any[]> {
     //return this.afs.collection(ref, queryFn).snapshotChanges().pipe(
-    return this.afs.collection(ref, queryFn).snapshotChanges(['added']).pipe(
+    return this.afs.collection(ref, queryFn).snapshotChanges().pipe(
       map(actions => actions.map(a => {
         //const data = a.payload.doc.data();
         const data = a.payload.doc.data() as Notice;
@@ -217,8 +217,7 @@ export class NoticeDataService {
   }
   // In your first query you subscribe to the collection and save the latest entry
   first(path:string, limit:number) {
-    this._data = new BehaviorSubject([]);
-    //this.data = this._data.asObservable().subscribe(res => this.allData.push(res));
+    this._data = new BehaviorSubject([]);    
     this.data = this._data.asObservable()
 
     const scoresRef = this.getCollection(path, ref => ref
@@ -226,7 +225,8 @@ export class NoticeDataService {
       .limit(limit))
       .subscribe(data => {
         if (data.length && data.length > 0){
-          this.latestEntry = data[data.length - 1].doc;       
+          this.latestEntry = data[data.length - 1].doc; 
+                
           this._data.next(data);
         }
       }); 
@@ -244,6 +244,7 @@ export class NoticeDataService {
         if (data.length && data.length > 0){
           this.latestEntryGeneral = data[data.length - 1].doc;
           //console.log(data[data.length - 1].doc.data())
+          console.log('first general', data)
           this._generalData.next(data);
         }
       });

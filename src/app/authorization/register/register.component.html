@@ -54,7 +54,7 @@
               </span>
             </div>
             <input formControlName="password" type="password" passwordToggle class="form-control" placeholder="Password">
-            <input type="hidden" name="honeypot" [(ngModel)]="honeypot">
+            <input type="hidden" name="honeypot" [(ngModel)]="honeypot" [ngModelOptions]="{standalone: true}">
           </div>
           <div class="form-group mb-0">
             <button (click)="registerClicked()" class="btn btn-block login_btn">Register</button>

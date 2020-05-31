@@ -39,8 +39,11 @@
                 <div class="col-7 font-weight-bolder">
                   Algo System Notifications
                 </div>               
-                <div class="col-5 align-self-center text-right bottom-border-navy-animated" (click)="filterReadAlgoNotifications()">
-                  <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
+                <div class="col-5 align-self-center text-right bottom-border-navy-animated" >
+                  <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="openConfirmModal(confirmModal, 'algo')">
+                      <fa-icon [icon]="faCheckCircle" size="lg"></fa-icon>
+                  </a>
+                  <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="filterReadAlgoNotifications()">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
                       {{this.authService.userMetaStore.UrGRY1 + this.authService.userMetaStore.UrGRY2 + this.authService.userMetaStore.UrGRY3 + this.authService.userMetaStore.UrGRZ}}
@@ -83,7 +86,10 @@
                   Wallet Notifications
                 </div>
                 <div class="col-5 align-self-center text-right bottom-border-navy-animated" (click)="filterReadWalletNotifications()">
-                  <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
+                                    <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="openConfirmModal(confirmModal, 'wallet')">
+                                        <fa-icon [icon]="faCheckCircle" size="lg"></fa-icon>
+                                    </a>
+                                    <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="filterReadWalletNotifications()">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
                       {{this.authService.userMetaStore.UrWallet}}
@@ -126,7 +132,10 @@
                   General Notifications
                 </div>
                 <div class="col-5 align-self-center text-right bottom-border-navy-animated" (click)="filterReadSystemNotifications()">
-                  <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;">
+                                    <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="openConfirmModal(confirmModal, 'general')">
+                                        <fa-icon [icon]="faCheckCircle" size="lg"></fa-icon>
+                                    </a>
+                                    <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="filterReadSystemNotifications()">
                     <fa-icon [icon]="faBell" size="lg"></fa-icon>
                     <span class="badge bg-yellow text-light badge-number">
                       {{this.authService.userMetaStore.UrGeneral}}
@@ -309,7 +318,41 @@
           </div>
         </ngb-carousel>
       </div>
-
-    </div>
+	</div>
   </div>
 </div>
+
+<ng-template #confirmModal let-modal>
+    <div class="modal-header">
+        <h4 class="text-purple" id="modal-basic-title" style="margin-bottom: 0;">Review Action</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <label class="text-purple lead" id="confirm-caption">Mark All Unread Notifications As Read</label>
+        <div class="row my-2 d-flex align-items-center">
+            <div class="col">
+                <label class="text-purple" id="confirm-content">
+                    Please review this action to mark all your notifications as read. Remember that it is important to read the notifications sent to you — GRAYLL Intelligence does not close positions for you — it is important to remain informed about the performance of
+                    your positions to achieve the best ROI.
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer justify-content-center">
+        <div class="row">
+            <div class="col">
+                <a href="javascript:void(0)" class="btn btn-outline-secondary" (click)="modal.dismiss('Cross click')">
+          Cancel
+        </a>
+            </div>
+            <div class="col">
+                <a (click)="markAllAsRead(confirmModal)" href="javascript:void(0)" class="btn btn-purple">
+          Confirm
+        </a>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
