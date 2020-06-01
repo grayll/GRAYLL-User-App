@@ -318,7 +318,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
         demand: false
       };      
     }
-    console.log('aloPosition:', this.algoPosition)        
+    //console.log('aloPosition:', this.algoPosition)        
   }
 
   scrollToSystemActivity() {

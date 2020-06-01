@@ -609,14 +609,14 @@ export class StellarService {
     }
     // // https://horizon-testnet.stellar.org/accounts/GCLPAXUV7XWZNLJQIQ3723ZBA2WFQHEGBQ3TFDUPRL733FDM5HV7KPOO/offers
     getOffer(account: string, limit: number, nextURL: string){
-        let url = `${environment.horizon_url}accounts/${account}/offers?limit=${limit}&order=desc`
+        let url = `${environment.horizon_url}/accounts/${account}/offers?limit=${limit}&order=desc`
         if (nextURL){
             url = nextURL
         }
         return axios.get(url)       
     }
     getPayment(account: string, limit: number, nextURL: string){
-        let url = `${environment.horizon_url}accounts/${account}/payments?limit=${limit}&order=desc`
+        let url = `${environment.horizon_url}/accounts/${account}/payments?limit=${limit}&order=desc`
         if (nextURL){
             url = nextURL
         }
@@ -630,7 +630,7 @@ export class StellarService {
         return axios.get(url)        
     }
     getTrade(account: string, limit: number, nextURL: string){
-        let url = `${environment.horizon_url}accounts/${account}/trades?limit=${limit}&order=desc`
+        let url = `${environment.horizon_url}/accounts/${account}/trades?limit=${limit}&order=desc`
         if (nextURL){
             url = nextURL
         }
@@ -773,7 +773,7 @@ export class StellarService {
         return new Promise((resolve, reject) => {
             this.horizon.loadAccount(publicKey).then(  
                     
-                res => {    
+                res => {
                     this.account = res
                     console.log(res)                
                     let xlm = 0
