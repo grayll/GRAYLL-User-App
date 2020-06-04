@@ -205,10 +205,11 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         //     pos.url = ""
         //   }          
         // }   
+        
         if (pos.status != "OPEN"){
           //pos.close_position_ROI_per = pos['close_position_ROI_%']
-          pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString()  
+          pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')         
+          pos.url = "https://stellar.expert/explorer/public/search?term=" + (pos.close_stellar_transaction_id || 1).toString()  
           return pos 
         } 
           

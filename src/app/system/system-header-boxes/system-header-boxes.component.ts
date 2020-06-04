@@ -42,7 +42,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
       name: 'GRY | 1',
       value: 'Balthazar',
       token: 'GRY',
-      tabName: 'Balthazar',
+      tabName: 'Balthzr',
       fee: 0.018
     },
     {
@@ -368,21 +368,18 @@ export class SystemHeaderBoxesComponent implements OnInit {
 
     
   private openPopup() {
-    
-    // if (this.selectedTab.id != 'GRZ'){
-    //   return
-    // }
-   
+      
     this.loadingService.show()
+    this.sharedService.openAlgoPosition(this.algoPosition);
     this.stellarService.sendAsset(this.authService.getSecretKey(), environment.HOT_WALLET_ONE, 
       this.algoPosition.grxAmount.toString(), this.stellarService.grxAsset, '').then( txHash => {
         this.algoPosition.stellarTxId = txHash
-        this.algoPosition.positionValue = this.algoPosition.usdValue - this.algoPosition.usdValue*+this.selectedTab.fee
-        this.sharedService.openAlgoPosition(this.algoPosition);
+        this.algoPosition.positionValue = this.algoPosition.usdValue - this.algoPosition.usdValue*+this.selectedTab.fee       
+       
        if (this.selectedTab.id === 'GRZ'){
           this.http.post(environment.grz_api_url + 'api/v1/grz/position/open', {
             user_id:this.authService.userInfo.Uid,            
-            open_stellar_transaction_id:txHash,
+            open_stellar_transaction_id:txHash,            
             grayll_transaction_id:"0",
             open_position_timestamp:0,
             algorithm_type:this.selectedTab.id,

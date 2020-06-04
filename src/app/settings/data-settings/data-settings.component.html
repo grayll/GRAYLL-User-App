@@ -86,13 +86,7 @@
             <div class="form-group row">
               <label class="col-sm-12 col-form-label">Select Region Time</label>
               <div class="col-sm-12" id="country">
-                
-                <!-- <ng-select name="timeZone" [ngModel]="selectedTz" (ngModelChange)="timeZoneChanged($event)">
-                  <option *ngFor="let tz of tzNames" [value]="tz">
-                    {{ tz }}
-                  </option>
-                </ng-select> -->
-                <ng-select [items]="tzNames" [ngModel]="selectedTz" (ngModelChange)="timeZoneChanged($event)"
+			  <ng-select [items]="tzNames" [ngModel]="selectedTz" (ngModelChange)="timeZoneChanged($event)"
                   [searchable]="true"
                   [clearable]="false">
                 </ng-select>

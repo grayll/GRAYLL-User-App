@@ -24,8 +24,10 @@
     <div class="row text-center">
       <div class="col-12 text-purple">
         <p class="mb-0">{{algoPosition.token}} | ${{algoPosition.itemPrice.toFixed(5)}}</p>
-        <p *ngIf="algoPosition.item === 'GRZ'" class="mb-0">{{algoPosition.item}} Algo Fee @ 0.3%</p>
-        <p *ngIf="algoPosition.item != 'GRZ'" class="mb-0">{{algoPosition.item}} Algo Fee @ 1.8%</p>
+        <p *ngIf="algoPosition.item == 'GRZ'" class="mb-0">{{algoPosition.item}} Algo Fee @ 0.3%</p>
+        <p *ngIf="algoPosition.item == 'GRY | 1'" class="mb-0">{{algoPosition.item}} Algo Fee @ 1.8%</p>
+        <p *ngIf="algoPosition.item == 'GRY | 2'" class="mb-0">{{algoPosition.item}} Algo Fee @ 1.3%</p>
+        <p *ngIf="algoPosition.item == 'GRY | 3'" class="mb-0">{{algoPosition.item}} Algo Fee @ 0.9%</p>
         <p class="mb-0">${{algoPosition.openFee$}}</p>
         <p class="mb-0">{{algoPosition.positionValueGRX}} GRX</p>
         <p class="mb-0">GRX | ${{algoPosition.grxPrice}}</p>
