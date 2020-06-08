@@ -167,7 +167,7 @@ export class LoginComponent {
           .subscribe(res => {  
             let data =  (res as any)             
             if (data.errCode === environment.SUCCESS) { 
-              console.log('user', data.user)  
+              //console.log('user', data.user)  
                 
               this.authService.ParseUserInfo(data.userBasicInfo)              
               this.authService.hash = this.password.value

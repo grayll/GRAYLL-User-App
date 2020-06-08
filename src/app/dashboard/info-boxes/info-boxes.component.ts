@@ -10,7 +10,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 })
 export class InfoBoxesComponent implements AfterViewInit {
 
-  constructor(public authService:AuthService,) { }
+  constructor(public authService:AuthService,public algoService:AlgoService) { }
 
   public lineChartData: Array<any> = [
     { data: [12, 19, 3, 5, 2, 3], label: 'Balance $' }

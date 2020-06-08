@@ -238,7 +238,7 @@ select:focus::-ms-value {
     color: white!important;
     background-image: linear-gradient(to right, #636fa4, #e8cbc0) !important;
     height: 36px!important;
-    /* width: 300px!important; */
+    width: 100% !important;
 }
 
 ::ng-deep #country .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
@@ -251,14 +251,14 @@ select:focus::-ms-value {
 ::ng-deep #country .ng-select {
     color: white!important;
     height: 36px!important;
-    /* width: 300px!important; */
+    width: 100% !important;
 }
 
 ::ng-deep #country .ng-select-container {
     background-image: linear-gradient(to right, #636fa4, #e8cbc0) !important;
     color: white!important;
     height: 36px!important;
-    /* width: 300px!important; */
+    width: 100% !important;
     border-radius: 4px!important;
     border: 0!important;
 }

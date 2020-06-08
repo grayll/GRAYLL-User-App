@@ -8,7 +8,7 @@
           </div>
           <div class="d-inline-block text-white align-middle">
             <span class="text-light font-16">Algo System Balance</span>
-            <h5 class="text-light font-weight-bolder">${{(authService.getAlgoBalance()).toFixed(3)}}</h5>
+            <h5 class="text-light font-weight-bolder">${{(algoService.getAlgoBalance()).toFixed(3)}}</h5>
           </div>
         </div>
         <div class="row mt-2">
@@ -16,20 +16,20 @@
             <i class="text-yellow font-16">
               <fa-icon [icon]="faCircle"></fa-icon>
             </i>            
-            <span class="font-16 text-white"> {{authService.calPercentGRY()}}% GRY</span>
+            <span class="font-16 text-white"> {{algoService.calPercentGRY()}}% GRY</span>
             <br>
             <p class="font-weight-bolder p-font text-white">
-              ${{authService.getGRYBalance().toFixed(3)}}
+              ${{algoService.getGRYBalance().toFixed(3)}}
             </p>
           </div>
           <div class="col-6 mt-4 text-right">
             <i class="m-r-5 text-white font-16">
               <fa-icon [icon]="faCircle"></fa-icon>
             </i>            
-            <span class="font-16 text-white">{{authService.calPercentGRZ()}}% GRZ</span>
+            <span class="font-16 text-white">{{algoService.calPercentGRZ()}}% GRZ</span>
             <br>
             <p class="m-b-0 font-weight-bolder p-font text-white">
-              ${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}
+              ${{algoService.grzMetric.TotalValue.toFixed(3)}}
             </p>
           </div>
         </div>

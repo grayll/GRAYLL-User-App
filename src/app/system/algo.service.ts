@@ -14,6 +14,7 @@ import * as firebase from 'firebase/app';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { environment } from 'src/environments/environment';
 import { ClosePosition } from './algo-position.model';
+import { map } from 'rxjs/operators';
 
 
 export interface UserMeta {UrWallet: 0, UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
@@ -52,6 +53,8 @@ export class AlgoService {
   public algoPositions$: Observable<ClosePosition[]>;
   algoPositionCollection: AngularFirestoreCollection<ClosePosition>;
 
+  openAlgos$:Observable<ClosePosition[]>;
+
   noticeId:string
   
   constructor(    
@@ -89,13 +92,21 @@ export class AlgoService {
     this.algoPositionCollection = null    
     this.noticeId = null
   }
-
-  // initFireStoreDb(){    
-  //   if (!this.fsdb){
-  //     var app = firebase.initializeApp(environment.dbs.systemtest, 'grayll-system-test');
-  //     this.fsdb = firebase.firestore(app);
-  //   }
-  // }
+  
+  getCollection(ref, queryFn?): Observable<any[]> {   
+    return this.afs.collection(ref, queryFn).snapshotChanges().pipe(
+      map(actions => actions.map(a => {
+        //const data = a.payload.doc.data();
+        const data = a.payload.doc.data() as ClosePosition;
+        return data    
+      }))
+    );
+  }
+  subOpenAlgos() {
+    let path = 'algo_positions/users/'+this.authService.userData.Uid
+    this.openAlgos$ = this.getCollection(path, ref => ref 
+      .where('status', '==', 'OPEN'))
+  }
 
   getAlgoPositions(){
     let algoPostionPath = 'algo_positions/GRZ/algo_positions_open/'
@@ -133,6 +144,125 @@ export class AlgoService {
   get algoPositions(){
     return this.algoPositions$;
   }
+  getTotalAccountValue(){
+    return this.authService.xlmInUsd() + this.authService.grxInUsd() + this.getAlgoBalance()
+  }
+  // getGRYBalance(){
+  //   return this.gry1Metric.TotalValue + this.gry2Metric.TotalValue + this.gry3Metric.TotalValue
+  // }
+  // getAlgoBalance(){   
+  //   return this.getGRYBalance() + this.grzMetric.TotalValue
+  // }
+  
+  // calPercentGRY(){
+  //   // let totalgry = this.getGRYBalance()
+  //   // if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+  //   //   return 0
+  //   // } else {
+  //   //   return Math.round(totalgry*100/(totalgry + this.userMetaStore.total_grz_current_position_value_$))
+  //   // }
+  //   let totalgry = this.getGRYBalance()
+  //   if (this.grzMetric.TotalValue == 0 && totalgry == 0){
+  //     return 0
+  //   } else {
+  //     return Math.round(totalgry*100/(totalgry + (this.grzMetric.TotalValue | 0)))
+  //   }
+
+  // }
+  // calPercentGRZ(){
+  //   let totalgry = this.getGRYBalance()
+  //   // if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+  //   //   return 0
+  //   // } else {
+  //   //   return 100 - this.calPercentGRY()
+  //   // }
+  //   if (this.grzMetric.TotalValue == 0 && totalgry == 0){
+  //     return 0
+  //   } else {
+  //     return 100 - this.calPercentGRY()
+  //   }
+  // }
+  // getTotalOpenPosition(){
+  //   // return this.userMetaStore.total_gry1_open_positions + this.userMetaStore.total_gry2_open_positions + 
+  //   // this.userMetaStore.total_gry3_open_positions + this.userMetaStore.total_grz_open_positions
+  //   this.grzMetric.Positions + this.gry1Metric.Positions + 
+  //   this.gry2Metric.Positions + this.gry3Metric.Positions
+  // }
+  // getGRYProfit(){
+  //  return this.gry1Metric.CurrentProfit + 
+  //   this.gry2Metric.CurrentProfit + this.gry3Metric.CurrentProfit
+  // }
+  // getTotalAccountProfit(){
+  //   //return this.getGRYProfit() + this.userMetaStore.total_grz_close_positions_ROI_$ + this.userMetaStore.total_grz_current_position_ROI_$
+  //   let ret = this.grzMetric.CurrentProfit + this.getGRYProfit() + this.authService.userMetaStore.total_grz_close_positions_ROI_$ + 
+  //   this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +this.authService.userMetaStore.total_gry2_close_positions_ROI_$ +
+  //   this.authService.userMetaStore.total_gry3_close_positions_ROI_$ 
+
+  //   return ret
+  // }
+
+  getGRYBalance(){
+    return this.authService.userMetaStore.total_gry1_current_position_value_$ + this.authService.userMetaStore.total_gry2_current_position_value_$ + 
+    this.authService.userMetaStore.total_gry3_current_position_value_$
+    // if (this.algoService.gry1Metric && this.algoService.gry2Metric && this.algoService.gry3Metric ){
+    //   return this.algoService.gry1Metric.TotalValue + this.algoService.gry2Metric.TotalValue + this.algoService.gry3Metric.TotalValue
+    // }
+    // return 0
+  }
+  getAlgoBalance(){
+    return this.getGRYBalance() + this.authService.userMetaStore.total_grz_current_position_value_$
+    //return this.getGRYBalance() + (this.algoService.grzMetric.TotalValue | 0)
+  }
+  calPercentGRY(){
+    let totalgry = this.getGRYBalance()
+    if (this.authService.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+      return 0
+    } else {
+      return Math.round(totalgry*100/(totalgry + this.authService.userMetaStore.total_grz_current_position_value_$))
+    }
+    // let totalgry = this.getGRYBalance()
+    // if (this.algoService.grzMetric.TotalValue == 0 && totalgry == 0){
+    //   return 0
+    // } else {
+    //   return Math.round(totalgry*100/(totalgry + (this.algoService.grzMetric.TotalValue | 0)))
+    // }
+
+  }
+  calPercentGRZ(){
+    let totalgry = this.getGRYBalance()
+    if (this.authService.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+      return 0
+    } else {
+      return 100 - this.calPercentGRY()
+    }
+    // if (this.algoService.grzMetric.TotalValue == 0 && totalgry == 0){
+    //   return 0
+    // } else {
+    //   return 100 - this.calPercentGRY()
+    // }
+  }
+  getTotalOpenPosition(){
+    return this.authService.userMetaStore.total_gry1_open_positions + this.authService.userMetaStore.total_gry2_open_positions + 
+    this.authService.userMetaStore.total_gry3_open_positions + this.authService.userMetaStore.total_grz_open_positions
+    // this.algoService.grzMetric.Positions + this.algoService.gry1Metric.Positions + 
+    // this.algoService.gry2Metric.Positions + this.algoService.gry3Metric.Positions
+  }
+  // getTotalAccountValue(){
+  //   return this.xlmInUsd() + this.grxInUsd() + this.getAlgoBalance()
+  // }
+  getGRYProfit(){
+    return this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
+    this.authService.userMetaStore.total_gry2_current_position_ROI_$ + this.authService.userMetaStore.total_gry2_close_positions_ROI_$ +
+    this.authService.userMetaStore.total_gry3_current_position_ROI_$ + this.authService.userMetaStore.total_gry3_close_positions_ROI_$
+    // this.algoService.gry1Metric.CurrentProfit + 
+    // this.algoService.gry2Metric.CurrentProfit + this.algoService.gry3Metric.CurrentProfit
+
+  }
+  getTotalAccountProfit(){
+    return this.getGRYProfit() + this.authService.userMetaStore.total_grz_close_positions_ROI_$ + this.authService.userMetaStore.total_grz_current_position_ROI_$
+    
+  }
+
 
   
   

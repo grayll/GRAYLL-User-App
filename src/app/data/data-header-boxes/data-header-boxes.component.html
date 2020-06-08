@@ -6,7 +6,7 @@
         <div class="d-flex">
           <div class="px-3" routerLink="/wallet/overview" style="outline: none;">
             <span>Total Account Value</span>
-            <h5 class="font-weight-bolder bottom-border-navy-animated mb-0">${{authService.getTotalAccountValue().toFixed(3)}}</h5>
+            <h5 class="font-weight-bolder bottom-border-navy-animated mb-0">${{algoService.getTotalAccountValue().toFixed(3)}}</h5>
           </div>
           <div class="ml-auto">
             <div class="line-chart m-b-40 chart">
@@ -58,7 +58,7 @@
             </div>
             <div class="ml-auto text-right">
               <h6 class="text-white font-weight-bolder">Value</h6>
-              <h6 class="text-white font-weight-bolder mb-0">${{authService.getGRYBalance().toFixed(3)}}</h6>
+              <h6 class="text-white font-weight-bolder mb-0">${{algoService.getGRYBalance().toFixed(3)}}</h6>
             </div>
           </div>
         </div>
@@ -109,7 +109,7 @@
             </div>
             <div class="ml-auto  text-right">
               <h6 class="text-white font-weight-bolder">Profits</h6>
-              <h6 class="text-white font-weight-bolder">${{authService.getGRYProfit().toFixed(3)}}</h6>
+              <h6 class="text-white font-weight-bolder">${{algoService.getGRYProfit().toFixed(3)}}</h6>
             </div>
           </div>
 
@@ -169,7 +169,7 @@
           <div class="bottom-border-navy-animated px-3" style="outline: none;" routerLink="/system/overview">
             <span>Total Open Algo Positions</span>
             <h5 class="font-weight-bolder mb-0">
-              {{authService.getTotalOpenPosition()}}</h5>
+              {{algoService.getTotalOpenPosition()}}</h5>
           </div>
           <div class="ml-auto">
             <div class="line-chart m-b-40 chart">
@@ -255,7 +255,7 @@
           <div class="d-flex justify-content-center">
             <div class="text-center mobile-bottom-border" routerLink="/wallet/overview" style="outline: none;">
               <span>Total Account Value</span>
-              <h5 class="font-weight-bolder mb-0">${{authService.getTotalAccountValue().toFixed(3)}}</h5>
+              <h5 class="font-weight-bolder mb-0">${{algoService.getTotalAccountValue().toFixed(3)}}</h5>
             </div>
           </div>
           <div class="chart mx-auto" style="max-width:130px;margin-top:15px;height:65px!important;">
@@ -305,7 +305,7 @@
               </div>
               <div class="ml-auto text-right">
                 <h6 class="text-white font-weight-bolder">Value</h6>
-                <h6 class="text-white font-weight-bolder">${{authService.getGRYBalance().toFixed(3)}}</h6>
+                <h6 class="text-white font-weight-bolder">${{algoService.getGRYBalance().toFixed(3)}}</h6>
               </div>
             </div>
           </div>
@@ -334,7 +334,7 @@
           <div class="d-flex justify-content-center">
             <div class="text-center mobile-bottom-border" routerLink="/system/overview" style="outline: none;">
               <span>Total Algo Profits</span>
-              <h5 class="font-weight-bolder mb-0">${{authService.getTotalAccountProfit().toFixed(3)}}</h5>
+              <h5 class="font-weight-bolder mb-0">${{algoService.getTotalAccountProfit().toFixed(3)}}</h5>
             </div>
           </div>
           <div class="chart mx-auto" style="max-width:130px;margin-top:15px;height:65px!important;">
@@ -354,7 +354,7 @@
               </div>
               <div class="ml-auto  text-right">
                 <h6 class="text-white font-weight-bolder">Profits</h6>
-                <h6 class="text-white font-weight-bolder">${{authService.getGRYProfit().toFixed(3)}}
+                <h6 class="text-white font-weight-bolder">${{algoService.getGRYProfit().toFixed(3)}}
                 </h6>
               </div>
             </div>
@@ -415,7 +415,7 @@
           <div class="d-flex justify-content-center">
             <div class="text-center mobile-bottom-border" routerLink="/system/overview" style="outline: none;">
               <span>Total Open Algo Positions</span>
-              <h5 class="font-weight-bolder mb-0">{{authService.getTotalOpenPosition()}}</h5>
+              <h5 class="font-weight-bolder mb-0">{{algoService.getTotalOpenPosition()}}</h5>
             </div>
           </div>
           <div class="chart mx-auto" style="max-width:130px;margin-top:15px;height:65px!important;">

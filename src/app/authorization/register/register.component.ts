@@ -3,13 +3,13 @@ import {faEnvelope, faKey, faUser} from '@fortawesome/free-solid-svg-icons';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ErrorService} from '../../shared/error/error.service';
 
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from "../../shared/services/auth.service"
-import { User, Setting } from "../../shared/services/user";
-import { StellarService } from '../services/stellar-service';
+// import { User, Setting } from "../../shared/services/user";
+// import { StellarService } from '../services/stellar-service';
 import axios from 'axios';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
-import * as naclutil from 'tweetnacl-util'
+//import * as naclutil from 'tweetnacl-util'
 import {environment} from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { LoadingService } from 'src/app/shared/services/loading.service';
@@ -28,6 +28,7 @@ export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   message: string;
   honeypot: any = ''
+  referer: string = ''
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,11 +38,13 @@ export class RegisterComponent implements OnInit {
     private ngZone:NgZone,
     private http: HttpClient,
     private loadingService: LoadingService,
+    private route: ActivatedRoute,
   ) {
    
   }
 
   ngOnInit() {
+    this.referer = this.route.snapshot.queryParams["referer"];    
     this.buildForm()  
   }
 
@@ -114,7 +117,7 @@ export class RegisterComponent implements OnInit {
 get f() { return this.registerForm.controls; }
 
 registerClicked() {
-  console.log('form clicked')   
+  
   this.submitted = true;
   this.errorService.clearError();
   this.onValueChanged()
@@ -126,53 +129,70 @@ registerClicked() {
   if (this.honeypot) {
     return;
   }
-  console.log('form valid')   
-  
-  this.loadingService.show()
-  this.recaptchaV3Service.execute('register')
-    .subscribe((token) => {
-      // Verify token 
-      axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
-        headers: { Authorization: "Bearer " + token }
-      }).then(response => {      
-        if (response.data.status === 'success'){ 
-          let userData = {            
-            Email: this.registerForm.value['email'],
-            HashPassword: this.registerForm.value['password'],
-            Name: this.registerForm.value['name'],  
-            LName: this.registerForm.value['lname'],           
-          }
-                   
-          this.http.post(`api/v1/accounts/register`, userData)             
-          .subscribe(res => { 
-            this.loadingService.hide() 
-            if ((res as any).errCode == environment.EMAIL_IN_USED)  {
-              let content = "The email entered is already registered."
-              this.errorService.handleError(null, content)
-              this.registerForm.reset() 
-            } else if ((res as any).errCode == environment.EMAIL_INVALID){
-              let content = "The email entered is invalid."
-              this.errorService.handleError(null, content)
-              this.registerForm.reset() 
-            } else {              
-              this.ngZone.run(() => {                    
-                this.router.navigate(['/confirm-email'], { state: { email: this.registerForm.value['email'],
-                  name: this.registerForm.value['name']}})
-              }) 
+
+  // Neverbounce verifies email
+  let email = this.registerForm.value['email']
+  this.http.get(environment.api_url + `api/v1/verifyemail/${{email}}`).subscribe( 
+    res => {
+      if ((res as any).errCode == environment.EMAIL_INVALID)  {
+        this.formErrors.email = 'Email must be a valid email'
+        return
+      } else {
+        this.loadingService.show()
+        this.recaptchaV3Service.execute('register').subscribe((token) => {
+          // Verify token 
+          axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
+            headers: { Authorization: "Bearer " + token }
+          }).then(response => {      
+            if (response.data.status === 'success'){ 
+              let userData = {            
+                Email: this.registerForm.value['email'],
+                HashPassword: this.registerForm.value['password'],
+                Name: this.registerForm.value['name'],  
+                LName: this.registerForm.value['lname'],    
+                //Referer: this.referer,       
+              }
+                      
+              this.http.post(`api/v1/accounts/register`, userData)             
+              .subscribe(res => { 
+                this.loadingService.hide() 
+                if ((res as any).errCode == environment.EMAIL_IN_USED)  {
+                  let content = "The email entered is already registered."
+                  this.errorService.handleError(null, content)
+                  this.registerForm.reset() 
+                } else if ((res as any).errCode == environment.EMAIL_INVALID){
+                  let content = "The email entered is invalid."
+                  this.errorService.handleError(null, content)
+                  this.registerForm.reset() 
+                } else {              
+                  this.ngZone.run(() => {                    
+                    this.router.navigate(['/confirm-email'], { state: { email: this.registerForm.value['email'],
+                      name: this.registerForm.value['name']}})
+                  }) 
+                }
+              },
+              error => {
+                this.loadingService.hide()
+                console.log(error) 
+                this.registerForm.reset()              
+                this.errorService.handleError(null, `Currently, registration can't be processed. Please try again later!`)     
+              })
             }
-          },
-          error => {
+          }).catch(e => {
             this.loadingService.hide()
-            console.log(error) 
-            this.registerForm.reset()              
-            this.errorService.handleError(null, `Currently, registration can't be processed. Please try again later!`)     
           })
-        }
-      }).catch(e => {
-        this.loadingService.hide()
-      })
-    })
-  }  
+        })
+  
+      }
+    }, e => {
+      this.errorService.handleError(null, `Currently, registration can't be processed. Please try again later!`) 
+    }
+  )
+
+}    
+  
+    
+   
 }
 
 

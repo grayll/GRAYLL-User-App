@@ -138,7 +138,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     if (this.authService.userMetaStore.XLM === 0){      
       this.authService.GetLocalUserMeta()      
     } 
-    console.log('navbar.subscribe', this.ComId)
+    //console.log('navbar.subscribe', this.ComId)
     if (this.ComId != 'notification'){
       Promise.all([
         // this.stellarService.getCurrentGrxPrice1(),
@@ -167,7 +167,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
   scheduleCheckTokenExpiry(){ 
    console.log('scheduleCheckTokenExpiry')
     if (this.authService.isTokenExpired()){
-      //console.log('token is expired, signout')
+      console.log('token is expired, signout')
       this.signOut()
     } else {
       if (!this.authService.userMetaStore || !this.authService.userMetaStore.TokenExpiredTime || this.authService.userMetaStore.TokenExpiredTime==0){
@@ -179,11 +179,11 @@ export class NavbarComponent implements OnDestroy, OnInit {
       if (remainTime >= 0){
         setTimeout(()=> {
           //will renew the token
-          //console.log('nav-scheduleCheckTokenExpiry-route:', this.router.url)
+          console.log('nav-scheduleCheckTokenExpiry-show confirm pwd:', this.router.url)
           if ( !this.router.url.includes('confirm-password') || !this.router.url.includes('login')){
             this.router.navigate([this.router.url, {outlets: {popup: 'confirm-password'}}]);
           } else {
-            console.log('will renew the token')
+            console.log('nav-scheduleCheckTokenExpiry')           
           }
         }, remainTime)
       }

@@ -266,9 +266,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
                 return pos       
               })
               console.log(this.algoService.allPositions)
-            }
-
-            
+            }            
           }).catch(e => {
             console.log(e)
           })

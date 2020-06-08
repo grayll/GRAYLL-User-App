@@ -426,8 +426,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   getNetworkHistory(){
-    this.stellarService.getNetworkHistory(this.authService.userData.PublicKey, 5, null).then(ops => {
-      console.log('getNetworkHistory:', ops.data)
+    this.stellarService.getNetworkHistory(this.authService.userData.PublicKey, 5, null).then(ops => {     
       if (ops && ops.data._embedded.records.length > 0){
         var records: any[] = ops.data._embedded.records.filter(item => {
           if (item.type === 'create_account' || item.type === "change_trust" ){
@@ -443,7 +442,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
                     
           if (item.type === 'create_account'){
             op = 'Credited'                  
-            amount = '+' + item.starting_balance
+            amount = '+' + (+item.starting_balance).toFixed(3)
           } 
           if (item.type === "change_trust"){
             op = 'Trustline Created'   

@@ -195,7 +195,7 @@ export class NoticeDataService {
       .orderBy('time', 'desc')
       .limit(limit))
       .subscribe(data => {
-        console.log('trade data:', data)
+        
         if (data.length && data.length > 0){
           this.latestEntryTrade = data[data.length - 1].doc; 
           this.dataTradeSync = data       

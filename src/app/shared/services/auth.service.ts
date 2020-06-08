@@ -12,6 +12,7 @@ import { UserInfo, Setting } from 'src/app/models/user.model';
 import { CountdownConfig } from 'ngx-countdown/src/countdown.config';
 import * as moment from 'moment';
 import {SubSink} from 'subsink'
+import { AlgoService } from 'src/app/system/algo.service';
 
 
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
@@ -136,6 +137,7 @@ export class AuthService {
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     public http: HttpClient,
     public stellarService: StellarService,  
+   // public algoService: AlgoService,
     private afs: AngularFirestore,      
   ) {    
     this.countdownConfigs = [{
@@ -694,44 +696,68 @@ export class AuthService {
       return 0
     }
   }
-  getGRYBalance(){
-    return this.userMetaStore.total_gry1_current_position_value_$ + this.userMetaStore.total_gry2_current_position_value_$ + 
-    this.userMetaStore.total_gry3_current_position_value_$
-  }
-  getAlgoBalance(){
-    return this.getGRYBalance() + this.userMetaStore.total_grz_current_position_value_$
-  }
-  calPercentGRY(){
-    let totalgry = this.getGRYBalance()
-    if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
-      return 0
-    } else {
-      return Math.round(totalgry*100/(totalgry + this.userMetaStore.total_grz_current_position_value_$))
-    }
-  }
-  calPercentGRZ(){
-    let totalgry = this.getGRYBalance()
-    if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
-      return 0
-    } else {
-      return 100 - this.calPercentGRY()
-    }
-  }
-  getTotalOpenPosition(){
-    return this.userMetaStore.total_gry1_open_positions + this.userMetaStore.total_gry2_open_positions + 
-    this.userMetaStore.total_gry3_open_positions + this.userMetaStore.total_grz_open_positions
-  }
-  getTotalAccountValue(){
-    return this.xlmInUsd() + this.grxInUsd() + this.getAlgoBalance()
-  }
-  getGRYProfit(){
-    return this.userMetaStore.total_gry1_current_position_ROI_$ + this.userMetaStore.total_gry1_close_positions_ROI_$ +
-    this.userMetaStore.total_gry2_current_position_ROI_$ + this.userMetaStore.total_gry2_close_positions_ROI_$ +
-    this.userMetaStore.total_gry3_current_position_ROI_$ + this.userMetaStore.total_gry3_close_positions_ROI_$
-  }
-  getTotalAccountProfit(){
-    return this.getGRYProfit() + this.userMetaStore.total_grz_close_positions_ROI_$ + this.userMetaStore.total_grz_current_position_ROI_$
-  }
+  // getGRYBalance(){
+  //   // return this.userMetaStore.total_gry1_current_position_value_$ + this.userMetaStore.total_gry2_current_position_value_$ + 
+  //   // this.userMetaStore.total_gry3_current_position_value_$
+  //   if (this.algoService.gry1Metric && this.algoService.gry2Metric && this.algoService.gry3Metric ){
+  //     return this.algoService.gry1Metric.TotalValue + this.algoService.gry2Metric.TotalValue + this.algoService.gry3Metric.TotalValue
+  //   }
+  //   return 0
+  // }
+  // getAlgoBalance(){
+  //   //return this.getGRYBalance() + this.userMetaStore.total_grz_current_position_value_$
+  //   return this.getGRYBalance() + (this.algoService.grzMetric.TotalValue | 0)
+  // }
+  // calPercentGRY(){
+  //   // let totalgry = this.getGRYBalance()
+  //   // if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+  //   //   return 0
+  //   // } else {
+  //   //   return Math.round(totalgry*100/(totalgry + this.userMetaStore.total_grz_current_position_value_$))
+  //   // }
+  //   let totalgry = this.getGRYBalance()
+  //   if (this.algoService.grzMetric.TotalValue == 0 && totalgry == 0){
+  //     return 0
+  //   } else {
+  //     return Math.round(totalgry*100/(totalgry + (this.algoService.grzMetric.TotalValue | 0)))
+  //   }
+
+  // }
+  // calPercentGRZ(){
+  //   let totalgry = this.getGRYBalance()
+  //   // if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+  //   //   return 0
+  //   // } else {
+  //   //   return 100 - this.calPercentGRY()
+  //   // }
+  //   if (this.algoService.grzMetric.TotalValue == 0 && totalgry == 0){
+  //     return 0
+  //   } else {
+  //     return 100 - this.calPercentGRY()
+  //   }
+  // }
+  // getTotalOpenPosition(){
+  //   // return this.userMetaStore.total_gry1_open_positions + this.userMetaStore.total_gry2_open_positions + 
+  //   // this.userMetaStore.total_gry3_open_positions + this.userMetaStore.total_grz_open_positions
+  //   this.algoService.grzMetric.Positions + this.algoService.gry1Metric.Positions + 
+  //   this.algoService.gry2Metric.Positions + this.algoService.gry3Metric.Positions
+  // }
+  // getTotalAccountValue(){
+  //   return this.xlmInUsd() + this.grxInUsd() + this.getAlgoBalance()
+  // }
+  // getGRYProfit(){
+  //   // return this.userMetaStore.total_gry1_current_position_ROI_$ + this.userMetaStore.total_gry1_close_positions_ROI_$ +
+  //   // this.userMetaStore.total_gry2_current_position_ROI_$ + this.userMetaStore.total_gry2_close_positions_ROI_$ +
+  //   // this.userMetaStore.total_gry3_current_position_ROI_$ + this.userMetaStore.total_gry3_close_positions_ROI_$
+  //   this.algoService.gry1Metric.CurrentProfit + 
+  //   this.algoService.gry2Metric.CurrentProfit + this.algoService.gry3Metric.CurrentProfit
+
+  // }
+  // getTotalAccountProfit(){
+  //   //return this.getGRYProfit() + this.userMetaStore.total_grz_close_positions_ROI_$ + this.userMetaStore.total_grz_current_position_ROI_$
+  //   this.algoService.grzMetric.CurrentProfit + this.algoService.gry1Metric.CurrentProfit + 
+  //   this.algoService.gry2Metric.CurrentProfit + this.algoService.gry3Metric.CurrentProfit
+  // }
   grxInUsd(){
     return this.userMetaStore.GRX*this.userData.grxPrice*this.priceInfo.xlmusd
   }

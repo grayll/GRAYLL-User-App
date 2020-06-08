@@ -136,6 +136,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
   executeBuy(){
+    if (this.authService.isTokenExpired()){
+      this.router.navigateByUrl('/');
+    }
        
       console.log('this.stellarService.allOffers:', this.stellarService.allOffers)      
       this.loadingService.show()
