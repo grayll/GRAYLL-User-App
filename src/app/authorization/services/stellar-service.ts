@@ -740,8 +740,8 @@ export class StellarService {
                         xlm = b.balance
                     }
                 });
-                console.log('balance:', xlm);               
-                console.log('balance:', grx);               
+                // console.log('balance:', xlm);               
+                // console.log('balance:', grx);               
                 cb({xlm:xlm, grx:grx})
             },
             err => {
@@ -775,7 +775,7 @@ export class StellarService {
                     
                 res => {
                     this.account = res
-                    console.log(res)                
+                    //console.log(res)                
                     let xlm = 0
                     let grx = 0
                     res.balances.forEach(b => {

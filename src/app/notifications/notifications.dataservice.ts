@@ -243,8 +243,7 @@ export class NoticeDataService {
       .subscribe(data => {
         if (data.length && data.length > 0){
           this.latestEntryGeneral = data[data.length - 1].doc;
-          //console.log(data[data.length - 1].doc.data())
-          console.log('first general', data)
+                 
           this._generalData.next(data);
         }
       });

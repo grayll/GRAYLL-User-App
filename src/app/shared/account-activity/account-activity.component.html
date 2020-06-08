@@ -121,37 +121,35 @@
     <table class="table mb-0">
       <thead>
       <tr class="font-weight-bolder font-10 text-light">
-        <th>Date</th>
-        <th>Type</th>
-        <th>Asset</th>
+        <th class="width-91px">Date</th>
+        <th class="width-41px">Type</th>
+        <th class="width-41px">Asset</th>
         <!-- <th>Issuer</th> -->
-        <th>Amount</th>
-        <th>Filled</th>
-        <th>Price (XLM)</th>
-        <th>Amount (XLM)</th>
-        <th>Price (USD)</th>      
-        <th>Total Price (USD)</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-  
-      
+        <th class="width-61px">Amount</th>
+        <th class="width-51px">Filled</th>
+        <th class="width-73px">Price (XLM)</th>     
+		<th class="width-73px">Total Price (XLM)</th>  
+        <th class="width-73px">Price (USD)</th>
+		<th class="width-73px">Total Price (USD)</th>
+		<th class="width-61px">Actions</th>
+	  </tr>
+      </thead>     
       <tbody *ngIf="this.stellarService.allOffers"  class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollOpenOrders()" [scrollWindow]="false">
         <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
           <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
         </div>
         <tr *ngFor="let item of this.stellarService.allOffers">    
-          <td>{{item.time}}</td>
-          <td>{{item.type}}</td>
+          <td class="width-91px">{{item.time}}</td>
+          <td class="width-41px">{{item.type}}</td>
           
-          <td>{{item.asset}}</td>        
-          <td>{{item.amount}}</td>
-          <td>0%</td>
-          <td>{{item.xlmp}}</td>
-          <td>{{item.totalxlm}}</td>
-          <td>{{item.priceusd.toFixed(7)}}</td>
-          <td>{{item.totalusd.toFixed(7)}}</td>
-          <td>
+          <td class="width-41px">{{item.asset}}</td>        
+          <td class="width-61px">{{item.amount}}</td>
+          <td class="width-51px">0%</td>
+          <td class="width-73px">{{item.xlmp}}</td>
+          <td class="width-73px">{{item.totalxlm}}</td>
+          <td class="width-73px">{{item.priceusd.toFixed(7)}}</td>
+          <td class="width-73px">{{item.totalusd.toFixed(7)}}</td>
+          <td class="width-61px">
             <a href="javascript:void(0)" (click)='cancelOffer(item)' class="purple-link">
               <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
               <span class="ml-1 cancel text-danger">Cancel</span>
@@ -167,43 +165,26 @@
     <table class="table mb-0">
       <thead>
       <tr class="font-weight-bolder font-10 text-light">
-        <th>Date</th>
-        <th>Counterparty</th>
-        <th>Asset</th>
-        <th>Issuer</th>
-        <th>Amount</th>
-        <th class="text-center">Info</th>
+          <th class="width-91px">Date</th>
+	      <th class="width-91px">Counterparty</th>
+	      <th class="width-41px">Asset</th>
+	      <th class="width-51px">Issuer</th>
+	      <th class="width-111px">Amount</th>
+	      <th class="text-center width-41px">Info</th>
       </tr>
       </thead>
-
- 	  <!-- <tbody *ngIf="payments" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollTransfers()" [scrollWindow]="false">
-    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
-      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
-    </div>
-        <tr *ngFor="let item of payments">
-            <td>{{item.time}}</td>
-            <td>{{item.counter}}</td>            
-            <td>{{item.asset}}</td>        
-            <td>{{item.issuer}}</td>            
-            <td>{{item.amount}}</td>            
-            <td class="text-center">
-                <a href="{{item.url}}" target="_blank">
-                  <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-                </a>
-              </td>
-        </tr>      
-      </tbody> -->
+ 	
       <tbody *ngIf="notices | async" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollTransfers()" [scrollWindow]="false">
         <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
           <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
         </div>
             <tr *ngFor="let item of notices | async">
-                <td>{{item.times}}</td>
-                <td>{{item.counters}}</td>            
-                <td>{{item.asset}}</td>        
-                <td>{{item.issuer}}</td>            
-                <td>{{item.amount}}</td>            
-                <td class="text-center">
+                <td class="width-91px">{{item.times}}</td>
+                <td class="purple-link width-91px">{{item.counters}}</td>            
+                <td class="width-41px">{{item.asset}}</td>        
+                <td class="width-51px">{{item.issuer}}</td>            
+                <td class="width-111px">{{item.amount}}</td>            
+                <td class="text-center width-41px">
                     <a href="{{item.url}}" target="_blank">
                       <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
                     </a>
@@ -218,13 +199,13 @@
     <table class="table mb-0">
       <thead>
       <tr class="font-weight-bolder font-10 text-light">
-        <th>Date</th>
-        <th>Operation</th>
-        <th>ID</th>
-        <th>Amount</th>
-        <th>Asset</th>
-        <th>Account</th>
-        <th class="text-center">Info</th>
+        <th class="width-91px">Date</th>
+        <th class="width-91px">Operation</th>
+        <th class="width-111px">ID</th>
+        <th class="width-91px">Amount</th>
+        <th class="width-41px">Asset</th>
+        <th class="width-111px">Account</th>
+        <th class="text-center width-41px">Info</th>
       </tr>
       </thead>
 	  <tbody *ngIf="operations" class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollNetworkHistory()" [scrollWindow]="false">
@@ -232,17 +213,17 @@
 	      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
 	    </div>
         <tr *ngFor="let item of operations">    
-          <td>{{item.time}}</td>
-          <td>{{item.op}}</td>
-          <td>{{item.id}}</td>
-          <td>{{item.amount}}</td>
-          <td>{{item.asset}}</td>   
-          <td>{{item.account}}</td>
-          <td class="text-center">
-              <a href="{{item.url}}" target="_blank">
-                <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
-              </a>
-            </td>
+          <td class="width-91px">{{item.time}}</td>
+          <td class="width-91px">{{item.op}}</td>
+          <td class="width-111px">{{item.id}}</td>
+          <td class="width-91px">{{item.amount}}</td>
+          <td class="width-41px">{{item.asset}}</td>   
+          <td class="width-111px">{{item.account}}</td>
+          <td class="text-center width-41px">
+            <a href="{{item.url}}" target="_blank">
+              <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+            </a>
+          </td>
         </tr>    
       </tbody>
     </table>
@@ -268,16 +249,15 @@
     <table class="table mb-0">
       <thead>
         <tr class="font-weight-bolder font-10 text-light">
-          <th>Date</th>
-          <th>Type</th>
-          <th>Asset</th>       
-          <th>Amount</th>
-          <!-- <th>Filled</th> -->
-          <th>Price (XLM)</th>
-          <th>Amount (XLM)</th>
-          <th>Price (USD)</th>      
-          <th>Total Price (USD)</th>
-          <th>Actions</th>
+          <th class="width-91px">Date</th>
+          <th class="width-41px">Type</th>
+          <th class="width-41px">Asset</th> 
+		  <th class="width-61px">Amount</th>         
+          <th class="width-73px">Amount (XLM)</th>
+		  
+           <th class="width-73px">Price (USD)</th>
+          <th class="width-73px">Total Price (USD)</th>
+          <th class="width-61px">Actions</th>
         </tr>
       </thead>
 
@@ -286,17 +266,17 @@
           <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
         </div>
         <tr *ngFor="let item of tradess | async">         
-          <td>{{item.times}}</td>
-          <td>{{item.type}}</td>
+          <td class="width-91px">{{item.times}}</td>
+          <td class="width-41px">{{item.type}}</td>
           
-          <td>{{item.asset}}</td>        
-          <td>{{item.amount}}</td>
-          <!-- <td>0%</td> -->
-          <td>{{item.xlmp}}</td>
-          <td>{{item.totalxlm}}</td>
-          <td>{{item.priceusd.toFixed(7)}}</td>
-          <td>{{item.totalusd.toFixed(7)}}</td>
-          <td><a href="{{item.url}}" target="_blank" class="purple-link">Details</a></td>
+          <td class="width-41px">{{item.asset}}</td>        
+           <td class="width-61px">{{item.amount}}</td>
+          
+          
+          <td class="width-73px">{{item.totalxlm}}</td>
+          <td class="width-73px">{{item.priceusd.toFixed(7)}}</td>
+          <td class="width-73px">{{item.totalusd.toFixed(7)}}</td>
+          <td class="width-61px"><a href="{{item.url}}" target="_blank" class="purple-link">Details</a></td>
         </tr>    
       </tbody>
     </table>
