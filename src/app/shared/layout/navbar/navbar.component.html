@@ -3,6 +3,7 @@
     <a class="navbar-brand ml-2" routerLink="/dashboard/overview" alt="DASHBOARD">
       <img src="assets/images/logo.png" width="40" height="40" class="d-inline-block align-top" alt="Logo">
     </a>
+    <button class="btn btn-purple nav-center-button" [routerLink]="[{outlets: {popup: 'xml-referral'}}]">Invite Contacts</button>
     <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed"
             data-target="#navbarsDefault" aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -38,6 +39,14 @@
           <a href="javascript:void(0)" class="nav-link" routerLink="/data/overview" alt="DATA">
             <span class="d-inline d-md-none mr-2">Data</span>
             <fa-icon [icon]="faChartBar" size="lg"></fa-icon>
+          </a>
+        </li>
+ 		<li class="nav-item" data-toggle="tooltip"
+            (click)="isNavbarCollapsed = !isNavbarCollapsed">
+          <a alt="REFERRAL SYSTEM" class="nav-link" href="javascript:void(0)" routerLink="/referral/overview">
+            <span class="d-inline d-md-none mr-2">Referral System</span>
+            <fa-icon [icon]="faAt" size="lg"></fa-icon>
+            <span class="badge bg-yellow text-light badge-number"> 0 </span>
           </a>
         </li>
         <li class="nav-item" data-toggle="tooltip" (click)="isNavbarCollapsed = !isNavbarCollapsed">

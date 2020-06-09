@@ -3,8 +3,8 @@
 }
 
 li.nav-item {
-  padding: 0 3px!important;
-  height: 100%!important;
+  padding: 0 3px !important;
+  height: 100% !important;
 }
 
 .nav-item a:hover {
@@ -15,7 +15,7 @@ li.nav-item a {
   padding: 0 14px;
   font-size: 0.875rem;
   line-height: 64px;
-  color: #40278C!important;
+  color: #40278c !important;
 }
 
 .badge-number {
@@ -31,18 +31,29 @@ li.nav-item a {
   border-color: rgba(207, 162, 86, 1);
 }
 
+.nav-center-button {
+  margin-left: 38%;
+}
+
+@media (max-width: 992px) {
+  .nav-center-button {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 @media (min-width: 768px) {
   .navbar {
-    max-width: 1200px!important;
+    max-width: 1200px !important;
     margin: 0 auto;
   }
   .navbar-wrapper {
-    height: 64px!important;
+    height: 64px !important;
   }
   li[alt]:hover:after {
     content: attr(alt);
     position: absolute;
-    background-color: #40278C;
+    background-color: #40278c;
     color: white;
     padding: 5px;
     -webkit-border-radius: 4px;
@@ -58,7 +69,7 @@ li.nav-item a {
     position: absolute;
     top: 64px;
     right: 0;
-    background-color: #40278C;
+    background-color: #40278c;
     color: white;
     padding: 5px;
     -webkit-border-radius: 4px;
@@ -70,14 +81,17 @@ li.nav-item a {
     white-space: nowrap;
   }
   a.navbar-brand:hover:after {
-    left: calc(1rem + 5px)!important;
-    right: auto!important;
+    left: calc(1rem + 5px) !important;
+    right: auto !important;
+  }
+  .nav-center-button {
+    top: 13px;
   }
 }
 
 @media (max-width: 768px) {
   .badge-number {
-    position: relative!important;
+    position: relative !important;
     top: 0;
     left: 5px;
   }

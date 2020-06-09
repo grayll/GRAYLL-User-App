@@ -1,6 +1,6 @@
 import {Component, NgZone,Input, OnDestroy, OnInit, HostListener} from '@angular/core';
 import {Router} from '@angular/router';
-import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet} from '@fortawesome/free-solid-svg-icons';
+import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet, faAt} from '@fortawesome/free-solid-svg-icons';
 import {NotificationsService} from '../../../notifications/notifications.service';
 import {AuthService} from 'src/app/shared/services/auth.service'
 import { StellarService } from 'src/app/authorization/services/stellar-service'
@@ -38,7 +38,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
   faChartBar = faChartBar;
   faWallet = faWallet;
   faChartLine = faChartLine;
-
+  faAt = faAt;
   walletNotices: number = 0
   algoNotices: number = 0
   generalNotices: number = 0 

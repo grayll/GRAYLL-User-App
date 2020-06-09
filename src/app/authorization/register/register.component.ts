@@ -150,7 +150,7 @@ registerClicked() {
                 HashPassword: this.registerForm.value['password'],
                 Name: this.registerForm.value['name'],  
                 LName: this.registerForm.value['lname'],    
-                //Referer: this.referer,       
+                Referer: this.referer,       
               }
                       
               this.http.post(`api/v1/accounts/register`, userData)             

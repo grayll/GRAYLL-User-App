@@ -1,0 +1,116 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Remove Referral Contact"></app-popup-header>
+  <div class="modal-body">
+
+    <app-error></app-error>
+
+    <div class="row mb-1" *ngIf="!success && !error">
+      <div class="col-12">
+        <p class="text-purple">Removing a<i class="margin-1">Referral Contact&nbsp;</i>will result in the following:</p>
+        <p class="text-purple">1) You will no longer receive<i class="margin-1">Performance Fees&nbsp;</i>from this<i class="margin-1">Referral Contact</i><br />2) Your<i class="margin-1">Referral Contact&nbsp;</i>will on longer have discounted<i class="margin-1">Performance Fees&nbsp;</i>at 15%</p>
+        <!-- <br> -->
+        <p class="text-purple">We recommend prior to removing any<i class="margin-1">Referral Contact&nbsp;</i>to communicate with them. It's good to let them know that you are removing them and give your referral time to respond.</p>
+      </div>
+      <div class="col-12">
+        <label for="firstName" class="text-purple font-weight-bold">
+          First Name
+        </label>
+        <input id="firstName" type="text" class="form-control purple-input" placeholder="First Name">
+      </div>
+      <div class="col-12 text-right">
+        <small class="text-purple"><i>Required</i></small>
+      </div>
+      <div class="col-12">
+        <label for="lastName" class="text-purple font-weight-bold">
+          Last Name
+        </label>
+        <input id="lastName" type="text" class="form-control purple-input" placeholder="Last Name">
+      </div>
+      <div class="col-12 text-right">
+        <small class="text-purple"><i>Required</i></small>
+      </div>
+      <div class="col-12">
+        <label for="businessName" class="text-purple font-weight-bold">
+          Business Name
+        </label>
+        <input id="businessName" type="text" class="form-control purple-input" placeholder="Business Name">
+      </div>
+      <div class="col-12"><small>&nbsp;</small></div>
+      <div class="col-12">
+        <label for="emailAddress" class="text-purple font-weight-bold">
+          Email Address
+        </label>
+        <input id="emailAddress" type="text" class="form-control purple-input" placeholder="Email Address">
+      </div>
+      <div class="col-12 text-right">
+        <small class="text-purple"><i>Required</i></small>
+      </div>
+      <!-- <div class="col-12"><small>&nbsp;</small></div> -->
+      <div class="col-12">
+        <div class="d-flex column-div">
+          <label for="phoneNumber" class="text-purple font-weight-bold">
+            Mobile Number <i>(*WhatsApp Number Only)</i>
+          </label>
+          <!-- <a class="text-purple margin-left-auto" href="javascript: void(0)">Send to <i>WhatsApp</i><fa-icon class="phone-icon" [icon]="faPhone"></fa-icon></a> -->
+        </div>
+        <input id="phoneNumber" type="text" class="form-control purple-input" placeholder="Mobile Number (*WhatsApp)">
+        <div class="col-12"><small>&nbsp;</small></div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="success">
+      <div class="success-checkmark">
+        <div class="check-icon">
+          <span class="icon-line line-tip"></span>
+          <span class="icon-line line-long"></span>
+          <div class="icon-circle"></div>
+          <div class="icon-fix"></div>
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <div class="col-12 text-center">
+          <p class="text-purple">
+            Your <i>Referral Contact&nbsp;</i> has been removed successfully.
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="error">
+      <div class="swal2-icon swal2-error swal2-animate-error-icon" style="display: flex;">
+        <span class="swal2-x-mark">
+          <span class="swal2-x-mark-line-left"></span>
+          <span class="swal2-x-mark-line-right"></span>
+        </span>
+      </div>
+
+      <div class="row text-center">
+        <div class="col">
+          <p class="text-purple font-16">Remove Referral Contact Failed</p>
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <div class="col-12 text-center">
+          <p class="text-purple">
+            Something went wrong, Please retry.
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+
+  <div class="modal-footer justify-content-center">
+    <div class="row text-center" style="display: contents!important;">
+      <div class="col">
+        <button class="btn btn-purple cancel-btn" *ngIf="!success && !error" (click)="popupService.close()">Cancel</button>
+        <button class="btn btn-purple" *ngIf="!success && !error" (click)="payOffLoan()">Confirm Removal</button>
+        <button class="btn btn-purple" *ngIf="success" (click)="popupService.close()">Close</button>
+        <button class="btn btn-purple cancel-btn" *ngIf="error" (click)="popupService.close()">Cancel</button>
+        <button class="btn btn-purple" *ngIf="error" (click)="retry()">Retry</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

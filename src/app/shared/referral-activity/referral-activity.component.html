@@ -1,0 +1,207 @@
+<router-outlet name="popup"></router-outlet>
+<div class="bg-gradient text-light mt-3" id="systemActivityTable">
+  <div class="row align-items-center justify-content-center p-2">
+    <div class="col">
+      <span class="lead align-middle">Activity</span>
+    </div>
+    <div class="col-xs-12 col-md-6 justify-content-center align-items-center" *ngIf="selectedTab">
+      <ngb-tabset type="pills" class="custom-pills" (tabChange)="onTabChange($event.nextId)" [activeId]="selectedTab.id">
+        <ng-container *ngFor="let tab of activityTabs">
+          <ngb-tab [id]="tab.id" [title]="tab.name"></ngb-tab>
+        </ng-container>
+      </ngb-tabset>
+    </div>
+    <div class="col text-center">
+      <hr class="mt-0 d-sm-none">
+      <a class="purple-link" (click)="DownloadPdf()">
+        <fa-icon [icon]="faDownload" [fixedWidth]="true"></fa-icon>
+        Download Activity History
+      </a>
+    </div>
+  </div>
+
+  <hr class="mt-0 mb-0">
+</div>
+
+<div class="bg-gradient text-light">
+  <div class="row justify-content-center align-items-center mb-1 p-2">
+    <div class="col-md-4 col-xs">
+      <span class="align-middle font-weight-bolder font-14" *ngIf="selectedTab && (selectedTab.id === 'pendingInvites')">Pending Contacts (1,234,567,890)</span>
+      <span class="align-middle font-weight-bolder font-14" *ngIf="selectedTab && (selectedTab.id === 'allTransactions' || selectedTab.id === 'referralContacts')">Referral Contacts (1,234,567,890)</span>
+    </div>
+    <div class="col">
+      <div class="row">
+        <div class="col search">
+          <div class="input-group">
+            <input class="form-control form-control-no-border bg-transparent py-2 border border-right-0 text-light"
+                   type="search" style="border-color: #40278C!important" [formControl]="searchControl">
+            <span class="input-group-append">
+              <div class="input-group-text bg-transparent">
+                <fa-icon style="color: #40278C" [icon]="faSearch"></fa-icon>
+              </div>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col d-none d-md-block"></div>
+  </div>
+</div>
+
+<div class="table-responsive bg-gradient text-light pull-top"
+     *ngIf="selectedTab && (selectedTab.id === 'allTransactions')">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th class="width-91px" (click)="sortByPositionValue()">Date</th>
+      <th class="width-101px">First Name</th>
+      <th class="width-101px">Last Name</th>
+      <th class="width-101px">Business Name</th>
+      <th class="width-175px">Email</th>
+      <th class="width-101px">Mobile<br><i>(WhatsApp)</i></th>
+      <th class="width-91px">Fees (USD)<br><i>(Received)</i></th>
+      <th (click)="sortByPositionProfit()" class="width-91px"> Fees (GRX)<br><i>(Received)</i> </th>
+      <th class="width-111px">Stellar<br>Transaction ID</th>
+      <th class="width-44px text-center">Info</th>
+      <!-- <th class="width-61px">Actions</th> -->
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [scrollWindow]="false">
+    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+    </div>
+    <tr *ngFor="let position of searchControl.value?searchResult.openAlgoPositions:openAlgoPositions">
+      <td class="width-91px">{{position.openDate}}</td>
+      <td class="width-101px">{{position.firstName}}</td>
+      <td class="width-101px">{{position.lastName}}</td>
+      <td class="width-101px">{{position.businessName}}</td>
+      <td class="width-175px">{{position.eMail}}</td>
+      <!-- <td class="width-91px">{{position.positionValueUSD}}</td>
+      <td class="width-91px">{{position.positionProfitUSD}}</td> -->
+      <td class="width-101px">{{position.phoneNumber}}</td>
+      <td class="width-91px">{{position.totalFees}}</td>
+      <td class="width-91px">{{position.totalFees}}</td>
+      <td class="width-111px">
+      {{position.stellarTransactionId}}
+      </td>
+      <td class="width-41px text-center">
+        <a href="https://stellar.expert/explorer/public" target="_blank">
+          <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="table-responsive bg-gradient text-light pull-top"
+     *ngIf="selectedTab && (selectedTab.id === 'referralContacts')">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th class="width-91px" (click)="sortByPositionValue()">Date<br><i>(Invite Confirmed)</i></th>
+      <th class="width-101px">First Name</th>
+      <th class="width-101px">Last Name</th>
+      <th class="width-101px">Business Name</th>
+      <th class="width-175px">Email</th>
+      <th class="width-101px">Phone</th>
+      <th (click)="sortByTotalFeesUSD()" class="width-91px">
+        Total Fees (USD)<br><i class="mr-1">(Received)</i>
+        <fa-icon [icon]="faSortByTotalFeesUSD" style="color: #40278C;"></fa-icon></th>
+      <th (click)="sortByTotalFeesGRX()" class="width-91px">
+        Total Fees (GRX)<br><i class="mr-1">(Received)</i>
+        <fa-icon [icon]="faSortByTotalFeesGRX" style="color: #40278C;"></fa-icon>
+      </th>
+      <th (click)="sortByTotalPayments()" class="width-91px">
+        Total Payments<br><i class="mr-1">(Received)</i>
+        <fa-icon [icon]="faSortByTotalPayments" style="color: #40278C;"></fa-icon></th>
+      <th class="width-41px">Edit</th>
+      <th class="width-64px">Actions</th>
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [scrollWindow]="false">
+    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+    </div>
+    <tr *ngFor="let position of searchControl.value?searchResult.openAlgoPositions:openAlgoPositions">
+      <td class="width-91px">{{position.openDate}}</td>
+      <td class="width-101px">{{position.firstName}}</td>
+      <td class="width-101px">{{position.lastName}}</td>
+      <td class="width-101px">{{position.businessName}}</td>
+      <td class="width-175px">{{position.eMail}}</td>
+      <!-- <td class="width-91px">{{position.positionValueUSD}}</td>
+      <td class="width-91px">{{position.positionProfitUSD}}</td> -->
+      <td class="width-101px">{{position.phoneNumber}}</td>
+      <td class="width-91px">{{position.totalFees}}</td>
+      <td class="width-91px">{{position.totalFees}}</td>
+      <td class="width-91px">{{position.totalPayments}}</td>
+      <td class="width-41px">
+        <a href="javascript:void(0)" class="colored-text" [routerLink]="[{outlets: {popup: 'xlm-referral-edit'}}]">
+          Edit
+        </a>
+      </td>
+      <td class="width-61px">
+        <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referral-remove'}}]">
+          <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+          <span class="ml-1 cancel text-danger">Remove</span>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="table-responsive bg-gradient text-light pull-top"
+     *ngIf="selectedTab && (selectedTab.id === 'pendingInvites')">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th class="width-91px" (click)="sortByPositionValue()">Date<br><i>(Invite Sent)</i></th>
+      <th class="width-101px">First Name</th>
+      <th class="width-101px">Last Name</th>
+      <th class="width-101px">Business Name</th>
+      <th class="width-175px">Email</th>
+      <th class="width-101px">Phone</th>
+      <th class="width-91px"># Reminders Sent</th>
+      <th (click)="sortByLastReminder()" class="width-91px">
+        Last Reminder<br /><i class="mr-1">(Date Sent)</i>
+        <fa-icon [icon]="faSortByLastReminder" style="color: #40278C;"></fa-icon>
+      </th>
+      <th class="width-91px">Send Reminder</th>
+      <!-- <th class="width-41px">Info</th> -->
+      <th class="width-64px">Actions</th>
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [scrollWindow]="false">
+    <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+      <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+    </div>
+    <tr *ngFor="let position of searchControl.value?searchResult.openAlgoPositions:openAlgoPositions">
+      <td class="width-91px">{{position.openDate}}</td>
+      <td class="width-101px">{{position.firstName}}</td>
+      <td class="width-101px">{{position.lastName}}</td>
+      <td class="width-101px">{{position.businessName}}</td>
+      <td class="width-175px">{{position.eMail}}</td>
+      <!-- <td class="width-91px">{{position.positionValueUSD}}</td>
+      <td class="width-91px">{{position.positionProfitUSD}}</td> -->
+      <td class="width-101px">{{position.phoneNumber}}</td>
+      <td class="width-91px">{{position.remindersSent}}</td>
+      <td class="width-91px">{{position.lastReminder}}</td>
+      <td class="width-91px">
+        <a class="colored-text" href="javascript:void(0)" [routerLink]="[{outlets: {popup: 'xlm-referral-resend'}}]">
+          Send Reminder
+        </a>
+      </td>
+      <td class="width-61px">
+        <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referral-remove'}}]">
+          <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+          <span class="ml-1 cancel text-danger">Remove</span>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

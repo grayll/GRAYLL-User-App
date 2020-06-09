@@ -1,0 +1,148 @@
+.colored-text-second {
+  color: #40278c!important;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.first-box {
+  /* background: linear-gradient(to right, #636fa4, #e8cbc0) !important; */
+  background-color: #e8cbc0;
+  color: white !important;
+}
+
+.first-content-div {
+  flex-direction: column;
+}
+
+.second-box {
+  /* background: linear-gradient(to right, #636fa4, #e8cbc0) !important; */
+  background-color: #e8cbc0;
+  color: white !important;
+  height: auto;
+  padding: 0.6rem;
+  display: flex;
+  align-items: center;
+}
+
+.second-box > p {
+  margin-bottom: 0;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.third-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* background: linear-gradient(to right, #636fa4, #e8cbc0) !important; */
+  background-color: #e8cbc0;
+  color: white !important;
+}
+
+.third-box h5 {
+  font-size: 18px !important;
+}
+
+.third-box h6 {
+  font-size: 16px !important;
+}
+
+.card {
+  background-color: #636fa4 !important;
+}
+
+.pointer:hover {
+  cursor: pointer !important;
+}
+
+.card-body {
+  border-radius: 4px !important;
+}
+
+.border-navy {
+  border-radius: 0.3rem;
+  border: 1px solid #636fa4 !important;
+  padding: 0.5rem;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+.icon-box {
+  margin-right: 1rem;
+}
+
+.border-navy-hover {
+  border-radius: 0.3rem;
+  padding: 0.5rem 0.25rem;
+  border: 1px solid transparent !important;
+}
+
+.border-navy-hover:hover {
+  cursor: pointer !important;
+  border-radius: 0.3rem;
+  padding: 0.5rem 0.25rem;
+  border: 1px solid #40278c !important;
+}
+
+.line-chart {
+  max-width: 130px;
+  height: 15px;
+}
+
+.heading {
+  color: #40278c;
+}
+
+.italic-content {
+  font-weight: lighter;
+}
+
+:host ::ng-deep .carousel-inner {
+  outline: 0 !important;
+}
+
+:host ::ng-deep .carousel-item.active {
+  outline: 0 !important;
+}
+
+:host ::ng-deep .carousel {
+  outline: 0 !important;
+}
+
+:host ::ng-deep .carousel-control-prev {
+  display: block;
+  position: absolute;
+  top: 100px;
+  left: -15px;
+}
+
+:host ::ng-deep .carousel-control-next {
+  display: block;
+  position: absolute;
+  top: 100px;
+  right: -15px;
+}
+
+:host ::ng-deep .carousel-control-prev-icon {
+  background-image: url("../../../assets/images/left-chevron.png");
+  width: 15px;
+  height: 24px;
+}
+
+:host ::ng-deep .carousel-control-next-icon {
+  background-image: url("../../../assets/images/right-chevron.png");
+  width: 15px;
+  height: 24px;
+}
+
+@media (min-width: 992px) {
+  .card {
+    height: 100% !important;
+  }
+  /* .card-body {
+    padding-bottom: 0 !important;
+  } */
+}

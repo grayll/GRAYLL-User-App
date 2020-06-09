@@ -1,0 +1,57 @@
+<router-outlet name="popup"></router-outlet>
+<div class="bg-gradient text-light mt-3 top-border-rounded" id="systemActivityTable">
+  <div class="row align-items-center justify-content-center p-2">
+    <div class="col-md-6">
+      <span class="lead align-middle">Linked Referrer Account <i class="font-16 d-inline-block">(Referrer that invited you to GRAYLL)</i></span>
+    </div>
+    <div class="col-md-6 text-right pr-4">
+      <a class="purple-link" href="javascript: void(0)">
+        Performance Fee Level 15%
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="table-responsive bg-gradient text-light pull-top bottom-border-rounded">
+  <table class="table mb-0">
+    <thead>
+    <tr class="font-weight-bolder font-10 text-light">
+      <th class="width-91px">Date<br><i>(Invite Accepted)</i></th>
+      <th class="width-101px">First Name</th>
+      <th class="width-101px">Last Name</th>
+      <th class="width-101px">Business Name</th>
+      <th class="width-175px">Email</th>
+      <th class="width-101px">Phone</th>
+      <th class="width-91px">Fees (USD) <br><i>(Paid to Referrer)</i> </th>
+      <th class="width-91px">Fees (GRX) <br><i>(Paid to Referrer)</i></th>
+      <!-- <th class="width-41px">Info</th> -->
+      <th class="width-61px">Actions</th>
+    </tr>
+    </thead>
+
+    <tbody class="font-8 text-light pb-3">
+      <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
+        <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
+      </div>
+      <tr *ngFor="let position of openAlgoPositions">
+        <td class="width-91px">{{position.openDate}}</td>
+        <td class="width-101px">{{position.firstName}}</td>
+        <td class="width-101px">{{position.lastName}}</td>
+        <td class="width-101px">{{position.businessName}}</td>
+        <td class="width-175px">{{position.eMail}}</td>
+        <!-- <td class="width-91px">{{position.positionValueUSD}}</td>
+        <td class="width-91px">{{position.positionProfitUSD}}</td> -->
+        <td class="width-101px">{{position.phoneNumber}}</td>
+        <td class="width-91px">{{position.totalFees}}</td>
+        <td class="width-91px">{{position.totalFees}}</td>
+        <td class="width-61px">
+          <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referrer-remove'}}]">
+            <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+            <span class="ml-1 cancel text-danger">Remove</span>
+          </a>
+        </td>
+      </tr>
+   
+    </tbody>
+  </table>
+</div>

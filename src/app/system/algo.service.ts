@@ -128,11 +128,11 @@ export class AlgoService {
     }
   }
 
-  getTotalAccountBl(){
-      return this.authService.grxInUsd() + this.authService.xlmInUsd() + this.authService.userMetaStore.total_grz_current_position_value_$
-       + this.authService.userMetaStore.total_gry1_current_position_value_$ + this.authService.userMetaStore.total_gry2_current_position_value_$
-       + this.authService.userMetaStore.total_gry3_current_position_value_$ 
-  }
+  // getTotalAccountBl(){
+  //     return this.authService.grxInUsd() + this.authService.xlmInUsd() + this.authService.userMetaStore.total_grz_current_position_value_$
+  //      + this.authService.userMetaStore.total_gry1_current_position_value_$ + this.authService.userMetaStore.total_gry2_current_position_value_$
+  //      + this.authService.userMetaStore.total_gry3_current_position_value_$ 
+  // }
 
   getTotalProfit(){
     return this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
