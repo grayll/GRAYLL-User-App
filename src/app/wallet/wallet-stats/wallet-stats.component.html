@@ -174,13 +174,13 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                     </div>
-                    <input type="text" name="grxamount" [(ngModel)]="grxAmount" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                    <input type="number" name="grxamount" [(ngModel)]="grxAmount"  (keyup)="KeyUp('grxamount')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                   </div>
                 </div>
                 <div class="form-group float-right mb-0">
-                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_ask.toFixed(7)">Bid</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_bid.toFixed(7)">Ask</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx.toFixed(7) ">Last</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_ask.toFixed(7);KeyUp('grxprice')">Bid</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_bid.toFixed(7);KeyUp('grxprice')">Ask</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx.toFixed(7);KeyUp('grxprice')">Last</a>
                 </div>
                 <div class="form-group">
                   <div class="input-group input-group-lg fixed-input-height">
@@ -189,7 +189,7 @@
                         <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                       </span>
                     </div>
-                    <input type="text" name="grxprice" [(ngModel)]="grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
+                    <input type="number" name="grxprice" [(ngModel)]="grxPrice" (keyup)="KeyUp('grxprice')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
                   </div>
                 </div>
                 <div class="form-group">
@@ -199,7 +199,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                     </div>
-                    <input [(ngModel)]="XLMValueForm" [value]="this.calXLMAmount()" type="text" name="xlmValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                    <input type="number" [(ngModel)]="xlmAmount" (keyup)="KeyUp('xlmamount')" name="xlmValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                     <!-- <input [value]="(+grxAmount)*(+grxPrice)" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value"> -->
                   </div>
                 </div>
@@ -208,7 +208,7 @@
                     <div class="input-group-prepend">
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
-                    <input  type="text" [value]="calculateUsdValue()" name="usdValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input type="number" [(ngModel)]="usdValue"  (keyup)="KeyUp('usdvalue')" name="usdValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -234,13 +234,13 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                     </div>
-                    <input name="grxamount1"  [(ngModel)]="grxAmount" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                    <input name="grxamount1"  [(ngModel)]="grxAmount" type="number" (keyup)="KeyUp('grxamount')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                   </div>
                 </div>
                 <div class="form-group float-right mb-0">
-                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_ask.toFixed(7)">Bid</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_bid.toFixed(7)">Ask</a>
-                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx.toFixed(7) ">Last</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_ask.toFixed(7);KeyUp('grxprice')">Bid</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_bid.toFixed(7);KeyUp('grxprice')">Ask</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx.toFixed(7);KeyUp('grxprice')">Last</a>
                 </div>
                 <div class="form-group">
                   <div class="input-group input-group-lg fixed-input-height">
@@ -249,7 +249,7 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                     </div>
-                    <input type="text" name="grxprice" [(ngModel)]="grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
+                    <input type="number" name="grxprice" [(ngModel)]="grxPrice" (keyup)="KeyUp('grxprice')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
                   </div>
                 </div>
                 <div class="form-group">
@@ -259,7 +259,7 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                     </div>
-                    <input type="text" [(ngModel)]="XLMValueForm" [value]="this.calGRXAmount()" name="xlmValueForm1" 
+                    <input type="number" [(ngModel)]="xlmAmount" (keyup)="KeyUp('xlmamount')" name="xlmValueForm1" 
                     class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                   </div>
                 </div>
@@ -269,7 +269,7 @@
                       <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                     </div>
                     <!-- <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(7)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value"> -->
-                    <input  type="text" [value]="calculateUsdValue()" name="usdValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                    <input  type="number" [(ngModel)]="usdValue" (keyup)="KeyUp('usdvalue')" name="usdValueForm1" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -456,13 +456,13 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                       </div>
-                      <input type="text" name="grxamount" [(ngModel)]="grxAmount" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                      <input type="number" name="grxamount" [(ngModel)]="grxAmount"  (keyup)="KeyUp('grxamount')"  class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                     </div>
                   </div>
-                  <div class="form-group float-right mb-0">
-                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_ask.toFixed(7)">Bid</a>
-                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_bid.toFixed(7)">Ask</a>
-                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx.toFixed(7) ">Last</a>
+                  <div class="form-group float-right mb-0">                  
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_ask.toFixed(7);KeyUp('grxprice')">Bid</a>
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_bid.toFixed(7);KeyUp('grxprice')">Ask</a>
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx.toFixed(7);KeyUp('grxprice')">Last</a>
                   </div>
                   <div class="form-group">
                     <div class="input-group input-group-lg fixed-input-height">
@@ -471,7 +471,7 @@
                         <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                       </span>
                       </div>
-                      <input type="text" name="grxprice" [(ngModel)]="grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
+                      <input type="number" name="grxprice" [(ngModel)]="grxPrice" (keyup)="KeyUp('grxprice')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
                     </div>
                   </div>
                   <div class="form-group">
@@ -482,7 +482,7 @@
                       </span>
                       </div>
                       <!-- <input [value]="(+grxAmount)*(+grxPrice)" type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value"> -->
-                      <input [(ngModel)]="XLMValueForm" [value]="this.calXLMAmount()" type="text" name="xlmValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
+                      <input type="number" [(ngModel)]="xlmAmount" (keyup)="KeyUp('xlmamount')" type="text" name="xlmValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                     </div>
                   </div>
                   <div class="form-group">
@@ -491,7 +491,7 @@
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
                       <!-- <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(7)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value"> -->
-                      <input  type="text" [value]="calculateUsdValue()" name="usdValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      <input type="number" [(ngModel)]="usdValue"  (keyup)="KeyUp('usdvalue')" name="usdValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">
@@ -517,13 +517,13 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
                   </span>
                       </div>
-                      <input name="grxamount1"  [(ngModel)]="grxAmount"  type="text" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                      <input name="grxamount1" [(ngModel)]="grxAmount" type="number" (keyup)="KeyUp('grxamount')"  class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                     </div>
                   </div>
                   <div class="form-group float-right mb-0">
-                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_ask.toFixed(7)">Bid</a>
-                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_bid.toFixed(7)">Ask</a>
-                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx.toFixed(7) ">Last</a>
+                    <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_ask.toFixed(7);KeyUp('grxprice')">Bid</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx_bid.toFixed(7);KeyUp('grxprice')">Ask</a>
+                  <a class="mr-1 purple-link" href="javascript:void(0)" (click)="grxPrice=authService.priceInfo.xlmgrx.toFixed(7);KeyUp('grxprice')">Last</a>
                   </div>
                   <div class="form-group">
                     <div class="input-group input-group-lg fixed-input-height">
@@ -532,7 +532,7 @@
                     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                   </span>
                       </div>
-                      <input type="text" name="grxprice1" [(ngModel)]="grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
+                      <input type="number" name="grxprice" [(ngModel)]="grxPrice" (keyup)="KeyUp('grxprice')"  class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM/GRX Price">
                     </div>
                   </div>
                   <div class="form-group">
@@ -542,8 +542,8 @@
                         <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="Stellar Logo">
                       </span>
                       </div>
-                      <!-- <input type="text" [value]="(+grxAmount)*(+grxPrice)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value"> -->
-                      <input type="text" [(ngModel)]="XLMValueForm" [value]="this.calGRXAmount()" name="xlmValueForm2" 
+                      
+                      <input type="number" [(ngModel)]="xlmAmount" (keyup)="KeyUp('xlmamount')" name="xlmValueForm2" 
                     class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Value">
                     </div>
                   </div>
@@ -552,8 +552,8 @@
                       <div class="input-group-prepend">
                         <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                       </div>
-                      <!-- <input type="text" [value]="((+grxAmount)*(+grxPrice)*this.authService.userData.xlmPrice).toFixed(7)" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value"> -->
-                      <input  type="text" [value]="calculateUsdValue()" name="usdValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                      
+                      <input type="number" [(ngModel)]="usdValue" (keyup)="KeyUp('usdvalue')" name="usdValueForm" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                     </div>
                   </div>
                   <div class="form-group row">

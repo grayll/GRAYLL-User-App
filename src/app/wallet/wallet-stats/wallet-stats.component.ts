@@ -35,18 +35,16 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
 
   reservedTrade : number = 0.500011
 
-  XLMValueForm:number
-  USDValueForm:number
-
-  //xlmTradeValue: number
+  // XLMValueForm:number
+  // USDValueForm:number
+  
   grxTradeValue: number
 
   grxP: number
   xlmP: number = 1
   action: string = ''
 
-  // totalXLM: number;
-  // totalGRX: number;
+  
   gryBalance: number;
   grzBalance: number;
   algoWalletValue: string;
@@ -65,13 +63,13 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   // offers
   grxAmount: string = ''
   grxPrice: string = ''
-  // grxXlmEqui: string = ''
-  // grxUsdEqui: string = ''
+  xlmAmount: string = ''
+  usdValue: string = ''
+  
   SecKey: string = ''
 
-  //askPrice: number = 0;
-  //bidPrice: number = 0;
-
+  fieldName: string = ''
+  
   private subs = new SubSink();
 
   constructor(
@@ -97,7 +95,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if (!this.stellarService.allOffers){
       this.stellarService.allOffers = []
     }
-    console.log('this.stellarService.allOffers:', this.stellarService.allOffers)
+    //console.log('this.stellarService.allOffers:', this.stellarService.allOffers)
     this.subs.add(this.popupService.observeValidation().subscribe(valid => {
       if (valid){
         if (this.action === 'buy'){
@@ -118,124 +116,110 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
   
   ngOnInit() {
-    this.observeRevealSecretKey();
-    //get ask, bid, last prices
-    // axios.get(environment.ask_bid_prices)
-    // .then( res => {
-    //   var ask : number = res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
-    //   let bid : number = res.data.bids[0].price_r.d/res.data.bids[0].price_r.n
-    //   this.askPrice = +(ask.toFixed(7))// res.data.asks[0].price_r.d/res.data.asks[0].price_r.n
-    //   this.bidPrice = +(bid.toFixed(7))//res.data.bids[0].price_r.d/res.data.bids[0].price_r.n
-    // })
-    // .catch(e => {
-    //   console.log('can not get ask/bid price: ', e)
-    // })
+    this.observeRevealSecretKey();    
   }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
-  executeBuy(){
-    if (this.authService.isTokenExpired()){
-      this.router.navigateByUrl('/');
-    }
+  executeBuy(){   
        
-      console.log('this.stellarService.allOffers:', this.stellarService.allOffers)      
-      this.loadingService.show()
-      var dexAmount = +this.grxAmount
-      var superAdminAmount = 0
-      if (this.authService.userInfo.SellingPercent <= 100){
-        dexAmount = this.authService.userInfo.SellingPercent*+this.grxAmount/100
-        superAdminAmount = +this.grxAmount - dexAmount
-      }
-      
-      // check setting whether direct purchase on admin account
-      console.log('grxPrice:', this.grxPrice , this.authService.priceInfo.xlmgrx , this.authService.userInfo.SellingPrice)
-      console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent, dexAmount, superAdminAmount)
-      if (+this.grxPrice > this.authService.priceInfo.xlmgrx_ask && +this.grxPrice >= this.authService.userInfo.SellingPrice){
-        if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){        
-          console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet,this.authService.getSecretKey())
-          // purchase directly from grayll super admin        
-          if (superAdminAmount > 0){
-            // buy all from grayll super admin
-            let xlmAmount = superAdminAmount*+this.grxPrice
-            console.log('xlmAmount:', xlmAmount)
-            this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
-              xlmAmount.toFixed(7), this.stellarService.nativeAsset, '')
-            .then( txHash => {
-              this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:+xlmAmount.toFixed(7), 
-                grxUsd:+this.grxPrice*this.authService.priceInfo.xlmusd, totalUsd:+xlmAmount.toFixed(7)*this.authService.priceInfo.xlmusd}).then(resp => {
-                // update fund
-                console.log('verifyTx: ', resp)
-                this.loadingService.hide()
-                let msg 
-                if (resp.errCode === environment.SUCCESS){
-                  msg = 'Buy order has been matched and executed!'                   
-                } else {
-                  msg = 'Buy order could not be submitted! Please retry!'             
-                }
-
-                this.loadingService.hide()
-                this.snotifyService.simple(msg); 
-              }).catch( e => {
-                console.log(e)
-                this.loadingService.hide()
-              })              
-            }).catch(e => {
-              console.log(e)
-              let msg = 'Buy order could not be submitted. Please retry!'   
-              this.snotifyService.simple(msg);        
+      //console.log('this.stellarService.allOffers:', this.stellarService.allOffers)      
+    this.loadingService.show()
+    var dexAmount = +this.grxAmount
+    var superAdminAmount = 0
+    if (this.authService.userInfo.SellingPercent <= 100){
+      dexAmount = this.authService.userInfo.SellingPercent*+this.grxAmount/100
+      superAdminAmount = +this.grxAmount - dexAmount
+    }
+    
+    // check setting whether direct purchase on admin account
+    console.log('grxPrice:', this.grxPrice , this.authService.priceInfo.xlmgrx , this.authService.userInfo.SellingPrice)
+    console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent, dexAmount, superAdminAmount)
+    if (+this.grxPrice > this.authService.priceInfo.xlmgrx_ask && +this.grxPrice >= this.authService.userInfo.SellingPrice){
+      if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){        
+        console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet,this.authService.getSecretKey())
+        // purchase directly from grayll super admin        
+        if (superAdminAmount > 0){
+          // buy all from grayll super admin
+          let xlmAmount = superAdminAmount*+this.grxPrice
+          console.log('xlmAmount:', xlmAmount)
+          this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
+            xlmAmount.toFixed(7), this.stellarService.nativeAsset, '')
+          .then( txHash => {
+            this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:+xlmAmount.toFixed(7), 
+              grxUsd:+this.grxPrice*this.authService.priceInfo.xlmusd, totalUsd:+xlmAmount.toFixed(7)*this.authService.priceInfo.xlmusd}).then(resp => {
+              // update fund
+              console.log('verifyTx: ', resp)
               this.loadingService.hide()
-            })            
-            //return
-          } 
-        }
-      } else {
-        dexAmount = +this.grxAmount
-      }
+              let msg 
+              if (resp.errCode === environment.SUCCESS){
+                msg = 'Buy order has been matched and executed!'                   
+              } else {
+                msg = 'Buy order could not be submitted! Please retry!'             
+              }
 
-      if (dexAmount > 0){
-        console.log('dexAmount.toString()', dexAmount.toString())
-        this.stellarService.buyOrder(this.authService.getSecretKey(), this.grxPrice, dexAmount.toFixed(7)).then( res => {
-          console.log(res)
-          if (!this.stellarService.allOffers){
-            this.stellarService.allOffers = []
-          }
-          let matchType = 0
-          let msg = 'Buy order submitted successfully.'
-          if (res.offerResults[0].currentOffer){
-            //console.log('res.offerResults[0].currentOffer', res.offerResults[0].currentOffer)
-            let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
-              this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore)
-  
-            this.stellarService.allOffers.push(of)                 
-            this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
-            matchType += 1
-            //this.authService.SetLocalUserData()          
-          } 
-          if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {
-            console.log('res.offerResults', res.offerResults)
-            this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userMetaStore)          
-            matchType += 2
-          }
-          if (matchType == 3){
-            msg = 'Buy order has been partially matched and executed!'
-          } else if (matchType == 2){
-            msg = 'Buy order has been matched and executed!'
-          }
-          this.loadingService.hide()
-          this.snotifyService.simple(msg); 
-          
-        }).catch(e => {
-          console.log(e)
-          this.loadingService.hide()
-          if (e.toString().includes('status code 400')){
-            this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')  
-          } else {
-            this.snotifyService.simple('Buy order could not be submitted. Please retry!')
-          } 
-        })  
-      }     
+              this.loadingService.hide()
+              this.snotifyService.simple(msg); 
+            }).catch( e => {
+              console.log(e)
+              this.loadingService.hide()
+            })              
+          }).catch(e => {
+            console.log(e)
+            let msg = 'Buy order could not be submitted. Please retry!'   
+            this.snotifyService.simple(msg);        
+            this.loadingService.hide()
+          })            
+          //return
+        } 
+      }
+    } else {
+      dexAmount = +this.grxAmount
+    }
+
+    if (dexAmount > 0){
+      console.log('dexAmount.toString()', dexAmount.toString())
+      this.stellarService.buyOrder(this.authService.getSecretKey(), this.grxPrice, dexAmount.toFixed(7)).then( res => {
+        console.log(res)
+        if (!this.stellarService.allOffers){
+          this.stellarService.allOffers = []
+        }
+        let matchType = 0
+        let msg = 'Buy order submitted successfully.'
+        if (res.offerResults[0].currentOffer){
+          //console.log('res.offerResults[0].currentOffer', res.offerResults[0].currentOffer)
+          let of = this.stellarService.parseOffer(res.offerResults[0].currentOffer, 
+            this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore)
+
+          this.stellarService.allOffers.push(of)                 
+          this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
+          matchType += 1
+          //this.authService.SetLocalUserData()          
+        } 
+        if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {
+          console.log('res.offerResults', res.offerResults)
+          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userMetaStore)          
+          matchType += 2
+        }
+        if (matchType == 3){
+          msg = 'Buy order has been partially matched and executed!'
+        } else if (matchType == 2){
+          msg = 'Buy order has been matched and executed!'
+        }
+        this.loadingService.hide()
+        this.snotifyService.simple(msg); 
+        
+      }).catch(e => {
+        console.log(e)
+        this.loadingService.hide()
+        if (e.toString().includes('status code 400')){
+          this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')  
+        } else {
+          this.snotifyService.simple('Buy order could not be submitted. Please retry!')
+        } 
+      })  
+    }     
   }
   
   verifyTx(ledger){
@@ -249,16 +233,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       } 
     )    
   }
-  testScrypt(){
-    var secretBox = require('secret-box') 
-    const passphrase = new Buffer('open sesame 2')
-    const message = new Buffer('The secret launch code is 1234.')
-    
-    const secret = secretBox.encrypt(message, passphrase)
-    const message2 = secretBox.decrypt(secret, passphrase)
-    
-    console.log(message2.toString('utf8'))
-  }
+  
   buyGrx(){    
     this.action = 'buy'       
     if(!this.validateSession()){
@@ -267,21 +242,21 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if (!this.validateBuyAbility()){
       return
     } 
-    this.executeBuy()  
+    this.executeBuy()
     this.action = ''  
   }
   validateBuyAbility(){
     let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
     if (maxAvailabeXLM < 0){
       this.snotifyService.simple('Insufficient funds to submit this buy order! For each sell order you place 0.5 XLM is reserved from your account balance. Please add more XLM to your account.')
-      this.reInitVariables()  
+        
       return false
     }
 
     if (+this.grxAmount*+this.grxPrice > maxAvailabeXLM){
       console.log('buyGrx:', +this.grxAmount*+this.grxPrice, maxAvailabeXLM)
       this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.')
-      this.reInitVariables()  
+        
       return false
     }
     
@@ -326,11 +301,11 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.loadingService.hide()
       this.snotifyService.simple(msg);  
 
-      //this.reInitVariables()             
+      //             
     }).catch(e => {
       console.log(e)
       this.loadingService.hide()
-      this.reInitVariables()
+      
       if (e.toString().includes('status code 400')){
         this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')  
       } else {
@@ -339,47 +314,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     })       
   }
 
-  async executeSell1(){
-    if (!this.validateSellAbility()){
-      return
-    } 
-    //this.authService.GetSecretKey(null).then(SecKey => {    
-      console.log('this.stellarService.allOffers:', this.stellarService.allOffers) 
-      let xdr = await this.stellarService.getSellOfferXdr(this.authService.userInfo.PublicKey, this.grxPrice, this.grxAmount)
-      this.authService.makeTransaction(xdr, "sell").subscribe(res => {
-        console.log(res)
-        if ((res as any).errCode == "tx_success"){
-          let txenv = this.stellarService.parseXdr((res as any).xdrResult)
-          if (!this.stellarService.allOffers){
-            this.stellarService.allOffers = []
-          }
-          let matchType = 0
-          let msg = 'Sell order submitted successfully.'          
-          if (txenv.result().value()[0].value().value().success().offer().value()){
-            console.log('res.offerResults[0].currentOffer', txenv.result().value()[0].value().value().success().offer().value())
-            let of = this.stellarService.parseXdrOffer(txenv.result().value()[0].value().value().success().offer().value(), 
-              this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore, false)
-              //console.log('offerData:', of)
-            this.stellarService.allOffers.push(of)    
-            //console.log('this.stellarService.allOffers:', this.stellarService.allOffers)             
-            this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
-            matchType += 1
-          } 
-          if (txenv.result().value()[0].value().value().success().offersClaimed() && txenv.result().value()[0].value().value().success().offersClaimed().length > 0) {
-            console.log('res.offersClaimed', txenv.result().value()[0].value().value().success().offersClaimed())
-            //this.stellarService.parseClaimedOffer(txenv.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)          
-            matchType += 2
-          }
-          this.authService.reload = false
-          if (matchType == 3){
-            msg = 'Sell order has been partially matched and executed!'
-          } else if (matchType == 2){
-            msg = 'Sell order has been matched and executed!'
-          }
-          this.snotifyService.simple(msg);          
-        }
-      }) 
-  }
+  // 
 
   validateSellAbility(){
     let maxAvailabeXLM = this.authService.getMaxAvailableXLM() - this.reservedTrade
@@ -388,18 +323,16 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     if (maxAvailabeXLM < 0){
       this.snotifyService.simple(`Insufficient funds to submit this sell order! For each buy order you place 0.5 XLM is reserved from your account balance.
         Please add more XLM to your account.`)
-      this.reInitVariables()  
+        
       return false 
     }
 
     if (+this.grxAmount > maxAvailabeGRX){
       console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
       this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')  
-      this.reInitVariables()  
+        
       return false
-    }
-
-    
+    }    
     return true
   }
   sellGrx(){
@@ -442,67 +375,113 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.secretKey = secretKey
     }));
   }
-  reInitVariables(){
-    this.isPopulateMaxGRX = false
-    this.isPopulateMaxXLM = false     
-  } 
+  // reInitVariables(){
+  //   this.isPopulateMaxGRX = false
+  //   this.isPopulateMaxXLM = false     
+  // } 
   onTabChange(id: string) {    
     this.isPopulateMaxXLM = false
     this.isPopulateMaxGRX = false    
   } 
-  calGRXAmount(){   
-    if (this.isPopulateMaxGRX && this.grxPrice && this.grxAmount){            
-      this.grxAmount = this.authService.getMaxAvailableGRX().toString()      
-      return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
-    } else if(!this.isPopulateMaxGRX && this.grxPrice && this.grxAmount) {      
-      return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
-    } else {
-      return ""
+  numericOnly(event): boolean {    
+    let patt = /^([0-9])$/;
+    let result = patt.test(event.key);
+    return result;
+  }
+
+  KeyUp(fieldName:string){
+    this.fieldName = fieldName   
+    switch(fieldName){     
+      case 'grxamount':        
+        if (this.grxPrice !== '' && this.grxAmount !== ''){          
+          this.xlmAmount = (+this.grxAmount * +this.grxPrice).toFixed(7)
+          this.usdValue = (+this.grxAmount * +this.grxPrice * this.authService.priceInfo.xlmusd).toFixed(7)
+        }
+        break
+      case 'grxprice':        
+        if (this.grxPrice !== '' && this.grxAmount !== ''){          
+          this.xlmAmount = (+this.grxAmount * +this.grxPrice).toFixed(7)
+          this.usdValue = (+this.grxAmount * +this.grxPrice * this.authService.priceInfo.xlmusd).toFixed(7)
+        }
+        break
+      case 'xlmamount':       
+        if (this.grxPrice !== '' ){          
+          this.grxAmount = (+this.xlmAmount / +this.grxPrice).toFixed(5)          
+          this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7)          
+        } else if (this.grxAmount !== ''){
+          this.grxPrice = (+this.grxAmount/(+this.grxAmount)).toFixed(7)
+          this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7)
+        }
+        break
+      case 'usdvalue':        
+        if (this.grxPrice !== '' ){          
+          this.xlmAmount = (+this.usdValue/this.authService.priceInfo.xlmusd).toFixed(7)
+          this.grxAmount = (+this.xlmAmount / +this.grxPrice).toFixed(5)          
+        } else if (this.grxAmount !== ''){
+          this.xlmAmount = (+this.usdValue/this.authService.priceInfo.xlmusd).toFixed(7)
+          this.grxPrice = (+this.xlmAmount/(+this.grxAmount)).toFixed(7)          
+        }
+        break
     }
   }
-  calXLMAmount(){    
-    if (this.isPopulateMaxXLM && this.grxPrice && this.grxAmount ){      
-      this.XLMValueForm = +this.getMaxXLMForTrade()
-      this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7)       
-      return this.XLMValueForm
-    } else if (!this.isPopulateMaxXLM && this.grxAmount && this.grxPrice) {      
-      this.XLMValueForm =  +((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
-      //return (+this.grxAmount)*(+this.grxPrice)
-    } else {
-      //console.log('calXLMAmount 4')
-      return ""
-    }
-  }
+  // calGRXAmount(){   
+  //   if (this.isPopulateMaxGRX && this.grxPrice && this.grxAmount){            
+  //     this.grxAmount = this.authService.getMaxAvailableGRX().toString()      
+  //     return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
+  //   } else if(!this.isPopulateMaxGRX && this.grxPrice && this.grxAmount) {      
+  //     return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
+  //   } else {
+  //     return ""
+  //   }
+  // }
+  // calXLMAmount(){    
+  //   if (this.isPopulateMaxXLM && this.grxPrice && this.grxAmount ){      
+  //     this.XLMValueForm = +this.getMaxXLMForTrade()
+  //     this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7)       
+  //     return this.XLMValueForm
+  //   } else if (!this.isPopulateMaxXLM && this.grxAmount && this.grxPrice) {      
+  //     this.XLMValueForm =  +((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
+  //     //return (+this.grxAmount)*(+this.grxPrice)
+  //   } else {
+  //     //console.log('calXLMAmount 4')
+  //     return ""
+  //   }
+  // }
   populateMaxXLM() {
-    this.isPopulateMaxGRX = false
+    //this.isPopulateMaxGRX = false
     if (this.authService.getMaxAvailableXLM() - this.reservedTrade > 0){
-      this.isPopulateMaxXLM = true
-      this.XLMValueForm = this.authService.getMaxAvailableXLM() - this.reservedTrade
+      //this.isPopulateMaxXLM = true
+      this.xlmAmount = (this.authService.getMaxAvailableXLM() - this.reservedTrade).toFixed(5)
       //this.grxPrice = this.bidPrice.toFixed(7)  
       this.grxPrice =  this.authService.priceInfo.xlmgrx_bid.toFixed(7)
-      this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7)
+      this.grxAmount = (+this.xlmAmount/+this.grxPrice).toFixed(7)
+      this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7)
     } else {
       this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')    
     }
   }
 
-  calculateUsdValue(){
-    if (this.grxAmount && this.grxPrice){
-     return ((+this.grxAmount)*(+this.grxPrice)*this.authService.priceInfo.xlmusd).toFixed(7)
-    } else {
-      return ""
+  populateMaxGRX() {
+    //this.isPopulateMaxXLM = false
+    if (this.authService.getMaxAvailableGRX() > 0){
+      //this.isPopulateMaxGRX = true
+      this.grxAmount = this.authService.getMaxAvailableGRX().toFixed(7)  
+      
+      this.grxPrice =  this.authService.priceInfo.xlmgrx_ask.toFixed(7)  
+      this.xlmAmount = (+this.grxAmount*+this.grxPrice).toFixed(7)
+      this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7)
     }
   }
-
-  populateMaxGRX() {
-    this.isPopulateMaxXLM = false
-    if (this.authService.getMaxAvailableGRX() > 0){
-      this.isPopulateMaxGRX = true
-      this.grxAmount = this.authService.getMaxAvailableGRX().toFixed(7)  
-      //this.grxPrice = this.askPrice.toFixed(7)    this.authService.priceInfo.xlmgrx_ask
-      this.grxPrice =  this.authService.priceInfo.xlmgrx_ask.toFixed(7)  
-      this.XLMValueForm = +(+this.grxAmount*+this.grxPrice).toFixed(7)
-    }
+  // calculateUsdValue(){
+  //   if (this.grxAmount && this.grxPrice){
+  //    return ((+this.grxAmount)*(+this.grxPrice)*this.authService.priceInfo.xlmusd).toFixed(7)
+  //   } else {
+  //     return ""
+  //   }
+  // }
+  private isValidNumber(value: string): boolean {
+    const num = Number(value);
+    return !isNaN(num);
   }
 
   goToTop() {
@@ -516,4 +495,46 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   swipeRight() {
     this.carouselWallet.prev();
   }
+
+  //async executeSell1(){
+    //   if (!this.validateSellAbility()){
+    //     return
+    //   } 
+    //   //this.authService.GetSecretKey(null).then(SecKey => {    
+    //     console.log('this.stellarService.allOffers:', this.stellarService.allOffers) 
+    //     let xdr = await this.stellarService.getSellOfferXdr(this.authService.userInfo.PublicKey, this.grxPrice, this.grxAmount)
+    //     this.authService.makeTransaction(xdr, "sell").subscribe(res => {
+    //       console.log(res)
+    //       if ((res as any).errCode == "tx_success"){
+    //         let txenv = this.stellarService.parseXdr((res as any).xdrResult)
+    //         if (!this.stellarService.allOffers){
+    //           this.stellarService.allOffers = []
+    //         }
+    //         let matchType = 0
+    //         let msg = 'Sell order submitted successfully.'          
+    //         if (txenv.result().value()[0].value().value().success().offer().value()){
+    //           console.log('res.offerResults[0].currentOffer', txenv.result().value()[0].value().value().success().offer().value())
+    //           let of = this.stellarService.parseXdrOffer(txenv.result().value()[0].value().value().success().offer().value(), 
+    //             this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore, false)
+    //             //console.log('offerData:', of)
+    //           this.stellarService.allOffers.push(of)    
+    //           //console.log('this.stellarService.allOffers:', this.stellarService.allOffers)             
+    //           this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
+    //           matchType += 1
+    //         } 
+    //         if (txenv.result().value()[0].value().value().success().offersClaimed() && txenv.result().value()[0].value().value().success().offersClaimed().length > 0) {
+    //           console.log('res.offersClaimed', txenv.result().value()[0].value().value().success().offersClaimed())
+    //           //this.stellarService.parseClaimedOffer(txenv.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)          
+    //           matchType += 2
+    //         }
+    //         this.authService.reload = false
+    //         if (matchType == 3){
+    //           msg = 'Sell order has been partially matched and executed!'
+    //         } else if (matchType == 2){
+    //           msg = 'Sell order has been matched and executed!'
+    //         }
+    //         this.snotifyService.simple(msg);          
+    //       }
+    //     }) 
+    // }
 }
