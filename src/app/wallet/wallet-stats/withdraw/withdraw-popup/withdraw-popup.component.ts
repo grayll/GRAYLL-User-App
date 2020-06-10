@@ -99,7 +99,11 @@ export class WithdrawPopupComponent implements OnInit {
   onTabAssetChange(id: string) {
     this.selectedAssestTabId = id;
     this.withdrawModel.asset = id
-    console.log('onTabAssetChange-', this.selectedAssestTabId)
+    if (id == 'XLM'){
+      this.KeyUp('xlm')
+    } else if (id == 'GRX'){
+      this.KeyUp('grx')
+    }    
   }
 
   populateMaxGRX() {
