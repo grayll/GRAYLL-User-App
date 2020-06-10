@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons';
 import { SharedService } from '../shared/shared.service';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '../shared/services/auth.service';
 
 @Component({
   selector: 'app-referral',
@@ -14,7 +15,8 @@ export class ReferralComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    public sharedService: SharedService
+    public sharedService: SharedService,
+    public authService: AuthService,
   ) {
     this.loadDataFromRoute();
   }
