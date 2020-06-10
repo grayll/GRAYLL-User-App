@@ -162,12 +162,20 @@ export class WithdrawPopupComponent implements OnInit {
   KeyUp(asset:string){
     this.errorService.clearError()
     if (asset == 'grx'){
+      if (!this.isValidNumber(this.withdrawValue)){    
+        this.usdValue = null
+        return
+      }
       if (this.withdrawValue && +this.withdrawValue > this.authService.getMaxAvailableGRX()){
         this.errorService.handleError(null, 'The amount entered exceeds the maximum available balance!');   
         return    
       }
       this.usdValue = (+this.withdrawValue*this.authService.priceInfo.xlmusd*this.authService.priceInfo.xlmgrx).toFixed(5)
     } else if (asset == 'xlm'){
+      if (!this.isValidNumber(this.withdrawValue)){    
+        this.usdValue = null
+        return
+      }
       if (this.withdrawValue && +this.withdrawValue > this.authService.getMaxAvailableXLM()){
         this.errorService.handleError(null, 'The amount entered exceeds the maximum available balance!');  
         return     
@@ -227,7 +235,10 @@ export class WithdrawPopupComponent implements OnInit {
     })    
   }
 
-  isValidNumber(value: string): boolean {
+  private isValidNumber(value: string): boolean {
+    if (value == '' || value == null){
+      return false
+    }
     const num = Number(value);
     return !isNaN(num);
   }

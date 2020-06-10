@@ -68,7 +68,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   
   SecKey: string = ''
   fieldName: string = ''
-  tabId: string = 'ngb-tab-0'
+  tabId: string = 'buy'
   
   private subs = new SubSink();
 
@@ -381,17 +381,15 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   // } 
   onTabChange(id: string) {    
     console.log('tabid', id)
-    this.tabId = id
-    // this.isPopulateMaxXLM = false
-    // this.isPopulateMaxGRX = false    
+    this.tabId = id   
   } 
 
   checkFunds(){
-    if (this.tabId == 'ngb-tab-0'){//buy GRX
+    if (this.tabId == 'buy'){//buy GRX
       if (+this.xlmAmount > +this.getMaxXLMForTrade()){
         this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.') 
       } 
-    } else if  (this.tabId == 'ngb-tab-1'){ // sell GRX
+    } else if (this.tabId == 'sell'){ // sell GRX
       if (+this.grxAmount > +this.authService.getMaxAvailableGRX()){
         this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.') 
       }
@@ -400,58 +398,85 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
  
   KeyUp(fieldName:string){
     this.fieldName = fieldName   
+   
     switch(fieldName){     
       case 'grxamount':        
-        if (this.grxPrice !== '' && this.grxAmount !== ''){          
+        if (!this.isValidNumber(this.grxAmount)){
+          console.log('grxAmount == null')  
+          this.usdValue = null
+          this.xlmAmount = null
+          return
+        }
+        
+        if (this.isValidNumber(this.grxPrice) && this.isValidNumber(this.grxAmount)){     
+          console.log(this.fieldName+ ' 1')     
           this.xlmAmount = (+this.grxAmount * +this.grxPrice).toFixed(7)
           this.usdValue = (+this.grxAmount * +this.grxPrice * this.authService.priceInfo.xlmusd).toFixed(7)
           this.checkFunds()
-        } else if (this.grxAmount !== ''){
-          if (this.xlmAmount != '' || this.usdValue != ''){
+        } else if (this.isValidNumber(this.grxAmount)){
+          if (this.isValidNumber(this.xlmAmount) || this.isValidNumber(this.usdValue)){
             this.grxPrice = (+this.xlmAmount/+this.grxAmount).toFixed(7)
           }
-        } else if (this.grxPrice !== ''){
-          if (this.xlmAmount != '' || this.usdValue != ''){
+        } else if (this.isValidNumber(this.grxPrice)){
+          if (this.isValidNumber(this.xlmAmount) || this.isValidNumber(this.usdValue)){
             this.grxAmount = (+this.xlmAmount/+this.grxPrice).toFixed(7)
           }
         }
         break
-      case 'grxprice':        
-        if (this.grxPrice !== '' && this.grxAmount !== ''){          
+      case 'grxprice':  
+      if (this.grxPrice == null){
+        console.log('grxAmount == null')  
+        this.usdValue = null
+        this.xlmAmount = null
+        return
+      }      
+        if (this.isValidNumber(this.grxPrice) && this.isValidNumber(this.grxAmount)){   
+          console.log('grxAmount 1', this.grxPrice)         
           this.xlmAmount = (+this.grxAmount * +this.grxPrice).toFixed(7)
           this.usdValue = (+this.grxAmount * +this.grxPrice * this.authService.priceInfo.xlmusd).toFixed(7)
           this.checkFunds()
-        } else if (this.grxAmount !== ''){
-          if (this.xlmAmount != '' || this.usdValue != ''){
+        } else if (this.isValidNumber(this.grxAmount)){
+          console.log('grxAmount 2')   
+          if (this.isValidNumber(this.xlmAmount) || this.isValidNumber(this.usdValue)){
+            console.log('grxAmount 3')   
             this.grxPrice = (+this.xlmAmount/+this.grxAmount).toFixed(7)
           }
-        } else if (this.grxPrice !== ''){
-          if (this.xlmAmount != '' || this.usdValue != ''){
+        } else if (this.isValidNumber(this.grxPrice)){
+          console.log('grxAmount 4')   
+          if (this.isValidNumber(this.xlmAmount) || this.isValidNumber(this.usdValue)){
+            console.log('grxAmount 5')   
             this.grxAmount = (+this.xlmAmount/+this.grxPrice).toFixed(7)
           }
         }
         break
       case 'xlmamount':    
+        if (!this.isValidNumber(this.xlmAmount)){    
+          this.usdValue = null
+          return
+        }
         this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7) 
-        this.checkFunds() 
-        if (this.grxPrice !== '' ){          
+        
+        if (this.isValidNumber(this.grxPrice)){          
           this.grxAmount = (+this.xlmAmount / +this.grxPrice).toFixed(5)          
           this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7)          
-        } else if (this.grxAmount !== ''){
+        } else if (this.isValidNumber(this.grxAmount)){
           this.grxPrice = (+this.grxAmount/(+this.grxAmount)).toFixed(7)
           this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7)
         }
+        this.checkFunds() 
         break
       case 'usdvalue':   
-        this.xlmAmount = (+this.usdValue/this.authService.priceInfo.xlmusd).toFixed(7) 
-        this.checkFunds()     
-        if (this.grxPrice !== '' ){
-          this.grxAmount = (+this.xlmAmount / +this.grxPrice).toFixed(5)    
-          this.checkFunds()       
-        } else if (this.grxAmount !== ''){
-          this.grxPrice = (+this.xlmAmount/(+this.grxAmount)).toFixed(7)  
-          this.checkFunds()         
+        if (!this.isValidNumber(this.usdValue)){    
+          this.xlmAmount = null
+          return
         }
+        this.xlmAmount = (+this.usdValue/this.authService.priceInfo.xlmusd).toFixed(7) 
+        if (this.isValidNumber(this.grxPrice) ){
+          this.grxAmount = (+this.xlmAmount / +this.grxPrice).toFixed(7)              
+        } else if (this.isValidNumber(this.grxAmount)){
+          this.grxPrice = (+this.xlmAmount/(+this.grxAmount)).toFixed(7) 
+        }
+        this.checkFunds()   
         break
     }
   }
@@ -511,6 +536,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   //   }
   // }
   private isValidNumber(value: string): boolean {
+    if (value == '' || value == null){
+      return false
+    }
     const num = Number(value);
     return !isNaN(num);
   }
