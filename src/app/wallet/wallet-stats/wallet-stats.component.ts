@@ -67,8 +67,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   usdValue: string = ''
   
   SecKey: string = ''
-
   fieldName: string = ''
+  tabId: string = 'ngb-tab-0'
   
   private subs = new SubSink();
 
@@ -380,15 +380,24 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   //   this.isPopulateMaxXLM = false     
   // } 
   onTabChange(id: string) {    
-    this.isPopulateMaxXLM = false
-    this.isPopulateMaxGRX = false    
+    console.log('tabid', id)
+    this.tabId = id
+    // this.isPopulateMaxXLM = false
+    // this.isPopulateMaxGRX = false    
   } 
-  numericOnly(event): boolean {    
-    let patt = /^([0-9])$/;
-    let result = patt.test(event.key);
-    return result;
-  }
 
+  checkFunds(){
+    if (this.tabId == 'ngb-tab-0'){//buy GRX
+      if (+this.xlmAmount > +this.getMaxXLMForTrade()){
+        this.snotifyService.simple('Insufficient funds to submit this buy order! Please add more funds to your account.') 
+      } 
+    } else if  (this.tabId == 'ngb-tab-1'){ // sell GRX
+      if (+this.grxAmount > +this.authService.getMaxAvailableGRX()){
+        this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.') 
+      }
+    }
+  }
+ 
   KeyUp(fieldName:string){
     this.fieldName = fieldName   
     switch(fieldName){     
@@ -396,15 +405,35 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
         if (this.grxPrice !== '' && this.grxAmount !== ''){          
           this.xlmAmount = (+this.grxAmount * +this.grxPrice).toFixed(7)
           this.usdValue = (+this.grxAmount * +this.grxPrice * this.authService.priceInfo.xlmusd).toFixed(7)
+          this.checkFunds()
+        } else if (this.grxAmount !== ''){
+          if (this.xlmAmount != '' || this.usdValue != ''){
+            this.grxPrice = (+this.xlmAmount/+this.grxAmount).toFixed(7)
+          }
+        } else if (this.grxPrice !== ''){
+          if (this.xlmAmount != '' || this.usdValue != ''){
+            this.grxAmount = (+this.xlmAmount/+this.grxPrice).toFixed(7)
+          }
         }
         break
       case 'grxprice':        
         if (this.grxPrice !== '' && this.grxAmount !== ''){          
           this.xlmAmount = (+this.grxAmount * +this.grxPrice).toFixed(7)
           this.usdValue = (+this.grxAmount * +this.grxPrice * this.authService.priceInfo.xlmusd).toFixed(7)
+          this.checkFunds()
+        } else if (this.grxAmount !== ''){
+          if (this.xlmAmount != '' || this.usdValue != ''){
+            this.grxPrice = (+this.xlmAmount/+this.grxAmount).toFixed(7)
+          }
+        } else if (this.grxPrice !== ''){
+          if (this.xlmAmount != '' || this.usdValue != ''){
+            this.grxAmount = (+this.xlmAmount/+this.grxPrice).toFixed(7)
+          }
         }
         break
-      case 'xlmamount':       
+      case 'xlmamount':    
+        this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7) 
+        this.checkFunds() 
         if (this.grxPrice !== '' ){          
           this.grxAmount = (+this.xlmAmount / +this.grxPrice).toFixed(5)          
           this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7)          
@@ -413,13 +442,15 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7)
         }
         break
-      case 'usdvalue':        
-        if (this.grxPrice !== '' ){          
-          this.xlmAmount = (+this.usdValue/this.authService.priceInfo.xlmusd).toFixed(7)
-          this.grxAmount = (+this.xlmAmount / +this.grxPrice).toFixed(5)          
+      case 'usdvalue':   
+        this.xlmAmount = (+this.usdValue/this.authService.priceInfo.xlmusd).toFixed(7) 
+        this.checkFunds()     
+        if (this.grxPrice !== '' ){
+          this.grxAmount = (+this.xlmAmount / +this.grxPrice).toFixed(5)    
+          this.checkFunds()       
         } else if (this.grxAmount !== ''){
-          this.xlmAmount = (+this.usdValue/this.authService.priceInfo.xlmusd).toFixed(7)
-          this.grxPrice = (+this.xlmAmount/(+this.grxAmount)).toFixed(7)          
+          this.grxPrice = (+this.xlmAmount/(+this.grxAmount)).toFixed(7)  
+          this.checkFunds()         
         }
         break
     }

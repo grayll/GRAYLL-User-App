@@ -22,6 +22,7 @@ export class WithdrawPopupComponent implements OnInit {
   totalGRX: number;
   XLMValue: string;
   withdrawValue: string;
+  usdValue: string;
   memoMessage: string;
   recipient: string;
   selectedTabId: string;
@@ -102,11 +103,13 @@ export class WithdrawPopupComponent implements OnInit {
   }
 
   populateMaxGRX() {
-    this.withdrawValue = this.totalGRX.toString();
+    this.withdrawValue = this.totalGRX.toFixed(7);
+    this.usdValue = (+this.withdrawValue*this.authService.priceInfo.xlmusd*this.authService.priceInfo.xlmgrx).toFixed(5)
   }
 
   populateMaxXLM() {    
     this.withdrawValue = this.authService.getMaxAvailableXLM().toFixed(7)
+    this.usdValue = (+this.withdrawValue*this.authService.priceInfo.xlmusd).toFixed(5)
   }
   getMaxXLMForTrade(){
     if (this.authService.getMaxAvailableXLM() - 0.50001 > 0){
@@ -114,6 +117,7 @@ export class WithdrawPopupComponent implements OnInit {
     } else {
       return '0'
     }
+    
   }
 
   next() {
@@ -154,6 +158,23 @@ export class WithdrawPopupComponent implements OnInit {
       this.memoMessage = null;
     }
   }
+  
+  KeyUp(asset:string){
+    this.errorService.clearError()
+    if (asset == 'grx'){
+      if (this.withdrawValue && +this.withdrawValue > this.authService.getMaxAvailableGRX()){
+        this.errorService.handleError(null, 'The amount entered exceeds the maximum available balance!');   
+        return    
+      }
+      this.usdValue = (+this.withdrawValue*this.authService.priceInfo.xlmusd*this.authService.priceInfo.xlmgrx).toFixed(5)
+    } else if (asset == 'xlm'){
+      if (this.withdrawValue && +this.withdrawValue > this.authService.getMaxAvailableXLM()){
+        this.errorService.handleError(null, 'The amount entered exceeds the maximum available balance!');  
+        return     
+      } 
+      this.usdValue = (+this.withdrawValue*this.authService.priceInfo.xlmusd).toFixed(5)
+    }
+  }
 
   clientValidation() {
     return new Promise(resolve => {
@@ -162,8 +183,7 @@ export class WithdrawPopupComponent implements OnInit {
         resolve(false)
         return
       }
-      this.isValidAddress(this.recipient).then(valid => {
-        console.log('clientValidation', valid)
+      this.isValidAddress(this.recipient).then(valid => {       
         if (!valid){
           resolve(false)
         }
@@ -201,15 +221,7 @@ export class WithdrawPopupComponent implements OnInit {
             resolve(false)
           }         
         }
-        // if ((!this.XLMValue && !this.withdrawValue) || (this.XLMValue && !this.isValidNumber(this.XLMValue))) {
-        //   this.errorService.handleError(null, 'Please enter a valid XLM amount!');
-        //   resolve(false)
-        // }
-        // if ((this.XLMValue && +this.XLMValue > this.authService.getMaxAvailableXLM()) || (this.withdrawValue && +this.withdrawValue > this.authService.getMaxAvailableGRX())) {
-        //   this.errorService.handleError(null, 'The amount entered exceeds the maximum available balance!');
-        //   resolve(false)
-        // }
-        
+                
         resolve(true)
       })
     })    

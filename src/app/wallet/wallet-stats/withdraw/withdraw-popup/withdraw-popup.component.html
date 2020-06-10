@@ -37,7 +37,7 @@
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="withdrawValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                        <input type="number" [(ngModel)]="withdrawValue" (keyup)="KeyUp('grx')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                       </div>
                       <span class="text-purple">*0 GRX are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -50,7 +50,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" [(ngModel)]="+withdrawValue*authService.userData.xlmPrice*authService.userData.grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                        <input type="number" [(ngModel)]="usdValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -65,7 +65,7 @@
                             <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="XLM Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="withdrawValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Amount">
+                        <input type="number" [(ngModel)]="withdrawValue" (keyup)="KeyUp('xlm')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Amount">
                       </div>
                       <span class="text-purple">*2.1 XLM are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -78,7 +78,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" [(ngModel)]="+withdrawValue*authService.userData.xlmPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                        <input type="number" [(ngModel)]="usdValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -164,7 +164,7 @@
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="withdrawValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                        <input type="number" [(ngModel)]="withdrawValue" (keyup)="KeyUp('grx')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                       </div>
                       <span class="text-purple">*0 GRX are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -177,7 +177,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" [(ngModel)]="+withdrawValue*authService.userData.xlmPrice*authService.userData.grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                        <input type="number" [(ngModel)]="usdValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -192,7 +192,7 @@
                             <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="XLM Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="withdrawValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Amount">
+                        <input type="number" [(ngModel)]="withdrawValue" (keyup)="KeyUp('xlm')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Amount">
                       </div>
                       <span class="text-purple">*2.1 XLM are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -205,7 +205,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" [(ngModel)]="+withdrawValue*authService.userData.xlmPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                        <input type="number" [(ngModel)]="usdValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -244,7 +244,7 @@
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYYL Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="withdrawValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
+                        <input type="number" [(ngModel)]="withdrawValue" (keyup)="KeyUp('grx')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="GRX Amount">
                       </div>
                       <span class="text-purple">*0 GRX are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -257,7 +257,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" [(ngModel)]="+withdrawValue*authService.userData.xlmPrice*authService.userData.grxPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                        <input type="number" [(ngModel)]="usdValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
@@ -272,7 +272,7 @@
                             <img class="small-grayll-icon" src="assets/images/xlm_logo_white.png" alt="XLM Logo">
                           </span>
                         </div>
-                        <input type="text" [(ngModel)]="withdrawValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Amount">
+                        <input type="number" [(ngModel)]="withdrawValue" (keyup)="KeyUp('xlm')" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="XLM Amount">
                       </div>
                       <span class="text-purple">*2.1 XLM are reserved in your wallet by the Stellar Network.</span>
                       <br>
@@ -285,7 +285,7 @@
                         <div class="input-group-prepend">
                           <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                         </div>
-                        <input type="text" [(ngModel)]="+withdrawValue*authService.userData.xlmPrice" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
+                        <input type="number" [(ngModel)]="usdValue" class="fixed-input-height text-light form-control form-control-no-border bg-purple" placeholder="USD Value">
                       </div>
                     </div>
                   </ng-template>
