@@ -132,7 +132,7 @@ registerClicked() {
 
   // Neverbounce verifies email
   let email = this.registerForm.value['email']
-  this.http.get(environment.api_url + `api/v1/verifyemail/${{email}}`).subscribe( 
+  this.http.get(environment.api_url + `api/v1/verifyemail/`+email).subscribe( 
     res => {
       if ((res as any).errCode == environment.EMAIL_INVALID)  {
         this.formErrors.email = 'Email must be a valid email'

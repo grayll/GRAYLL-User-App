@@ -16,7 +16,7 @@ import { distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
 import { PdfDownloadService } from 'src/app/_services/pdf-download.service';
-import { AlgoPositionService } from '../algo-position.service';
+import { AlgoPositionService } from '../../shared/algo-position.service';
 
 @Component({
   selector: 'app-referral-activity',

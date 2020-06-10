@@ -62,7 +62,6 @@ import { ReferralActivityComponent } from './referral-activity/referral-activity
     XlmReferralResendPopupComponent,
     XlmReferralEditPopupComponent,
     XlmReferralPopupComponent,
-
   ],
   imports: [
     CommonModule,
@@ -83,6 +82,7 @@ import { ReferralActivityComponent } from './referral-activity/referral-activity
     ErrorComponent,
     NavbarComponent,
     AccountActivityComponent,
+    ReferralActivityComponent,
     MainChartComponent,
     ActivityComponent,
     AlgoNotificationItemComponent,
@@ -93,6 +93,7 @@ import { ReferralActivityComponent } from './referral-activity/referral-activity
     SwUpdateNotifiyComponent,
     LoaderScreenComponent,
     ReActivateAccountComponent,
+
   ]
 })
 export class SharedModule { }
