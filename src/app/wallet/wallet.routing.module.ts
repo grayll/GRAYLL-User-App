@@ -13,6 +13,7 @@ import {XlmBalanceStatusPopupComponent} from '../shared/popup/xlm-balance-status
 //import {InputPasswordComponent} from '../shared/popup/input-password/input-password.component';
 import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
 import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
+import { XlmReferralPopupComponent } from '../shared/popup/xlm-referral-popup/xlm-referral-popup.component';
 const popupRoutes: Routes = [
   {
     path: 'deposit',
@@ -64,11 +65,11 @@ const popupRoutes: Routes = [
     component: XlmBalanceStatusPopupComponent,
     outlet: 'popup'
   },
-  // {
-  //   path: 'input-password',
-  //   component: InputPasswordComponent,
-  //   outlet: 'popup'
-  // },
+  {
+    path: 'xml-referral',
+    component: XlmReferralPopupComponent,
+    outlet: 'popup'
+  },
   {
     path: 'confirm-password',
     component: ConfirmPasswordComponent,

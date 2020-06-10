@@ -8,6 +8,7 @@ import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm
 import { DepositPopupComponent } from './deposit-popup/deposit-popup.component';
 import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
 import { ReActivateAccountComponent } from '../shared/popup/reactivate-account/reactivate-account.component';
+import { XlmReferralPopupComponent } from '../shared/popup/xlm-referral-popup/xlm-referral-popup.component';
 
 const popupRoutes: Routes = [
   {
@@ -43,6 +44,11 @@ const popupRoutes: Routes = [
   {
     path: 'reactivate-account',
     component: ReActivateAccountComponent,
+    outlet: 'popup'
+  },
+  {
+    path: 'xml-referral',
+    component: XlmReferralPopupComponent,
     outlet: 'popup'
   },
 ];
