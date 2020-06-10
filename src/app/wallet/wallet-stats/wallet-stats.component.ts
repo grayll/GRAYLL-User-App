@@ -401,15 +401,13 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
    
     switch(fieldName){     
       case 'grxamount':        
-        if (!this.isValidNumber(this.grxAmount)){
-          console.log('grxAmount == null')  
+        if (!this.isValidNumber(this.grxAmount)){         
           this.usdValue = null
           this.xlmAmount = null
           return
         }
         
-        if (this.isValidNumber(this.grxPrice) && this.isValidNumber(this.grxAmount)){     
-          console.log(this.fieldName+ ' 1')     
+        if (this.isValidNumber(this.grxPrice) && this.isValidNumber(this.grxAmount)){             
           this.xlmAmount = (+this.grxAmount * +this.grxPrice).toFixed(7)
           this.usdValue = (+this.grxAmount * +this.grxPrice * this.authService.priceInfo.xlmusd).toFixed(7)
           this.checkFunds()
@@ -424,27 +422,21 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
         }
         break
       case 'grxprice':  
-      if (this.grxPrice == null){
-        console.log('grxAmount == null')  
+      if (this.grxPrice == null){        
         this.usdValue = null
         this.xlmAmount = null
         return
       }      
-        if (this.isValidNumber(this.grxPrice) && this.isValidNumber(this.grxAmount)){   
-          console.log('grxAmount 1', this.grxPrice)         
+        if (this.isValidNumber(this.grxPrice) && this.isValidNumber(this.grxAmount)){           
           this.xlmAmount = (+this.grxAmount * +this.grxPrice).toFixed(7)
           this.usdValue = (+this.grxAmount * +this.grxPrice * this.authService.priceInfo.xlmusd).toFixed(7)
           this.checkFunds()
-        } else if (this.isValidNumber(this.grxAmount)){
-          console.log('grxAmount 2')   
-          if (this.isValidNumber(this.xlmAmount) || this.isValidNumber(this.usdValue)){
-            console.log('grxAmount 3')   
+        } else if (this.isValidNumber(this.grxAmount)){          
+          if (this.isValidNumber(this.xlmAmount) || this.isValidNumber(this.usdValue)){            
             this.grxPrice = (+this.xlmAmount/+this.grxAmount).toFixed(7)
           }
-        } else if (this.isValidNumber(this.grxPrice)){
-          console.log('grxAmount 4')   
-          if (this.isValidNumber(this.xlmAmount) || this.isValidNumber(this.usdValue)){
-            console.log('grxAmount 5')   
+        } else if (this.isValidNumber(this.grxPrice)){           
+          if (this.isValidNumber(this.xlmAmount) || this.isValidNumber(this.usdValue)){           
             this.grxAmount = (+this.xlmAmount/+this.grxPrice).toFixed(7)
           }
         }
@@ -528,13 +520,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
       this.usdValue = (+this.xlmAmount*this.authService.priceInfo.xlmusd).toFixed(7)
     }
   }
-  // calculateUsdValue(){
-  //   if (this.grxAmount && this.grxPrice){
-  //    return ((+this.grxAmount)*(+this.grxPrice)*this.authService.priceInfo.xlmusd).toFixed(7)
-  //   } else {
-  //     return ""
-  //   }
-  // }
+  
   private isValidNumber(value: string): boolean {
     if (value == '' || value == null){
       return false
