@@ -44,7 +44,8 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.referer = this.route.snapshot.queryParams["referer"];    
+    this.referer = this.route.snapshot.queryParams["referer"];   
+    console.log("referer:", this.referer) 
     this.buildForm()  
   }
 
