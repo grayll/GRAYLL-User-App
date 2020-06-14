@@ -21,10 +21,23 @@ export class NoticeDataService {
 
   private _generalData: BehaviorSubject<NoticeId[]>;
   public generalData: Observable<NoticeId[]>;
+
+  private _algoDataGrz: BehaviorSubject<NoticeId[]>;
+  public algoDataGrz: Observable<NoticeId[]>;
+
+  private _algoDataGry1: BehaviorSubject<NoticeId[]>;
+  public algoDataGry1: Observable<NoticeId[]>;
+
+  private _algoDataGry2: BehaviorSubject<NoticeId[]>;
+  public algoDataGry2: Observable<NoticeId[]>;
+
+  private _algoDataGry3: BehaviorSubject<NoticeId[]>;
+  public algoDataGry3: Observable<NoticeId[]>;
   
   private _dataTrade: BehaviorSubject<OrderId[]>;
   public dataTrade: Observable<OrderId[]>;
   public dataTradeSync: OrderId[];
+
   
   private _markAsRead: Subject<any>
 
@@ -265,22 +278,53 @@ export class NoticeDataService {
       });
   }
 
-  firstAlgoType(path:string, limit:number, type:string) {
-    this._algoData = new BehaviorSubject([]);
-    //this.data = this._data.asObservable().subscribe(res => this.allData.push(res));
-    this.algoData = this._algoData.asObservable()
-  
-    const scoresRef = this.getCollection(path, ref => ref
-      .where('type', '==', type)
-      //.orderBy('time', 'desc')
+  firstAlgoType(path:string, limit:number) {
+    this._algoDataGry1 = new BehaviorSubject([]);
+    this.algoDataGry1 = this._algoDataGry1.asObservable()
+    let type = 'GRY 1'
+    this.getCollection(path, ref => ref
+      .where('type', '==', type)      
       .limit(limit))
       .subscribe(data => {
-        if (data.length && data.length > 0){
-          this.latestEntryAlgo = data[data.length - 1].doc;
-          //console.log(data[data.length - 1].doc.data())
-          this._algoData.next(data);
+        if (data.length && data.length > 0){          
+          this._algoDataGry1.next(data);
         }
-      });
+    });
+
+    this._algoDataGry2 = new BehaviorSubject([]);
+    this.algoDataGry2 = this._algoDataGry2.asObservable()
+    type = 'GRY 2'
+    this.getCollection(path, ref => ref
+      .where('type', '==', type)     
+      .limit(limit))
+      .subscribe(data => {
+        if (data.length && data.length > 0){          
+          this._algoDataGry2.next(data);
+        }
+    });
+    this._algoDataGry3 = new BehaviorSubject([]);
+    this.algoDataGry3 = this._algoDataGry3.asObservable()
+    type = 'GRY 3'
+    this.getCollection(path, ref => ref
+      .where('type', '==', type)      
+      .limit(limit))
+      .subscribe(data => {
+        if (data.length && data.length > 0){          
+          this._algoDataGry3.next(data);
+        }
+    });
+
+    this._algoDataGrz = new BehaviorSubject([]);
+    this.algoDataGrz = this._algoDataGrz.asObservable()
+    type = 'GRZ'
+    this.getCollection(path, ref => ref
+      .where('type', '==', type)      
+      .limit(limit))
+      .subscribe(data => {
+        if (data.length && data.length > 0){          
+          this._algoDataGrz.next(data);
+        }
+    });
   }
 
   next(path:string, limit:number) {

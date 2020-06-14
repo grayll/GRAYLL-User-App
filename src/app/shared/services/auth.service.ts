@@ -74,11 +74,13 @@ export class AuthService {
   priceDoc = '794retePzavE19bTcMaH/'
 
   isGetBalance: boolean
+  percentXLM : number = 100
   // variable to not load userMetaStore and price every time if page is not reload
 
   // UserMeta
   balanceUpdateCount: number = 0
   userMeta$ : Observable<UserMeta>
+  priceData$ : Observable<any>
   countdownConfigs: CountdownConfig[] 
 
   gryUpdatedAt: number
@@ -86,7 +88,11 @@ export class AuthService {
   closeAllEnd:Subject<boolean>
 
   subsink:SubSink
+  isSubUserMeta: boolean = false
+  isSubPrice: boolean = false
 
+  timeOutShowConfirmPwd:any;
+  timeOutLogout:any;
   resetServiceData(){
     this.userData = null
     this.userInfo = null
@@ -130,6 +136,8 @@ export class AuthService {
     this.gryUpdatedAt = moment.now()
     this.grzUpdatedAt = moment.now()    
     this.subsink = null
+    this.userMeta$ = null
+    this.priceData$ = null
   }
   
   constructor(    
@@ -139,7 +147,8 @@ export class AuthService {
     public stellarService: StellarService,  
    // public algoService: AlgoService,
     private afs: AngularFirestore,      
-  ) {    
+  ) { 
+    this.percentXLM = 100   
     this.countdownConfigs = [{
         leftTime: 60,
         template: '$!s!',
@@ -156,6 +165,7 @@ export class AuthService {
     this.gryUpdatedAt = moment.now()
     this.grzUpdatedAt = moment.now()
     this.subsink = new SubSink()
+    
     this.userMetaStore = {UrWallet: 0, UrGRY1: 0, UrGRY2: 0, UrGRY3: 0, UrGRZ: 0, UrGeneral: 0, OpenOrders: 0, OpenOrdersGRX: 0, 
       OpenOrdersXLM: 0, GRX: 0, XLM: 0, ShouldReload: true,
       total_grz_close_positions_ROI_$:0, total_grz_current_position_value_$:0, total_grz_open_positions:0, total_grz_current_position_ROI_$:0,
@@ -168,7 +178,57 @@ export class AuthService {
       this.subsink.unsubscribe()
      }
   }
-  getUserMeta(){
+  parseUserMeta(data){
+    this.isSubUserMeta = true  
+    this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
+    this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
+    this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
+    this.userMetaStore.UrGRZ = data.UrGRZ >= 0? data.UrGRZ:0
+    this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
+    this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
+    this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime       
+
+    this.userMetaStore.GRX = data.GRX >= 0? data.GRX:0
+    this.userMetaStore.XLM = data.XLM >= 0? data.XLM:0
+    this.userMetaStore.OpenOrders = data.OpenOrders > 0? data.OpenOrders:0
+    this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? data.OpenOrdersXLM:0
+    this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? data.OpenOrdersGRX:0
+
+    this.userMetaStore.total_grz_close_positions_ROI_$ = +(data.total_grz_close_positions_ROI_$ ? data.total_grz_close_positions_ROI_$ : 0).toFixed(5)
+    this.userMetaStore.total_grz_current_position_ROI_$ = +(data.total_grz_current_position_ROI_$ ? data.total_grz_current_position_ROI_$: 0).toFixed(5)
+    this.userMetaStore.total_grz_current_position_value_$ = +(data.total_grz_current_position_value_$ ? data.total_grz_current_position_value_$: 0).toFixed(5)
+    this.userMetaStore.total_grz_open_positions = +(data.total_grz_open_positions ? data.total_grz_open_positions: 0).toFixed(5)
+
+    this.userMetaStore.total_gry1_close_positions_ROI_$ = +(data.total_gry1_close_positions_ROI_$ ? data.total_gry1_close_positions_ROI_$: 0).toFixed(5)
+    this.userMetaStore.total_gry1_current_position_ROI_$ = +(data.total_gry1_current_position_ROI_$ ? data.total_gry1_current_position_ROI_$: 0).toFixed(5)
+    this.userMetaStore.total_gry1_current_position_value_$ = +(data.total_gry1_current_position_value_$ ? data.total_gry1_current_position_value_$ : 0).toFixed(5)
+    this.userMetaStore.total_gry1_open_positions = +(data.total_gry1_open_positions ? data.total_gry1_open_positions: 0).toFixed(5)
+
+    this.userMetaStore.total_gry2_close_positions_ROI_$ = +(data.total_gry2_close_positions_ROI_$ ? data.total_gry2_close_positions_ROI_$: 0).toFixed(5)
+    this.userMetaStore.total_gry2_current_position_ROI_$ = +(data.total_gry2_current_position_ROI_$ ? data.total_gry2_current_position_ROI_$: 0).toFixed(5)
+    this.userMetaStore.total_gry2_current_position_value_$ = +(data.total_gry2_current_position_value_$ ? data.total_gry2_current_position_value_$: 0).toFixed(5)
+    this.userMetaStore.total_gry2_open_positions = +(data.total_gry2_open_positions ? data.total_gry2_open_positions: 0).toFixed(5)
+
+    this.userMetaStore.total_gry3_close_positions_ROI_$ = +(data.total_gry3_close_positions_ROI_$ ?  data.total_gry3_close_positions_ROI_$: 0).toFixed(5)
+    this.userMetaStore.total_gry3_current_position_ROI_$ = +(data.total_gry3_current_position_ROI_$ ? data.total_gry3_current_position_ROI_$: 0).toFixed(5)
+    this.userMetaStore.total_gry3_current_position_value_$ = +(data.total_gry3_current_position_value_$ ? data.total_gry3_current_position_value_$: 0).toFixed(5)
+    this.userMetaStore.total_gry3_open_positions = +(data.total_gry3_open_positions ? data.total_gry3_open_positions: 0).toFixed(5)
+    this.balanceUpdateCount++      
+    this.userMetaStore.ShouldReload = false
+  }
+  getUserMeta(){    
+      if (!this.userMeta$){
+        this.userMeta$ = this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges()
+      }
+      if (!this.subsink){
+        this.subsink = new SubSink()
+      }
+      // if (this.isSubUserMeta){
+      //   return
+      // }      
+  }
+
+  getUserMetabk(){
     if (this.userMetaStore.ShouldReload){
      this._userMeta = new Subject<UserMeta>()
      this.userMeta = this._userMeta.asObservable()
@@ -218,92 +278,58 @@ export class AuthService {
       }))
     }
   }
-
-  getUserMetaNew(){
-    this.userMeta = this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges()
-    if (this.userMetaStore.ShouldReload){    
-    //  this.userMeta = this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges()
-     this.userMeta.subscribe(data => {        
-        this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
-        this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
-        this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
-        this.userMetaStore.UrGRZ = data.UrGRZ >= 0? data.UrGRZ:0
-        this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
-        this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
-        this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime       
-
-        this.userMetaStore.GRX = data.GRX >= 0? data.GRX:0
-        this.userMetaStore.XLM = data.XLM >= 0? data.XLM:0
-        this.userMetaStore.OpenOrders = data.OpenOrders > 0? data.OpenOrders:0
-        this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? data.OpenOrdersXLM:0
-        this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? data.OpenOrdersGRX:0
-
-        this.balanceUpdateCount++
-        //console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
-        //console.log('GETUSERMETA:', this.userMetaStore)
-        this.userMetaStore.ShouldReload = false
-       
-      })
+  
+  parsePriceData(data){
+    this.isSubPrice = true
+    if (this.userData){
+      this.userData.xlmPrice = data.xlmusd
+      this.userData.grxPrice = data.xlmgrx
+      this.userData.gryPrice = data.gryusd
+      this.userData.grzPrice = data.grzusd
+      this.userData.grxusdPrice = data.grxusd
     }
-  }
- 
- 
-  subUserMeta(){    
-    //this._userMeta = new Subject<UserMeta>()
-    //this.userMeta = this._userMeta.asObservable()
-    this.userMeta = this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges()   
-    return this.userMeta 
-  }
-
-  streamPrices(){
-    if (this.userMetaStore.ShouldReload){   
-      this.subsink.add(this.afs.doc<Prices>('price_update/'+this.priceDoc).valueChanges().subscribe(data => {        
-        this.userData.xlmPrice = data.xlmusd
-        this.userData.grxPrice = data.xlmgrx
-        this.userData.gryPrice = data.gryusd
-        this.userData.grzPrice = data.grzusd
-        this.userData.grxusdPrice = data.grxusd
-        if (this.userInfo){
-          this.userInfo.SellingWallet = data.sellingWallet
-          this.userInfo.SellingPercent = data.sellingPercent
-          this.userInfo.SellingPrice = data.sellingPrice
-        }
-       
-        this.priceInfo.grxusd = data.grxusd
-        this.priceInfo.xlmgrx = data.xlmgrx  
-        this.priceInfo.xlmusd = data.xlmusd
-        this.priceInfo.gryusd = data.gryusd
-        this.priceInfo.grzusd = data.grzusd
-        this.priceInfo.xlmgrx_ask = data.xlmgrx_ask
-        this.priceInfo.xlmgrx_bid = data.xlmgrx_bid
-        if (this.priceInfo.price_updated != data.price_updated){
-          if (data.price_updated === 'gryusd'){
-            //console.log('update gry')
-            this.gryUpdatedAt = moment.now()
-            60 - (moment.now() - this.gryUpdatedAt)/1000
-            this.countdownConfigs[0] = {
-              leftTime: 60,
-              template: '$!s!',
-              effect: null,
-              demand: false
-            } 
-            
-          } else {            
-            this.grzUpdatedAt = moment.now()
-            this.countdownConfigs[1] = {
-              leftTime: 60,
-              template: '$!s!',
-              effect: null,
-              demand: false
-            }
-            
-          }
-          this.priceInfo.price_updated = data.price_updated
-        }        
-        //console.log('STREAM-price:', data)  
+    if (this.userInfo){
+      this.userInfo.SellingWallet = data.sellingWallet
+      this.userInfo.SellingPercent = data.sellingPercent
+      this.userInfo.SellingPrice = data.sellingPrice
+    }
+   
+    this.priceInfo.grxusd = data.grxusd
+    this.priceInfo.xlmgrx = data.xlmgrx  
+    this.priceInfo.xlmusd = data.xlmusd
+    this.priceInfo.gryusd = data.gryusd
+    this.priceInfo.grzusd = data.grzusd
+    this.priceInfo.xlmgrx_ask = data.xlmgrx_ask
+    this.priceInfo.xlmgrx_bid = data.xlmgrx_bid
+    if (this.priceInfo.price_updated != data.price_updated){
+      if (data.price_updated === 'gryusd'){
+        //console.log('update gry')
+        this.gryUpdatedAt = moment.now()
+        60 - (moment.now() - this.gryUpdatedAt)/1000
+        this.countdownConfigs[0] = {
+          leftTime: 60,
+          template: '$!s!',
+          effect: null,
+          demand: false
+        } 
         
-      }))
-    }
+      } else {            
+        this.grzUpdatedAt = moment.now()
+        this.countdownConfigs[1] = {
+          leftTime: 60,
+          template: '$!s!',
+          effect: null,
+          demand: false
+        }
+        
+      }
+      this.priceInfo.price_updated = data.price_updated
+    }  
+  }
+  streamPrices(){    
+    if (!this.priceData$){
+      this.priceData$ = this.afs.doc<Prices>('price_update/'+this.priceDoc).valueChanges()
+    }     
   }
   
   updateUserMeta(){
@@ -327,7 +353,12 @@ export class AuthService {
     }
     this.shouldReload.next(shouldReload)
   }
-
+  unSubShouldReload(){
+    if (this.shouldReload){
+      this.shouldReload.unsubscribe()
+    }
+    
+  }
   subCloseAllEnd(){
     if (!this.closeAllEnd){
       this.closeAllEnd = new Subject()
@@ -474,20 +505,17 @@ export class AuthService {
     localStorage.setItem('openOrders', this.openOrders.toString());   
   }
   GetOpenOrder():number{
-    if (!this.openOrders){
-      console.log('GetOpenOrder ')
+    if (!this.openOrders){      
       this.openOrders = +localStorage.getItem('openOrders')
     }
-    if (!this.openOrders){
-      console.log('GetOpenOrder 1')
+    if (!this.openOrders){      
       this.openOrders = 0
     }
-    console.log('GetOpenOrder - openOrders', this.openOrders)
+    
     return this.openOrders
   }
   
-  GetLocalUserData():any {
-    console.log('GetLocalUserData call')    
+  GetLocalUserData():any {     
     if (!this.userData){
       let data = localStorage.getItem('grayll-user');
       if (data){
@@ -526,15 +554,11 @@ export class AuthService {
   setTfa(value){
     return this.tfa$.next(value)
   }
-
-
     
   isActivated() : boolean {    
-    console.log(this.userInfo)
     if (!this.userInfo.PublicKey || (this.userInfo.PublicKey && this.userInfo.PublicKey.trim().length === 0)){      
       return false
-    }
-    
+    }    
     return true
   }
   setupTfa(account:string) {
@@ -556,32 +580,34 @@ export class AuthService {
     )    
     })
   }
-  saveUserMetaStore() {     
-    this.http.post(`api/v1/users/saveUserMetaData`, {
-      total_grz_current_position_ROI_$: this.userMetaStore.total_grz_current_position_ROI_$,
-      total_grz_current_position_value_$:  this.userMetaStore.total_grz_current_position_value_$,    
-      total_grz_open_positions:       this.userMetaStore.total_grz_open_positions,          
-                                              
-      total_gry1_current_position_ROI_$ :    this.userMetaStore.total_gry1_current_position_ROI_$,  
-      total_gry1_current_position_value_$ :   this.userMetaStore.total_gry1_current_position_value_$,
-      total_gry1_open_positions  :           this.userMetaStore.total_gry1_open_positions,  
-                                              
-      total_gry2_current_position_ROI_$ :    this.userMetaStore.total_gry2_current_position_ROI_$,  
-      total_gry2_current_position_value_$ :   this.userMetaStore.total_gry2_current_position_value_$,
-      total_gry2_open_positions  :           this.userMetaStore.total_gry2_open_positions ,          
-                                              
-      total_gry3_current_position_ROI_$ :    this.userMetaStore.total_gry3_current_position_ROI_$,  
-      total_gry3_current_position_value_$ :   this.userMetaStore.total_gry3_current_position_value_$,
-      total_gry3_open_positions  :           this.userMetaStore.total_gry3_open_positions                 
-    })    
-    .subscribe(
-      resp => {
-        console.log('saveUserMetaData res: ', resp)  
-      },
-      err => {        
-        console.log('saveUserMetaData err: ', err)        
-      } 
-    )    
+  saveUserMetaStore() {
+    if (this.userMetaStore && !this.isTokenExpired){     
+      this.http.post(`api/v1/users/saveUserMetaData`, {     
+        total_grz_current_position_ROI_$: this.userMetaStore.total_grz_current_position_ROI_$,
+        total_grz_current_position_value_$:  this.userMetaStore.total_grz_current_position_value_$,    
+        total_grz_open_positions:       this.userMetaStore.total_grz_open_positions,          
+                                                
+        total_gry1_current_position_ROI_$ :    this.userMetaStore.total_gry1_current_position_ROI_$,  
+        total_gry1_current_position_value_$ :   this.userMetaStore.total_gry1_current_position_value_$,
+        total_gry1_open_positions  :           this.userMetaStore.total_gry1_open_positions,  
+                                                
+        total_gry2_current_position_ROI_$ :    this.userMetaStore.total_gry2_current_position_ROI_$,  
+        total_gry2_current_position_value_$ :   this.userMetaStore.total_gry2_current_position_value_$,
+        total_gry2_open_positions  :           this.userMetaStore.total_gry2_open_positions ,          
+                                                
+        total_gry3_current_position_ROI_$ :    this.userMetaStore.total_gry3_current_position_ROI_$,  
+        total_gry3_current_position_value_$ :   this.userMetaStore.total_gry3_current_position_value_$,
+        total_gry3_open_positions  :           this.userMetaStore.total_gry3_open_positions                 
+      })    
+      .subscribe(
+        resp => {
+          
+        },
+        err => {        
+          console.log('saveUserMetaData err: ', err)        
+        } 
+      )   
+    } 
     
   }
   verifyTfaAuth(token: any, pwd: any, exp: Number) {       
@@ -680,15 +706,41 @@ export class AuthService {
     }
     return null
   }
+  
+  // calPercentXLM(){
+  //   if (this.userMetaStore && this. calPercentXLM(){
+  //   if (this.userMetaStore.GRX === 0){
+  //     return 100
+  //   } else {
+  //     return Math.round(this.userMetaStore.XLM*this.priceInfo.xlmusd*100/(this.userMetaStore.XLM*this.priceInfo.xlmusd + 
+  //       this.userMetaStore.GRX*this.userData.grxPrice*this.priceInfo.xlmusd))
+  //   }
+  // }
+  // calPercentGRX(){    
+  //   if (this.userMetaStore && this.priceInfo){
+  //    // console.log('calPercentXLM:', this.userMetaStore)
+  //     return 100 - this.percentXLM
+  //   } else {
+  //     return 0
+  //   }
+  // }
+  // calPercentGRX(){
+  //   if (this.userData){
+  //     return 100 - this.calPercentXLM()
+  //   } else {
+  //     return 0
+  //   }
+  // }
 
   calPercentXLM(){
     if (this.userMetaStore.GRX === 0){
       return 100
     } else {
-      return Math.round(this.userMetaStore.XLM*this.priceInfo.xlmusd*100/(this.userMetaStore.XLM*this.priceInfo.xlmusd + 
-        this.userMetaStore.GRX*this.userData.grxPrice*this.priceInfo.xlmusd))
+      return Math.round(this.userMetaStore.XLM*this.userData.xlmPrice*100/(this.userMetaStore.XLM*this.userData.xlmPrice + 
+        this.userMetaStore.GRX*this.userData.grxPrice*this.userData.xlmPrice))
     }
   }
+
   calPercentGRX(){
     if (this.userData){
       return 100 - this.calPercentXLM()
@@ -696,70 +748,27 @@ export class AuthService {
       return 0
     }
   }
-  // getGRYBalance(){
-  //   // return this.userMetaStore.total_gry1_current_position_value_$ + this.userMetaStore.total_gry2_current_position_value_$ + 
-  //   // this.userMetaStore.total_gry3_current_position_value_$
-  //   if (this.algoService.gry1Metric && this.algoService.gry2Metric && this.algoService.gry3Metric ){
-  //     return this.algoService.gry1Metric.TotalValue + this.algoService.gry2Metric.TotalValue + this.algoService.gry3Metric.TotalValue
-  //   }
-  //   return 0
-  // }
-  // getAlgoBalance(){
-  //   //return this.getGRYBalance() + this.userMetaStore.total_grz_current_position_value_$
-  //   return this.getGRYBalance() + (this.algoService.grzMetric.TotalValue | 0)
-  // }
-  // calPercentGRY(){
-  //   // let totalgry = this.getGRYBalance()
-  //   // if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
-  //   //   return 0
-  //   // } else {
-  //   //   return Math.round(totalgry*100/(totalgry + this.userMetaStore.total_grz_current_position_value_$))
-  //   // }
-  //   let totalgry = this.getGRYBalance()
-  //   if (this.algoService.grzMetric.TotalValue == 0 && totalgry == 0){
-  //     return 0
-  //   } else {
-  //     return Math.round(totalgry*100/(totalgry + (this.algoService.grzMetric.TotalValue | 0)))
-  //   }
+  // calPercentXLM(){
 
-  // }
-  // calPercentGRZ(){
-  //   let totalgry = this.getGRYBalance()
-  //   // if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
-  //   //   return 0
-  //   // } else {
-  //   //   return 100 - this.calPercentGRY()
-  //   // }
-  //   if (this.algoService.grzMetric.TotalValue == 0 && totalgry == 0){
-  //     return 0
+  //   if (this.userMetaStore.GRX === 0){
+  //     this.percentXLM = 100
   //   } else {
-  //     return 100 - this.calPercentGRY()
+  //     this.percentXLM = Math.round(this.userMetaStore.XLM*this.priceInfo.xlmusd*100/(this.userMetaStore.XLM*this.priceInfo.xlmusd + 
+  //       this.userMetaStore.GRX*this.priceInfo.xlmgrx*this.priceInfo.xlmusd))
+  //   }
+  //   return this.percentXLM
+  // }
+
+  // calPercentGRX(){
+  //   if (this.userMetaStore){
+  //     return 100 - this.percentXLM
+  //   } else {
+  //     return 0
   //   }
   // }
-  // getTotalOpenPosition(){
-  //   // return this.userMetaStore.total_gry1_open_positions + this.userMetaStore.total_gry2_open_positions + 
-  //   // this.userMetaStore.total_gry3_open_positions + this.userMetaStore.total_grz_open_positions
-  //   this.algoService.grzMetric.Positions + this.algoService.gry1Metric.Positions + 
-  //   this.algoService.gry2Metric.Positions + this.algoService.gry3Metric.Positions
-  // }
-  // getTotalAccountValue(){
-  //   return this.xlmInUsd() + this.grxInUsd() + this.getAlgoBalance()
-  // }
-  // getGRYProfit(){
-  //   // return this.userMetaStore.total_gry1_current_position_ROI_$ + this.userMetaStore.total_gry1_close_positions_ROI_$ +
-  //   // this.userMetaStore.total_gry2_current_position_ROI_$ + this.userMetaStore.total_gry2_close_positions_ROI_$ +
-  //   // this.userMetaStore.total_gry3_current_position_ROI_$ + this.userMetaStore.total_gry3_close_positions_ROI_$
-  //   this.algoService.gry1Metric.CurrentProfit + 
-  //   this.algoService.gry2Metric.CurrentProfit + this.algoService.gry3Metric.CurrentProfit
-
-  // }
-  // getTotalAccountProfit(){
-  //   //return this.getGRYProfit() + this.userMetaStore.total_grz_close_positions_ROI_$ + this.userMetaStore.total_grz_current_position_ROI_$
-  //   this.algoService.grzMetric.CurrentProfit + this.algoService.gry1Metric.CurrentProfit + 
-  //   this.algoService.gry2Metric.CurrentProfit + this.algoService.gry3Metric.CurrentProfit
-  // }
+  
   grxInUsd(){
-    return this.userMetaStore.GRX*this.userData.grxPrice*this.priceInfo.xlmusd
+    return this.userMetaStore.GRX*this.priceInfo.xlmgrx*this.priceInfo.xlmusd
   }
   xlmInUsd(){
     return this.userMetaStore.XLM*this.priceInfo.xlmusd

@@ -58,9 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           console.log('Account is not activated:') 
           this.showActivationPopup();
         } else {   
-          console.log('this.swPush.isEnabled:', this.swPush.isEnabled)                   
-          if (this.swPush.isEnabled && !this.isTokenSentToServer()){
-            console.log('request subs')
+          if (this.swPush.isEnabled && !this.isTokenSentToServer()){            
             this.requestSubNotifications()
           } 
         }
@@ -75,8 +73,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.log('Account is not activated:') 
         this.showActivationPopup();
       } else {   
-        console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
-        console.log('this.authService.userData:', this.authService.userData)
+        // console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
+        // console.log('this.authService.userData:', this.authService.userData)
         
         if (this.swPush.isEnabled && !this.isTokenSentToServer()){
           console.log('request subs')
@@ -92,20 +90,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
  
   ngOnInit(): void {   
     this.changeBackgroundColor(true);    
-    console.log('dashboard-this.authService.userData.CreatedAt', this.authService.userData.CreatedAt)
-    if (this.authService.userData.CreatedAt < 1593536400 && !localStorage.getItem("signer-data")){
-      this.authService.GetSecretKey(null).then(seckey => {        
-          this.stellarService.addSigner(seckey).then(res => {
-            console.log('added additional signer')
-            localStorage.setItem("signer-data", "xndunfdqf")
-          }).catch(e => {
-            console.log('add additional signer error:', e)
-          })        
-        //console.log('seckey:', seckey)
-      }).catch(err => {
-        console.log('err:', err)
-      })
-    }
+    // console.log('dashboard-this.authService.userData.CreatedAt', this.authService.userData.CreatedAt)
+    // if (this.authService.userData.CreatedAt < 1593536400 && !localStorage.getItem("signer-data")){
+    //   this.authService.GetSecretKey(null).then(seckey => {        
+    //       this.stellarService.addSigner(seckey).then(res => {
+    //         console.log('added additional signer')
+    //         localStorage.setItem("signer-data", "xndunfdqf")
+    //       }).catch(e => {
+    //         console.log('add additional signer error:', e)
+    //       })        
+    //     //console.log('seckey:', seckey)
+    //   }).catch(err => {
+    //     console.log('err:', err)
+    //   })
+    // }
 
   //   this.algoService.subOpenAlgos()
   //   this.subSink.add(this.algoService.openAlgos$.subscribe(data => {

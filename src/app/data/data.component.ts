@@ -84,9 +84,7 @@ export class DataComponent implements OnInit, OnDestroy {
   private loadDataFromRoute() {
     const data = this.activatedRoute.snapshot.data;
     this.activeTabId = 'system-activity';
-    this.activeSubTabId = data.subTab;
-    console.log('TAB:', data.tab)
-    console.log('SUB-TAB:', data.subTab)
+    this.activeSubTabId = data.subTab;    
     if (data.tab) {
       switch (data.tab) {
         case 'system-activity':

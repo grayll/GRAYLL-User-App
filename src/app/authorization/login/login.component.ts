@@ -175,8 +175,10 @@ export class LoginComponent {
               this.authService.userData.token = data.token
               this.authService.userData.xlmPrice = data.userMeta.XlmP
               this.authService.userData.grxPrice = data.userMeta.GrxP
+              this.authService.priceInfo.xlmgrx = data.userMeta.GrxP
+              this.authService.priceInfo.xlmusd = data.userMeta.XlmP
               this.authService.userMetaStore = data.userMeta
-              this.authService.userMetaStore.ShouldReload = true              
+              //this.authService.userMetaStore.ShouldReload = true              
               this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
               this.loadingService.hide() 
               if (this.authService.userInfo.Tfa){                  
@@ -192,7 +194,8 @@ export class LoginComponent {
               } else {                           
                 this.router.navigate(['/dashboard/overview'])
               } 
-             
+
+              //this.ngZone.runOutsideAngular(()=>{             
               if (this.authService.userInfo && this.authService.userData.PublicKey && this.authService.userInfo.LocalKey){
                 if (this.authService.userInfo.EnSecretKey.length > 80){  
                   this.stellarService.decryptSecretKey(this.password.value, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
@@ -255,7 +258,8 @@ export class LoginComponent {
                     }
                   })
                 } 
-              }            
+              } 
+            //})           
             } else if ((res as any).errCode === environment.INVALID_UNAME_PASSWORD){
               this.showError('Invalid email or password!')                                 
             }  else if((res as any).errCode === environment.UNVERIFIED)  {    

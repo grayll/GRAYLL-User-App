@@ -102,8 +102,8 @@ export class StellarService {
                     tx.addOperation(offer.cachedOffer)
                 })
                 tx.build().sign(source)
-                let xdr = tx.toXDR('base64')   
-                console.log('cancelOffer xdr', xdr)     
+                // let xdr = tx.toXDR('base64')   
+                // console.log('cancelOffer xdr', xdr)     
                 this.horizon.submitTransaction(tx).then( res => {
                     console.log('cancel offer:', offers)
                     console.log('cancel userData:', userData)
@@ -131,8 +131,8 @@ export class StellarService {
                     .addOperation(offer)
                     .setTimeout(180).build()                
                 tx.sign(source)
-                let xdr = tx.toXDR('base64')   
-                console.log('cancelOffer xdr', xdr)     
+                // let xdr = tx.toXDR('base64')   
+                // console.log('cancelOffer xdr', xdr)     
                 this.horizon.submitTransaction(tx).then( res => {                   
                     // console.log('cancel userData:', userData)
                     // if (assetType === 'XLM'){                    
@@ -187,8 +187,8 @@ export class StellarService {
                 tx.sign(source)
                 
                 // 7. Submit transaction to network
-                let xdr = tx.toXDR('base64')   
-                console.log('submitTransaction xdr', xdr)     
+                //let xdr = tx.toXDR('base64')   
+                //console.log('submitTransaction xdr', xdr)     
                 //console.log('submit tx', tx.toXDR())                
                 this.horizon.submitTransaction(tx).then( res => {
                     resolve(res)
@@ -784,9 +784,7 @@ export class StellarService {
                         } else if (b.asset_type === 'native'){
                             xlm = b.balance
                         }
-                    });
-                    console.log('balance:', xlm);               
-                    console.log('balance:', grx);               
+                    });                        
                     resolve({xlm:xlm, grx:grx})
                 },
                 err => {

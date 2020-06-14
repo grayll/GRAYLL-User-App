@@ -72,8 +72,7 @@ export class DataHeaderBoxesComponent implements OnInit {
   constructor(
     public authService: AuthService,
     public algoService: AlgoService) {
-      console.log('HEADER-BOX:', this.authService.userMetaStore.total_grz_open_positions)
-      console.log('HEADER-BOX:', this.authService.userMetaStore.total_gry1_open_positions)
+      
      }
 
   ngOnInit() {

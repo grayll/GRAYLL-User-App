@@ -86,8 +86,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     private loadingService: LoadingService,
   ) {
     
-    this.grxP = this.authService.priceInfo.xlmgrx
-    this.xlmP = this.authService.userData.xlmPrice
+    // this.grxP = this.authService.priceInfo.xlmgrx
+    // this.xlmP = this.authService.userData.xlmPrice
 
     this.federationAddress = this.authService.userData.Federation;
     this.stellarAddress = this.authService.userData.PublicKey;
@@ -273,7 +273,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
   executeSell(){    
     this.loadingService.show()     
-    this.stellarService.sellOrder(this.authService.getSecretKey(), this.grxPrice, this.grxAmount).then( res => {    
+    console.log('this.grxAmount:', this.grxAmount, this.grxPrice)
+    this.stellarService.sellOrder(this.authService.getSecretKey(), (+this.grxPrice).toFixed(7), (+this.grxAmount).toFixed(7)).then( res => {    
       let matchType = 0
       let msg = 'Buy order submitted successfully.'    
       if (res.offerResults[0].currentOffer){     
@@ -379,8 +380,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   //   this.isPopulateMaxGRX = false
   //   this.isPopulateMaxXLM = false     
   // } 
-  onTabChange(id: string) {    
-    console.log('tabid', id)
+  onTabChange(id: string) { 
     this.tabId = id   
   } 
 

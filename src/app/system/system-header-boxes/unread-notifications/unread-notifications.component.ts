@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NotificationsService} from '../../../notifications/notifications.service';
-import {faBell, faSearch, faTimes} from '@fortawesome/free-solid-svg-icons';
+import {faBell, faSearch, faTimes, faCheckCircle} from '@fortawesome/free-solid-svg-icons';
 import {NoticeId} from '../../../notifications/notification.model';
 import {CustomModalService} from '../../../shared/custom-modal.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
@@ -9,6 +9,8 @@ import { Observable } from 'rxjs';
 import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-unread-notifications',
@@ -21,15 +23,13 @@ import { environment } from 'src/environments/environment';
 
 export class UnreadNotificationsComponent implements OnInit {
 
-  // gry1notifications: GRY1NotificationModel[];
-  // gry2notifications: GRY1NotificationModel[];
-  // gry3notifications: GRY1NotificationModel[];
-  // grznotifications: GRY1NotificationModel[];
+  notifiType: any = '';
 
   // Font Awesome Icons
   faSearch = faSearch;
   faBell = faBell;
   faTimes = faTimes;
+  faCheckCircle = faCheckCircle;
 
   notices: Observable<NoticeId[]>;
   noticesAlgo: Observable<NoticeId[]>;
@@ -51,22 +51,14 @@ export class UnreadNotificationsComponent implements OnInit {
   constructor(
     public notificationsService: NotificationsService,
     private customModalService: CustomModalService,
-    public authService: AuthService,
-    //public stellarService: StellarService,
+    public authService: AuthService,    
     private http: HttpClient,
-    //private loadingService: LoadingService,
-    private algoService: AlgoService,
-    public dataService:NoticeDataService,
-    
+    private loadingService: LoadingService, 
+    public modalService: NgbModal,
+    public dataService:NoticeDataService,    
   ) {    
-    this.algoPath = 'notices/algo/'+this.authService.userData.Uid  
-
-    console.log('algoService.noticeId', this.algoService.noticeId)
-    //if (this.algoService.noticeId == 'unread-grz-notifications'){
-      this.dataService.firstAlgoType(this.algoPath, this.limit, "GRZ" )
-      this.noticesAlgo = this.dataService.algoData  
-   // }
-   
+    this.algoPath = 'notices/algo/'+this.authService.userData.Uid     
+    this.dataService.firstAlgoType(this.algoPath, this.limit)    
   }
 
   ngOnInit() {
@@ -81,27 +73,10 @@ export class UnreadNotificationsComponent implements OnInit {
     this.customModalService.grzmobileScrollContainer = elements[3];
   }
 
-  
-
-  // private populateNumberOfUnreadNotifications() {
-  //   this.notificationsService.resetNumberOfAllGrayllSystemNotifications();
-  //   const gry1Unread = this.gry1notifications.filter((n) => !n.isRead).length;
-  //   const gry2Unread = this.gry2notifications.filter((n) => !n.isRead).length;
-  //   const gry3Unread = this.gry3notifications.filter((n) => !n.isRead).length;
-  //   const grzUnread = this.grznotifications.filter((n) => !n.isRead).length;
-  //   this.notificationsService.increaseNumberOfAllGrayllSystemNotificationsBy(gry1Unread + gry2Unread + gry3Unread + grzUnread);
-  //   this.notificationsService.numberOfGRY1Notifications = gry1Unread;
-  //   this.notificationsService.numberOfGRY2Notifications = gry2Unread;
-  //   this.notificationsService.numberOfGRY3Notifications = gry3Unread;
-  //   this.notificationsService.numberOfGRZNotifications = grzUnread;
-  // }
-
-  
-
   markAsRead(collPath: string, notice:any) {
     //console.log('notice-com:markAsRead')
     if (!notice.isRead) {
-      console.log('notice-com:markAsRead not isread')
+      //console.log('notice-com:markAsRead not isread')
       notice.isRead = true;       
       if (!notice.type || notice.type.includes('GRZ')){
         if (this.authService.userMetaStore.UrGRZ - 1 >= 0){
@@ -124,39 +99,56 @@ export class UnreadNotificationsComponent implements OnInit {
     }
   }
 
-  closePopup(id: string) {
-    // switch (id) {
-    //   case 'unread-gry1-notifications':
-    //     this.gry1notifications = this.gry1notifications.filter((n) => !n.isRead);
-    //     break;
-    //   case 'unread-gry2-notifications':
-    //     this.gry2notifications = this.gry2notifications.filter((n) => !n.isRead);
-    //     break;
-    //   case 'unread-gry3-notifications':
-    //     this.gry3notifications = this.gry3notifications.filter((n) => !n.isRead);
-    //     break;
-    //   default:
-    //     // Send read ids to server
-      
-    //     break;
-    // }
+  closePopup(id: string) {    
     if (this.readAlgoNoticeIds.length > 0){
       //console.log('this.readAlgoNoticeIds', this.readAlgoNoticeIds)
       this.http.post(`api/v1/users/updateReadNotices`, {walletIds:this.readWalletNoticeIds, algoIds:this.readAlgoNoticeIds, 
         generalIds:this.readGeneralNoticeIds, 
         urgrz:this.authService.userMetaStore.UrGRZ, urgry1:this.authService.userMetaStore.UrGRY1,
         urgry2:this.authService.userMetaStore.UrGRY2, urgry3:this.authService.userMetaStore.UrGRY3}).
-      subscribe(res => {
-        console.log('updateReadNotices', res)
-        if ((res as any).errCode == environment.SUCCESS){         
-          console.log("Updated read notice ids")
-        }        
+          subscribe(res => {
+        //console.log('updateReadNotices', res)
+          if ((res as any).errCode == environment.SUCCESS){         
+            //console.log("Updated read notice ids")
+          }        
       },
       e => {
         console.log(e)
       })
     }
     this.customModalService.close(id);
+  }
+
+  markAllAsRead(confirmModal:any) {
+    this.loadingService.show()
+    this.http.post('api/v1/users/updateAllAsRead/'+this.notifiType, {}).subscribe(res => {
+      //console.log(res)
+      this.loadingService.hide()
+      this.modalService.dismissAll()
+      if ((res as any).errCode != environment.SUCCESS){               
+        
+      } else {
+       
+      }      
+    },
+    e => {      
+      this.loadingService.hide()
+      this.modalService.dismissAll()
+    })  
+  }
+  
+ 
+  openConfirmModal(modal, type) {    
+    this.notifiType = type;
+    this.modalService.open(modal).result.then(
+      res => {        
+        this.notifiType = '';
+      },
+      err => {
+        console.log("!openConfirmModal",err);
+        this.notifiType = '';
+      }
+    );
   }
 
 }

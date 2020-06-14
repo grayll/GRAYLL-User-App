@@ -6,6 +6,10 @@
           Unread GRY | 1 Notifications
         </div>
         <div class="col-4 align-self-center text-right">
+          <!-- <div class="col-5 align-self-center text-right bottom-border-navy-animated" > -->
+          <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="openConfirmModal(confirmModal, 'gry1')">
+            <fa-icon [icon]="faCheckCircle" size="lg"></fa-icon>
+          </a>
           <a href="javascript:void(0)" class="navy-span">
             <fa-icon [icon]="faBell" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
@@ -32,7 +36,7 @@
       </div>
       <div class="mobile-system-nots"
            style="overflow-y: scroll; height:440px;overflow-x: hidden;-webkit-overflow-scrolling: touch;">
-           <ng-container *ngFor="let notice of noticesAlgo | async">
+           <ng-container *ngFor="let notice of dataService.algoDataGry1 | async">
             <app-algo-notification-item
               (markAsRead)="markAsRead(algoPath, notice)"
               [notification]="notice">
@@ -52,6 +56,9 @@
           Unread GRY | 2 Notifications
         </div>
         <div class="col-4 align-self-center text-right">
+          <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="openConfirmModal(confirmModal, 'gry2')">
+            <fa-icon [icon]="faCheckCircle" size="lg"></fa-icon>
+          </a>
           <a href="javascript:void(0)" class="navy-span">
             <fa-icon [icon]="faBell" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
@@ -78,7 +85,7 @@
       </div>
       <div class="mobile-system-nots"
            style="overflow-y: scroll; height:440px;overflow-x: hidden;-webkit-overflow-scrolling: touch;">
-           <ng-container *ngFor="let notice of noticesAlgo | async">
+           <ng-container *ngFor="let notice of dataService.algoDataGry2 | async">
             <app-algo-notification-item
               (markAsRead)="markAsRead(algoPath, notice)"
               [notification]="notice">
@@ -100,6 +107,9 @@
           Unread GRY | 3 Notifications
         </div>
         <div class="col-4 align-self-center text-right">
+          <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="openConfirmModal(confirmModal, 'gry3')">
+            <fa-icon [icon]="faCheckCircle" size="lg"></fa-icon>
+          </a>
           <a href="javascript:void(0)" class="navy-span" style="margin-right: 15px">
             <fa-icon [icon]="faBell" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
@@ -126,7 +136,7 @@
       </div>
       <div class="mobile-system-nots"
            style="overflow-y: scroll; height:440px;overflow-x: hidden;-webkit-overflow-scrolling: touch;">
-           <ng-container *ngFor="let notice of noticesAlgo | async">
+           <ng-container *ngFor="let notice of dataService.algoDataGry3 | async">
             <app-algo-notification-item
               (markAsRead)="markAsRead(algoPath, notice)"
               [notification]="notice">
@@ -146,6 +156,9 @@
           Unread GRZ Notifications
         </div>
         <div class="col-4 align-self-center text-right">
+          <a href="javascript:void(0)" class="navy-link" style="margin-right: 15px;" (click)="openConfirmModal(confirmModal, 'grz')">
+            <fa-icon [icon]="faCheckCircle" size="lg"></fa-icon>
+          </a>
           <a href="javascript:void(0)" class="navy-span">
             <fa-icon [icon]="faBell" size="lg"></fa-icon>
             <span class="badge bg-yellow text-light badge-number">
@@ -172,7 +185,7 @@
       </div>
       <div class="mobile-system-nots"
            style="overflow-y: scroll; height:440px;overflow-x: hidden;-webkit-overflow-scrolling: touch;">
-        <ng-container *ngFor="let notice of noticesAlgo | async">
+        <ng-container *ngFor="let notice of dataService.algoDataGrz | async">
           <app-algo-notification-item
             (markAsRead)="markAsRead(algoPath, notice)"
             [notification]="notice">
@@ -191,5 +204,39 @@
     </div>
   </div>
 </app-jw-modal>
+
+<ng-template #confirmModal let-modal>
+  <div class="modal-header">
+      <h4 class="text-purple" id="modal-basic-title" style="margin-bottom: 0;">Review Action</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <label class="text-purple lead" id="confirm-caption">Mark All Unread Notifications As Read</label>
+      <div class="row my-2 d-flex align-items-center">
+          <div class="col">
+              <label class="text-purple" id="confirm-content">
+                  Please review this action to mark all your notifications as read. Remember that it is important to read the notifications sent to you — GRAYLL Intelligence does not close positions for you — it is important to remain informed about the performance of
+                  your positions to achieve the best ROI.
+              </label>
+          </div>
+      </div>
+  </div>
+  <div class="modal-footer justify-content-center">
+      <div class="row">
+          <div class="col">
+              <a href="javascript:void(0)" class="btn btn-outline-secondary" (click)="modal.dismiss('Cross click')">
+        Cancel
+      </a>
+          </div>
+          <div class="col">
+              <a (click)="markAllAsRead(confirmModal)" href="javascript:void(0)" class="btn btn-purple">
+        Confirm
+      </a>
+          </div>
+      </div>
+  </div>
+</ng-template>
 
 

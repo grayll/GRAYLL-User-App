@@ -99,8 +99,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
       template: '$!s!',
       effect: null,
       demand: false
-    };
-    console.log(this.authService.countdownConfigs)
+    };    
   }
 
   ngOnInit() {    

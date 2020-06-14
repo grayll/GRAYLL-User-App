@@ -63,12 +63,7 @@ const popupRoutes: Routes = [
     path: 'xlm-balance-status',
     component: XlmBalanceStatusPopupComponent,
     outlet: 'popup'
-  },
-  // {
-  //   path: 'input-password',
-  //   component: InputPasswordComponent,
-  //   outlet: 'popup'
-  // },
+  }, 
   {
     path: 'confirm-password',
     component: ConfirmPasswordComponent,

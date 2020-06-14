@@ -81,8 +81,8 @@ export class WithdrawPopupComponent implements OnInit {
     this.withdrawModel = new WithdrawModel();
     this.isMemoMessageSelected = true;
 
-    this.xlmPrice = this.authService.userData.xlmPrice
-    this.grxPrice = this.authService.userData.grxPrice
+    // this.xlmPrice = this.authService.userData.xlmPrice
+    // this.grxPrice = this.authService.userData.grxPrice
     this.authService.GetOpenOrder()
   }
 

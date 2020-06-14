@@ -225,7 +225,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
     if(!this.validateSession()){
       return
     }    
-    console.log('cancelOffer-cachedOffer:', item.cachedOffer) 
+    //console.log('cancelOffer-cachedOffer:', item.cachedOffer) 
     this.cancelCurrentOffer(this.item)    
       
   }
@@ -268,7 +268,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
       this.loadingService.show() 
       this.stellarService.cancelOffer(this.authService.getSecretKey(), item.cachedOffer, this.authService.userMetaStore, item.realAmount, item.assetType).then(res=>
         {    
-          console.log('cancelCurrentOffer a', this.authService.userMetaStore, item.assetType, item.realAmount)                 
+          //console.log('cancelCurrentOffer a', this.authService.userMetaStore, item.assetType, item.realAmount)                 
           this.stellarService.allOffers.splice(item.index, 1)
           if (this.authService.userMetaStore.OpenOrders){
             this.authService.userMetaStore.OpenOrders -=1
@@ -279,7 +279,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
                    
           if(item.assetType === 'XLM'){                        
             this.authService.userMetaStore.OpenOrdersXLM = +this.authService.userMetaStore.OpenOrdersXLM - +item.realAmount
-            console.log('cancelCurrentOffer 21', this.authService.userMetaStore, item.assetType, item.realAmount) 
+            //console.log('cancelCurrentOffer 21', this.authService.userMetaStore, item.assetType, item.realAmount) 
           } else {
             this.authService.userMetaStore.OpenOrdersGRX = +this.authService.userMetaStore.OpenOrdersGRX - +item.realAmount
           }
@@ -461,7 +461,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   getAccountOrders(nextURL, countOpenOrder:boolean) {  
-    console.log('start getAccountOrders:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+    //console.log('start getAccountOrders:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
     this.stellarService.getOffer(this.authService.userData.PublicKey, 200, nextURL).then(pms => {          
       if (pms && pms.data._embedded.records.length > 0){   
         let totalOpenXLM = 0

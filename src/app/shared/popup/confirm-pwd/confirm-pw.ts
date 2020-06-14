@@ -8,6 +8,8 @@ import { environment } from 'src/environments/environment';
 import {SnotifyService} from 'ng-snotify';
 import { Router } from '@angular/router';
 import { LoadingService } from '../../services/loading.service';
+import { AlgoService } from 'src/app/system/algo.service';
+import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
 
 @Component({
   selector: 'app-confirm-pw',
@@ -26,17 +28,20 @@ export class ConfirmPasswordComponent implements OnInit {
     public popupService: PopupService,    
     private errorService: ErrorService,
     private ngZone:NgZone,
-    private authService: AuthService,    
+    public authService: AuthService,
+    public algoService: AlgoService,
+    public noticeService: NoticeDataService,
+    public stellarService: StellarService,
     private http: HttpClient,
     private router: Router,
     private loadingService: LoadingService,
-  ) {    
+  ) { 
     
-    //this.remainingTime = '5:00'
     this.x = setInterval(()=> {
-      console.log('setInterval-confirm-pwd')
+      //console.log('setInterval-confirm-pwd')
       if (!this.authService.userMetaStore || !this.authService.userMetaStore.TokenExpiredTime){
         clearInterval(this.x); 
+        //console.log('clear interval and close popup-confirm-pwd')
         this.popupService.close()   
         return
       }
@@ -45,9 +50,7 @@ export class ConfirmPasswordComponent implements OnInit {
       // Find the distance between now and the count down date
       var distance = this.authService.userMetaStore.TokenExpiredTime*1000 - now;
     
-      // Time calculations for days, hours, minutes and seconds
-      // var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      // var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      // Time calculations for days, hours, minutes and seconds     
       var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       var seconds = Math.floor((distance % (1000 * 60)) / 1000);   
      
@@ -68,9 +71,18 @@ export class ConfirmPasswordComponent implements OnInit {
     this.popupService.open(this.modal);
     this.password = ''
   }
-  signOut(){       
+  signOut(){  
+    //console.log('confirmpwd-signout')     
+    if (this.authService.userMetaStore.OpenOrders > 0){
+      this.authService.updateUserMeta()
+    }
+    clearInterval(this.x); 
+    this.algoService.resetServiceData()
+    this.authService.resetServiceData()
+    this.stellarService.resetServiceData()
+    this.noticeService.resetServiceData()
     localStorage.removeItem('grayll-user');    
-    //this.router.navigateByUrl('/')
+    localStorage.removeItem('grayll-user-meta');
     this.router.navigate(['/', {outlets: { popup: null}}])
   }
   submit() {    
@@ -102,16 +114,7 @@ export class ConfirmPasswordComponent implements OnInit {
         })        
     } else {
       this.loadingService.show()  
-      this.renewToken(this.password)  
-      // this.authService.DecryptLocalSecret()
-      // this.authService.GetSecretKey(this.password).then(SecKey => {
-      //   if (SecKey != ''){
-      //     // send request api for re-new token
-      //     this.renewToken(this.password)            
-      //   } else {       
-      //     this.errorService.handleError(null, 'Please enter the valid password!');
-      //   }
-      // })
+      this.renewToken(this.password)        
     }
    
   }
@@ -124,7 +127,7 @@ export class ConfirmPasswordComponent implements OnInit {
         if (data.errCode === environment.SUCCESS) {
           this.authService.userData.token = data.token
           this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
-          //this.authService.SetLocalUserData()          
+          this.authService.pushShouldReload(true)          
           this.popupService.close()
         } else {              
           this.errorService.handleError(null, 'Please enter the valid password!');
@@ -154,21 +157,4 @@ export class ConfirmPasswordComponent implements OnInit {
     }    
     return true;
   }
-
-  // scheduleCheckTokenExpiry(){ 
-  //   // Schedule to logout
-  //   let logoutTime = this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime())
-  //   console.log('confirmpwd-remaining time for logoutTime:', logoutTime)
-  //   if (logoutTime >= 0){
-  //     setTimeout(()=> {
-  //       //will renew the token
-  //       if (this.authService.isTokenExpired){
-  //         console.log('confirmpwd-token is expired, closed ')
-  //         this.popupService.close()
-  //       } else {
-  //         console.log('token already renew')
-  //       }          
-  //     }, logoutTime)
-  //   }
-  // }
 }

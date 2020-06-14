@@ -61,8 +61,7 @@ export class MainChartComponent {
   }
   
   getFrameData(){
-    this.dataService.getFramesData(288, "grxusd,gryusd,grzusd", this.selectedTimespan.frame).subscribe(data => {      
-      console.log(data)
+    this.dataService.getFramesData(288, "grxusd,gryusd,grzusd", this.selectedTimespan.frame).subscribe(data => {
       if (data.res.grxusd && data.res.grxusd[0]){ 
         
         let timeFrame:TimePrice[] = [] 
