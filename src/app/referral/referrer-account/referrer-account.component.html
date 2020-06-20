@@ -33,17 +33,15 @@
       <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
         <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
       </div>
-      <tr *ngFor="let position of openAlgoPositions">
-        <td class="width-91px">{{position.openDate}}</td>
-        <td class="width-101px">{{position.firstName}}</td>
-        <td class="width-101px">{{position.lastName}}</td>
-        <td class="width-101px">{{position.businessName}}</td>
-        <td class="width-175px">{{position.eMail}}</td>
-        <!-- <td class="width-91px">{{position.positionValueUSD}}</td>
-        <td class="width-91px">{{position.positionProfitUSD}}</td> -->
-        <td class="width-101px">{{position.phoneNumber}}</td>
-        <td class="width-91px">{{position.totalFees}}</td>
-        <td class="width-91px">{{position.totalFees}}</td>
+      <tr *ngIf="referralService.referer">
+        <td class="width-91px">{{referralService.referer.time*1000 | date:'d/M/yyyy h:mm'}}</td>
+        <td class="width-101px">{{referralService.referer.name}}</td>
+        <td class="width-101px">{{referralService.referer.lname}}</td>
+        <td class="width-101px">{{referralService.referer.businessName}}</td>
+        <td class="width-175px">{{referralService.referer.email}}</td>
+        <td class="width-101px">{{referralService.referer.phone}}</td>
+        <td class="width-91px">{{referralService.referer.feeGRX*authService.priceInfo.grxusd}}</td>
+        <td class="width-91px">{{referralService.referer.feeGRX}}</td>
         <td class="width-61px">
           <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referrer-remove'}}]">
             <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>

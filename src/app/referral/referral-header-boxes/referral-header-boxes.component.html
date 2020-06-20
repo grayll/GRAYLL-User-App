@@ -13,13 +13,13 @@
               <i class="italic-content"> (Received)</i></span
             >
             <h5 class="text-light font-weight-bolder mb-1">
-              $100,000,000,000.00
+              {{referralService.metric.totalFeeGRX*authService.priceInfo.grxusd}} USD
             </h5>
             <h6 class="text-light font-weight-bolder mb-1">
-              100,000,000,000.00 GRX
+              {{referralService.metric.totalFeeGRX}} GRX
             </h6>
             <h6 class="text-light font-weight-bolder mb-1">
-              100,000,000,000 Payments
+              {{referralService.metric.totalPayment}} Payments
             </h6>
           </div>
         </div>
@@ -55,8 +55,8 @@
             <h6 class="text-white m-b-0 font-weight-bolder">Pending</h6>
           </div>
           <div class="ml-auto mr-3 text-right">
-            <h6 class="text-white font-weight-bolder">$10,000,000.00</h6>
-            <h6 class="text-white font-weight-bolder">$10,000,000.00</h6>
+            <h6 class="text-white font-weight-bolder">{{referralService.metric.confirmed}}</h6>
+            <h6 class="text-white font-weight-bolder">{{referralService.metric.pending}}</h6>
           </div>
         </div>
         <div class="bottom-border-navy-animated">

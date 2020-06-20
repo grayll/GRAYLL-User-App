@@ -26,8 +26,8 @@
 <div class="bg-gradient text-light">
   <div class="row justify-content-center align-items-center mb-1 p-2">
     <div class="col-md-4 col-xs">
-      <span class="align-middle font-weight-bolder font-14" *ngIf="selectedTab && (selectedTab.id === 'pendingInvites')">Pending Contacts (1,234,567,890)</span>
-      <span class="align-middle font-weight-bolder font-14" *ngIf="selectedTab && (selectedTab.id === 'allTransactions' || selectedTab.id === 'referralContacts')">Referral Contacts (1,234,567,890)</span>
+      <span class="align-middle font-weight-bolder font-14" *ngIf="(selectedTab.id === 'pendingInvites')">Pending Contacts ({{referralService.invites.length}})</span>
+      <span class="align-middle font-weight-bolder font-14" *ngIf="(selectedTab.id === 'referralContacts')">Referral Contacts ({{referralService.referralContacts.length}})</span>
     </div>
     <div class="col">
       <div class="row">
@@ -49,7 +49,7 @@
 </div>
 
 <div class="table-responsive bg-gradient text-light pull-top"
-     *ngIf="selectedTab && (selectedTab.id === 'allTransactions')">
+     *ngIf="(selectedTab.id === 'allTransactions')">
   <table class="table mb-0">
     <thead>
     <tr class="font-weight-bolder font-10 text-light">
@@ -71,22 +71,20 @@
     <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
       <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
     </div>
-    <tr *ngFor="let position of searchControl.value?searchResult.openAlgoPositions:openAlgoPositions">
-      <td class="width-91px">{{position.openDate}}</td>
-      <td class="width-101px">{{position.firstName}}</td>
-      <td class="width-101px">{{position.lastName}}</td>
-      <td class="width-101px">{{position.businessName}}</td>
-      <td class="width-175px">{{position.eMail}}</td>
-      <!-- <td class="width-91px">{{position.positionValueUSD}}</td>
-      <td class="width-91px">{{position.positionProfitUSD}}</td> -->
-      <td class="width-101px">{{position.phoneNumber}}</td>
-      <td class="width-91px">{{position.totalFees}}</td>
-      <td class="width-91px">{{position.totalFees}}</td>
+    <tr *ngFor="let item of referralService.referralTxs">
+      <td class="width-91px">{{item.time*1000 | date:'d/M/yyyy h:mm'}}</td>
+      <td class="width-101px">{{item.name}}</td>
+      <td class="width-101px">{{item.lname}}</td>
+      <td class="width-101px">{{item.businessName}}</td>
+      <td class="width-175px">{{item.email}}</td>     
+      <td class="width-101px">{{item.phone}}</td>
+      <td class="width-91px">{{item.feeGRX*authService.priceInfo.grxusd}}</td>
+      <td class="width-91px">{{item.feeGRX}}</td>
       <td class="width-111px">
-      {{position.stellarTransactionId}}
+      {{item.stellarTx}}
       </td>
       <td class="width-41px text-center">
-        <a href="https://stellar.expert/explorer/public" target="_blank">
+        <a href="https://stellar.expert/explorer/public" + {{item.stellarTx}} target="_blank">
           <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
         </a>
       </td>
@@ -125,24 +123,22 @@
     <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
       <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
     </div>
-    <tr *ngFor="let position of searchControl.value?searchResult.openAlgoPositions:openAlgoPositions">
-      <td class="width-91px">{{position.openDate}}</td>
-      <td class="width-101px">{{position.firstName}}</td>
-      <td class="width-101px">{{position.lastName}}</td>
-      <td class="width-101px">{{position.businessName}}</td>
-      <td class="width-175px">{{position.eMail}}</td>
-      <!-- <td class="width-91px">{{position.positionValueUSD}}</td>
-      <td class="width-91px">{{position.positionProfitUSD}}</td> -->
-      <td class="width-101px">{{position.phoneNumber}}</td>
-      <td class="width-91px">{{position.totalFees}}</td>
-      <td class="width-91px">{{position.totalFees}}</td>
-      <td class="width-91px">{{position.totalPayments}}</td>
+    <tr *ngFor="let item of referralService.referralContacts">
+      <td class="width-91px">{{item.time*1000 | date:'d/M/yyyy h:mm'}}</td>
+      <td class="width-101px">{{item.name}}</td>
+      <td class="width-101px">{{item.lname}}</td>
+      <td class="width-101px">{{item.businessName}}</td>
+      <td class="width-175px">{{item.email}}</td>      
+      <td class="width-101px">{{item.phone}}</td>
+      <td class="width-91px">{{item.totalFeeGRX*authService.priceInfo.grxusd}}</td>
+      <td class="width-91px">{{item.totalFeeGRX}}</td>
+      <td class="width-91px">{{item.totalPayment}}</td>
       <td class="width-41px">
         <a href="javascript:void(0)" class="colored-text" [routerLink]="[{outlets: {popup: 'xlm-referral-edit'}}]">
           Edit
         </a>
       </td>
-      <td class="width-61px">
+      <td class="width-64px">
         <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referral-remove'}}]">
           <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
           <span class="ml-1 cancel text-danger">Remove</span>
@@ -179,27 +175,34 @@
     <div class="right-arrow-mobile-scroll-indicator-div d-sm-none">
       <img class="right-arrow-mobile-scroll-indicator-img" src="assets/images/right-chevron.png" alt="Scroll right for more">
     </div>
-    <tr *ngFor="let position of searchControl.value?searchResult.openAlgoPositions:openAlgoPositions">
-      <td class="width-91px">{{position.openDate}}</td>
-      <td class="width-101px">{{position.firstName}}</td>
-      <td class="width-101px">{{position.lastName}}</td>
-      <td class="width-101px">{{position.businessName}}</td>
-      <td class="width-175px">{{position.eMail}}</td>
-      <!-- <td class="width-91px">{{position.positionValueUSD}}</td>
-      <td class="width-91px">{{position.positionProfitUSD}}</td> -->
-      <td class="width-101px">{{position.phoneNumber}}</td>
-      <td class="width-91px">{{position.remindersSent}}</td>
-      <td class="width-91px">{{position.lastReminder}}</td>
+    <tr *ngFor="let item of referralService.invites">
+      <td class="width-91px">{{(item.sentRemind || item.lastSentRemind)*1000 | date:'d/M/yyyy h:mm'}}</td>
+      <td class="width-101px">{{item.name}}</td>
+      <td class="width-101px">{{item.lname}}</td>
+      <td class="width-101px">{{item.businessName}}</td>
+      <td class="width-175px">{{item.email}}</td>
+      <!-- <td class="width-91px">{{item.itemValueUSD}}</td>
+      <td class="width-91px">{{item.itemProfitUSD}}</td> -->
+      <td class="width-101px">{{item.phone}}</td>
+      <td class="width-91px">{{item.remindTime}}</td>
+      <td class="width-91px">{{item.lastSentRemind*1000 | date:'d/M/yyyy h:mm'}}</td>
       <td class="width-91px">
-        <a class="colored-text" href="javascript:void(0)" [routerLink]="[{outlets: {popup: 'xlm-referral-resend'}}]">
+        <!-- <a class="colored-text" href="javascript:void(0)" [routerLink]="[{outlets: {popup: 'xlm-referral-resend'}}]">
+          Send Reminder
+        </a> -->
+        <a class="colored-text" href="javascript:void(0)" (click)='sendRemind(item.id)'>
           Send Reminder
         </a>
       </td>
-      <td class="width-61px">
-        <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referral-remove'}}]">
+      <td class="width-64px">
+        <a href="javascript:void(0)" class="purple-link" (click)='removeInvite(item.id)'>
           <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
           <span class="ml-1 cancel text-danger">Remove</span>
         </a>
+        <!-- <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referral-remove'}}]">
+          <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
+          <span class="ml-1 cancel text-danger">Remove</span>
+        </a> -->
       </td>
     </tr>
     </tbody>

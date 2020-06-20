@@ -29,6 +29,7 @@ export class RegisterComponent implements OnInit {
   message: string;
   honeypot: any = ''
   referer: string = ''
+  docId: string = ''
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,7 +46,8 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.referer = this.route.snapshot.queryParams["referer"];   
-    console.log("referer:", this.referer) 
+    this.docId = this.route.snapshot.queryParams["id"];
+    console.log("docId:", this.docId) 
     this.buildForm()  
   }
 
@@ -151,7 +153,8 @@ registerClicked() {
                 HashPassword: this.registerForm.value['password'],
                 Name: this.registerForm.value['name'],  
                 LName: this.registerForm.value['lname'],    
-                Referer: this.referer,       
+                Referer: this.referer,
+                DocId: this.docId,   
               }
                       
               this.http.post(`api/v1/accounts/register`, userData)             

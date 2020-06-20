@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faAt } from '@fortawesome/free-solid-svg-icons';
+import { ReferralService } from '../referral.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 @Component({
   selector: 'app-referral-header-boxes',
@@ -8,7 +10,11 @@ import { faAt } from '@fortawesome/free-solid-svg-icons';
 })
 export class ReferralHeaderBoxesComponent implements OnInit {
   faAt = faAt;
-  constructor() { }
+  constructor(
+    public referralService: ReferralService,
+    public authService: AuthService) {
+      console.log(referralService.metric)
+    }
 
   ngOnInit() {
   }

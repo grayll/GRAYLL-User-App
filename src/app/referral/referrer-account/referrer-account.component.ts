@@ -16,6 +16,9 @@ import { distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
 import { PdfDownloadService } from 'src/app/_services/pdf-download.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
+import { ReferralService } from '../referral.service';
+import * as moment from 'moment';
 // import { AlgoPositionService } from '../algo-position.service';
 
 @Component({
@@ -90,7 +93,8 @@ export class ReferrerAccountComponent implements OnInit, OnChanges {
   constructor(
     private clipboardService: ClipboardService,
     private snotifyService: SnotifyService,
-    // private algoPositionService: AlgoPositionService,
+    public referralService: ReferralService,
+    public authService: AuthService,
     private pdfService: PdfDownloadService
   ) {
     this.populateOpenAlgoPositionsArray();

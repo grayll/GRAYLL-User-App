@@ -17,6 +17,12 @@ import { Subscription } from 'rxjs';
 
 import { PdfDownloadService } from 'src/app/_services/pdf-download.service';
 import { AlgoPositionService } from '../../shared/algo-position.service';
+import { ReferralService } from 'src/app/referral/referral.service';
+import { AuthService } from '../services/auth.service';
+import * as moment from 'moment';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { ErrorService } from '../error/error.service';
 
 @Component({
   selector: 'app-referral-activity',
@@ -93,7 +99,12 @@ export class ReferralActivityComponent implements OnInit, OnChanges {
     private clipboardService: ClipboardService,
     private snotifyService: SnotifyService,
     private algoPositionService: AlgoPositionService,
-    private pdfService: PdfDownloadService
+    private pdfService: PdfDownloadService,
+    public referralService: ReferralService,
+    public authService: AuthService,
+    private http: HttpClient,
+    private errorService: ErrorService,
+
   ) {
     this.populateOpenAlgoPositionsArray();
   }
@@ -117,36 +128,57 @@ export class ReferralActivityComponent implements OnInit, OnChanges {
           this.search(query, 'CLOSED');
         }
       });
+  }
 
-    // let mockup = new AlgoPositionModel(
-    //   1,
-    //   '18/12/2019 03:14',
-    //   'OPEN',
-    //   44401,
-    //   'GRY 1',
-    //   0.34201,
-    //   0.54202,
-    //   '4,220,888,221.3333',
-    //   '2,444,210,778.3838',
-    //   210.32,
-    //   '010818199961838546',
-    //   '0109181999618385543'
-    // );
-
-    // this.algoPositionService.addAlgoPosition({...mockup});
-
-    // this.algoPositions$ = this.algoPositionService.algoPositions.subscribe(res => {
-    //   this.openAlgoPositions = [];
-    //   this.closeAlgoPositions = [];
-    //   console.log('run,', res)
-    //   res.map(el => {
-    //     if (el && el['status'] === 'OPEN') {
-    //       this.openAlgoPositions.push({ ...el });
-    //     } else {
-    //       this.closeAlgoPositions.push({ ...el });
-    //     }
-    //   });
-    // });
+  sendRemind(id){
+    this.http.post(`api/v1/users/reinvite/`+id, {})             
+    .subscribe(res => { 
+      //this.loadingService.hide() 
+      console.log(res)
+      if ((res as any).errCode == environment.EMAIL_IN_USED)  {
+        let content = "The email entered is already registered."
+        //this.errorService.handleError(null, content)
+        //this.registerForm.reset() 
+      } else if ((res as any).errCode == environment.EMAIL_INVALID){
+        let content = "The email entered is invalid."
+        //this.errorService.handleError(null, content)
+        //this.registerForm.reset() 
+      } else {              
+        //this.success = true
+        this.errorService.handleError(null, `The reminder already sent.!`)  
+      }
+    },
+    error => {
+      //this.loadingService.hide()
+      // console.log(error) 
+      // this.registerForm.reset()              
+      this.errorService.handleError(null, `Currently, Reminder can't be processed. Please try again later!`)     
+    })
+  }
+  removeInvite(id){
+    this.http.post(`api/v1/users/delinvite/`+id, {})             
+    .subscribe(res => { 
+      //this.loadingService.hide() 
+      console.log(res)
+      if ((res as any).errCode == environment.EMAIL_IN_USED)  {
+        let content = "The email entered is already registered."
+        //this.errorService.handleError(null, content)
+        //this.registerForm.reset() 
+      } else if ((res as any).errCode == environment.EMAIL_INVALID){
+        let content = "The email entered is invalid."
+        //this.errorService.handleError(null, content)
+        //this.registerForm.reset() 
+      } else {              
+        //this.success = true
+        this.errorService.handleError(null, `The reminder already sent.!`)  
+      }
+    },
+    error => {
+      //this.loadingService.hide()
+      // console.log(error) 
+      // this.registerForm.reset()              
+      this.errorService.handleError(null, `Currently, Reminder can't be processed. Please try again later!`)     
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {

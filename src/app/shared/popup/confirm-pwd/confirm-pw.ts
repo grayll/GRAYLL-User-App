@@ -37,7 +37,7 @@ export class ConfirmPasswordComponent implements OnInit {
       console.log('setInterval-confirm-pwd')
       if (!this.authService.userMetaStore || !this.authService.userMetaStore.TokenExpiredTime){
         clearInterval(this.x); 
-        this.popupService.close()   
+        this.popupService.close()
         return
       }
       // Get today's date and time
