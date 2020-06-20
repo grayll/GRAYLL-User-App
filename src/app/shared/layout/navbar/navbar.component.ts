@@ -1,12 +1,7 @@
-//<<<<<<< HEAD
-//import {Component, NgZone,Input, OnDestroy, OnInit, HostListener, ChangeDetectorRef} from '@angular/core';
-//import {Router, ActivatedRoute} from '@angular/router';
-//import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet} from '@fortawesome/free-solid-svg-icons';
-//=======
 import {Component, NgZone,Input, OnDestroy, OnInit, HostListener, ChangeDetectorRef} from '@angular/core';
-import {Router} from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet, faAt} from '@fortawesome/free-solid-svg-icons';
-//>>>>>>> origin/referral_system
+
 import {NotificationsService} from '../../../notifications/notifications.service';
 import {AuthService} from 'src/app/shared/services/auth.service'
 import { StellarService } from 'src/app/authorization/services/stellar-service'
@@ -23,6 +18,9 @@ import { SwUpdateNotifyService } from '../../sw-update-notifiy/sw-update-notify.
 
 import { AlgoService } from 'src/app/system/algo.service';
 import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
+
+// import { interval } from 'rxjs';
+// import { timeoutWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-navbar',
@@ -187,15 +185,15 @@ export class NavbarComponent implements OnDestroy, OnInit {
         return
       }
       let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 15*60*1000
-      //let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 1*60*1000
-      
+      //let remainTime = +this.authService.userMetaStore.TokenExpiredTime*1000 - (new Date().getTime()) - 1*60*1000      
       if (remainTime >= 0){
         if (this.authService.timeOutShowConfirmPwd){
           clearTimeout(this.authService.timeOutShowConfirmPwd)
         }
-        this.authService.timeOutShowConfirmPwd = setTimeout(()=> {              
-            this.ngZone.run(()=> {              
-              this.changeDetector.detectChanges();
+        this.authService.timeOutShowConfirmPwd = setTimeout(()=> { 
+          console.log('NAV.show confirm pwd')
+          //setTimeout(() => { this.router.navigate([this.currentURL, {outlets: {popup: 'confirm-password'}}]); }, 0)             
+            this.ngZone.run(()=> {
               this.router.navigate(['/settings/profile', {outlets: {popup: 'confirm-password'}}]);
               //this.router.navigate([this.currentURL, {outlets: {popup: 'confirm-password'}}]);                           
             })         
@@ -211,7 +209,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
         this.authService.timeOutLogout = setTimeout(()=> {
           //will renew the token
           if (this.authService.isTokenExpired){
-            //console.log('NAV.token is expired, signout')
+            console.log('NAV.token is expired, signout')
             this.signOut()
           } else {
             this.scheduleCheckTokenExpiry()

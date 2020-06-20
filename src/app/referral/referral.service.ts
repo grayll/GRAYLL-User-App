@@ -68,7 +68,7 @@ export class ReferralService {
         }
         if (!this._referralContacts){
             // need to change refererral to referral after test completion
-            this._referralContacts = this.afs.collection('referrals/' + uid + '/refererral').valueChanges()
+            this._referralContacts = this.afs.collection('referrals/' + uid + '/referral').valueChanges()
         }
 
         if (!this._referralTxs){

@@ -1,6 +1,6 @@
 export class AlgoPositionModel {
   constructor(
-    //public id?: string,
+    public id?: string,
     public item?: string,
     public usdValue?: any,
     public itemAmount?: any,

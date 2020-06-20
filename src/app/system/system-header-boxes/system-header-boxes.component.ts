@@ -91,6 +91,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
     
     this.selectedTab = this.algoItems[0];
     this.algoPosition = new AlgoPositionModel();
+    this.algoPosition.id = this.algoItems[0].id
     this.algoPosition.token = this.algoItems[0].token
     this.algoPosition.item = this.algoItems[0].name
     

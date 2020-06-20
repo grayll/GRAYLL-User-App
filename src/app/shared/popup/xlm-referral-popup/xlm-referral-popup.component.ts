@@ -146,11 +146,11 @@ registerClicked() {
     .subscribe(res => { 
       this.loadingService.hide() 
       if ((res as any).errCode == environment.EMAIL_IN_USED)  {
-        let content = "The email entered is already registered."
+        let content = "The email is already registered."
         this.errorService.handleError(null, content)
         this.registerForm.reset() 
-      } else if ((res as any).errCode == environment.EMAIL_INVALID){
-        let content = "The email entered is invalid."
+      } else if ((res as any).errCode == environment.INVALID_ADDRESS){
+        let content = "The email is invalid."
         this.errorService.handleError(null, content)
         this.registerForm.reset() 
       } else {              

@@ -202,16 +202,21 @@ export class AlgoService {
   // }
 
   getGRYBalance(){
-    return this.authService.userMetaStore.total_gry1_current_position_value_$ + this.authService.userMetaStore.total_gry2_current_position_value_$ + 
-    this.authService.userMetaStore.total_gry3_current_position_value_$
+    if (this.authService.userMetaStore){
+      return this.authService.userMetaStore.total_gry1_current_position_value_$ + this.authService.userMetaStore.total_gry2_current_position_value_$ + 
+      this.authService.userMetaStore.total_gry3_current_position_value_$
+    }
     // if (this.algoService.gry1Metric && this.algoService.gry2Metric && this.algoService.gry3Metric ){
     //   return this.algoService.gry1Metric.TotalValue + this.algoService.gry2Metric.TotalValue + this.algoService.gry3Metric.TotalValue
     // }
-    // return 0
+    return 0
   }
   getAlgoBalance(){
-    return this.getGRYBalance() + this.authService.userMetaStore.total_grz_current_position_value_$
-    //return this.getGRYBalance() + (this.algoService.grzMetric.TotalValue | 0)
+    if (this.authService.userMetaStore && this.authService.userMetaStore.total_grz_current_position_value_$){
+      return this.getGRYBalance() + this.authService.userMetaStore.total_grz_current_position_value_$
+    } 
+    return 0
+    
   }
   calPercentGRY(){
     let totalgry = this.getGRYBalance()
@@ -242,25 +247,30 @@ export class AlgoService {
     // }
   }
   getTotalOpenPosition(){
-    return this.authService.userMetaStore.total_gry1_open_positions + this.authService.userMetaStore.total_gry2_open_positions + 
-    this.authService.userMetaStore.total_gry3_open_positions + this.authService.userMetaStore.total_grz_open_positions
-    // this.algoService.grzMetric.Positions + this.algoService.gry1Metric.Positions + 
-    // this.algoService.gry2Metric.Positions + this.algoService.gry3Metric.Positions
+    if (this.authService.userMetaStore && this.authService.userMetaStore.total_gry1_open_positions 
+      && this.authService.userMetaStore.total_grz_open_positions){
+      return this.authService.userMetaStore.total_gry1_open_positions + this.authService.userMetaStore.total_gry2_open_positions + 
+        this.authService.userMetaStore.total_gry3_open_positions + this.authService.userMetaStore.total_grz_open_positions
+    }
+    return 0
   }
   // getTotalAccountValue(){
   //   return this.xlmInUsd() + this.grxInUsd() + this.getAlgoBalance()
   // }
   getGRYProfit(){
-    return this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
-    this.authService.userMetaStore.total_gry2_current_position_ROI_$ + this.authService.userMetaStore.total_gry2_close_positions_ROI_$ +
-    this.authService.userMetaStore.total_gry3_current_position_ROI_$ + this.authService.userMetaStore.total_gry3_close_positions_ROI_$
-    // this.algoService.gry1Metric.CurrentProfit + 
-    // this.algoService.gry2Metric.CurrentProfit + this.algoService.gry3Metric.CurrentProfit
-
+    if (this.authService.userMetaStore){
+      return this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
+      this.authService.userMetaStore.total_gry2_current_position_ROI_$ + this.authService.userMetaStore.total_gry2_close_positions_ROI_$ +
+      this.authService.userMetaStore.total_gry3_current_position_ROI_$ + this.authService.userMetaStore.total_gry3_close_positions_ROI_$
+    }
+    return 0
+        
   }
   getTotalAccountProfit(){
-    return this.getGRYProfit() + this.authService.userMetaStore.total_grz_close_positions_ROI_$ + this.authService.userMetaStore.total_grz_current_position_ROI_$
-    
+    if (this.authService.userMetaStore){
+      return this.getGRYProfit() + this.authService.userMetaStore.total_grz_close_positions_ROI_$ + this.authService.userMetaStore.total_grz_current_position_ROI_$
+    }
+    return 0
   }
 
 
