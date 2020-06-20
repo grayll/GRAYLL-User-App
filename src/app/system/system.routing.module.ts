@@ -7,6 +7,7 @@ import {OpenAlgoPositionErrorComponent} from './system-header-boxes/open-algo-po
 import {XlmLoanPopupComponent} from '../shared/popup/xlm-loan-popup/xlm-loan-popup.component';
 import {ConfirmPasswordComponent} from 'src/app/shared/popup/confirm-pwd/confirm-pw';
 import { ConfirmNewVersionComponent } from '../shared/popup/confirm-new-version/confirm-new-version.component';
+import { XlmReferralPopupComponent } from '../shared/popup/xlm-referral-popup/xlm-referral-popup.component';
 
 const popupRoutes: Routes = [
   {
@@ -37,6 +38,11 @@ const popupRoutes: Routes = [
   {
     path: 'confirm-password',
     component: ConfirmPasswordComponent,
+    outlet: 'popup'
+  },
+  {
+    path: 'xml-referral',
+    component: XlmReferralPopupComponent,
     outlet: 'popup'
   },
 ];

@@ -28,6 +28,12 @@ import {ConfirmPasswordComponent} from './popup/confirm-pwd/confirm-pw';
 import { ConfirmNewVersionComponent } from './popup/confirm-new-version/confirm-new-version.component';
 import { SwUpdateNotifiyComponent } from './sw-update-notifiy/sw-update-notifiy.component';
 import { LoaderScreenComponent } from './loader-screen/loader-screen.component';
+import {XlmReferralPopupComponent} from './popup/xlm-referral-popup/xlm-referral-popup.component';
+import {XlmReferralRemovePopupComponent} from './popup/xlm-referral-remove-popup/xlm-referral-remove-popup.component';
+import {XlmReferrerRemovePopupComponent} from './popup/xlm-referrer-remove-popup/xlm-referrer-remove-popup.component';
+import {XlmReferralResendPopupComponent} from './popup/xlm-referral-resend-popup/xlm-referral-resend-popup.component';
+import {XlmReferralEditPopupComponent} from './popup/xlm-referral-edit-popup/xlm-referral-edit-popup.component';
+import { ReferralActivityComponent } from './referral-activity/referral-activity.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +56,12 @@ import { LoaderScreenComponent } from './loader-screen/loader-screen.component';
     ConfirmNewVersionComponent,
     SwUpdateNotifiyComponent,
     LoaderScreenComponent,
+    ReferralActivityComponent,
+    XlmReferralRemovePopupComponent,
+    XlmReferrerRemovePopupComponent,
+    XlmReferralResendPopupComponent,
+    XlmReferralEditPopupComponent,
+    XlmReferralPopupComponent,
   ],
   imports: [
     CommonModule,
@@ -70,6 +82,7 @@ import { LoaderScreenComponent } from './loader-screen/loader-screen.component';
     ErrorComponent,
     NavbarComponent,
     AccountActivityComponent,
+    ReferralActivityComponent,
     MainChartComponent,
     ActivityComponent,
     AlgoNotificationItemComponent,
@@ -80,6 +93,7 @@ import { LoaderScreenComponent } from './loader-screen/loader-screen.component';
     SwUpdateNotifiyComponent,
     LoaderScreenComponent,
     ReActivateAccountComponent,
+
   ]
 })
 export class SharedModule { }

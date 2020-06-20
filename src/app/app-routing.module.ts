@@ -59,6 +59,11 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'referral',
+    loadChildren: './referral/referral.module#ReferralModule',
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'swnotify',
     component: SwUpdateNotifiyComponent,   
   },

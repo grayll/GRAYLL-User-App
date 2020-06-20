@@ -1,0 +1,51 @@
+<router-outlet name="popup"></router-outlet>
+<app-navbar></app-navbar>
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="container-fluid pt-0" id="algoPositionForm">
+
+      <div *ngIf="authService.userInfo && authService.userInfo.LoanPaidStatus <= 1; else loanPaid">
+        <!-- Display on mobile -->
+        <div class="alert justify-content-between alert-warning d-lg-none loan-unpaid-mobile" role="alert">
+          <div style="display: inline;">
+            <fa-icon [icon]="faWarning" class="text-purple" [fixedWidth]="true"></fa-icon>
+            Please click the button "Pay Off Loan" to return the 2.1 XLM loan to GRAYLL.
+          </div>
+          <button class="btn btn-purple" [routerLink]="[{outlets: {popup: 'xlm-loan'}}]">Pay Off Loan</button>
+        </div>
+
+        <h4 class="text-light pb-1 page-title">
+          Dashboard
+        </h4>
+
+        <!-- Display on larger devices -->
+        <div class="alert alert-warning loan-unpaid justify-content-between d-none d-lg-flex" role="alert">
+          <div style="display: inline;">
+            <fa-icon [icon]="faWarning" class="text-purple" [fixedWidth]="true"></fa-icon>
+            Please click the button "Pay Off Loan" to return the 2.1 XLM loan to GRAYLL.
+          </div>
+          <button class="btn btn-purple" [routerLink]="[{outlets: {popup: 'xlm-loan'}}]">Pay Off Loan</button>
+        </div>
+      </div>
+
+      <ng-template #loanPaid>
+        <h4 class="text-light pt-3 pb-1">
+          Referral System
+        </h4>
+      </ng-template>
+
+      <div style="clear:both"></div>
+
+      <!-- Top 3 boxes -->
+      <app-referral-header-boxes></app-referral-header-boxes>
+      <!-- <br class="d-none d-lg-block"> -->
+      <!-- Large chart -->
+      <!-- <app-main-chart></app-main-chart> -->
+
+      <!-- Bottom table -->
+      <app-referrer-account></app-referrer-account>
+      <app-referral-activity [showCompletedOrdersLink]="true" [activeTabId]="activeTabId"></app-referral-activity>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,120 @@
+<ng-template #content let-modal>
+  <app-popup-header popupHeaderTitle="Resend Referral Invite"></app-popup-header>
+  <div class="modal-body">
+
+    <app-error></app-error>
+
+    <div class="row mb-1" *ngIf="!success && !error">
+      <div class="col-12">
+        <p class="text-purple">Please review your <i>Referral Contact&nbsp;</i>details before resending the <i>Referral Invite</i>.</p>
+      </div>
+      <div class="col-12">
+        <label for="firstName" class="text-purple font-weight-bold">
+          First Name
+        </label>
+        <input id="firstName" type="text" class="form-control purple-input" placeholder="First Name">
+      </div>
+      <div class="col-12 text-right">
+        <small class="text-purple"><i>Required</i></small>
+      </div>
+      <div class="col-12">
+        <label for="lastName" class="text-purple font-weight-bold">
+          Last Name
+        </label>
+        <input id="lastName" type="text" class="form-control purple-input" placeholder="Last Name">
+      </div>
+      <div class="col-12 text-right">
+        <small class="text-purple"><i>Required</i></small>
+      </div>
+      <div class="col-12">
+        <label for="businessName" class="text-purple font-weight-bold">
+          Business Name
+        </label>
+        <input id="businessName" type="text" class="form-control purple-input" placeholder="Business Name">
+      </div>
+      <div class="col-12"><small>&nbsp;</small></div>
+      <div class="col-12">
+        <label for="emailAddress" class="text-purple font-weight-bold">
+          Email Address
+        </label>
+        <input id="emailAddress" type="text" class="form-control purple-input" placeholder="Email Address">
+      </div>
+      <div class="col-12 text-right">
+        <small class="text-purple"><i>Required</i></small>
+      </div>
+      <div class="col-12"><small>&nbsp;</small></div>
+      <div class="col-12">
+        <div class="d-flex column-div">
+          <label for="phoneNumber" class="text-purple font-weight-bold">
+            Mobile Number <i>(*WhatsApp Number Only)</i>
+          </label>
+          <!-- <a class="text-purple margin-left-auto font-weight-bold" href="javascript: void(0)">Send to <i>WhatsApp</i><fa-icon class="phone-icon" [icon]="faPhone"></fa-icon></a> -->
+          <div class="text-right flex-grow-1">
+            <label for="noMemoMessage" class="font-weight-bolder form-check-label text-purple">Send to<i class="margin-1">WhatsApp</i></label>
+            <label class="checkbox">
+              <input [(ngModel)]="noMemoMessageSelected" type="checkbox" id="noMemoMessage" />
+              <span class="default"></span>
+            </label>
+          </div>
+        </div>
+        <input id="phoneNumber" type="text" class="form-control purple-input" placeholder="Mobile Number (*WhatsApp)">
+        <div class="col-12"><small>&nbsp;</small></div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="success">
+      <div class="success-checkmark">
+        <div class="check-icon">
+          <span class="icon-line line-tip"></span>
+          <span class="icon-line line-long"></span>
+          <div class="icon-circle"></div>
+          <div class="icon-fix"></div>
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <div class="col-12 text-center">
+          <p class="text-purple">
+            Thank you, the referral invite has been resent successfully.
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="error">
+      <div class="swal2-icon swal2-error swal2-animate-error-icon" style="display: flex;">
+        <span class="swal2-x-mark">
+          <span class="swal2-x-mark-line-left"></span>
+          <span class="swal2-x-mark-line-right"></span>
+        </span>
+      </div>
+
+      <div class="row text-center">
+        <div class="col">
+          <p class="text-purple font-16">Resend Referral Invite Failed</p>
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <div class="col-12 text-center">
+          <p class="text-purple">
+            Something went wrong, Please review the contact details and retry.
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+
+  <div class="modal-footer justify-content-center">
+    <div class="row text-center" style="display: contents!important;">
+      <div class="col">
+        <button class="btn btn-purple cancel-btn three-btn" *ngIf="!success && !error" (click)="popupService.close()">Cancel</button>
+        <a href="javascript: void(0)" class="btn btn-purple cancel-btn three-btn" *ngIf="!success && !error" (click)="goToEdit()">Edit Contact</a>
+        <button class="btn btn-purple three-btn" *ngIf="!success && !error" (click)="payOffLoan()">Resend</button>
+        <button class="btn btn-purple" *ngIf="success" (click)="popupService.close()">Close</button>
+        <button class="btn btn-purple" *ngIf="error" (click)="retry()">Review</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

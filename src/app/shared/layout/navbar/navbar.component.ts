@@ -1,6 +1,12 @@
+//<<<<<<< HEAD
+//import {Component, NgZone,Input, OnDestroy, OnInit, HostListener, ChangeDetectorRef} from '@angular/core';
+//import {Router, ActivatedRoute} from '@angular/router';
+//import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet} from '@fortawesome/free-solid-svg-icons';
+//=======
 import {Component, NgZone,Input, OnDestroy, OnInit, HostListener, ChangeDetectorRef} from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet} from '@fortawesome/free-solid-svg-icons';
+import {Router} from '@angular/router';
+import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet, faAt} from '@fortawesome/free-solid-svg-icons';
+//>>>>>>> origin/referral_system
 import {NotificationsService} from '../../../notifications/notifications.service';
 import {AuthService} from 'src/app/shared/services/auth.service'
 import { StellarService } from 'src/app/authorization/services/stellar-service'
@@ -36,7 +42,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
   faChartBar = faChartBar;
   faWallet = faWallet;
   faChartLine = faChartLine;
-
+  faAt = faAt;
   walletNotices: number = 0
   algoNotices: number = 0
   generalNotices: number = 0 
@@ -49,8 +55,8 @@ export class NavbarComponent implements OnDestroy, OnInit {
   isSignout:boolean = false
   shouldReleadSub: Subscription
 
-  timeOutShowConfirmPwd:any;
-  timeOutLogout:any;
+  //timeOutShowConfirmPwd:any;
+  //timeOutLogout:any;
   currentURL:string = ''
    
   constructor(
