@@ -15,17 +15,18 @@
 <div class="table-responsive bg-gradient text-light pull-top bottom-border-rounded">
   <table class="table mb-0">
     <thead>
-    <tr class="font-weight-bolder font-10 text-light">
-      <th class="width-91px">Date<br><i>(Invite Accepted)</i></th>
-      <th class="width-101px">First Name</th>
-      <th class="width-101px">Last Name</th>
-      <th class="width-101px">Business Name</th>
-      <th class="width-175px">Email</th>
-      <th class="width-101px">Phone</th>
-      <th class="width-91px">Fees (USD) <br><i>(Paid to Referrer)</i> </th>
-      <th class="width-91px">Fees (GRX) <br><i>(Paid to Referrer)</i></th>     
-      <th class="width-61px">Actions</th>
-    </tr>
+      <tr class="font-weight-bolder font-10 text-light">
+        <th class="width-91px">Date<br><i>(Invite Accepted)</i></th>
+        <th class="width-101px">First Name</th>
+        <th class="width-101px">Last Name</th>
+        <th class="width-101px">Business Name</th>
+        <th class="width-175px">Email</th>
+        <th class="width-100px">Phone</th>
+        <th class="width-91px">Fees (USD) <br><i>(Paid to Referrer)</i> </th>
+        <th class="width-91px">Fees (GRX) <br><i>(Paid to Referrer)</i></th>
+        <!-- <th class="width-41px">Info</th> -->
+        <th class="width-62px">Actions</th>
+      </tr>
     </thead>
 
     <tbody class="font-8 text-light pb-3">
@@ -38,13 +39,13 @@
         <td class="width-101px">{{referralService.referer.lname}}</td>
         <td class="width-101px">{{referralService.referer.businessName}}</td>
         <td class="width-175px">{{referralService.referer.email}}</td>
-        <td class="width-101px">{{referralService.referer.phone}}</td>
+        <td class="width-100px">{{referralService.referer.phone}}</td>
         <td class="width-91px">{{referralService.referer.feeGRX*authService.priceInfo.grxusd}}</td>
         <td class="width-91px">{{referralService.referer.feeGRX}}</td>
-        <td class="width-61px">
-          <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referrer-remove'}}]">
+        <td class="width-62px">
+          <a href="javascript:void(0)" class="purple-link" (click)='removeReferer(referralService.referer.id)'>
             <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
-            <span class="ml-1 cancel text-danger">Remove </span>
+            <span class="ml-1 cancel text-danger">Remove</span>
           </a>
         </td>
       </tr>

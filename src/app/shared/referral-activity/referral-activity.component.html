@@ -134,12 +134,12 @@
       <td class="width-91px">{{item.totalFeeGRX}}</td>
       <td class="width-91px">{{item.totalPayment}}</td>
       <td class="width-41px">
-        <a href="javascript:void(0)" class="colored-text" [routerLink]="[{outlets: {popup: 'xlm-referral-edit'}}]">
+        <a href="javascript:void(0)" class="colored-text" [routerLink]="[{outlets: {popup: 'xlm-referral-edit'+item.uid}}]">
           Edit
         </a>
       </td>
       <td class="width-64px">
-        <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referral-remove'}}]">
+        <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referral-remove/'+item.uid}}]">
           <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
           <span class="ml-1 cancel text-danger">Remove</span>
         </a>

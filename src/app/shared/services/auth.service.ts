@@ -222,10 +222,7 @@ export class AuthService {
       }
       if (!this.subsink){
         this.subsink = new SubSink()
-      }
-      // if (this.isSubUserMeta){
-      //   return
-      // }      
+      }     
   }
 
   getUserMetabk(){

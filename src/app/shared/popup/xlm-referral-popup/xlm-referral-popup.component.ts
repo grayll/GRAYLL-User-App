@@ -28,29 +28,19 @@ export class XlmReferralPopupComponent implements OnInit {
   didShowErrorOnce: boolean;
   faPhone = faCircle;
 
-  private user: UserModel;
-
-  submitted = false;
-  
+  submitted = false;  
   registerForm: FormGroup;
 
   constructor(
-    public popupService: PopupService,
-    private settingsService: SettingsService,
-    private errorService: ErrorService,
-    private userService: UserService,
-    private sharedService: SharedService,
-    private formBuilder: FormBuilder,
-   
-    private router: Router, public authService: AuthService,
-    
-    private ngZone:NgZone,
+    public popupService: PopupService,    
+    private errorService: ErrorService,    
+    private formBuilder: FormBuilder,   
+    private router: Router, public authService: AuthService,  
     private http: HttpClient,
     private loadingService: LoadingService,
     private route: ActivatedRoute,
   ) {
-    this.user = this.userService.getUser();
-    
+       
   }
 
   
@@ -62,10 +52,12 @@ export class XlmReferralPopupComponent implements OnInit {
 
   buildForm(): void {    
     this.registerForm = this.formBuilder.group({
-      'name': ['', [Validators.required, Validators.minLength(3),
+      'name': ['', [Validators.required, Validators.minLength(2),
         Validators.maxLength(50)]],   
-      'lname': ['', [Validators.required, Validators.minLength(3),
-        Validators.maxLength(50)]],      
+      'lname': ['', [Validators.required, Validators.minLength(2),
+        Validators.maxLength(50)]],  
+      'businessName': ['', [Validators.minLength(2),
+          Validators.maxLength(50)]],       
       'email': ['', [
           Validators.required,        
           Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/),
@@ -97,19 +89,24 @@ export class XlmReferralPopupComponent implements OnInit {
   formErrors = {
     'name':'',
     'lname':'',
+    'businessName':'',
     'email': '',        
   };
 
   validationMessages = {  
     'name':{
       'required':      'First Name is required.',
-      'minlength':      'First Name must be at least 3 characters long.',
+      'minlength':      'First Name must be at least 2 characters long.',
       'maxlength':      'First Name cannot be more than 25 characters long.'
     },      
     'lname':{
       'required':      'Last Name is required.',
-      'minlength':      'Last Name must be at least 3 characters long.',
+      'minlength':      'Last Name must be at least 2 characters long.',
       'maxlength':      'Last Name cannot be more than 25 characters long.'
+    },
+    'businessName':{      
+      'minlength':      'Business Name must be at least 3 characters long.',
+      'maxlength':      'Business Name cannot be more than 25 characters long.'
     },
     'email': {
       'required':      'Email is required.',
@@ -137,11 +134,11 @@ registerClicked() {
   let email = this.registerForm.value['email']
   let name = this.registerForm.value['name']
   let lname = this.registerForm.value['lname']
-  let bussinessName = this.registerForm.value['bussinessName']
+  let businessName = this.registerForm.value['businessName']
   let phone = this.registerForm.value['phone']
   this.loadingService.show()
 
-  let userData = {email:email, name:name, lname:lname,bussinessName:bussinessName, phone:phone}
+  let userData = {email:email, name:name, lname:lname, businessName:businessName, phone:phone}
   this.http.post(`api/v1/users/invite`, userData)             
     .subscribe(res => { 
       this.loadingService.hide() 

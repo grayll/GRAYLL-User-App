@@ -6,7 +6,7 @@
 
     <div class="row mb-1" *ngIf="!success && !error">
       <div class="col-12">
-        <p class="text-purple">Removing a<i class="margin-1">Referrer Invite Contact&nbsp;</i>will result in the following:</p>
+        <p class="text-purple">Removing a&nbsp;<i class="margin-1">Referrer Invite Contact&nbsp;</i>will result in the following:</p>
         <p class="text-purple">1) You will no longer benefit from reduced <i>Performance Fees&nbsp;</i>- fee increase to 18%<br />2) Your <i>Referrer Contact&nbsp;</i>will no longer receive shared fees from your algo positions.</p>
         <!-- <br> -->
         <p class="text-purple">We advise that prior to removing your <i>Referrer Contact&nbsp;</i> that you notify your contact. It is always better to give the <i>Referrer Contact&nbsp;</i> that invited you to GRAYLL time to respond.</p>
@@ -106,7 +106,7 @@
     <div class="row text-center" style="display: contents!important;">
       <div class="col">
         <button class="btn btn-purple cancel-btn" *ngIf="!success && !error" (click)="popupService.close()">Cancel</button>
-        <button class="btn btn-purple" *ngIf="!success && !error" (click)="payOffLoan()">Confirm Removal</button>
+        <button class="btn btn-purple" *ngIf="!success && !error" (click)="removeReferer()">Confirm Removal</button>
         <button class="btn btn-purple" *ngIf="success" (click)="popupService.close()">Close</button>
         <button class="btn btn-purple cancel-btn" *ngIf="error" (click)="popupService.close()">Cancel</button>
         <button class="btn btn-purple" *ngIf="error" (click)="retry()">Retry</button>

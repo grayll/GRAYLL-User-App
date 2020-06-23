@@ -35,6 +35,9 @@ export class ReferralService {
     _referralTxs: Observable<any>
     _invites: Observable<any>
 
+    removeRefererId: string = ''
+    removeRefererralId: string = ''
+
     public metric: ReferralMetrics = {totalFeeUsd: 0, totalFeeGRX: 0, totalPayment: 0, confirmed:0, pending:0}
 
     public referralContacts: Referral[]
@@ -54,7 +57,15 @@ export class ReferralService {
         this.referralContacts = []
         this.referralTxs = []
         this.invites = []
+        
        // this.referer       
+    }
+
+    resetData(){
+        this.referralContacts = []
+        this.referralTxs = []
+        this.invites = []
+        this.referer = null
     }
 
     subReferral(){

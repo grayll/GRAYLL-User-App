@@ -102,7 +102,10 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   ) {
     this.subsink = new SubSink()    
     this.algoService.subsAlgoPositions()
-    this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {           
+    this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {    
+      if (!positions){
+        return
+      }       
       let positionClosed = true
       this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
       this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}

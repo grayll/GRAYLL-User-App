@@ -16,10 +16,11 @@
             First Name
           </label>
           <input id="firstName" formControlName="name"  type="text" class="form-control purple-input" placeholder="First Name">
+          <small class="text-purple" *ngIf="submitted && formErrors.name">
+            {{ formErrors.name }}
+          </small> 
         </div>
-        <small class="text-light" *ngIf="submitted && formErrors.name">
-          {{ formErrors.name }}
-        </small> 
+       
         <div class="col-12 text-right">
           <small class="text-purple"><i>Required</i></small>
         </div>
@@ -29,29 +30,35 @@
             Last Name
           </label>
           <input id="lastName" formControlName="lname" type="text" class="form-control purple-input" placeholder="Last Name">
+          <small class="text-purple" *ngIf="submitted && formErrors.lname">
+            {{ formErrors.lname }}
+          </small>  
         </div>
-        <small class="text-light" *ngIf="submitted && formErrors.lname">
-          {{ formErrors.lname }}
-        </small>  
-        <!-- <div class="col-12 text-right">
+        
+        <div class="col-12 text-right">
           <small class="text-purple"><i>Required</i></small>
-        </div> -->
+        </div>
         <div class="col-12">
-          <label for="businessName" class="text-purple font-weight-bold">
+          <label for="busName" class="text-purple font-weight-bold">
             Business Name
           </label>
-          <input id="businessName" type="text" class="form-control purple-input" placeholder="Business Name">
+          <input id="busName" formControlName="businessName" type="text" class="form-control purple-input" placeholder="Business Name">
+          <small class="text-purple" *ngIf="submitted && formErrors.businessName">
+            {{ formErrors.businessName }}
+          </small> 
         </div>
+         
         <div class="col-12"><small>&nbsp;</small></div>
         <div class="col-12">
           <label for="emailAddress" class="text-purple font-weight-bold">
             Email Address
           </label>
           <input id="emailAddress" formControlName="email" type="text" class="form-control purple-input" placeholder="Email Address">
+          <small class="text-purple" *ngIf="submitted && formErrors.email" >
+            {{ formErrors.email }}
+          </small>
         </div>
-        <small class="text-light" *ngIf="submitted && formErrors.email" >
-          {{ formErrors.email }}
-        </small>
+       
         <div class="col-12 text-right">
           <small class="text-purple"><i>Required</i></small>
         </div>

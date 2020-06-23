@@ -19,6 +19,7 @@ import { StellarService } from '../services/stellar-service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { AlgoService } from 'src/app/system/algo.service';
 import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
+import { ReferralService } from 'src/app/referral/referral.service';
 
 
 @Component({
@@ -52,17 +53,15 @@ export class LoginComponent {
     public stellarService: StellarService,
     private formBuilder: FormBuilder,
     private errorService: ErrorService,
-    private router: Router,
-    
+    private router: Router,    
     private recaptchaV3Service: ReCaptchaV3Service,
     public notificationsService: NotificationsService,
     public http: HttpClient,   
-    public Pwa: PwaService,
-    
+    public Pwa: PwaService,    
     private loadingService: LoadingService,
+    private refService: ReferralService,
     private ngZone:NgZone) {
-    	this.browserPlatform = this.Pwa.getBrowserPlatform();
-      console.log("Current Platform : ", this.browserPlatform);
+    	this.browserPlatform = this.Pwa.getBrowserPlatform();      
     }
 
   ngOnInit(): void {
@@ -71,7 +70,7 @@ export class LoginComponent {
     this.authService.resetServiceData()
     this.stellarService.resetServiceData()
     this.noticeService.resetServiceData();
-
+    this.refService.resetData();
       // Add email for Intercom
       (<any>window).Intercom('boot', {
         app_id: "v9vzre42",       

@@ -18,6 +18,7 @@ import { SwUpdateNotifyService } from '../../sw-update-notifiy/sw-update-notify.
 
 import { AlgoService } from 'src/app/system/algo.service';
 import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
+import { ReferralService } from 'src/app/referral/referral.service';
 
 // import { interval } from 'rxjs';
 // import { timeoutWith } from 'rxjs/operators';
@@ -71,25 +72,35 @@ export class NavbarComponent implements OnDestroy, OnInit {
     private http: HttpClient,
     public popupService: PopupService,   
     public swService: SwUpdateNotifyService, 
-    private changeDetector: ChangeDetectorRef   
+    private refService: ReferralService, 
   ) {       
     this.server = new StellarSdk.Server(environment.horizon_url);      
     this.authService.isGetBalance = false  
     this.subsink = new SubSink()
     // get user meta data
-    this.authService.getUserMeta()
+    this.authService.getUserMeta()    
     if (!this.authService.isSubUserMeta && !this.isSignout){
-      //console.log('NAV.sub user meta')
-      this.subsink.add(this.authService.userMeta$.subscribe( data => {
-        this.authService.parseUserMeta(data)        
+      
+      // this.authService.userMeta$.subscribe( data => {
+      //   console.log('NAV-userMeta$.subscribe:', data)
+      //   this.authService.parseUserMeta(data)        
+      // })
+      this.authService.subsink.add(this.authService.userMeta$.subscribe( data => {
+        //console.log('NAV-userMeta$.subscribe:', data)
+        if (data){
+          this.authService.parseUserMeta(data)
+        }
       }))
     }
         
     this.authService.streamPrices()
     if (!this.authService.isSubPrice && !this.isSignout){
       //console.log('NAV.sub price data')
-      this.subsink.add(this.authService.priceData$.subscribe( data => {
-        this.authService.parsePriceData(data)        
+      this.authService.subsink.add(this.authService.priceData$.subscribe( data => {
+        //console.log('NAV-price data:', data)
+        if (data){
+          this.authService.parsePriceData(data)
+        }    
       }))
     }
         
@@ -234,6 +245,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     this.isSignout = true
     //console.log('NAV-signout')   
     this.subsink.unsubscribe()
+    this.authService.subsink.unsubscribe()
 
     if (this.authService.userMetaStore.OpenOrders > 0){
       this.authService.updateUserMeta()
@@ -245,6 +257,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     this.authService.resetServiceData()
     this.stellarService.resetServiceData()
     this.noticeService.resetServiceData()
+    this.refService.resetData()
     localStorage.removeItem('grayll-user');    
     localStorage.removeItem('grayll-user-meta');   
     this.ngZone.run(() => {

@@ -53,9 +53,9 @@ export class RegisterComponent implements OnInit {
 
   buildForm(): void {    
     this.registerForm = this.formBuilder.group({
-      'name': ['', [Validators.required, Validators.minLength(3),
+      'name': ['', [Validators.required, Validators.minLength(2),
         Validators.maxLength(50)]],   
-      'lname': ['', [Validators.required, Validators.minLength(3),
+      'lname': ['', [Validators.required, Validators.minLength(2),
         Validators.maxLength(50)]],      
       'email': ['', [
           Validators.required,        
@@ -97,12 +97,12 @@ export class RegisterComponent implements OnInit {
   validationMessages = {  
     'name':{
       'required':      'First Name is required.',
-      'minlength':      'First Name must be at least 3 characters long.',
+      'minlength':      'First Name must be at least 2 characters long.',
       'maxlength':      'First Name cannot be more than 25 characters long.'
     },      
     'lname':{
       'required':      'Last Name is required.',
-      'minlength':      'Last Name must be at least 3 characters long.',
+      'minlength':      'Last Name must be at least 2 characters long.',
       'maxlength':      'Last Name cannot be more than 25 characters long.'
     },
     'email': {

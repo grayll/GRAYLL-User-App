@@ -71,8 +71,10 @@ export class AlgoService {
   }
 
   subsAlgoPositions(){
-    this.algoPositionCollection = this.afs.collection<ClosePosition>('algo_positions/users/'+this.authService.userData.Uid);
-    this.algoPositions$ = this.algoPositionCollection.valueChanges();
+    if (!this.algoPositions$){
+      this.algoPositionCollection = this.afs.collection<ClosePosition>('algo_positions/users/'+this.authService.userData.Uid);
+      this.algoPositions$ = this.algoPositionCollection.valueChanges();
+    }
   }
 
   resetServiceData(){
@@ -104,8 +106,10 @@ export class AlgoService {
   }
   subOpenAlgos() {
     let path = 'algo_positions/users/'+this.authService.userData.Uid
-    this.openAlgos$ = this.getCollection(path, ref => ref 
-      .where('status', '==', 'OPEN'))
+    if (!this.openAlgos$){
+      this.openAlgos$ = this.getCollection(path, ref => ref 
+        .where('status', '==', 'OPEN'))
+    }
   }
 
   getAlgoPositions(){
@@ -202,7 +206,7 @@ export class AlgoService {
   // }
 
   getGRYBalance(){
-    if (this.authService.userMetaStore){
+    if (this.authService.userMetaStore && this.authService.userMetaStore.total_gry1_current_position_value_$){
       return this.authService.userMetaStore.total_gry1_current_position_value_$ + this.authService.userMetaStore.total_gry2_current_position_value_$ + 
       this.authService.userMetaStore.total_gry3_current_position_value_$
     }
