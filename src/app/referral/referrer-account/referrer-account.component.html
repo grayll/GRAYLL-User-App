@@ -40,10 +40,10 @@
         <td class="width-101px">{{referralService.referer.businessName}}</td>
         <td class="width-175px">{{referralService.referer.email}}</td>
         <td class="width-100px">{{referralService.referer.phone}}</td>
-        <td class="width-91px">{{referralService.referer.feeGRX*authService.priceInfo.grxusd}}</td>
-        <td class="width-91px">{{referralService.referer.feeGRX}}</td>
+        <td class="width-91px">{{(referralService.referer.feeGRX*authService.priceInfo.grxusd).toFixed(5)}}</td>
+        <td class="width-91px">{{referralService.referer.feeGRX.toFixed(7)}}</td>
         <td class="width-62px">
-          <a href="javascript:void(0)" class="purple-link" (click)='removeReferer(referralService.referer.id)'>
+          <a href="javascript:void(0)" class="purple-link" [routerLink]="[{outlets: {popup: 'xlm-referrer-remove/'+referralService.referer.uid}}]">
             <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
             <span class="ml-1 cancel text-danger">Remove</span>
           </a>

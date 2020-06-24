@@ -13,10 +13,10 @@
               <i class="italic-content"> (Received)</i></span
             >
             <h5 class="text-light font-weight-bolder mb-1">
-              {{referralService.metric.totalFeeGRX*authService.priceInfo.grxusd}} USD
+              {{(referralService.metric.totalFeeGRX*authService.priceInfo.grxusd).toFixed(5)}} USD
             </h5>
             <h6 class="text-light font-weight-bolder mb-1">
-              {{referralService.metric.totalFeeGRX}} GRX
+              {{referralService.metric.totalFeeGRX.toFixed(7)}} GRX
             </h6>
             <h6 class="text-light font-weight-bolder mb-1">
               {{referralService.metric.totalPayment}} Payments

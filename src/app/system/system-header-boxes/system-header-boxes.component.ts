@@ -301,6 +301,9 @@ export class SystemHeaderBoxesComponent implements OnInit {
 
     
   private openPopup() {
+    if (this.authService.isTokenExpired()){
+      return
+    }
       
     this.loadingService.show()
     this.sharedService.openAlgoPosition(this.algoPosition);

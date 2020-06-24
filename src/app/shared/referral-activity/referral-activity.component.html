@@ -56,9 +56,9 @@
       <th class="width-91px" (click)="sortByPositionValue()">Date</th>
       <th class="width-101px">First Name</th>
       <th class="width-101px">Last Name</th>
-      <th class="width-101px">Business Name</th>
+      <!-- <th class="width-101px">Business Name</th> -->
       <th class="width-175px">Email</th>
-      <th class="width-101px">Mobile<br><i>(WhatsApp)</i></th>
+      <!-- <th class="width-101px">Mobile<br><i>(WhatsApp)</i></th> -->
       <th class="width-91px">Fees (USD)<br><i>(Received)</i></th>
       <th (click)="sortByPositionProfit()" class="width-91px"> Fees (GRX)<br><i>(Received)</i> </th>
       <th class="width-111px">Stellar<br>Transaction ID</th>
@@ -75,16 +75,14 @@
       <td class="width-91px">{{item.time*1000 | date:'d/M/yyyy h:mm'}}</td>
       <td class="width-101px">{{item.name}}</td>
       <td class="width-101px">{{item.lname}}</td>
-      <td class="width-101px">{{item.businessName}}</td>
+      <!-- <td class="width-101px">{{item.businessName}}</td> -->
       <td class="width-175px">{{item.email}}</td>     
-      <td class="width-101px">{{item.phone}}</td>
-      <td class="width-91px">{{item.feeGRX*authService.priceInfo.grxusd}}</td>
-      <td class="width-91px">{{item.feeGRX}}</td>
-      <td class="width-111px">
-      {{item.stellarTx}}
-      </td>
-      <td class="width-41px text-center">
-        <a href="https://stellar.expert/explorer/public" + {{item.stellarTx}} target="_blank">
+      <!-- <td class="width-101px">{{item.phone}}</td> -->
+      <td class="width-91px">{{(item.feeGRX*authService.priceInfo.grxusd).toFixed(5)}}</td>
+      <td class="width-91px">{{item.feeGRX.toFixed(7)}}</td>
+      <td class="width-111px">{{item.stellarTx}}</td>
+      <td class="width-44px text-center">
+        <a href="{{'https://stellar.expert/explorer/public/search?term=' + item.stellarTx}}}" target="_blank">
           <fa-icon [icon]="faInfo" class="purple-link cancel"></fa-icon>
         </a>
       </td>
@@ -130,8 +128,8 @@
       <td class="width-101px">{{item.businessName}}</td>
       <td class="width-175px">{{item.email}}</td>      
       <td class="width-101px">{{item.phone}}</td>
-      <td class="width-91px">{{item.totalFeeGRX*authService.priceInfo.grxusd}}</td>
-      <td class="width-91px">{{item.totalFeeGRX}}</td>
+      <td class="width-91px">{{(item.totalFeeGRX*authService.priceInfo.grxusd).toFixed(5)}}</td>
+      <td class="width-91px">{{item.totalFeeGRX.toFixed(7)}}</td>
       <td class="width-91px">{{item.totalPayment}}</td>
       <td class="width-41px">
         <a href="javascript:void(0)" class="colored-text" [routerLink]="[{outlets: {popup: 'xlm-referral-edit'+item.uid}}]">

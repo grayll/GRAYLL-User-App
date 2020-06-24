@@ -7,6 +7,9 @@ import {UserService} from '../../../authorization/user.service';
 import {SharedService} from '../../shared.service';
 import {faCircle} from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { LoadingService } from '../../services/loading.service';
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -28,27 +31,38 @@ export class XlmReferrerRemovePopupComponent implements OnInit {
 
   constructor(
     public popupService: PopupService,
-    private settingsService: SettingsService,
-    private errorService: ErrorService,
     private userService: UserService,
-    private sharedService: SharedService,
+    private http: HttpClient,
+    private loadingService: LoadingService,
     private route: ActivatedRoute,
   ) {
-    this.user = this.userService.getUser();
-   
+    
   }
 
   ngOnInit() {
     this.popupService.open(this.modal);
-    this.route.params.subscribe((param) => {
-      console.log(param)
-      this.refererId = param.id;
-      
+    this.route.params.subscribe((param) => {      
+      this.refererId = param.id;      
     })
   }
 
   removeReferer(){
-
+    this.loadingService.show()
+    this.http.post(`api/v1/users/removeReferer/`+this.refererId, {})             
+    .subscribe(res => { 
+      console.log(res)
+      this.loadingService.hide() 
+      if ((res as any).errCode != environment.SUCCESS)  {
+       this.error = true        
+      } else {              
+        this.success = true
+      }
+    },
+    error => {
+      this.loadingService.hide()
+      console.log(error) 
+      this.error = true
+    })
   }
 
   retry() {

@@ -224,57 +224,6 @@ export class AuthService {
         this.subsink = new SubSink()
       }     
   }
-
-  getUserMetabk(){
-    if (this.userMetaStore.ShouldReload){
-     this._userMeta = new Subject<UserMeta>()
-     this.userMeta = this._userMeta.asObservable()
-     if (!this.subsink){
-      this.subsink = new SubSink()
-     }
-     this.subsink.add(this.afs.doc<UserMeta>('users_meta/'+this.userData.Uid).valueChanges().subscribe(data => {        
-        this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
-        this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
-        this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
-        this.userMetaStore.UrGRZ = data.UrGRZ >= 0? data.UrGRZ:0
-        this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
-        this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
-        this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime       
-
-        this.userMetaStore.GRX = data.GRX >= 0? data.GRX:0
-        this.userMetaStore.XLM = data.XLM >= 0? data.XLM:0
-        this.userMetaStore.OpenOrders = data.OpenOrders > 0? data.OpenOrders:0
-        this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? data.OpenOrdersXLM:0
-        this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? data.OpenOrdersGRX:0
-
-        this.userMetaStore.total_grz_close_positions_ROI_$ = +(data.total_grz_close_positions_ROI_$ ? data.total_grz_close_positions_ROI_$ : 0).toFixed(5)
-        this.userMetaStore.total_grz_current_position_ROI_$ = +(data.total_grz_current_position_ROI_$ ? data.total_grz_current_position_ROI_$: 0).toFixed(5)
-        this.userMetaStore.total_grz_current_position_value_$ = +(data.total_grz_current_position_value_$ ? data.total_grz_current_position_value_$: 0).toFixed(5)
-        this.userMetaStore.total_grz_open_positions = +(data.total_grz_open_positions ? data.total_grz_open_positions: 0).toFixed(5)
-
-        this.userMetaStore.total_gry1_close_positions_ROI_$ = +(data.total_gry1_close_positions_ROI_$ ? data.total_gry1_close_positions_ROI_$: 0).toFixed(5)
-        this.userMetaStore.total_gry1_current_position_ROI_$ = +(data.total_gry1_current_position_ROI_$ ? data.total_gry1_current_position_ROI_$: 0).toFixed(5)
-        this.userMetaStore.total_gry1_current_position_value_$ = +(data.total_gry1_current_position_value_$ ? data.total_gry1_current_position_value_$ : 0).toFixed(5)
-        this.userMetaStore.total_gry1_open_positions = +(data.total_gry1_open_positions ? data.total_gry1_open_positions: 0).toFixed(5)
-
-        this.userMetaStore.total_gry2_close_positions_ROI_$ = +(data.total_gry2_close_positions_ROI_$ ? data.total_gry2_close_positions_ROI_$: 0).toFixed(5)
-        this.userMetaStore.total_gry2_current_position_ROI_$ = +(data.total_gry2_current_position_ROI_$ ? data.total_gry2_current_position_ROI_$: 0).toFixed(5)
-        this.userMetaStore.total_gry2_current_position_value_$ = +(data.total_gry2_current_position_value_$ ? data.total_gry2_current_position_value_$: 0).toFixed(5)
-        this.userMetaStore.total_gry2_open_positions = +(data.total_gry2_open_positions ? data.total_gry2_open_positions: 0).toFixed(5)
-
-        this.userMetaStore.total_gry3_close_positions_ROI_$ = +(data.total_gry3_close_positions_ROI_$ ?  data.total_gry3_close_positions_ROI_$: 0).toFixed(5)
-        this.userMetaStore.total_gry3_current_position_ROI_$ = +(data.total_gry3_current_position_ROI_$ ? data.total_gry3_current_position_ROI_$: 0).toFixed(5)
-        this.userMetaStore.total_gry3_current_position_value_$ = +(data.total_gry3_current_position_value_$ ? data.total_gry3_current_position_value_$: 0).toFixed(5)
-        this.userMetaStore.total_gry3_open_positions = +(data.total_gry3_open_positions ? data.total_gry3_open_positions: 0).toFixed(5)
-
-        this.balanceUpdateCount++
-        // console.log(' this.balanceUpdateCount',  this.balanceUpdateCount)       
-        // console.log('GETUSERMETA:', this.userMetaStore)
-        this.userMetaStore.ShouldReload = false
-       
-      }))
-    }
-  }
   
   parsePriceData(data){
     this.isSubPrice = true
@@ -578,7 +527,8 @@ export class AuthService {
     })
   }
   saveUserMetaStore() {
-    if (this.userMetaStore && !this.isTokenExpired){     
+    if (this.userMetaStore && !this.isTokenExpired){  
+      console.log('saveUserMetaStore')   
       this.http.post(`api/v1/users/saveUserMetaData`, {     
         total_grz_current_position_ROI_$: this.userMetaStore.total_grz_current_position_ROI_$,
         total_grz_current_position_value_$:  this.userMetaStore.total_grz_current_position_value_$,    

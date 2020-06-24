@@ -31,11 +31,7 @@ export class XlmReferralRemovePopupComponent implements OnInit {
   referralId: string
 
   constructor(
-    public popupService: PopupService,
-    private settingsService: SettingsService,
-    private errorService: ErrorService,
-    private userService: UserService,
-    private sharedService: SharedService,
+    public popupService: PopupService,   
     private route: ActivatedRoute,
     private http: HttpClient,
     private loadingService: LoadingService,

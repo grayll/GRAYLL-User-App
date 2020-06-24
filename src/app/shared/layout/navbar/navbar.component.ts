@@ -79,12 +79,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     this.subsink = new SubSink()
     // get user meta data
     this.authService.getUserMeta()    
-    if (!this.authService.isSubUserMeta && !this.isSignout){
-      
-      // this.authService.userMeta$.subscribe( data => {
-      //   console.log('NAV-userMeta$.subscribe:', data)
-      //   this.authService.parseUserMeta(data)        
-      // })
+    if (!this.authService.isSubUserMeta){            
       this.authService.subsink.add(this.authService.userMeta$.subscribe( data => {
         //console.log('NAV-userMeta$.subscribe:', data)
         if (data){
@@ -94,7 +89,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     }
         
     this.authService.streamPrices()
-    if (!this.authService.isSubPrice && !this.isSignout){
+    if (!this.authService.isSubPrice){
       //console.log('NAV.sub price data')
       this.authService.subsink.add(this.authService.priceData$.subscribe( data => {
         //console.log('NAV-price data:', data)
@@ -246,6 +241,8 @@ export class NavbarComponent implements OnDestroy, OnInit {
     //console.log('NAV-signout')   
     this.subsink.unsubscribe()
     this.authService.subsink.unsubscribe()
+    this.authService.isSubPrice = false
+    this.authService.isSubUserMeta = false
 
     if (this.authService.userMetaStore.OpenOrders > 0){
       this.authService.updateUserMeta()

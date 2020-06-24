@@ -66,6 +66,12 @@ export class ReferralService {
         this.referralTxs = []
         this.invites = []
         this.referer = null
+
+        this._referralContacts = null
+        this._referralTxs = null
+        this._invites = null
+        this._referer = null        
+        this._metric = null
     }
 
     subReferral(){
