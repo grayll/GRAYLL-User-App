@@ -5,8 +5,11 @@
       <span class="lead align-middle">Linked Referrer Account <i class="font-16 d-inline-block">(Referrer that invited you to GRAYLL)</i></span>
     </div>
     <div class="col-md-6 text-right pr-4">
-      <a class="purple-link" href="javascript: void(0)">
+      <a *ngIf="referralService.referer" class="purple-link" href="javascript: void(0)">
         Performance Fee Level 15%
+      </a>
+      <a *ngIf="!referralService.referer" class="purple-link" href="javascript: void(0)">
+        Performance Fee Level 18%
       </a>
     </div>
   </div>

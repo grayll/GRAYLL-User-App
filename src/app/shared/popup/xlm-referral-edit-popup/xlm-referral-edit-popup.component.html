@@ -1,53 +1,81 @@
 <ng-template #content let-modal>
   <app-popup-header popupHeaderTitle="Edit Referral Contact"></app-popup-header>
   <div class="modal-body">
-
+    <form [formGroup]="registerForm">
     <app-error></app-error>
 
     <div class="row mb-1" *ngIf="!success && !error">
+             
       <div class="col-12">
         <label for="firstName" class="text-purple font-weight-bold">
           First Name
         </label>
-        <input id="firstName" type="text" class="form-control purple-input" placeholder="First Name">
+        <input id="firstName" formControlName="name"  type="text" class="form-control purple-input" placeholder="First Name">
+        <small class="text-purple" *ngIf="submitted && formErrors.name">
+          {{ formErrors.name }}
+        </small> 
       </div>
+     
       <div class="col-12 text-right">
         <small class="text-purple"><i>Required</i></small>
       </div>
+
       <div class="col-12">
         <label for="lastName" class="text-purple font-weight-bold">
           Last Name
         </label>
-        <input id="lastName" type="text" class="form-control purple-input" placeholder="Last Name">
+        <input id="lastName" formControlName="lname" type="text" class="form-control purple-input" placeholder="Last Name">
+        <small class="text-purple" *ngIf="submitted && formErrors.lname">
+          {{ formErrors.lname }}
+        </small>  
       </div>
+      
       <div class="col-12 text-right">
         <small class="text-purple"><i>Required</i></small>
       </div>
       <div class="col-12">
-        <label for="businessName" class="text-purple font-weight-bold">
+        <label for="busName" class="text-purple font-weight-bold">
           Business Name
         </label>
-        <input id="businessName" type="text" class="form-control purple-input" placeholder="Business Name">
+        <input id="busName" formControlName="businessName" type="text" class="form-control purple-input" placeholder="Business Name">
+        <small class="text-purple" *ngIf="submitted && formErrors.businessName">
+          {{ formErrors.businessName }}
+        </small> 
       </div>
+       
       <div class="col-12"><small>&nbsp;</small></div>
       <div class="col-12">
         <label for="emailAddress" class="text-purple font-weight-bold">
           Email Address
         </label>
-        <input id="emailAddress" type="text" class="form-control purple-input" placeholder="Email Address">
+        <input id="emailAddress" formControlName="email" type="text" class="form-control purple-input" placeholder="Email Address">
+        <small class="text-purple" *ngIf="submitted && formErrors.email" >
+          {{ formErrors.email }}
+        </small>
       </div>
+     
       <div class="col-12 text-right">
         <small class="text-purple"><i>Required</i></small>
       </div>
-      <!-- <div class="col-12"><small>&nbsp;</small></div> -->
+      <div class="col-12"><small>&nbsp;</small></div>
       <div class="col-12">
         <div class="d-flex column-div">
           <label for="phoneNumber" class="text-purple font-weight-bold">
-            Mobile Number <i>(*WhatsApp Number Only)</i>
+            Mobile Number
           </label>
-          <!-- <a class="text-purple margin-left-auto" href="javascript: void(0)">Send to <i>WhatsApp</i><fa-icon class="phone-icon" [icon]="faPhone"></fa-icon></a> -->
+          <!-- <a class="text-purple margin-left-auto font-weight-bold" href="javascript: void(0)">Send to <i>WhatsApp</i><fa-icon class="phone-icon" [icon]="faPhone"></fa-icon></a> -->
+          <!-- <div class="text-right flex-grow-1">
+            <label for="noMemoMessage" class="font-weight-bolder form-check-label text-purple">Send to<i class="margin-1">WhatsApp</i></label>
+            <label class="checkbox">
+              <input formControlName="sendWhatAppChk" type="checkbox" id="sendWhatAppChk" />
+              <span class="default"></span>
+            </label>
+          </div> -->
         </div>
-        <input id="phoneNumber" type="text" class="form-control purple-input" placeholder="Mobile Number (*WhatsApp)">
+        <input id="phoneNumber" formControlName="phone" type="text" class="form-control purple-input" placeholder="Mobile Number">
+        <small class="text-purple" *ngIf="submitted && formErrors.phone" >
+          {{ formErrors.phone }}
+        </small>
         <div class="col-12"><small>&nbsp;</small></div>
       </div>
     </div>
@@ -93,14 +121,14 @@
         </div>
       </div>
     </ng-container>
-
+    </form>
   </div>
 
   <div class="modal-footer justify-content-center">
     <div class="row text-center" style="display: contents!important;">
       <div class="col">
         <button class="btn btn-purple cancel-btn" *ngIf="!success && !error" (click)="popupService.close()">Cancel</button>
-        <button class="btn btn-purple" *ngIf="!success && !error" (click)="payOffLoan()">Submit</button>
+        <button class="btn btn-purple" *ngIf="!success && !error" (click)="editReferral()">Submit</button>
         <button class="btn btn-purple" *ngIf="success" (click)="popupService.close()">Close</button>
         <!-- <button class="btn btn-purple cancel-btn" *ngIf="error" (click)="popupService.close()">Cancel</button> -->
         <button class="btn btn-purple" *ngIf="error" (click)="retry()">Review</button>

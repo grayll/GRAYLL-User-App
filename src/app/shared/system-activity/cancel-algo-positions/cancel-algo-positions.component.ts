@@ -58,76 +58,80 @@ export class CancelAlgoPositionsComponent implements OnInit {
     let closePositionsDataGry3 = []
     
     this.algoService.openPositions.forEach( position => {      
-      if (position.algorithm_type === 'GRZ'){ 
+      // if (position.algorithm_type === 'GRZ'){ 
        
-        let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)
+      //   let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)
       
-        let close_position_fee_$ = close_position_total_$*0.003
-        let close_position_ROI_$ = close_position_total_$ - position.open_position_value_$       
+      //   let close_position_fee_$ = close_position_total_$*0.003
+      //   let close_position_ROI_$ = close_position_total_$ - position.open_position_value_$       
 
-        let close_performance_fee_$ = 0
-        let netRoi = close_position_ROI_$ - close_position_fee_$
-        if (netRoi > 0) {
-          close_performance_fee_$ =  netRoi * 0.18
-        }
+      //   let close_performance_fee_$ = 0
+      //   let netRoi = close_position_ROI_$ - close_position_fee_$
+      //   if (netRoi > 0) {
+      //     close_performance_fee_$ =  netRoi * 0.18
+      //   }
 
-        let close_position_total_GRX = close_position_total_$/grxusd
-        let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
-        let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ
+      //   let close_position_total_GRX = close_position_total_$/grxusd
+      //   let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
+      //   let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ
         
-        let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
-        //==
+      //   let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
+      //   //==
         
-        let positionData = 
-        {  user_id: this.authService.userInfo.Uid,            
-          open_stellar_transaction_id: position.open_stellar_transaction_id,
-          open_position_timestamp: position.open_position_timestamp,
-          grayll_transaction_id: position.grayll_transaction_id,        
-          algorithm_type: position.algorithm_type,
+      //   let positionData = 
+      //   {  user_id: this.authService.userInfo.Uid,            
+      //     open_stellar_transaction_id: position.open_stellar_transaction_id,
+      //     open_position_timestamp: position.open_position_timestamp,
+      //     grayll_transaction_id: position.grayll_transaction_id,        
+      //     algorithm_type: position.algorithm_type,
           
-          close_value_GRX:              grxusd,
-          close_value_GRZ:              grzusd,
+      //     close_value_GRX:              grxusd,
+      //     close_value_GRZ:              grzusd,
 
-          close_position_value_$:       close_position_value_$,
-          close_position_value_GRX:     close_position_value_$/grxusd,
-          close_position_ROI_$:         close_position_ROI_$,
-          close_position_ROI_percent:   close_position_ROI_percent,
-          close_position_ROI_percent_NET:   close_position_ROI_percent_NET,
-          current_position_ROI_$:       close_position_ROI_$,
-          current_position_ROI_percent: close_position_ROI_percent,
-          close_position_total_$:    close_position_total_$,
-          close_position_total_GRX:  close_position_total_GRX,
-          close_position_total_GRZ:   close_position_total_$/grzusd,
-          close_position_fee_$:      close_position_fee_$,
-          close_position_fee_GRX:      close_position_fee_$/grxusd,
-          close_performance_fee_$:   close_performance_fee_$,
-          close_performance_fee_GRX: close_performance_fee_$/grxusd 
-        } 
-        closePositionsData.push(positionData)
+      //     close_position_value_$:       close_position_value_$,
+      //     close_position_value_GRX:     close_position_value_$/grxusd,
+      //     close_position_ROI_$:         close_position_ROI_$,
+      //     close_position_ROI_percent:   close_position_ROI_percent,
+      //     close_position_ROI_percent_NET:   close_position_ROI_percent_NET,
+      //     current_position_ROI_$:       close_position_ROI_$,
+      //     current_position_ROI_percent: close_position_ROI_percent,
+      //     close_position_total_$:    close_position_total_$,
+      //     close_position_total_GRX:  close_position_total_GRX,
+      //     close_position_total_GRZ:   close_position_total_$/grzusd,
+      //     close_position_fee_$:      close_position_fee_$,
+      //     close_position_fee_GRX:      close_position_fee_$/grxusd,
+      //     close_performance_fee_$:   close_performance_fee_$,
+      //     close_performance_fee_GRX: close_performance_fee_$/grxusd 
+      //   } 
+      //   closePositionsData.push(positionData)
         
-      } else {
-        let data = {user_id: this.authService.userInfo.Uid,   
-          open_position_value_$:position.open_position_value_$,         
-          open_stellar_transaction_id: position.open_stellar_transaction_id,
-          open_position_timestamp: position.open_position_timestamp,
-          grayll_transaction_id: position.grayll_transaction_id,        
-          algorithm_type: position.algorithm_type,          
-          close_value_GRX:              grxusd,
-          close_value_GRY:              gryusd,          
-        }
+      // } else {
+        // let data = {
+        //   // user_id: this.authService.userInfo.Uid,   
+        //   // open_position_value_$:position.open_position_value_$,         
+        //   // open_stellar_transaction_id: position.open_stellar_transaction_id,
+        //   // open_position_timestamp: position.open_position_timestamp,
+        //   grayll_transaction_id: position.grayll_transaction_id,        
+        //   // algorithm_type: position.algorithm_type,          
+        //   // close_value_GRX:              grxusd,
+        //   // close_value_GRY:              gryusd,          
+        // }
         
         switch(position.algorithm_type){
+          case "GRZ":
+            closePositionsData.push(position.grayll_transaction_id)
+            break
           case "GRY 1":            
-            closePositionsDataGry1.push(data)
+            closePositionsDataGry1.push(position.grayll_transaction_id)
             break
           case "GRY 2":           
-            closePositionsDataGry2.push(data)
+            closePositionsDataGry2.push(position.grayll_transaction_id)
             break
           case "GRY 3":           
-            closePositionsDataGry3.push(data)
+            closePositionsDataGry3.push(position.grayll_transaction_id)
             break
         }       
-      }       
+     // }       
     })   
 
     
@@ -155,7 +159,7 @@ export class CancelAlgoPositionsComponent implements OnInit {
         case 'GRZ':
           if (closePositionsData.length > 0){
             this.algoService.closingAllAlgo = this.algoName
-            this.http.post(environment.grz_api_url + 'api/v1/grz/position/closeAll', {action:"CLOSEALL", data: closePositionsData}).subscribe(
+            this.http.post(environment.grz_api_url + 'api/v1/grz/position/closeAll', {grayllTxs: closePositionsData}).subscribe(
               res => { 
                 if ((res as any).errCode != environment.SUCCESS){
                   this.closePopup()
@@ -170,7 +174,7 @@ export class CancelAlgoPositionsComponent implements OnInit {
         case 'GRY 1':
           if (closePositionsDataGry1.length > 0){
             this.algoService.closingAllAlgo = this.algoName
-            this.http.post(environment.gry1_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry1}).subscribe(
+            this.http.post(environment.gry1_api_url + 'api/v1/gry/position/closeAll', {grayllTxs: closePositionsDataGry1}).subscribe(
               res => { 
                 if ((res as any).errCode != environment.SUCCESS){
                   this.closePopup()
@@ -185,7 +189,7 @@ export class CancelAlgoPositionsComponent implements OnInit {
         case 'GRY 2':
           if (closePositionsDataGry2.length > 0){
             this.algoService.closingAllAlgo = this.algoName
-            this.http.post(environment.gry2_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry2}).subscribe(
+            this.http.post(environment.gry2_api_url + 'api/v1/gry/position/closeAll', {grayllTxs: closePositionsDataGry2}).subscribe(
               res => { 
                 if ((res as any).errCode != environment.SUCCESS){
                   this.closePopup()
@@ -200,7 +204,7 @@ export class CancelAlgoPositionsComponent implements OnInit {
         case 'GRY 3':
           if (closePositionsDataGry3.length > 0){
             this.algoService.closingAllAlgo = this.algoName
-            this.http.post(environment.gry3_api_url + 'api/v1/gry/position/closeAll', {action:"CLOSEALL", data: closePositionsDataGry3}).subscribe(
+            this.http.post(environment.gry3_api_url + 'api/v1/gry/position/closeAll', {grayllTxs: closePositionsDataGry3}).subscribe(
               res => { 
                 if ((res as any).errCode != environment.SUCCESS){
                   this.closePopup()
@@ -213,18 +217,6 @@ export class CancelAlgoPositionsComponent implements OnInit {
           }
           break
       }
-    
-    // if (this.algoService.closeAll){
-    //   from(postDatas).pipe(
-    //     concatMap(postData => 
-    //       this.http.post(postData.url, postData.data)
-    //     )
-    //   ).subscribe(
-    //     res => { console.log(res)},
-    //       err => { console.log(err)}     
-    //   );
-    // }   
-
   }
   closePopup(){
     this.loadingService.hide()

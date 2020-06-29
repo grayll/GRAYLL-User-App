@@ -198,7 +198,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           //this.authService.SetLocalUserData()          
         } 
         if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {
-          console.log('res.offerResults', res.offerResults)
+          //console.log('res.offerResults', res.offerResults)
           this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userMetaStore)          
           matchType += 2
         }

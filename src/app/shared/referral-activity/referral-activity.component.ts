@@ -137,22 +137,25 @@ export class ReferralActivityComponent implements OnInit, OnChanges {
       console.log(res)
       if ((res as any).errCode == environment.EMAIL_IN_USED)  {
         let content = "The email entered is already registered."
+        this.snotifyService.simple(content)
         //this.errorService.handleError(null, content)
         //this.registerForm.reset() 
       } else if ((res as any).errCode == environment.EMAIL_INVALID){
         let content = "The email entered is invalid."
-        //this.errorService.handleError(null, content)
+        this.snotifyService.simple(content)
         //this.registerForm.reset() 
       } else {              
         //this.success = true
-        this.errorService.handleError(null, `The reminder already sent.!`)  
+        let content = "Your Sign Up Invite Reminder has been sent to your contact."
+        this.snotifyService.simple(content)
       }
     },
     error => {
       //this.loadingService.hide()
       // console.log(error) 
       // this.registerForm.reset()              
-      this.errorService.handleError(null, `Currently, Reminder can't be processed. Please try again later!`)     
+      let content = `Currently, Sending reminder can't be processed. Please try again later!`  
+      this.snotifyService.simple(content)   
     })
   }
   removeInvite(id){

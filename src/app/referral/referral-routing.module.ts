@@ -35,7 +35,7 @@ const popupRoutes: Routes = [
     outlet: 'popup'
   },
   {
-    path: 'xlm-referral-edit',
+    path: 'xlm-referral-edit/:id',
     component: XlmReferralEditPopupComponent,
     outlet: 'popup'
   }

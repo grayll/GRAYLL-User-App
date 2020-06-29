@@ -412,35 +412,30 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ      
       let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
       
-      // console.log('close_position_ROI_$', close_position_ROI_$)
-      // console.log("close_position_value_GRX:", close_position_value_$/grxusd)
-      // console.log('close_position_total_$', close_position_total_$)
-      // console.log('close_position_ROI_percent', close_position_ROI_percent)
-      
       this.http.post(environment.grz_api_url + 'api/v1/grz/position/close',
         {user_id: this.authService.userInfo.Uid,            
-        open_stellar_transaction_id: position.open_stellar_transaction_id,
-        open_position_timestamp: position.open_position_timestamp,
+        // open_stellar_transaction_id: position.open_stellar_transaction_id,
+        // open_position_timestamp: position.open_position_timestamp,
         grayll_transaction_id: position.grayll_transaction_id,     
-        algorithm_type: position.algorithm_type,
+        // algorithm_type: position.algorithm_type,
         
-        close_value_GRX:              grxusd,
-        close_value_GRZ:              grzusd,
+        // close_value_GRX:              grxusd,
+        // close_value_GRZ:              grzusd,
 
-        close_position_value_$:       close_position_value_$,
-        close_position_value_GRX:     close_position_value_$/grxusd,
-        close_position_ROI_$:         close_position_ROI_$,
-        close_position_ROI_percent:   close_position_ROI_percent,
-        close_position_ROI_percent_NET:   close_position_ROI_percent_NET,
-        current_position_ROI_$:       close_position_ROI_$,
-        current_position_ROI_percent: close_position_ROI_percent,
-        close_position_total_$:    close_position_total_$,
-        close_position_total_GRX:  close_position_total_GRX,
-        close_position_total_GRZ:   close_position_total_$/grzusd,
-        close_position_fee_$:      close_position_fee_$,
-        close_position_fee_GRX:      close_position_fee_$/grxusd,
-        close_performance_fee_$:   close_performance_fee_$,
-        close_performance_fee_GRX: close_performance_fee_$/grxusd     
+        // close_position_value_$:       close_position_value_$,
+        // close_position_value_GRX:     close_position_value_$/grxusd,
+        // close_position_ROI_$:         close_position_ROI_$,
+        // close_position_ROI_percent:   close_position_ROI_percent,
+        // close_position_ROI_percent_NET:   close_position_ROI_percent_NET,
+        // current_position_ROI_$:       close_position_ROI_$,
+        // current_position_ROI_percent: close_position_ROI_percent,
+        // close_position_total_$:    close_position_total_$,
+        // close_position_total_GRX:  close_position_total_GRX,
+        // close_position_total_GRZ:   close_position_total_$/grzusd,
+        // close_position_fee_$:      close_position_fee_$,
+        // close_position_fee_GRX:      close_position_fee_$/grxusd,
+        // close_performance_fee_$:   close_performance_fee_$,
+        // close_performance_fee_GRX: close_performance_fee_$/grxusd     
 
       }).subscribe( res => {
         console.log(res)             
@@ -465,13 +460,13 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       }
            
       let data = {user_id: this.authService.userInfo.Uid,   
-        open_position_value_$:position.open_position_value_$,         
-        open_stellar_transaction_id: position.open_stellar_transaction_id,
-        open_position_timestamp: position.open_position_timestamp,
+        // open_position_value_$:position.open_position_value_$,         
+        // open_stellar_transaction_id: position.open_stellar_transaction_id,
+        // open_position_timestamp: position.open_position_timestamp,
         grayll_transaction_id: position.grayll_transaction_id,        
-        algorithm_type: position.algorithm_type,        
-        close_value_GRX:              grxusd,
-        close_value_GRY:              gryusd,
+        // algorithm_type: position.algorithm_type,        
+        // close_value_GRX:              grxusd,
+        // close_value_GRY:              gryusd,
         
       }
       this.http.post(url + 'api/v1/gry/position/close', data).subscribe( res => {

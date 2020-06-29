@@ -42,31 +42,37 @@ export class XlmReferralPopupComponent implements OnInit {
   ) {
        
   }
-
-  
-
   ngOnInit() {
     this.popupService.open(this.modal);
     this.buildForm()  
+    this.registerForm.valueChanges.subscribe(change => {
+      this.submitted = true;      
+      this.onValueChanged()
+    })
   }
 
   buildForm(): void {    
     this.registerForm = this.formBuilder.group({
       'name': ['', [Validators.required, Validators.minLength(2),
-        Validators.maxLength(50)]],   
+        Validators.maxLength(50),
+        Validators.pattern(/^[a-zA-Z0-9]/),]],   
       'lname': ['', [Validators.required, Validators.minLength(2),
-        Validators.maxLength(50)]],  
+        Validators.maxLength(50),
+        Validators.pattern(/^[a-zA-Z0-9]/)]],  
       'businessName': ['', [Validators.minLength(2),
-          Validators.maxLength(50)]],       
+          Validators.maxLength(50),
+          Validators.pattern(/^[a-zA-Z0-9]/)]],       
       'email': ['', [
           Validators.required,        
           Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/),
         ]
       ],
-      'sendWhatAppChk':[],
-      'phone':[],
-      
+      // 'sendWhatAppChk':[],
+      'phone': ['', [        
+        Validators.pattern(/^[0-9]/),
+      ]],   
       });
+      //this.onValueChanged();
   }
 
   // Updates validation state on form changes.
@@ -84,33 +90,53 @@ export class XlmReferralPopupComponent implements OnInit {
         }        
       }
     }
+
+    if (!this.formErrors.email){
+      (<any>window)._nb.api.getValidatePublic(this.registerForm.value['email'],
+      res => {          
+          if (res.response.result != 'valid'){
+            this.formErrors.email = 'The email is invalid.'
+          }
+      },
+      err => {          
+          console.log(err)
+          this.formErrors.email = 'The email validation can not be processed right now.'
+      })
+    }
   }
 
   formErrors = {
     'name':'',
     'lname':'',
     'businessName':'',
-    'email': '',        
+    'email': '',  
+    'phone': '',      
   };
 
   validationMessages = {  
     'name':{
       'required':      'First Name is required.',
       'minlength':      'First Name must be at least 2 characters long.',
-      'maxlength':      'First Name cannot be more than 25 characters long.'
+      'maxlength':      'First Name cannot be more than 25 characters long.',
+      'pattern':         'First Name must be characters or numbers'
     },      
     'lname':{
       'required':      'Last Name is required.',
       'minlength':      'Last Name must be at least 2 characters long.',
-      'maxlength':      'Last Name cannot be more than 25 characters long.'
+      'maxlength':      'Last Name cannot be more than 25 characters long.',
+      'pattern':         'First Name must be characters or numbers.'
     },
     'businessName':{      
-      'minlength':      'Business Name must be at least 3 characters long.',
-      'maxlength':      'Business Name cannot be more than 25 characters long.'
+      'minlength':      'Business Name must be at least 2 characters long.',
+      'maxlength':      'Business Name cannot be more than 25 characters long.',
+      'pattern':         'Business Name must be characters or numbers.'
     },
     'email': {
       'required':      'Email is required.',
-      'pattern':         'Email must be a valid email'
+      'pattern':       'Email must be a valid email'
+    },
+    'phone': {      
+      'pattern':       'Phone number must be a valid number'
     },
       
   };
@@ -145,11 +171,11 @@ registerClicked() {
       if ((res as any).errCode == environment.EMAIL_IN_USED)  {
         let content = "The email is already registered."
         this.errorService.handleError(null, content)
-        this.registerForm.reset() 
+        //this.registerForm.reset() 
       } else if ((res as any).errCode == environment.INVALID_ADDRESS){
         let content = "The email is invalid."
         this.errorService.handleError(null, content)
-        this.registerForm.reset() 
+        //this.registerForm.reset() 
       } else {              
         this.success = true
       }
@@ -157,7 +183,7 @@ registerClicked() {
     error => {
       this.loadingService.hide()
       console.log(error) 
-      this.registerForm.reset()              
+      //this.registerForm.reset()              
       this.errorService.handleError(null, `Currently, Invitation can't be processed. Please try again later!`)     
     })
 }

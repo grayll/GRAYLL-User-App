@@ -4,6 +4,7 @@ import {faChevronCircleUp, faPlusCircle} from '@fortawesome/free-solid-svg-icons
 import {Router} from '@angular/router';
 import * as moment from 'moment'
 import {DatePipe} from '@angular/common';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-algo-notification-item',
@@ -24,12 +25,15 @@ export class AlgoNotificationItemComponent implements OnInit {
   faExpand: any;
 
   constructor(
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer
   ) {
     this.faExpand = this.faPlus;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    
+  }
 
   expandNotification() {
     this.markNotificationAsRead();
