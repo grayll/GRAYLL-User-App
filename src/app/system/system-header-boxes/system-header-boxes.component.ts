@@ -219,9 +219,10 @@ export class SystemHeaderBoxesComponent implements OnInit {
   didChangeTab(id: string) {
     const algoItem = this.algoItems.find((i) => i.id === id);
     this.selectedTab = algoItem;
+    this.algoPosition.id =  algoItem.id
     this.algoPosition.item = algoItem.name;
     this.algoPosition.token = algoItem.token;
-      
+    
     if (this.selectedTab.id === 'GRZ' ){
       if (this.algoPosition.usdValue && this.isValidNumber(this.algoPosition.usdValue) ){
         this.algoPosition.itemAmount = this.algoPosition.usdValue/this.authService.priceInfo.grzusd        

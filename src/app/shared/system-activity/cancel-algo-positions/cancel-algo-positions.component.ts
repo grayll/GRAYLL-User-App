@@ -176,6 +176,7 @@ export class CancelAlgoPositionsComponent implements OnInit {
             this.algoService.closingAllAlgo = this.algoName
             this.http.post(environment.gry1_api_url + 'api/v1/gry/position/closeAll', {grayllTxs: closePositionsDataGry1}).subscribe(
               res => { 
+                console.log(res)
                 if ((res as any).errCode != environment.SUCCESS){
                   this.closePopup()
                 }

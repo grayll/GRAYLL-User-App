@@ -30,6 +30,7 @@ export class XlmReferralPopupComponent implements OnInit {
 
   submitted = false;  
   registerForm: FormGroup;
+  isEmailValid = false
 
   constructor(
     public popupService: PopupService,    
@@ -64,12 +65,12 @@ export class XlmReferralPopupComponent implements OnInit {
           Validators.pattern(/^[a-zA-Z0-9]/)]],       
       'email': ['', [
           Validators.required,        
-          Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/),
+          Validators.pattern(/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/),
         ]
       ],
       // 'sendWhatAppChk':[],
       'phone': ['', [        
-        Validators.pattern(/^[0-9]/),
+        Validators.pattern(/^[0-9]{6,15}$/),
       ]],   
       });
       //this.onValueChanged();
@@ -94,13 +95,24 @@ export class XlmReferralPopupComponent implements OnInit {
     if (!this.formErrors.email){
       (<any>window)._nb.api.getValidatePublic(this.registerForm.value['email'],
       res => {          
+          console.log(res)
           if (res.response.result != 'valid'){
-            this.formErrors.email = 'The email is invalid.'
+            this.formErrors.email = 'The email is invalid.'            
+          } else {
+            this.isEmailValid = true
+            this.formErrors = {
+              'name':'',
+              'lname':'',
+              'businessName':'',
+              'email': '',  
+              'phone': '',      
+            };
           }
       },
       err => {          
           console.log(err)
           this.formErrors.email = 'The email validation can not be processed right now.'
+          this.isEmailValid = false
       })
     }
   }
@@ -147,13 +159,15 @@ registerClicked() {
   
   this.submitted = true;
   this.errorService.clearError();
-  this.onValueChanged()
+  //this.onValueChanged()
   // stop here if form is invalid
-  if (this.registerForm.invalid) {
+ // console.log(this.isEmailValid)
+  if (this.registerForm.invalid || !this.isEmailValid) {
       console.log('form invalid', this.formErrors)    
       //this.error = true 
       return;
   }  
+  
   
 
   // Neverbounce verifies email

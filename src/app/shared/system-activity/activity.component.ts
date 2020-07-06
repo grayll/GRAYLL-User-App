@@ -395,22 +395,22 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     let grxusd = this.authService.priceInfo.grxusd
     this.algoService.closeGrayllId = position.grayll_transaction_id
     if (position.algorithm_type === 'GRZ'){
-      let grzusd = this.authService.priceInfo.grzusd
-      let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)
+      // let grzusd = this.authService.priceInfo.grzusd
+      // let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)
       
-      let close_position_fee_$ = close_position_total_$*0.003
-      let close_position_ROI_$ = close_position_total_$ - position.open_position_value_$       
+      // let close_position_fee_$ = close_position_total_$*0.003
+      // let close_position_ROI_$ = close_position_total_$ - position.open_position_value_$       
 
-      let close_performance_fee_$ = 0
-      let netRoi = close_position_ROI_$ - close_position_fee_$
-      if (netRoi > 0) {
-        close_performance_fee_$ =  netRoi * 0.18
-      }
+      // let close_performance_fee_$ = 0
+      // let netRoi = close_position_ROI_$ - close_position_fee_$
+      // if (netRoi > 0) {
+      //   close_performance_fee_$ =  netRoi * 0.18
+      // }
 
-      let close_position_total_GRX = close_position_total_$/grxusd
-      let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
-      let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ      
-      let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
+      // let close_position_total_GRX = close_position_total_$/grxusd
+      // let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
+      // let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ      
+      // let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
       
       this.http.post(environment.grz_api_url + 'api/v1/grz/position/close',
         {user_id: this.authService.userInfo.Uid,            
@@ -438,7 +438,9 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         // close_performance_fee_GRX: close_performance_fee_$/grxusd     
 
       }).subscribe( res => {
-        console.log(res)             
+        if ((res as any).errCode != environment.SUCCESS){
+          this.loadingService.hide()
+        }            
       },
       e => {
        // this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
@@ -470,7 +472,9 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         
       }
       this.http.post(url + 'api/v1/gry/position/close', data).subscribe( res => {
-        console.log(res)             
+        if ((res as any).errCode != environment.SUCCESS){
+          this.loadingService.hide()
+        }              
       },
       e => {       
         this.loadingService.hide()

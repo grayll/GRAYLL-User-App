@@ -68,12 +68,12 @@ export class XlmReferralEditPopupComponent implements OnInit {
           Validators.pattern(/^[a-zA-Z0-9]/)]],       
       'email': ['', [
           Validators.required,        
-          Validators.pattern(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/),
+          Validators.pattern(/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/),
         ]
       ],
-      'sendWhatAppChk':[],
+      // 'sendWhatAppChk':[],
       'phone': ['', [        
-        Validators.pattern(/^[0-9]/),
+        Validators.pattern(/^[0-9]{6,15}$/),
       ]],     
       });
       //this.onValueChanged();

@@ -57,26 +57,16 @@
       <div class="col-12 text-right">
         <small class="text-purple"><i>Required</i></small>
       </div>
-      <div class="col-12"><small>&nbsp;</small></div>
+      <!-- <div class="col-9"><small>&nbsp;</small></div> -->
       <div class="col-12">
-        <div class="d-flex column-div">
-          <label for="phoneNumber" class="text-purple font-weight-bold">
-            Mobile Number
-          </label>
-          <!-- <a class="text-purple margin-left-auto font-weight-bold" href="javascript: void(0)">Send to <i>WhatsApp</i><fa-icon class="phone-icon" [icon]="faPhone"></fa-icon></a> -->
-          <!-- <div class="text-right flex-grow-1">
-            <label for="noMemoMessage" class="font-weight-bolder form-check-label text-purple">Send to<i class="margin-1">WhatsApp</i></label>
-            <label class="checkbox">
-              <input formControlName="sendWhatAppChk" type="checkbox" id="sendWhatAppChk" />
-              <span class="default"></span>
-            </label>
-          </div> -->
-        </div>
+        <label for="phoneNumber" class="text-purple font-weight-bold">
+          Mobile Number
+        </label> 
         <input id="phoneNumber" formControlName="phone" type="text" class="form-control purple-input" placeholder="Mobile Number">
         <small class="text-purple" *ngIf="submitted && formErrors.phone" >
           {{ formErrors.phone }}
         </small>
-        <div class="col-12"><small>&nbsp;</small></div>
+        <!-- <div class="col-12"><small>&nbsp;</small></div> -->
       </div>
     </div>
 
