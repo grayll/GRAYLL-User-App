@@ -28,6 +28,7 @@ import {ConfirmPasswordComponent} from './popup/confirm-pwd/confirm-pw';
 import { ConfirmNewVersionComponent } from './popup/confirm-new-version/confirm-new-version.component';
 import { SwUpdateNotifiyComponent } from './sw-update-notifiy/sw-update-notifiy.component';
 import { LoaderScreenComponent } from './loader-screen/loader-screen.component';
+import { MaintainScreenComponent } from './maintain-screen/maintain-screen.component';
 import {XlmReferralPopupComponent} from './popup/xlm-referral-popup/xlm-referral-popup.component';
 import {XlmReferralRemovePopupComponent} from './popup/xlm-referral-remove-popup/xlm-referral-remove-popup.component';
 import {XlmReferrerRemovePopupComponent} from './popup/xlm-referrer-remove-popup/xlm-referrer-remove-popup.component';
@@ -56,6 +57,7 @@ import { ReferralActivityComponent } from './referral-activity/referral-activity
     ConfirmNewVersionComponent,
     SwUpdateNotifiyComponent,
     LoaderScreenComponent,
+    MaintainScreenComponent,
     ReferralActivityComponent,
     XlmReferralRemovePopupComponent,
     XlmReferrerRemovePopupComponent,
@@ -92,6 +94,7 @@ import { ReferralActivityComponent } from './referral-activity/referral-activity
     ConfirmNewVersionComponent,
     SwUpdateNotifiyComponent,
     LoaderScreenComponent,
+    MaintainScreenComponent,
     ReActivateAccountComponent,
 
   ]

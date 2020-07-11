@@ -1,6 +1,6 @@
 import {Component, NgZone,Input, OnDestroy, OnInit, HostListener, ChangeDetectorRef} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {faBell, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet, faAt} from '@fortawesome/free-solid-svg-icons';
+import {faBell, faCog, faChartBar, faChartLine, faCommentAlt, faPowerOff, faUser, faWallet, faAt} from '@fortawesome/free-solid-svg-icons';
 
 import {NotificationsService} from '../../../notifications/notifications.service';
 import {AuthService} from 'src/app/shared/services/auth.service'
@@ -19,6 +19,10 @@ import { SwUpdateNotifyService } from '../../sw-update-notifiy/sw-update-notify.
 import { AlgoService } from 'src/app/system/algo.service';
 import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
 import { ReferralService } from 'src/app/referral/referral.service';
+import { LogoutService } from '../../services/logout.service';
+import { SnotifyService } from 'ng-snotify';
+import { AdminService } from 'src/app/admin/admin.service';
+import { LoadingService } from '../../services/loading.service';
 
 // import { interval } from 'rxjs';
 // import { timeoutWith } from 'rxjs/operators';
@@ -32,6 +36,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
   @Input() isGetAccountData: boolean;
   @Input() ComId: string;  
+  @Input() adminPanel: boolean;
 
   isNavbarCollapsed = false;
   faPowerOff = faPowerOff;
@@ -42,6 +47,8 @@ export class NavbarComponent implements OnDestroy, OnInit {
   faWallet = faWallet;
   faChartLine = faChartLine;
   faAt = faAt;
+  faCog = faCog;
+
   walletNotices: number = 0
   algoNotices: number = 0
   generalNotices: number = 0 
@@ -73,12 +80,25 @@ export class NavbarComponent implements OnDestroy, OnInit {
     public popupService: PopupService,   
     public swService: SwUpdateNotifyService, 
     private refService: ReferralService, 
-  ) {       
+    private logoutService: LogoutService,
+    private snotifyService: SnotifyService,
+    private adminService: AdminService,
+    private loadingService: LoadingService,
+  ) {   
+    if (!this.adminService.adminSetting.loginStatus){      
+      this.logoutService.signOut()  
+      this.loadingService.show()        
+    }  else {
+      this.loadingService.hide()
+    }  
     this.server = new StellarSdk.Server(environment.horizon_url);      
     this.authService.isGetBalance = false  
-    this.subsink = new SubSink()
+    //this.subsink = new SubSink()
     // get user meta data
-    this.authService.getUserMeta()    
+    this.authService.GetLocalUserData()
+    //console.log('NAV:userdata', this.authService.userData);
+
+    this.authService.getUserMeta() 
     if (!this.authService.isSubUserMeta){            
       this.authService.subsink.add(this.authService.userMeta$.subscribe( data => {
         //console.log('NAV-userMeta$.subscribe:', data)
@@ -100,7 +120,8 @@ export class NavbarComponent implements OnDestroy, OnInit {
     }
         
     // Get basic data    
-    if (!this.authService.userInfo){this.http.post(`api/v1/users/getUserInfo`, {})
+    if (!this.authService.userInfo){
+      this.http.post(`api/v1/users/getUserInfo`, {})
       .subscribe(res => {
         let data = (res as any)        
         if (data.errCode == environment.SUCCESS){           
@@ -123,21 +144,18 @@ export class NavbarComponent implements OnDestroy, OnInit {
           } else {
             //this.errorService.handleError(null, `The request could not be performed! Please retry.`);
           }        
-        },
-        e => {
+        }, e => {
           console.log(e)        
         })
       })
     } else {
       //this.streaming()  
     }    
-    this.subsink = new SubSink()     
+    //this.subsink = new SubSink()     
   }
 
   ngOnInit(){
-    if (!this.authService.userData){      
-      this.authService.GetLocalUserData()
-    } 
+    
     // Add email for Intercom
     (<any>window).Intercom('boot', {
       app_id: "v9vzre42",    
@@ -150,7 +168,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
       this.authService.GetLocalUserMeta()      
     } 
     //console.log('navbar.subscribe', this.ComId)
-    if (this.ComId != 'notification'){
+    if (this.ComId != 'notification' && this.authService.userData.PublicKey){
       Promise.all([
         // this.stellarService.getCurrentGrxPrice1(),
         // this.stellarService.getCurrentXlmPrice1(),
@@ -168,13 +186,12 @@ export class NavbarComponent implements OnDestroy, OnInit {
         }
         
         this.authService.isGetBalance = true
-        // console.log('NAV.totalGRX:', this.authService.userMetaStore.GRX)
-        // console.log('NAV.totalXLM:', this.authService.userMetaStore.XLM)
+       
         
       }) 
     }  
     this.scheduleCheckTokenExpiry()
-    this.subsink.add(this.authService.subShouldReload().subscribe(data => {                
+    this.logoutService.subsink.add(this.authService.subShouldReload().subscribe(data => {                
       this.scheduleCheckTokenExpiry()  
     }))
     this.currentURL = this.router.url    
@@ -184,7 +201,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     //console.log('scheduleCheckTokenExpiry')
     if (this.authService.isTokenExpired()){
       //console.log('token is expired, signout')
-      this.signOut()
+      this.logoutService.signOut()
     } else {
       if (!this.authService.userMetaStore || !this.authService.userMetaStore.TokenExpiredTime || this.authService.userMetaStore.TokenExpiredTime==0){
         console.log('scheduleCheckTokenExpiry- user meta is null')
@@ -216,7 +233,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
           //will renew the token
           if (this.authService.isTokenExpired){
             console.log('NAV.token is expired, signout')
-            this.signOut()
+            this.logoutService.signOut()
           } else {
             this.scheduleCheckTokenExpiry()
           }          
@@ -227,39 +244,42 @@ export class NavbarComponent implements OnDestroy, OnInit {
 
   @HostListener('window:beforeunload')
   ngOnDestroy():void {
-    this.subsink.unsubscribe()    
-    if (!this.isSignout){
+    this.logoutService.subsink.unsubscribe()    
+    if (!this.logoutService.isSignout){
       this.authService.SetLocalUserData()
       this.authService.SetLocalUserMeta()
     }
     clearTimeout(this.authService.timeOutShowConfirmPwd)
     clearTimeout(this.authService.timeOutLogout)
   }
-
-  signOut(){  
-    this.isSignout = true
-    //console.log('NAV-signout')   
-    this.subsink.unsubscribe()
-    this.authService.subsink.unsubscribe()
-    this.authService.isSubPrice = false
-    this.authService.isSubUserMeta = false
-
-    if (this.authService.userMetaStore.OpenOrders > 0){
-      this.authService.updateUserMeta()
-    }
-    clearTimeout(this.authService.timeOutShowConfirmPwd)
-    clearTimeout(this.authService.timeOutLogout)
-   
-    this.algoService.resetServiceData()
-    this.authService.resetServiceData()
-    this.stellarService.resetServiceData()
-    this.noticeService.resetServiceData()
-    this.refService.resetData()
-    localStorage.removeItem('grayll-user');    
-    localStorage.removeItem('grayll-user-meta');   
-    this.ngZone.run(() => {
-      //console.log('signout-home')
-      this.router.navigate(['']);      
-    });
+  signOut(){
+    this.logoutService.signOut()
   }
+
+  // signOut(){  
+  //   this.isSignout = true
+  //   //console.log('NAV-signout')   
+  //   this.logoutService.subsink.unsubscribe()
+  //   this.authService.subsink.unsubscribe()
+  //   this.authService.isSubPrice = false
+  //   this.authService.isSubUserMeta = false
+
+  //   if (this.authService.userMetaStore.OpenOrders > 0){
+  //     this.authService.updateUserMeta()
+  //   }
+  //   clearTimeout(this.authService.timeOutShowConfirmPwd)
+  //   clearTimeout(this.authService.timeOutLogout)
+   
+  //   this.algoService.resetServiceData()
+  //   this.authService.resetServiceData()
+  //   this.stellarService.resetServiceData()
+  //   this.noticeService.resetServiceData()
+  //   this.refService.resetData()
+  //   localStorage.removeItem('grayll-user');    
+  //   localStorage.removeItem('grayll-user-meta');   
+  //   this.ngZone.run(() => {
+  //     //console.log('signout-home')
+  //     this.router.navigate(['']);      
+  //   });
+  // }
 }

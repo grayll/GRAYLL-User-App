@@ -39,7 +39,7 @@
                     </ng-select>
                 </div>
                 <div class="" style="width: 25%;padding-right: 10px;">
-                    <button class="btn btn-purple submit-btn" [routerLink]="['/system/overview', {outlets: {popup: 'cancel-algo-positions/' + algoName}}]">Submit</button>
+                    <button class="btn btn-purple submit-btn" (click)='closeAll()'>Submit</button>
                 </div>
             </div>
         </div>

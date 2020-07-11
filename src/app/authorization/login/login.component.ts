@@ -20,6 +20,8 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
 import { AlgoService } from 'src/app/system/algo.service';
 import { NoticeDataService } from 'src/app/notifications/notifications.dataservice';
 import { ReferralService } from 'src/app/referral/referral.service';
+import { LogoutService } from 'src/app/shared/services/logout.service';
+import { AdminService } from 'src/app/admin/admin.service';
 
 
 @Component({
@@ -60,6 +62,8 @@ export class LoginComponent {
     public Pwa: PwaService,    
     private loadingService: LoadingService,
     private refService: ReferralService,
+    private logoutService: LogoutService,
+    private adminService: AdminService,
     private ngZone:NgZone) {
     	this.browserPlatform = this.Pwa.getBrowserPlatform();      
     }
@@ -75,6 +79,8 @@ export class LoginComponent {
       (<any>window).Intercom('boot', {
         app_id: "v9vzre42",       
       });
+
+      this.logoutService.isSignout = false
   }
 
   buildForm(): void {
@@ -139,7 +145,11 @@ export class LoginComponent {
 
   get f() { return this.loginForm.controls; }
 
-  loginClicked() {    
+  loginClicked() {  
+    if (!this.adminService.adminSetting.loginStatus)  {
+      this.logoutService.show('')
+      this.logoutService.signOut()
+    }
     
     this.submitted = true;
     this.errorService.clearError()

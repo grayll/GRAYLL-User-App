@@ -15,6 +15,7 @@ import { environment } from 'src/environments/environment'
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { AlgoService } from '../algo.service';
 import * as moment from 'moment';
+import { AdminService } from 'src/app/admin/admin.service';
 
 @Component({
   selector: 'app-system-header-boxes',
@@ -86,7 +87,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
     private http: HttpClient,
     private loadingService: LoadingService,
     private algoService: AlgoService,
-
+    private adminService: AdminService,
   ) {    
     
     this.selectedTab = this.algoItems[0];
@@ -303,6 +304,9 @@ export class SystemHeaderBoxesComponent implements OnInit {
     
   private openPopup() {
     if (this.authService.isTokenExpired()){
+      return
+    }
+    if (this.adminService.show(this.selectedTab.id)){
       return
     }
       

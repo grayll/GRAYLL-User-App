@@ -5,6 +5,10 @@ import {Router} from '@angular/router';
 import { AlgoliaService } from './algolia.service';
 import { SwUpdateNotifyService } from './shared/sw-update-notifiy/sw-update-notify.service';
 import { interval } from 'rxjs';
+import { AdminService } from './admin/admin.service';
+import { LoadingService } from './shared/services/loading.service';
+import { SnotifyService } from 'ng-snotify';
+import { LogoutService } from './shared/services/logout.service';
 
 @Component({
   selector: 'app-root',
@@ -26,21 +30,37 @@ export class AppComponent {
   // });
   constructor(public sharedService: SharedService, private algolia: AlgoliaService,
     private swPush: SwPush,
-    private router: Router,
+    private loadingService: LoadingService,
     public updates: SwUpdate,
-   
+    public adminService: AdminService,
     public swService: SwUpdateNotifyService,
+    private snotifyService: SnotifyService,
+    private logoutService:LogoutService,
     ) {
+      if (!this.adminService.adminSetting.loginStatus){        
+        this.logoutService.signOut()  
+        console.log('showloading screen')
+        this.logoutService.show('')
+      } else {
+        this.logoutService.hide()
+      }
+      
+      this.adminService.subAdminSetting()
+      this.adminService._adminSetting.subscribe(setting => {
+        console.log('setting:', setting)
+        if (setting){
+          this.adminService.adminSetting = setting
+          if (!this.adminService.adminSetting.loginStatus){                        
+            this.logoutService.show('')
+            this.logoutService.signOut()           
+          } else {
+            this.logoutService.hide()
+          }          
+        }
+      })
       this.algolia.init();
       this.checkForUpdates(true)
-    // this.swPush.notificationClicks.subscribe( noticeData =>
-    //   {        
-    //     const url = noticeData.notification.data.url
-    //     // window.open(url, '_blank');
-    //     // console.log('data.url: ' + url);
-    //     //this.router.navigate(noticeData.notification.data.url)
-    //     window.open(noticeData.notification.data.url, '_blank');
-    //  });
+   
   }
 
   // ngOnInit() {

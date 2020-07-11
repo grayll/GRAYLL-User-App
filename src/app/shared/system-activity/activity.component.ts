@@ -18,6 +18,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import {faArrowAltCircleDown, faCopy, faInfoCircle, faSearch, faTimesCircle, faCaretDown, faCaretUp} from '@fortawesome/free-solid-svg-icons';
 import { FormControl } from '@angular/forms';
 import { AccountActivityService } from '../account-activity/account-activity.service';
+import { AdminService } from 'src/app/admin/admin.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-activity',
@@ -28,6 +30,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() activeTabId: string;
   @Input() showCompletedOrdersLink: boolean;
+  @Input() userAccount: string;
+	@Input() hideRouterOutlet: boolean;
 
   subsink: SubSink
 
@@ -99,6 +103,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     private loadingService: LoadingService,
     private sharedService:SharedService,
     private accountService: AccountActivityService,
+    private adminService: AdminService,
+    private router: Router,
   ) {
     this.subsink = new SubSink()    
     this.algoService.subsAlgoPositions()
@@ -388,8 +394,22 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         break  
     }
   }
+
+  closeAll(){
+    console.log(this.algoName)
+    let index = this.algoName.indexOf("GR");
+    let algoName = this.algoName.substring(index, this.algoName.length);
+    
+    if (this.adminService.showClose(algoName)){
+      return
+    }    
+    this.router.navigate(['/system/overview', {outlets: {popup: 'cancel-algo-positions/'+algoName}}]);
+  }
   
   closePosition(position){
+    if (this.adminService.showClose(position.algorithm_type)){
+      return
+    }    
     this.loadingService.show()
     
     let grxusd = this.authService.priceInfo.grxusd

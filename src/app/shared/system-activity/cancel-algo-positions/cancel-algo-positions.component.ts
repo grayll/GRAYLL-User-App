@@ -31,9 +31,10 @@ export class CancelAlgoPositionsComponent implements OnInit {
   ngOnInit() {
     this.popupService.open(this.modal);
     this.route.params.subscribe((param) => {
-      let params = param.name;
-      let index = params.indexOf("GR");
-      this.algoName = params.substring(index, params.length);
+      // let params = param.name;
+      // let index = params.indexOf("GR");
+      // this.algoName = params.substring(index, params.length);
+      this.algoName = param.name;
     })
     this.subs = this.authService.subCloseAllEnd().subscribe( end => {
       this.algoService.closingAllAlgo = ''

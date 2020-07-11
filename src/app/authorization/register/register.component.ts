@@ -13,6 +13,8 @@ import { ReCaptchaV3Service } from 'ng-recaptcha';
 import {environment} from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { AdminService } from 'src/app/admin/admin.service';
+import { LogoutService } from 'src/app/shared/services/logout.service';
 
 @Component({
   selector: 'app-register',
@@ -40,15 +42,34 @@ export class RegisterComponent implements OnInit {
     private http: HttpClient,
     private loadingService: LoadingService,
     private route: ActivatedRoute,
+    private logoutService: LogoutService,
+    private adminService: AdminService,
   ) {
-   
+    if (!this.adminService.adminSetting.signupStatus)  {
+      this.logoutService.show("The GRAYLL App is currently under maintenance, please check back soon.")      
+    } else {
+      this.logoutService.hide()
+    }
+    this.adminService._adminSetting.subscribe(setting => {  
+      console.log('reg setting:', setting)    
+      if (setting){
+        this.adminService.adminSetting = setting        
+        if (!this.adminService.adminSetting.signupStatus){                        
+          this.logoutService.show("The GRAYLL App is currently under maintenance, please check back soon.")
+          //this.logoutService.signOut()           
+        } else {
+          this.logoutService.hide()
+        }
+      }
+    })
   }
 
   ngOnInit() {
     this.referer = this.route.snapshot.queryParams["referer"];   
     this.docId = this.route.snapshot.queryParams["id"];
-    console.log("docId:", this.docId) 
+    console.log("docId:", this.adminService.adminSetting) 
     this.buildForm()  
+    
   }
 
   buildForm(): void {    
@@ -120,6 +141,11 @@ export class RegisterComponent implements OnInit {
 get f() { return this.registerForm.controls; }
 
 registerClicked() {
+  if (!this.adminService.adminSetting.signupStatus)  {
+    this.logoutService.show("The GRAYLL App is currently under maintenance, please check back soon.")
+  } else {
+    this.logoutService.hide()
+  }
   
   this.submitted = true;
   this.errorService.clearError();
