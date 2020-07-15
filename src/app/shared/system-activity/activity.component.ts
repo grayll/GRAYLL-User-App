@@ -107,18 +107,19 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     private router: Router,
   ) {
     this.subsink = new SubSink()    
+    this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.algoService.gryMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+
     this.algoService.subsAlgoPositions()
     this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {    
       if (!positions){
         return
       }       
       let positionClosed = true
-      this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gryMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-
+      
       this.algoService.openPositions = positions.filter(pos => {
         if (pos.status == "OPEN"){               
           pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
@@ -348,29 +349,29 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     metric.TotalValue = FPC.add(metric.TotalValue, pos.current_position_value_$)
     metric.Positions +=1
              
-    if (pos.duration <= 1440*60){
-      metric.OneDayPercent = FPC.add(metric.OneDayPercent, pos.current_position_ROI_percent)
-      metric.OneDayCnt++
-    }
-    if (pos.duration <= 10080*60){
-      metric.SevenDayPercent = FPC.add(metric.SevenDayPercent, pos.current_position_ROI_percent)
-      metric.SevenDayCnt++
-    }
-    metric.ROIPercent = FPC.add(metric.ROIPercent, pos.current_position_ROI_percent)
+    // if (pos.duration <= 1440*60){
+    //   metric.OneDayPercent = FPC.add(metric.OneDayPercent, pos.current_position_ROI_percent)
+    //   metric.OneDayCnt++
+    // }
+    // if (pos.duration <= 10080*60){
+    //   metric.SevenDayPercent = FPC.add(metric.SevenDayPercent, pos.current_position_ROI_percent)
+    //   metric.SevenDayCnt++
+    // }
+    // metric.ROIPercent = FPC.add(metric.ROIPercent, pos.current_position_ROI_percent)
     
   }
 
   updateAverageMetric(metric : AlgoMetrics, type: string){
     //console.log('CALCULATE-metric.CurrentProfit-positions:', metric.CurrentProfit, metric.Positions) 
-    if (metric.OneDayCnt > 0){
-      metric.OneDayPercent = metric.OneDayPercent/metric.OneDayCnt
-    }
-    if (metric.SevenDayCnt > 0){
-      metric.SevenDayPercent = metric.SevenDayPercent/metric.SevenDayCnt
-    }
-    if (metric.Positions > 0){
-      metric.ROIPercent = metric.ROIPercent/metric.Positions
-    }
+    // if (metric.OneDayCnt > 0){
+    //   metric.OneDayPercent = metric.OneDayPercent/metric.OneDayCnt
+    // }
+    // if (metric.SevenDayCnt > 0){
+    //   metric.SevenDayPercent = metric.SevenDayPercent/metric.SevenDayCnt
+    // }
+    // if (metric.Positions > 0){
+    //   metric.ROIPercent = metric.ROIPercent/metric.Positions
+    // }
 
     switch(type){
       case "grz":

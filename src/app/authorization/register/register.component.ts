@@ -67,7 +67,7 @@ export class RegisterComponent implements OnInit {
   ngOnInit() {
     this.referer = this.route.snapshot.queryParams["referer"];   
     this.docId = this.route.snapshot.queryParams["id"];
-    console.log("docId:", this.adminService.adminSetting) 
+    //console.log("docId:", this.adminService.adminSetting) 
     this.buildForm()  
     
   }

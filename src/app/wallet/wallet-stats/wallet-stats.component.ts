@@ -276,7 +276,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     console.log('this.grxAmount:', this.grxAmount, this.grxPrice)
     this.stellarService.sellOrder(this.authService.getSecretKey(), (+this.grxPrice).toFixed(7), (+this.grxAmount).toFixed(7)).then( res => {    
       let matchType = 0
-      let msg = 'Buy order submitted successfully.'    
+      let msg = 'Sell order submitted successfully.'    
       if (res.offerResults[0].currentOffer){     
         if (!this.stellarService.allOffers){
           this.stellarService.allOffers = []

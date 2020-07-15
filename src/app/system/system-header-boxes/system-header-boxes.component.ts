@@ -106,6 +106,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
 
   ngOnInit() {    
     this.getDashBoardData()
+    this.getAlgoRoi()
   }
 
   getDashBoardData(){
@@ -118,6 +119,32 @@ export class SystemHeaderBoxesComponent implements OnInit {
         if (res.db.grzusd){ 
           this.grzdb = res.db.grzusd
         }        
+      },
+      e => {
+        console.log(e)
+      }
+    )
+  }
+  getAlgoRoi(){
+    this.http.get("api/v1/users/getalgoroi").subscribe(
+      data => {       
+        let res = data as any 
+        console.log('getAlgoRoi', res) 
+        this.algoService.gry1Metric.OneDayPercent = res.gry1s[0]   
+        this.algoService.gry1Metric.SevenDayPercent = res.gry1s[1] 
+        this.algoService.gry1Metric.ROIPercent = res.gry1s[2] 
+
+        this.algoService.gry2Metric.OneDayPercent = res.gry2s[0]   
+        this.algoService.gry2Metric.SevenDayPercent = res.gry2s[1] 
+        this.algoService.gry2Metric.ROIPercent = res.gry2s[2] 
+
+        this.algoService.gry3Metric.OneDayPercent = res.gry3s[0]   
+        this.algoService.gry3Metric.SevenDayPercent = res.gry3s[1] 
+        this.algoService.gry3Metric.ROIPercent = res.gry3s[2] 
+
+        this.algoService.grzMetric.OneDayPercent = res.grzs[0]   
+        this.algoService.grzMetric.SevenDayPercent = res.grzs[1] 
+        this.algoService.grzMetric.ROIPercent = res.grzs[2] 
       },
       e => {
         console.log(e)
