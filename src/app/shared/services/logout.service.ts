@@ -71,6 +71,7 @@ import { SnotifyService } from 'ng-snotify';
         if (msg){
             newmsg = msg
         } 
+        
         this.snotifyService.warning(newmsg, {
             timeout: -1,
             showProgressBar: false,

@@ -23,8 +23,9 @@ export interface UserMeta {UrWallet: 0, UrGRY1: number; UrGRY2: number; UrGRY3: 
 export interface AlgoMetric {GRYs: number; GRZs: number; GRYBl: number; GRZBl: number; TotalAccountBl: number; 
   TotalAccountProfit: number; TotalOpenPosition: number; PercentGRX: number;PercentXLM: number;GRXInUsd: number;XLMInUsd: number}
 
-export interface AlgoMetrics {Positions: number; CurrentProfit: number; TotalValue: number; OneDayPercent:number; SevenDayPercent:number; ROIPercent:number;
-                              OneDayCnt: number; SevenDayCnt: number }
+export interface AlgoMetrics {Positions: number; CurrentProfit: number; TotalValue: number;}
+
+export interface AlgoMetricROI {OneDayPercent:number; SevenDayPercent:number; ROIPercent:number;}
 
 
 @Injectable({
@@ -35,11 +36,16 @@ export class AlgoService {
   algoMetric: AlgoMetric = {GRYs: 0, GRZs: 0, GRYBl: 0, GRZBl: 0, TotalAccountBl: 0, 
     TotalAccountProfit: 0, TotalOpenPosition: 0, PercentGRX: 0, PercentXLM: 0, GRXInUsd: 0, XLMInUsd: 0}
   
-  grzMetric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-  gry1Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-  gry2Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-  gry3Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-  gryMetric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+  grzMetric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
+  gry1Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
+  gry2Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
+  gry3Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
+  gryMetric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
+
+  gry1MetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
+  gry2MetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
+  gry3MetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
+  grzMetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
 
   public fsdb:any
 
@@ -80,10 +86,10 @@ export class AlgoService {
   resetServiceData(){
     this.algoMetric = {GRYs: 0, GRZs: 0, GRYBl: 0, GRZBl: 0, TotalAccountBl: 0, 
       TotalAccountProfit: 0, TotalOpenPosition: 0, PercentGRX: 0, PercentXLM: 0, GRXInUsd: 0, XLMInUsd: 0}
-      this.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+      this.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0}
+      this.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
+      this.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
+      this.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
     this.allPositions  = []
     this.openPositions  = []
     this.closePositions = []

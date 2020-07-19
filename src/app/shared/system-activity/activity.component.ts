@@ -106,12 +106,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     private adminService: AdminService,
     private router: Router,
   ) {
-    this.subsink = new SubSink()    
-    this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
-      this.algoService.gryMetric = {Positions:0, CurrentProfit:0, TotalValue:0, OneDayPercent:0, SevenDayPercent:0, ROIPercent:0, OneDayCnt:0, SevenDayCnt:0}
+    this.subsink = new SubSink() 
 
     this.algoService.subsAlgoPositions()
     this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {    
@@ -119,6 +114,11 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         return
       }       
       let positionClosed = true
+      this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0}
+      this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
+      this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
+      this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
+      this.algoService.gryMetric = {Positions:0, CurrentProfit:0, TotalValue:0}      
       
       this.algoService.openPositions = positions.filter(pos => {
         if (pos.status == "OPEN"){               

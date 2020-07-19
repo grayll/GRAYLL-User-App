@@ -46,11 +46,10 @@ export class AppComponent {
       }
       
       this.adminService.subAdminSetting()
-      this.adminService._adminSetting.subscribe(setting => {
-        console.log('setting:', setting)
+      this.adminService._adminSetting.subscribe(setting => {        
         if (setting){
           this.adminService.adminSetting = setting
-          if (!this.adminService.adminSetting.loginStatus){                        
+          if (!this.adminService.adminSetting.loginStatus ){                        
             this.logoutService.show('')
             this.logoutService.signOut()           
           } else {
