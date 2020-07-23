@@ -129,7 +129,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
     this.http.get("api/v1/users/getalgoroi").subscribe(
       data => {       
         let res = data as any 
-        console.log('getAlgoRoi', res) 
+       
         this.algoService.gry1MetricROI.OneDayPercent = res.gry1s[0]   
         this.algoService.gry1MetricROI.SevenDayPercent = res.gry1s[1] 
         this.algoService.gry1MetricROI.ROIPercent = res.gry1s[2] 

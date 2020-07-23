@@ -68,15 +68,13 @@ export class DataComponent implements OnInit, OnDestroy {
   }
 
   onTabChange(id: string) {
-    console.log('tab: ', id)
+    
     this.selectedTab = this.activityTabs.find((t) => t.id === id);
     this.activeTabId = id
     switch (id){
-      case 'system-activity':   
-      console.log('system')     
+      case 'system-activity':          
         break;
-      case 'wallet-activity':
-          console.log('wallet')     
+      case 'wallet-activity':          
         break;
     }
   }

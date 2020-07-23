@@ -18,8 +18,8 @@ exports.scheduledFirestoreExport = functions.pubsub
     outputUriPrefix: bucket,
     // Leave collectionIds empty to export all collections
     // or set to a list of collection IDs to export,
-    // collectionIds: ['users', 'posts']
-    collectionIds: ['users_meta', 'users', 'trades', 'subsriptions', 'resetpwd', 'referrals', 'price_update', 'notices', 'algo_positions', 'accounts_closure']
+    collectionIds: []
+    //collectionIds: ['users_meta', 'users', 'trades', 'subsriptions', 'resetpwd', 'referrals', 'price_update', 'notices', 'algo_positions', 'accounts_closure']
     })
   .then(responses => {
     if (responses){

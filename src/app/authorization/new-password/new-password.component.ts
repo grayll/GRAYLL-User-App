@@ -69,9 +69,9 @@ export class NewPasswordComponent {
     }
   }
 
-  public handleRecaptchaExecute(data): void {
-    console.log('this.handleToken(token)', data)
-  }
+  // public handleRecaptchaExecute(data): void {
+  //   console.log('this.handleToken(token)', data)
+  // }
 
  formErrors = {
     'email': ''    

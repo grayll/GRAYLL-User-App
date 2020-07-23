@@ -134,8 +134,8 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     }
     
     // check setting whether direct purchase on admin account
-    console.log('grxPrice:', this.grxPrice , this.authService.priceInfo.xlmgrx , this.authService.userInfo.SellingPrice)
-    console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent, dexAmount, superAdminAmount)
+   // console.log('grxPrice:', this.grxPrice , this.authService.priceInfo.xlmgrx , this.authService.userInfo.SellingPrice)
+    //console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent, dexAmount, superAdminAmount)
     if (+this.grxPrice > this.authService.priceInfo.xlmgrx_ask && +this.grxPrice >= this.authService.userInfo.SellingPrice){
       if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){        
         console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet,this.authService.getSecretKey())
@@ -143,14 +143,14 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
         if (superAdminAmount > 0){
           // buy all from grayll super admin
           let xlmAmount = superAdminAmount*+this.grxPrice
-          console.log('xlmAmount:', xlmAmount)
+          //console.log('xlmAmount:', xlmAmount)
           this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
             xlmAmount.toFixed(7), this.stellarService.nativeAsset, '')
           .then( txHash => {
             this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:+xlmAmount.toFixed(7), 
               grxUsd:+this.grxPrice*this.authService.priceInfo.xlmusd, totalUsd:+xlmAmount.toFixed(7)*this.authService.priceInfo.xlmusd}).then(resp => {
               // update fund
-              console.log('verifyTx: ', resp)
+              //console.log('verifyTx: ', resp)
               this.loadingService.hide()
               let msg 
               if (resp.errCode === environment.SUCCESS){
@@ -273,7 +273,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
   executeSell(){    
     this.loadingService.show()     
-    console.log('this.grxAmount:', this.grxAmount, this.grxPrice)
+    //console.log('this.grxAmount:', this.grxAmount, this.grxPrice)
     this.stellarService.sellOrder(this.authService.getSecretKey(), (+this.grxPrice).toFixed(7), (+this.grxAmount).toFixed(7)).then( res => {    
       let matchType = 0
       let msg = 'Sell order submitted successfully.'    

@@ -83,7 +83,7 @@ export class TwoFactorComponent {
     this.errorService.clearError();
     let exp = 0
     if (this.dontAskForNext30Days){
-      console.log('Do not ask for the next 30 days.')          
+      //console.log('Do not ask for the next 30 days.')          
       let t = new Date().getTime();
       exp = t + 1000 * 60 * 60 * 24 * 30
     }
@@ -91,18 +91,18 @@ export class TwoFactorComponent {
     //let userData = this.authService.userData
     this.authService.verifyTfaAuth(this.code, this.authService.userData.Tfa.Secret, exp)
     .subscribe(res => {
-      console.log('verifyTfaAuth-data: ', res)     
+          
       if ((res as any).valid === true ){
         //this.router.navigate(['/settings/profile'])
         this.router.navigate(['/dashboard/overview'])
         if (this.dontAskForNext30Days){
-          console.log('Do not ask for the next 30 days.')          
+                
           this.authService.userInfo.Expire = exp
           // this.authService.userData = userData
           // this.authService.SetLocalUserData()
           this.authService.SetLocalTfa(this.authService.userInfo.Uid, {Expire:exp})
           //this.authService.updateTfaData(userData)
-          console.log('set 30day tfa')
+          
         }
       } else {
         this.errorService.handleError(null, 'The 2FA code from your Authenticator App is invalid! Please retry.');

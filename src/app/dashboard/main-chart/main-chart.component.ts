@@ -56,7 +56,7 @@ export class MainChartComponent {
 
   selectedTimespan: {id: number, frame:string, name: string} = this.timespanFilter[4];
   public onChange(value: any) {
-    console.log(this.selectedTimespan)
+    
     this.getFrameData()
   }
   

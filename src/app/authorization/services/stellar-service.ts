@@ -77,8 +77,8 @@ export class StellarService {
     
     generateKeyPair(): any {
         const pair = StellarSdk.Keypair.random();
-        console.log('sec key:', pair.secret())
-        console.log('pub key:', pair.publicKey())         
+        // console.log('sec key:', pair.secret())
+        // console.log('pub key:', pair.publicKey())         
         return pair
     }
 
@@ -105,8 +105,8 @@ export class StellarService {
                 // let xdr = tx.toXDR('base64')   
                 // console.log('cancelOffer xdr', xdr)     
                 this.horizon.submitTransaction(tx).then( res => {
-                    console.log('cancel offer:', offers)
-                    console.log('cancel userData:', userData)
+                    // console.log('cancel offer:', offers)
+                    // console.log('cancel userData:', userData)
                     // if (assetType === 'XLM'){                    
                     //     userData.OpenOrdersXLM -= realAmount
                     // } else {
@@ -116,7 +116,7 @@ export class StellarService {
                     resolve(res)
                 }).catch( err => {
                     reject(err)
-                    console.log('cancellOffer error: ', err)
+                    //console.log('cancellOffer error: ', err)
                 })
             })
         })
@@ -144,7 +144,7 @@ export class StellarService {
                     resolve(res)
                 }).catch( err => {
                     reject(err)
-                    console.log('cancellOffer error: ', err)
+                    //console.log('cancellOffer error: ', err)
                 })
             //})
         })
@@ -158,12 +158,12 @@ export class StellarService {
                 .setTimeout(180).build()                
             tx.sign(source)
             let xdr = tx.toXDR('base64')   
-            console.log('cancelOffer xdr', xdr)     
+            //console.log('cancelOffer xdr', xdr)     
             this.horizon.submitTransaction(tx).then( res => { 
                 resolve(res)
             }).catch( err => {
                 reject(err)
-                console.log('cancellOffer error: ', err)
+                //console.log('cancellOffer error: ', err)
             })
         })
     }
@@ -347,7 +347,7 @@ export class StellarService {
                 let xdr = tx.toXDR('base64')   
                 //console.log('Tx xdr', xdr)            
                 this.horizon.submitTransaction(tx).then( resp => {
-                    console.log('resp: ', resp.hash);
+                    //console.log('resp: ', resp.hash);
                     // this.horizon.operations()          
                     // .forTransaction(resp.hash)
                     // .call()
@@ -388,7 +388,7 @@ export class StellarService {
                // tx.sign(source)
                 
                 let xdr = tx.toXDR('base64')   
-                console.log('Tx xdr', xdr)            
+                //console.log('Tx xdr', xdr)            
                 // this.horizon.submitTransaction(tx).then( resp => {
                 //     console.log('resp: ', resp);
                 //     resolve(resp.ledger)
@@ -398,7 +398,7 @@ export class StellarService {
                 // })                
             })
             .catch(function(error) {
-                console.log('loadAccount error: ', error);             
+                //console.log('loadAccount error: ', error);             
                 reject(error)                
             }) 
         })     
@@ -427,8 +427,7 @@ export class StellarService {
                 //console.log('submitTransaction xdr', xdr)                 
                 this.horizon.submitTransaction(tx).then( res => {                    
                     resolve(res)
-                }).catch( err => {
-                    console.log('buyOrder: ', err)
+                }).catch( err => {                   
                     reject(err)
                 })
             // })
@@ -547,8 +546,7 @@ export class StellarService {
                 offerId: offerId,                  
             });            
             userMetaStore.OpenOrdersXLM = +userMetaStore.OpenOrdersXLM + amountXlm
-            console.log('BUY.OpenOrdersXLM :', userMetaStore )
-
+          
             offerData = {time: time, type:type, asset:asset, amount:amount, xlmp: grxXlmP, 
               totalxlm: amountXlm, priceusd: grxXlmP*xlmP, totalusd: amountXlm*xlmP, 
               cachedOffer: cachedOffer, index:index, realAmount: amountXlm, assetType:'XLM'}
@@ -639,12 +637,12 @@ export class StellarService {
     
     verifyPublicKey(secretKey, publicKey): boolean{
         let source = StellarSdk.Keypair.fromSecret(secretKey);     
-        console.log(source.publicKey(),publicKey) 
+       
         if (source.publicKey() != publicKey){
-            console.log('false')
+            
             return false
         }
-        console.log('true')
+        
         return true
     }
 
@@ -718,7 +716,7 @@ export class StellarService {
                     reject(e)
                 })
             }).catch( err => {
-                console.log('getaccount err:', err)                
+                    
                 reject(err)
             })
         })
@@ -746,7 +744,7 @@ export class StellarService {
             },
             err => {
                 cb({err: err})
-                console.log(err)
+               
             }
         )
     }
@@ -789,7 +787,7 @@ export class StellarService {
                 },
                 err => {
                     reject(err)
-                    console.log(err)
+                   
                 }
             )
         })
@@ -804,8 +802,8 @@ export class StellarService {
                 xlm = b.balance
             }
         });
-        console.log('balance:', xlm);               
-        console.log('balance:', grx);               
+        // console.log('balance:', xlm);               
+        // console.log('balance:', grx);               
         cb({xlm:xlm, grx:grx})
        
     }
@@ -819,8 +817,7 @@ export class StellarService {
                     resolve(res)              
                 },
                 err => {
-                    resolve(err)
-                    console.log('this.horizon.loadAccount:', err)
+                    resolve(err)                    
                 }
             )
         })
@@ -829,12 +826,12 @@ export class StellarService {
     getCurrentGrxPrice(cb){
         axios.get(environment.price_grx_url).then(
             res => {
-                console.log(res.data)
+               
                 if (res.data._embedded.records.length > 0){
                     let price = res.data._embedded.records[0].price.d/res.data._embedded.records[0].price.n
                     cb({p:price})
                 } else {
-                    console.log('getCurrentGrxPrice 1')
+                    
                     cb({p:0.04})
                 }
             }
@@ -845,13 +842,13 @@ export class StellarService {
     getCurrentXlmPrice(cb){
         axios.get(environment.price_xlm_url).then(
             res => {
-                console.log(res.data)
+                //console.log(res.data)
                 if (res.data._embedded.records.length > 0){                    
                     let price = res.data._embedded.records[0].price.n/res.data._embedded.records[0].price.d
-                    console.log('getCurrentXlmPrice :', price)
+                   // console.log('getCurrentXlmPrice :', price)
                     cb({p:price})
                 } else {
-                    console.log('getCurrentXlmPrice 1')
+                    //console.log('getCurrentXlmPrice 1')
                     cb({p:0})
                 }
             }
@@ -882,10 +879,10 @@ export class StellarService {
         return new Promise((resolve, reject) => {
             axios.get(environment.price_xlm_url).then(
                 res => {
-                    console.log(res.data)
+                    
                     if (res.data._embedded.records.length > 0){                    
                         let price = res.data._embedded.records[0].price.n/res.data._embedded.records[0].price.d
-                        console.log('getCurrentXlmPrice :', price)
+                       
                         resolve(price)
                     } else {
                         resolve(0)
@@ -998,17 +995,14 @@ export class StellarService {
 
     hashPassword(password, callback){
         const salt = naclutil.encodeBase64(nacl.randomBytes(32));
-        console.log('salt.len: ', salt)
-        //const nonce = new Uint8Array(24);
-        
+               
         scrypt(password, salt,  {
             N: 16384,
             r: 8,
             p: 1,
             dkLen: 16,
             encoding: 'hex'
-        }, (derivedKey) => {
-            console.log('derivedKey.len: ', derivedKey)
+        }, (derivedKey) => {            
             callback(salt+derivedKey)
         })
     }
@@ -1016,8 +1010,7 @@ export class StellarService {
     verifyPassword(hashPass, password, callback){
         const salt = hashPass.substring(0, 44);
         const hash = hashPass.substr(-44);
-        console.log('salt: ', salt)
-       
+              
         scrypt(password, salt,  {
             N: 16384,
             r: 8,

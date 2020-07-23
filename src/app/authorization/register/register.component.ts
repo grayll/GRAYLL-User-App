@@ -51,7 +51,7 @@ export class RegisterComponent implements OnInit {
       this.logoutService.hide()
     }
     this.adminService._adminSetting.subscribe(setting => {  
-      console.log('reg setting:', setting)    
+      //console.log('reg setting:', setting)    
       if (setting){
         this.adminService.adminSetting = setting        
         if (!this.adminService.adminSetting.signupStatus){                        
@@ -152,7 +152,7 @@ registerClicked() {
   this.onValueChanged()
   // stop here if form is invalid
   if (this.registerForm.invalid) {
-      console.log('form invalid')     
+      //console.log('form invalid')     
       return;
   }  
   if (this.honeypot) {
@@ -203,7 +203,7 @@ registerClicked() {
               },
               error => {
                 this.loadingService.hide()
-                console.log(error) 
+                //console.log(error) 
                 this.registerForm.reset()              
                 this.errorService.handleError(null, `Currently, registration can't be processed. Please try again later!`)     
               })
