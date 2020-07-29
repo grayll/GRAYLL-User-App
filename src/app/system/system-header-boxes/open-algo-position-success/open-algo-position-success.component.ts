@@ -30,11 +30,7 @@ export class OpenAlgoPositionSuccessComponent implements OnInit {
   }
 
   goToError() {
-    this.popupService.close().then(() => {
-      // setTimeout(() => {
-      //   this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
-      // }, 1000);
-    });
+    this.popupService.close()
   }
 
   goToOverview() {

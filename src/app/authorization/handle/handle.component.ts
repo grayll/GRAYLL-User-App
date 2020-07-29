@@ -55,7 +55,7 @@ export class HandleComponent implements OnInit {
       this.continueUrl =  params['continueUrl'];
       // (Optional) Get the language code if available.
 
-      console.log('params:', params)
+      //console.log('params:', params)
 
       // Handle the user management action.
       switch (this.mode) {
@@ -95,7 +95,7 @@ export class HandleComponent implements OnInit {
   ngOnInit() {
     switch (this.mode) {
       case 'resetPassword':
-        console.log('resetPassword-build form')
+        //console.log('resetPassword-build form')
         //this.buildForm();
       break;
     }

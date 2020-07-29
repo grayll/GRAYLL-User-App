@@ -416,49 +416,11 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     let grxusd = this.authService.priceInfo.grxusd
     this.algoService.closeGrayllId = position.grayll_transaction_id
     if (position.algorithm_type === 'GRZ'){
-      // let grzusd = this.authService.priceInfo.grzusd
-      // let close_position_total_$ = position.open_position_value_$ * ((((grzusd - position.open_value_GRZ)/position.open_value_GRZ) / 1.00) + 1)
-      
-      // let close_position_fee_$ = close_position_total_$*0.003
-      // let close_position_ROI_$ = close_position_total_$ - position.open_position_value_$       
-
-      // let close_performance_fee_$ = 0
-      // let netRoi = close_position_ROI_$ - close_position_fee_$
-      // if (netRoi > 0) {
-      //   close_performance_fee_$ =  netRoi * 0.18
-      // }
-
-      // let close_position_total_GRX = close_position_total_$/grxusd
-      // let close_position_value_$ = close_position_total_$ - close_position_fee_$ - close_performance_fee_$
-      // let close_position_ROI_percent = (grzusd - position.open_value_GRZ)*100/position.open_value_GRZ      
-      // let close_position_ROI_percent_NET = ((close_position_value_$-position.open_position_value_$)*100)/position.open_position_value_$  
       
       this.http.post(environment.grz_api_url + 'api/v1/grz/position/close',
-        {user_id: this.authService.userInfo.Uid,            
-        // open_stellar_transaction_id: position.open_stellar_transaction_id,
-        // open_position_timestamp: position.open_position_timestamp,
-        grayll_transaction_id: position.grayll_transaction_id,     
-        // algorithm_type: position.algorithm_type,
-        
-        // close_value_GRX:              grxusd,
-        // close_value_GRZ:              grzusd,
-
-        // close_position_value_$:       close_position_value_$,
-        // close_position_value_GRX:     close_position_value_$/grxusd,
-        // close_position_ROI_$:         close_position_ROI_$,
-        // close_position_ROI_percent:   close_position_ROI_percent,
-        // close_position_ROI_percent_NET:   close_position_ROI_percent_NET,
-        // current_position_ROI_$:       close_position_ROI_$,
-        // current_position_ROI_percent: close_position_ROI_percent,
-        // close_position_total_$:    close_position_total_$,
-        // close_position_total_GRX:  close_position_total_GRX,
-        // close_position_total_GRZ:   close_position_total_$/grzusd,
-        // close_position_fee_$:      close_position_fee_$,
-        // close_position_fee_GRX:      close_position_fee_$/grxusd,
-        // close_performance_fee_$:   close_performance_fee_$,
-        // close_performance_fee_GRX: close_performance_fee_$/grxusd     
-
-      }).subscribe( res => {
+        {user_id: this.authService.userInfo.Uid,        
+        grayll_transaction_id: position.grayll_transaction_id,
+        }).subscribe( res => {
         if ((res as any).errCode != environment.SUCCESS){
           this.loadingService.hide()
         }            
@@ -482,15 +444,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
           break
       }
            
-      let data = {user_id: this.authService.userInfo.Uid,   
-        // open_position_value_$:position.open_position_value_$,         
-        // open_stellar_transaction_id: position.open_stellar_transaction_id,
-        // open_position_timestamp: position.open_position_timestamp,
-        grayll_transaction_id: position.grayll_transaction_id,        
-        // algorithm_type: position.algorithm_type,        
-        // close_value_GRX:              grxusd,
-        // close_value_GRY:              gryusd,
-        
+      let data = {user_id: this.authService.userInfo.Uid,       
+        grayll_transaction_id: position.grayll_transaction_id, 
       }
       this.http.post(url + 'api/v1/gry/position/close', data).subscribe( res => {
         if ((res as any).errCode != environment.SUCCESS){
@@ -515,17 +470,12 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
 
   private setActiveTab() {
     if (this.activeTabId && this.activeTabId !== 'openAlgoPositions' && this.activeTabId !== 'closedAlgoPositions' && this.activeTabId !== 'allAlgoPositions') {
-      //console.log('setActiveTab-',this.activeTabId)
+      
       this.selectedTab = this.activityTabs.find((t) => t.id === this.activeTabId);
     } else {
       this.selectedTab = this.activityTabs[0];
     }
-    // if (!this.activeTabId) {
-    //   this.selectedTab = this.activityTabs.find((t) => t.id === this.activeTabId);
-    // } else {
-    //   this.selectedTab = this.activityTabs[0];
-    // }
-    //console.log('setActiveTab:', this.selectedTab)
+  
   }
 
   sortByPositionValue() {

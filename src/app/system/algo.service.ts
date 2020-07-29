@@ -15,6 +15,7 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { environment } from 'src/environments/environment';
 import { ClosePosition } from './algo-position.model';
 import { map } from 'rxjs/operators';
+import { AlgoPositionModel } from '../data/models/algoPositionModel';
 
 
 export interface UserMeta {UrWallet: 0, UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
@@ -62,6 +63,15 @@ export class AlgoService {
   openAlgos$:Observable<ClosePosition[]>;
 
   noticeId:string
+
+  // use to manage the current position
+  currentPositionModel:any
+  currentOpenPosition:any
+  currentURL:string
+
+  // sub retry success
+  retrySuccess$: Observable<boolean>
+  retrySuccess: Subject<boolean>
   
   constructor(    
     public router: Router,  
@@ -73,7 +83,13 @@ export class AlgoService {
   ) {    
     // this.algoPositionCollection = afs.collection<ClosePosition>('algo_positions/users/'+this.authService.userData.Uid);
     // this.algoPositions$ = this.algoPositionCollection.valueChanges();
-  
+    this.retrySuccess = new Subject<true>()
+  }
+
+  subRetrySuccess(){
+    if (!this.retrySuccess$){
+      this.retrySuccess$ = this.retrySuccess.asObservable()
+    }
   }
 
   subsAlgoPositions(){

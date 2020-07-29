@@ -3,9 +3,8 @@ const firestore = require('@google-cloud/firestore');
 const client = new firestore.v1.FirestoreAdminClient();
 
 // Replace BUCKET_NAME
-//const bucket = 'gs://grayll-app-backup';
-//const bucket = 'gs://backup-grayllapp';
-const bucket = process.env.BACKUP_BUCKET;
+const bucket = 'gs://grayll-app-backup';
+//const bucket = functions.config().backup.bucket;
 exports.scheduledFirestoreExport = functions.pubsub
                                             .schedule('every 24 hours')
                                             .onRun((context) => {
@@ -18,8 +17,8 @@ exports.scheduledFirestoreExport = functions.pubsub
     outputUriPrefix: bucket,
     // Leave collectionIds empty to export all collections
     // or set to a list of collection IDs to export,
+    // collectionIds: ['users', 'posts']
     collectionIds: []
-    //collectionIds: ['users_meta', 'users', 'trades', 'subsriptions', 'resetpwd', 'referrals', 'price_update', 'notices', 'algo_positions', 'accounts_closure']
     })
   .then(responses => {
     if (responses){

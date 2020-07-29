@@ -219,54 +219,7 @@ export class LoginComponent {
                       //reject('')
                     }
                   })
-                } 
-                // else {                   
-                //   this.stellarService.decryptSecretKey1(this.password.value, 
-                //     {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
-                //   secretKey => {
-                //     if (secretKey != ''){
-                //       this.authService.secretKey = secretKey                          
-                //       this.stellarService.encryptSecretKey(this.password.value, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                //         //console.log('OLD USER-secretKeyBundle:', secretKeyBundle)
-                //         this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey
-                //         // Save new EnSecretKey and Salt                           
-                //         this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.Salt}).subscribe( 
-                //           res => {
-                //             console.log('saveEnSecretKeyData', res)
-                //             this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                //               //console.log('login-secretKeyBundle:', secretKeyBundle)
-                //               this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
-                //               this.authService.SetLocalUserData()
-                //               //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                //             })   
-                //           },
-                //           e => {
-                //             //console.log('saveEnSecretKeyData error', e)
-                //             this.http.post('api/v1/users/saveEnSecretKeyData', {enSecretKey:secretKeyBundle.EnSecretKey, salt: secretKeyBundle.salt}).subscribe( 
-                //               res => {
-                //                 //console.log('saveEnSecretKeyData', res)
-                //                 this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, secretKey, this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                //                   //console.log('login-secretKeyBundle:', secretKeyBundle)
-                //                   this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
-                //                   this.authService.SetLocalUserData()
-                //                   //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                //                 })  
-                //               },
-                //               e => {
-                //                 console.log('saveEnSecretKeyData error', e)
-                //               }
-                //             )  
-                //           }
-                //         )                            
-                //         this.authService.SetLocalUserData()
-                //         //console.log('encryptSecretKey:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
-                //       })            
-                //     } else {
-                //       console.log('GetSecretKey7, key invalid')
-                //       //reject('')
-                //     }
-                //   })
-                // } 
+                }                 
               }                      
             } else if ((res as any).errCode === environment.INVALID_UNAME_PASSWORD){
               this.showError('Invalid email or password!')                                 

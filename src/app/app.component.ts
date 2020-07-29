@@ -38,8 +38,7 @@ export class AppComponent {
     private logoutService:LogoutService,
     ) {
       if (!this.adminService.adminSetting.loginStatus){        
-        this.logoutService.signOut()  
-        console.log('showloading screen')
+        this.logoutService.signOut()        
         this.logoutService.show('')
       } else {
         this.logoutService.hide()

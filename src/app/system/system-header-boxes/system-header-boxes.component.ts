@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {faBell, faInfoCircle} from '@fortawesome/free-solid-svg-icons';
 import {CountdownConfig} from 'ngx-countdown/src/countdown.config';
 import {AlgoPositionModel} from '../algo-position.model';
-import {Router} from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 import {SharedService} from '../../shared/shared.service';
 import {ErrorService} from '../../shared/error/error.service';
 import {CustomModalService} from '../../shared/custom-modal.service';
@@ -16,6 +16,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
 import { AlgoService } from '../algo.service';
 import * as moment from 'moment';
 import { AdminService } from 'src/app/admin/admin.service';
+import { PopupService } from 'src/app/shared/popup/popup.service';
 
 @Component({
   selector: 'app-system-header-boxes',
@@ -88,6 +89,8 @@ export class SystemHeaderBoxesComponent implements OnInit {
     private loadingService: LoadingService,
     private algoService: AlgoService,
     private adminService: AdminService,
+    public popupService: PopupService,
+    private route: ActivatedRoute,
   ) {    
     
     this.selectedTab = this.algoItems[0];
@@ -121,7 +124,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
         }        
       },
       e => {
-        console.log(e)
+        //console.log(e)
       }
     )
   }
@@ -147,7 +150,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
         this.algoService.grzMetricROI.ROIPercent = res.grzs[2] 
       },
       e => {
-        console.log(e)
+        //console.log(e)
       }
     )
   }
@@ -165,10 +168,10 @@ export class SystemHeaderBoxesComponent implements OnInit {
       this.errorService.handleError(null, 'Please enter a valid Amount Value.');
       return false;
     }   
-    console.log('itemAmountChange')    
+    //console.log('itemAmountChange')    
   }
   grxAmountChange(){    
-    console.log('grxAmountChange')
+    //console.log('grxAmountChange')
     this.itemChange = 'grxAmountChange' 
     
   }
@@ -334,16 +337,28 @@ export class SystemHeaderBoxesComponent implements OnInit {
     if (this.adminService.show(this.selectedTab.id)){
       return
     }
+    // this.algoService.subRetrySuccess()
+    // this.algoService.retrySuccess.subscribe(()=> {
+    //   console.log('received open success')
+    //   this.popupService.close().then(() => {
+    //     setTimeout(() => {
+    //       //this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
+    //       this.router.navigate([{outlets: {popup: 'open-algo-position-success'}}], {relativeTo: this.route});
+    //     }, 10);
+    //   })
+    //   .catch((error) => console.log(error));
+      
+    // })
       
     this.loadingService.show()
     this.sharedService.openAlgoPosition(this.algoPosition);
     this.stellarService.sendAsset(this.authService.getSecretKey(), environment.HOT_WALLET_ONE, 
-      this.algoPosition.grxAmount.toString(), this.stellarService.grxAsset, '').then( txHash => {
+      this.algoPosition.grxAmount.toString(), this.stellarService.grxAsset, this.selectedTab.id).then( txHash => {
         this.algoPosition.stellarTxId = txHash
         this.algoPosition.positionValue = this.algoPosition.usdValue - this.algoPosition.usdValue*+this.selectedTab.fee       
        
        if (this.selectedTab.id === 'GRZ'){
-          this.http.post(environment.grz_api_url + 'api/v1/grz/position/open', {
+         let data =  {
             user_id:this.authService.userInfo.Uid,            
             open_stellar_transaction_id:txHash,            
             grayll_transaction_id:"0",
@@ -362,23 +377,35 @@ export class SystemHeaderBoxesComponent implements OnInit {
             open_position_total_GRX:+this.algoPosition.grxAmount,
             open_position_value_GRZ:+this.algoPosition.itemAmount - +this.algoPosition.itemAmount*+this.selectedTab.fee,
             open_position_value_GRX:(+this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee),
-          }).subscribe(res => {
-              console.log(res)
-              if ((res as any).errCode != environment.SUCCESS){               
+          }
+
+          this.algoPosition.openFee$ = +this.algoPosition.usdValue*+this.selectedTab.fee
+          this.algoPosition.positionValueGRX = +this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee
+          
+          this.algoService.currentOpenPosition = data
+          this.algoService.currentURL =  environment.grz_api_url + 'api/v1/grz/position/open'
+          this.algoService.currentPositionModel = this.algoPosition
+          this.sharedService.openAlgoPosition(this.algoPosition);
+          this.http.post(this.algoService.currentURL, data).subscribe(res => {             
+              let errCode = (res as any).errCode
+              if (errCode != environment.SUCCESS ){     
+                // save data to retry  
+                if (errCode != environment.TX_IN_USED || errCode != environment.INTERNAL_ERROR_RETRY){
+                  this.algoService.currentOpenPosition = null
+                }
                 this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
               } else {
-                //console.log('res:', res)
+               
                this.algoPosition.grayllTxId = (res as any).grayllTxId
                this.algoPosition.stellarTxId = (res as any).stellarTxId
-               this.algoPosition.openFee$ = +this.algoPosition.usdValue*+this.selectedTab.fee
-               this.algoPosition.positionValueGRX = +this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee
+               this.algoService.currentOpenPosition = null
                this.sharedService.openAlgoPosition(this.algoPosition);
                this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
               }
               this.loadingService.hide()
           },
           e => {
-            console.log('ex:', e)
+            //console.log('ex:', e)
             this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
             this.loadingService.hide()
           })
@@ -405,30 +432,44 @@ export class SystemHeaderBoxesComponent implements OnInit {
           let url = ''
           switch(this.selectedTab.id){
             case "GRY 1":
-              url = environment.gry1_api_url 
+              url = environment.gry1_api_url + 'api/v1/gry/position/open'
               break
             case "GRY 2":
-              url = environment.gry2_api_url 
+              url = environment.gry2_api_url + 'api/v1/gry/position/open'
               break
             case "GRY 3":
-              url = environment.gry3_api_url 
+              url = environment.gry3_api_url + 'api/v1/gry/position/open'
               break
           }
-          this.http.post(url + 'api/v1/gry/position/open', data).subscribe(res => {
-              if ((res as any).errCode != environment.SUCCESS){               
-                this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
-              } else {
-                //console.log('res:', res)
-               this.algoPosition.grayllTxId = (res as any).grayllTxId
-               this.algoPosition.stellarTxId = (res as any).stellarTxId
-               this.algoPosition.openFee$ = +this.algoPosition.usdValue*+this.selectedTab.fee
-               this.algoPosition.positionValueGRX = +this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee
-               this.sharedService.openAlgoPosition(this.algoPosition);
-               this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
-              }
-              this.loadingService.hide()
+          // save data to retry  
+          this.algoPosition.openFee$ = +this.algoPosition.usdValue*+this.selectedTab.fee
+          this.algoPosition.positionValueGRX = +this.algoPosition.grxAmount - +this.algoPosition.grxAmount*+this.selectedTab.fee
+
+          this.algoService.currentOpenPosition = data
+          this.algoService.currentURL =  url
+          this.algoService.currentPositionModel = this.algoPosition
+          this.sharedService.openAlgoPosition(this.algoPosition);
+
+          this.http.post(url, data).subscribe(res => {
+            let errCode = (res as any).errCode
+            if (errCode != environment.SUCCESS ){     
+              // save data to retry  
+              if (errCode != environment.TX_IN_USED || errCode != environment.INTERNAL_ERROR_RETRY){
+                this.algoService.currentOpenPosition = null
+              }        
+              this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
+            } else {
+              console.log('res:', res)
+              this.algoPosition.grayllTxId = (res as any).grayllTxId
+              this.algoPosition.stellarTxId = (res as any).stellarTxId
+              this.algoService.currentOpenPosition = null
+              this.sharedService.openAlgoPosition(this.algoPosition);
+              this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
+            }
+            this.loadingService.hide()
           },
           e => {
+            console.log(e)
             this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
             this.loadingService.hide()
           })          
@@ -478,8 +519,8 @@ export class SystemHeaderBoxesComponent implements OnInit {
           this.algoPosition.itemPrice = this.authService.priceInfo.gryusd
         }
         this.algoPosition.positionValue = this.algoPosition.usdValue - +this.selectedTab.fee*this.algoPosition.usdValue
-        console.log(this.algoPosition.usdValue)
-        console.log(this.authService.priceInfo.grxusd)
+        // console.log(this.algoPosition.usdValue)
+        // console.log(this.authService.priceInfo.grxusd)
         this.algoPosition.grxAmount = (this.algoPosition.usdValue/this.authService.priceInfo.grxusd).toFixed(7)
         break
       case 'itemAmountChange':
