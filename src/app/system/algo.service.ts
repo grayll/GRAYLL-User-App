@@ -47,6 +47,7 @@ export class AlgoService {
   gry2MetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
   gry3MetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
   grzMetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
+  gryMetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
 
   public fsdb:any
 
@@ -139,16 +140,7 @@ export class AlgoService {
     if(this.fsdb){
       this.fsdb.collection(algoPostionPath).onSnapshot(snapshot => {      
         snapshot.docChanges().forEach( change => {
-          console.log("New: ", change.doc.data());
-          // if (change.type === "added") {
-          //     console.log("New: ", change.doc.data());
-          // }
-          // if (change.type === "modified") {
-          //     console.log("Modified: ", change.doc.data());
-          // }
-          // if (change.type === "removed") {
-          //     console.log("Removed: ", change.doc.data());
-          // }
+          
         });
       })
     }
@@ -173,59 +165,40 @@ export class AlgoService {
   getTotalAccountValue(){
     return this.authService.xlmInUsd() + this.authService.grxInUsd() + this.getAlgoBalance()
   }
-  // getGRYBalance(){
-  //   return this.gry1Metric.TotalValue + this.gry2Metric.TotalValue + this.gry3Metric.TotalValue
-  // }
-  // getAlgoBalance(){   
-  //   return this.getGRYBalance() + this.grzMetric.TotalValue
-  // }
   
-  // calPercentGRY(){
-  //   // let totalgry = this.getGRYBalance()
-  //   // if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
-  //   //   return 0
-  //   // } else {
-  //   //   return Math.round(totalgry*100/(totalgry + this.userMetaStore.total_grz_current_position_value_$))
-  //   // }
-  //   let totalgry = this.getGRYBalance()
-  //   if (this.grzMetric.TotalValue == 0 && totalgry == 0){
-  //     return 0
-  //   } else {
-  //     return Math.round(totalgry*100/(totalgry + (this.grzMetric.TotalValue | 0)))
-  //   }
+  getAlgoRoi(){         
+    if (this.gry1MetricROI.ROIPercent == 0 ) {
+      this.http.get("api/v1/users/getalgoroi").subscribe(
+        data => {       
+          let res = data as any   
+          
+          this.gry1MetricROI.OneDayPercent = res.gry1s[0]   
+          this.gry1MetricROI.SevenDayPercent = res.gry1s[1] 
+          this.gry1MetricROI.ROIPercent = res.gry1s[2] 
 
-  // }
-  // calPercentGRZ(){
-  //   let totalgry = this.getGRYBalance()
-  //   // if (this.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
-  //   //   return 0
-  //   // } else {
-  //   //   return 100 - this.calPercentGRY()
-  //   // }
-  //   if (this.grzMetric.TotalValue == 0 && totalgry == 0){
-  //     return 0
-  //   } else {
-  //     return 100 - this.calPercentGRY()
-  //   }
-  // }
-  // getTotalOpenPosition(){
-  //   // return this.userMetaStore.total_gry1_open_positions + this.userMetaStore.total_gry2_open_positions + 
-  //   // this.userMetaStore.total_gry3_open_positions + this.userMetaStore.total_grz_open_positions
-  //   this.grzMetric.Positions + this.gry1Metric.Positions + 
-  //   this.gry2Metric.Positions + this.gry3Metric.Positions
-  // }
-  // getGRYProfit(){
-  //  return this.gry1Metric.CurrentProfit + 
-  //   this.gry2Metric.CurrentProfit + this.gry3Metric.CurrentProfit
-  // }
-  // getTotalAccountProfit(){
-  //   //return this.getGRYProfit() + this.userMetaStore.total_grz_close_positions_ROI_$ + this.userMetaStore.total_grz_current_position_ROI_$
-  //   let ret = this.grzMetric.CurrentProfit + this.getGRYProfit() + this.authService.userMetaStore.total_grz_close_positions_ROI_$ + 
-  //   this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +this.authService.userMetaStore.total_gry2_close_positions_ROI_$ +
-  //   this.authService.userMetaStore.total_gry3_close_positions_ROI_$ 
+          this.gry2MetricROI.OneDayPercent = res.gry2s[0]   
+          this.gry2MetricROI.SevenDayPercent = res.gry2s[1] 
+          this.gry2MetricROI.ROIPercent = res.gry2s[2] 
 
-  //   return ret
-  // }
+          this.gry3MetricROI.OneDayPercent = res.gry3s[0]   
+          this.gry3MetricROI.SevenDayPercent = res.gry3s[1] 
+          this.gry3MetricROI.ROIPercent = res.gry3s[2] 
+
+          this.grzMetricROI.OneDayPercent = res.grzs[0]   
+          this.grzMetricROI.SevenDayPercent = res.grzs[1] 
+          this.grzMetricROI.ROIPercent = res.grzs[2] 
+
+          this.gryMetricROI.OneDayPercent = Math.max(this.gry1MetricROI.OneDayPercent, this.gry2MetricROI.OneDayPercent, this.gry3MetricROI.OneDayPercent)  
+          this.gryMetricROI.SevenDayPercent = Math.max(this.gry1MetricROI.SevenDayPercent, this.gry2MetricROI.SevenDayPercent, this.gry3MetricROI.SevenDayPercent)
+          this.gryMetricROI.ROIPercent =  Math.max(this.gry1MetricROI.ROIPercent, this.gry2MetricROI.ROIPercent, this.gry3MetricROI.ROIPercent) 
+
+        },
+        e => {
+          //console.log(e)
+        }
+      )
+    }
+  }
 
   getGRYBalance(){
     if (this.authService.userMetaStore && this.authService.userMetaStore.total_gry1_current_position_value_$){
@@ -284,12 +257,15 @@ export class AlgoService {
   //   return this.xlmInUsd() + this.grxInUsd() + this.getAlgoBalance()
   // }
   getGRYProfit(){
+    let val = 0
     if (this.authService.userMetaStore){
-      return this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
+      //console.log('getGRYProfit - usermetastore', this.authService.userMetaStore)
+      val = this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
       this.authService.userMetaStore.total_gry2_current_position_ROI_$ + this.authService.userMetaStore.total_gry2_close_positions_ROI_$ +
       this.authService.userMetaStore.total_gry3_current_position_ROI_$ + this.authService.userMetaStore.total_gry3_close_positions_ROI_$
     }
-    return 0
+    //console.log('getGRYProfit ret', val)
+    return val
         
   }
   getTotalAccountProfit(){

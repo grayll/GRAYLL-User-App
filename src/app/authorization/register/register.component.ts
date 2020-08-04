@@ -16,6 +16,8 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
 import { AdminService } from 'src/app/admin/admin.service';
 import { LogoutService } from 'src/app/shared/services/logout.service';
 
+//var crypto = require('crypto');
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -170,7 +172,7 @@ registerClicked() {
         this.loadingService.show()
         this.recaptchaV3Service.execute('register').subscribe((token) => {
           // Verify token 
-          axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
+          axios.post(environment.api_url + 'api/v1/verifyrecapchatoken/'+this.registerForm.value['email']+"/register", {}, {
             headers: { Authorization: "Bearer " + token }
           }).then(response => {      
             if (response.data.status === 'success'){ 

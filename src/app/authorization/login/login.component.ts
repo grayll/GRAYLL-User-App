@@ -168,7 +168,7 @@ export class LoginComponent {
     this.recaptchaV3Service.execute('login')
     .subscribe(token => {
       // Verify token 
-      axios.post('https://us-central1-grayll-app-f3f3f3.cloudfunctions.net/VerifyRecapchaToken', {}, {
+      axios.post(environment.api_url + 'api/v1/verifyrecapchatoken/'+this.email.value+"/login", {}, {
         headers: { Authorization: "Bearer " + token }
       }).then(response => {      
         if (response.data.status === 'success'){          

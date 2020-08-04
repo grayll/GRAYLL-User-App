@@ -72,7 +72,7 @@ export class DataHeaderBoxesComponent implements OnInit {
   constructor(
     public authService: AuthService,
     public algoService: AlgoService) {
-      
+      this.algoService.getAlgoRoi()
      }
 
   ngOnInit() {
