@@ -304,8 +304,6 @@ export class StellarService {
     }
     async payLoanXdr(publicKey: string, dest: string, amount: string, asset: any, memo: string) {        
         const account = await this.horizon.loadAccount(publicKey)
-
-        //console.log(account)
        
         let tx = new StellarSdk.TransactionBuilder(account, 
         {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
@@ -315,7 +313,8 @@ export class StellarService {
             amount: amount,
         }))
         .addOperation(StellarSdk.Operation.setOptions({
-            highThreshold: 0,            
+            highThreshold: 0,
+            medThreshold: 0,
         }))
         .addOperation(StellarSdk.Operation.setOptions({           
             signer:{
@@ -324,7 +323,23 @@ export class StellarService {
             }
         }))
         .addMemo(StellarSdk.Memo.text(memo))        
-        .setTimeout(180).build()                    
+        .setTimeout(0).build()                    
+        return tx.toXDR('base64')                      
+    }
+    async mergeAccount(publicKey: string, dest: string) {        
+        const account = await this.horizon.loadAccount(publicKey)       
+        let tx = new StellarSdk.TransactionBuilder(account, 
+        {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
+        .addOperation(StellarSdk.Operation.changeTrust({ 
+            asset: this.grxAsset,                    
+            source: publicKey,
+            limit:0
+        })) 
+        .addOperation(StellarSdk.Operation.accountMerge({ 
+            destination: dest,  
+            source:publicKey,          
+        }))        
+        .setTimeout(0).build()                    
         return tx.toXDR('base64')                      
     }
 
@@ -645,7 +660,9 @@ export class StellarService {
         
         return true
     }
-
+    // Each account can set its own threshold values. By default all thresholds levels are set to 0, and the master key is set to weight 1. 
+    // The Set Options operation allows you to change the weight of the master key and to add other signing keys with different weights.
+    // https://www.stellar.org/developers/guides/concepts/multi-sig.html
     trustAsset(accSeed: string): Promise<any> {
         return new Promise((resolve, reject) => {
             let source = StellarSdk.Keypair.fromSecret(accSeed);                    
@@ -659,7 +676,8 @@ export class StellarService {
                     asset: this.grxAsset,                    
                     source: source.publicKey(),
                 }))  
-                .addOperation(StellarSdk.Operation.setOptions({                    
+                .addOperation(StellarSdk.Operation.setOptions({  
+                    medThreshold: 4,                               
                     highThreshold: 5 // make sure to have enough weight to add up to the high threshold!
                   }))              
                 .addOperation(StellarSdk.Operation.setOptions({                    
@@ -668,6 +686,45 @@ export class StellarService {
                         weight: 10                        
                     }
                 }))                 
+                .setTimeout(0)
+                .build()
+                tx.sign(source)  
+                let xdr = tx.toXDR('base64') 
+                console.log('xdr:', xdr)   
+                console.log('trustAsset')         
+                this.horizon.submitTransaction(tx).then( res => {
+                    //console.log('submitTransaction res:', res)
+                    resolve(res)
+                }).catch( e => {
+                    //console.log('submitTransaction e:', e)
+                    reject(e)
+                })
+            }).catch( err => {
+                console.log('getaccount err:', err)                
+                reject(err)
+            })
+        })
+    }
+
+    removeTrustAsset(accSeed: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let source = StellarSdk.Keypair.fromSecret(accSeed);                    
+            this.horizon.loadAccount(source.publicKey()).then( account => {                
+                // 3. Create a transaction builder
+                let tx = new StellarSdk.TransactionBuilder(account, 
+                    {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
+                
+                // 4. Add CHANGE_TRUST operation to establish trustline
+                .addOperation(StellarSdk.Operation.changeTrust({ 
+                    asset: this.grxAsset,                    
+                    source: source.publicKey(),
+                    limit:0
+                }))  
+                .addOperation(StellarSdk.Operation.accountMerge({  
+                    lowThreshold: 4,                               
+                    highThreshold: 5 // make sure to have enough weight to add up to the high threshold!
+                  }))              
+                                
                 .setTimeout(0)
                 .build()
                 tx.sign(source)  

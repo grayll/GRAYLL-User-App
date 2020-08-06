@@ -260,14 +260,18 @@ export class WithdrawPopupComponent implements OnInit {
           if (ret == -1){
             msg = 'Destination account address does not exist.'
           } else if(ret == -2){
-            msg = 'Destination account address does not have a GRX trustline!'
+            if (this.selectedAssestTabId == 'GRX'){
+              msg = 'Destination account address does not have a GRX trustline!'
+            } else {
+              valid = true
+            }
           } else if (ret == 0){
-            valid = true
-            this.withdrawModel.address = value
+            valid = true            
           }
           if (!valid){
             this.errorService.handleError(null, msg)
           }
+          this.withdrawModel.address = value
           resolve(valid)
         })      
       } else if (value.includes('*') && value.includes('.')){

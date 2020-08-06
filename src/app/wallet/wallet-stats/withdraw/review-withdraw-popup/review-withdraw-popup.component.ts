@@ -63,7 +63,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     //this.sharedService.showModalOverview();
     let amount = 0
     let asset
-    console.log("0")
+    
     if (this.withdrawModel.asset === 'GRX') {
       amount = this.withdrawModel.amount  
       asset = this.stellarService.grxAsset     
@@ -71,10 +71,10 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
       amount = this.withdrawModel.amount  
       asset = this.stellarService.nativeAsset
     } else {
-      console.log("1")
+      
       return
     }
-    console.log("2")
+    
     let memo = ''
     if (this.withdrawModel.memoMessage && this.withdrawModel.memoMessage.length > 0){
       memo = this.withdrawModel.memoMessage
@@ -217,10 +217,10 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
             this.popupService.close()
             .then(() => {              
               if (asset.code === 'XLM'){
-                console.log('asset.code', asset.code)
+                //console.log('asset.code', asset.code)
                 this.authService.userMetaStore.XLM = +this.authService.userMetaStore.XLM - +amount
               } else {
-                console.log('asset.code1', asset.code)
+                //console.log('asset.code1', asset.code)
                 this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX - +amount
               }
               
@@ -264,11 +264,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
         this.popupService.close()        
         .then(() => {
           
-          if (asset.code === 'XLM'){
-            console.log('asset.code', asset.code)
+          if (asset.code === 'XLM'){            
             this.authService.userMetaStore.XLM = +this.authService.userMetaStore.XLM - +amount
-          } else {
-            console.log('asset.code1', asset.code)
+          } else {            
             this.authService.userMetaStore.GRX = +this.authService.userMetaStore.GRX - +amount
           }
           setTimeout(() => {

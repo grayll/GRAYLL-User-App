@@ -168,13 +168,12 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
                 this.authService.userInfo.SecretKeySalt = enSecret.Salt
                 this.authService.userInfo.PublicKey = res.keypair.publicKey()  
                 this.stellarService.encryptSecretKey(this.authService.userInfo.LocalKey, 
-                  res.keypair.rawSecretKey(), this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {
-                  //console.log('activate-secretKeyBundle:', secretKeyBundle)
+                  res.keypair.rawSecretKey(), this.authService.userInfo.SecretKeySalt, (secretKeyBundle) => {                    
                   this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey              
                   this.authService.SetLocalUserData() 
                   this.authService.RemoveSeedData() 
                   this.loadingService.hide()                 
-                })                 
+                })
               },
               err => {
                 console.log('err trust asset:', err)                 
@@ -188,7 +187,8 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
               this.error = true;
               this.success = false;
               this.loadingService.hide()
-            })                                            
+            }) 
+
           } else if ((resp as any).errCode === environment.INVALID_UNAME_PASSWORD){
             this.loadingService.hide()
             this.frm.reset()
