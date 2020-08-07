@@ -86,7 +86,7 @@
   <div class="modal-footer">
     <div class="row text-center" style="display: contents!important;">
       <div class="col">
-        <button class="btn btn-purple" *ngIf="!success && !error" (click)="payOffLoan()">Pay Off 2.1 XLM</button>
+        <button class="btn btn-purple" *ngIf="!success && !error" (click)="payOffLoanNew()">Pay Off 2.1 XLM</button>
         <button class="btn btn-purple" *ngIf="success" (click)="popupService.close()">Close</button>
         <button class="btn btn-purple" *ngIf="error" (click)="retry()">Retry</button>
       </div>

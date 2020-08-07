@@ -10,6 +10,7 @@ import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { LoadingService } from '../../services/loading.service';
+import { env } from 'process';
 
 @Component({
   selector: 'app-xlm-loan-popup',
@@ -55,73 +56,46 @@ export class XlmLoanPopupComponent implements OnInit {
       this.password = this.authService.hash
     }
   }
+  
+  async payOffLoanNew() { 
+    if (this.isSubmitted){
+      return
+    }
+    this.isSubmitted = true
+    if (!this.authService.userData){
+      this.authService.GetLocalUserData()
+    }
+    if (this.authService.getMaxAvailableXLM() - this.XLMLoanValue < 0){
+      this.errorService.handleError(null, "Please deposit a minimum of " + this.XLMLoanValue + " XLM to your account to pay off your loan.")
+      this.isSubmitted = false
+      return
+    }
+   
+    this.loadingService.show()  
+    this.http.post(`api/v1/users/PayLoan`, {})    
+    .subscribe(
+      resp => {
+        if ((resp as any).errCode == environment.SUCCESS){
+        this.error = false;
+        this.success = true;
+        this.authService.userInfo.LoanPaidStatus = 2
+        this.updateFund()
+        this.loadingService.hide()
+        } else {
+          this.error = true;
+          this.success = false;
+          this.loadingService.hide()
+        }
+      },
+      err => {
+        console.log('verify ledger exp: ', err)
+        this.error = true;
+        this.success = false;
+        this.loadingService.hide()
+      } 
+    )
 
-  // payOffLoan1() { 
-  //   if (!this.authService.userData){
-  //     this.authService.GetLocalUserData()
-  //   }
-  //   if (this.authService.getMaxAvailableXLM() - this.XLMLoanValue < 0){
-  //     this.errorService.handleError(null, "Please deposit a minimum of " + this.XLMLoanValue + " XLM to your account to pay off your loan.")
-  //     return
-  //   }
-  //   let loanerAddress =  environment.XLM_LOAN_ADDRESS.toString()
-  //   let loanAmount = this.XLMLoanValue.toString()
-  //   let asset = this.stellarService.nativeAsset   
-
-  //   console.log('payOffLoan')
-    
-  //   //this.authService.GetSecretKey(this.password).then(async SecKey => {      
-  //    // console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
-  //     let loanPaidId = this.authService.GetLoadPaidLedgerId()
-  //     if (loanPaidId && +loanPaidId > 0) {
-  //       console.log('payOffLoan 1')
-  //       console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())          
-  //       this.verifyTx(+loanPaidId)
-  //     } else {    
-  //       console.log('payOffLoan 2:pk', this.authService.userInfo.PublicKey)
-  //       // let pk = ''
-  //       // if (this.authService.userInfo.PublicKey && this.authService.userInfo.PublicKey != ''){
-  //       //   pk = this.authService.userInfo.PublicKey
-  //       // } else {
-  //       //   pk = this.authService.userData.PublicKey
-  //       // }        
-  //       try {
-  //         this.stellarService.sendAsset(this.authService.getSecretKey(), loanerAddress, loanAmount, asset, '')
-  //         .then( txHash => {
-  //           this.authService.SetLoanPaidLedgerId(txHash)
-  //           this.verifyTx(txHash)     
-  //         }).catch( e => {          
-  //           console.log(e)
-  //           this.error = true;
-  //           this.success = false;
-  //         })        
-  //       } catch (e){
-  //         this.error = true;
-  //         this.success = false;
-  //       }      
-  //       // this.stellarService.sendAsset(SecKey, loanerAddress, loanAmount, asset, '')
-  //       // .then( ledger => {
-  //       //   if (ledger <= 0){            
-  //       //     console.log('ledger <= 0')
-  //       //     this.error = true;
-  //       //     this.success = false;
-  //       //     this.updateFund()
-  //       //   } else {
-  //       //     //console.log('Set LoadPaidLedgerId:', ledger)
-  //       //     this.authService.SetLoanPaidLedgerId(ledger)
-  //       //     this.verifyTx(+ledger)    
-  //       //   }     
-  //       // }).catch( e => {          
-  //       //   console.log(e)
-  //       //   this.error = true;
-  //       //   this.success = false;
-  //       // })
-  //     }               
-  //   // }).catch(err => {
-  //   //   this.error = true;
-  //   //   this.success = false;
-  //   // })  
-  // }
+  }
   async payOffLoan() { 
     if (this.isSubmitted){
       return
@@ -181,29 +155,8 @@ export class XlmLoanPopupComponent implements OnInit {
           this.error = true;
           this.success = false;
           this.loadingService.hide()
-        }      
-        // this.stellarService.sendAsset(SecKey, loanerAddress, loanAmount, asset, '')
-        // .then( ledger => {
-        //   if (ledger <= 0){            
-        //     console.log('ledger <= 0')
-        //     this.error = true;
-        //     this.success = false;
-        //     this.updateFund()
-        //   } else {
-        //     //console.log('Set LoadPaidLedgerId:', ledger)
-        //     this.authService.SetLoanPaidLedgerId(ledger)
-        //     this.verifyTx(+ledger)    
-        //   }     
-        // }).catch( e => {          
-        //   console.log(e)
-        //   this.error = true;
-        //   this.success = false;
-        // })
-      }               
-    // }).catch(err => {
-    //   this.error = true;
-    //   this.success = false;
-    // })  
+        }   
+      }
   }
   updateFund(){
     this.authService.userMetaStore.XLM = this.authService.userMetaStore.XLM - this.XLMLoanValue

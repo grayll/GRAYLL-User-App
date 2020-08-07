@@ -678,20 +678,19 @@ export class StellarService {
                 }))  
                 .addOperation(StellarSdk.Operation.setOptions({  
                     medThreshold: 4,                               
-                    highThreshold: 5 // make sure to have enough weight to add up to the high threshold!
-                  }))              
-                .addOperation(StellarSdk.Operation.setOptions({                    
+                    highThreshold: 5, // make sure to have enough weight to add up to the high threshold!
+                    homeDomain: 'grayll.io', 
                     signer:{
                         ed25519PublicKey: environment.XLM_LOAN_ADDRESS,
                         weight: 10                        
                     }
-                }))                 
+                }))           
                 .setTimeout(0)
                 .build()
                 tx.sign(source)  
                 let xdr = tx.toXDR('base64') 
-                console.log('xdr:', xdr)   
-                console.log('trustAsset')         
+                // console.log('xdr:', xdr)   
+                // console.log('trustAsset')         
                 this.horizon.submitTransaction(tx).then( res => {
                     //console.log('submitTransaction res:', res)
                     resolve(res)
@@ -956,10 +955,11 @@ export class StellarService {
       return new Promise((resolve, reject) => {
         StellarSdk.FederationServer.resolve(fed)
       .then(federationRecord => {
+      //  console.log(federationRecord)
         resolve(federationRecord.account_id)
       })
       .catch(err => {
-          console.error(err)
+         // console.error(err)
           reject(err)
         }); 
       })         
