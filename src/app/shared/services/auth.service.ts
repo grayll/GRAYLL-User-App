@@ -732,9 +732,11 @@ export class AuthService {
     }
     return bl
   }
-  getMaxAvailableGRX(){  
-    //console.log('getMaxAvailableGRX-', this.userMetaStore.GRX, this.userMetaStore.OpenOrdersGRX)  
+  getMaxAvailableGRX(){     
     return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX
+  }
+  getMaxWithdrawGRX(){     
+    return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX - 0.0000001
   }
   /* Setting up user data when sign in with username/password, 
   sign up with username/password and sign in with social auth  

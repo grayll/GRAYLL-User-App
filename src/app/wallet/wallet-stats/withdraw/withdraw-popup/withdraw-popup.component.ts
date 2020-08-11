@@ -93,7 +93,7 @@ export class WithdrawPopupComponent implements OnInit {
   }
 
   populateMaxGRX() {
-    this.withdrawValue = this.authService.getMaxAvailableGRX().toFixed(7)
+    this.withdrawValue = this.authService.getMaxWithdrawGRX().toFixed(7) 
     this.usdValue = (+this.withdrawValue*this.authService.priceInfo.xlmusd*this.authService.priceInfo.xlmgrx).toFixed(5)
   }
 

@@ -57,11 +57,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (!this.authService.isActivated()){     
           //console.log('Account is not activated:') 
           this.showActivationPopup();
-        } else {   
-          if (this.swPush.isEnabled && !this.isTokenSentToServer()){            
-            this.requestSubNotifications()
-          } 
-        }
+        } 
+        // else {   
+        //   if (this.swPush.isEnabled && !this.isTokenSentToServer()){            
+        //     this.requestSubNotifications()
+        //   } 
+        // }
 
         // check whether user has changed pwd
         if (this.authService.userInfo.EnSecretKey == '' && this.authService.userInfo.PublicKey != ''){
@@ -72,15 +73,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (!this.authService.isActivated()){     
         //console.log('Account is not activated:') 
         this.showActivationPopup();
-      } else {   
-        // console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
-        // console.log('this.authService.userData:', this.authService.userData)
-        
-        if (this.swPush.isEnabled && !this.isTokenSentToServer()){
-          //console.log('request subs')
-          this.requestSubNotifications()
-        } 
       }
+      //  else {   
+      //   // console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
+      //   // console.log('this.authService.userData:', this.authService.userData)
+        
+      //   if (this.swPush.isEnabled && !this.isTokenSentToServer()){
+      //     //console.log('request subs')
+      //     this.requestSubNotifications()
+      //   } 
+      // }
        // check whether user has changed pwd
       if (this.authService.userInfo.EnSecretKey == '' && this.authService.userInfo.PublicKey != ''){
         this.router.navigate([{outlets: {popup: 'reactivate-account'}}], {relativeTo: this.route});

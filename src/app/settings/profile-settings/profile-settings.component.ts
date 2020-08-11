@@ -92,23 +92,23 @@ export class ProfileSettingsComponent implements OnDestroy {
       });
   }
 
-  requestSubNotifications() {
-    const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
-    this.swPush.requestSubscription({
-        serverPublicKey: VAPID_PUBLIC_KEY
-    })
-    .then(sub => {     
-      this.http.post(`api/v1/users/savesubcriber`, sub).subscribe(res => {
-        if ((res as any).errCode == environment.SUCCESS){
-          console.log("subs are saved")
-        }
-      },
-      err => {
-        console.log("subs err:", err)
-      })
-    }),
-    err => console.error("Could not subscribe to notifications!", err);
-  }
+  // requestSubNotifications() {
+  //   const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
+  //   this.swPush.requestSubscription({
+  //       serverPublicKey: VAPID_PUBLIC_KEY
+  //   })
+  //   .then(sub => {     
+  //     this.http.post(`api/v1/users/savesubcriber`, sub).subscribe(res => {
+  //       if ((res as any).errCode == environment.SUCCESS){
+  //         console.log("subs are saved")
+  //       }
+  //     },
+  //     err => {
+  //       console.log("subs err:", err)
+  //     })
+  //   }),
+  //   err => console.error("Could not subscribe to notifications!", err);
+  // }
 
   // Updates validation state on form changes.
   onValueChanged(data?: any): boolean {

@@ -71,14 +71,14 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
   @HostListener('window:beforeunload')
   ngOnDestroy(){
     this.authService.RemoveSeedData()
-    if (this.authService.isActivated()){      
-      if (this.swPush.isEnabled && !this.isTokenSentToServer()){
-        console.log('activate-request subs')
-        this.requestSubNotifications()
-      } else {
-        console.log('activate-not request subs')
-      } 
-    }
+    // if (this.authService.isActivated()){      
+    //   if (this.swPush.isEnabled && !this.isTokenSentToServer()){
+    //     console.log('activate-request subs')
+    //     this.requestSubNotifications()
+    //   } else {
+    //     console.log('activate-not request subs')
+    //   } 
+    // }
   }
   isTokenSentToServer() {
     return localStorage.getItem('sentToServer') === '1';
@@ -221,24 +221,24 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
 
   //Its easy to navigate to page using angular router, btw (instead of window.open) but this is not solution in case PWA is not running already.
   //this.router.navigateByUrl(notpayload.notification.data.url)
-  requestSubNotifications() {    
-    const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
-    this.swPush.requestSubscription({
-        serverPublicKey: VAPID_PUBLIC_KEY
-    }).then(sub => {       
-      this.http.post(`api/v1/users/savesubcriber`, sub).subscribe(res => {
-        if ((res as any).errCode == environment.SUCCESS){
-          console.log("subs are saved")
-          this.setTokenSentToServer(true) 
-        }
-      },
-      err => {
-        console.log("subs err:", err)
-      })
-    }).catch(err => 
-      { console.error("Could not subscribe to notifications", err)}
-    );
-  }
+  // requestSubNotifications() {    
+  //   const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
+  //   this.swPush.requestSubscription({
+  //       serverPublicKey: VAPID_PUBLIC_KEY
+  //   }).then(sub => {       
+  //     this.http.post(`api/v1/users/savesubcriber`, sub).subscribe(res => {
+  //       if ((res as any).errCode == environment.SUCCESS){
+  //         console.log("subs are saved")
+  //         this.setTokenSentToServer(true) 
+  //       }
+  //     },
+  //     err => {
+  //       console.log("subs err:", err)
+  //     })
+  //   }).catch(err => 
+  //     { console.error("Could not subscribe to notifications", err)}
+  //   );
+  // }
 
   copySecretKey() {
     if (this.clipboardService.copyFromContent(this.secretKey)) {
