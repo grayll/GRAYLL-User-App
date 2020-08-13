@@ -167,28 +167,20 @@ export class NavbarComponent implements OnDestroy, OnInit {
     if (this.authService.userMetaStore.XLM === 0){      
       this.authService.GetLocalUserMeta()      
     } 
-    //console.log('navbar.subscribe', this.ComId)
-    if (this.ComId != 'notification' && this.authService.userData.PublicKey){
-      Promise.all([
-        // this.stellarService.getCurrentGrxPrice1(),
-        // this.stellarService.getCurrentXlmPrice1(),
-        this.stellarService.getAccountBalance(this.authService.userData.PublicKey)
-        .catch(err => {
-          // Notify internet connection.
-          //this.snotifyService.simple('Please check your internet connection.')
-          console.log(err)
-        })
-      ])
-      .then(([ balances ]) => {    
+   
+    if (this.ComId != 'notification' && this.authService.userData.PublicKey){      
+      this.stellarService.getAccountBalance(this.authService.userData.PublicKey)      
+      .then(balances => {        
         if  (balances && (balances as any).grx && (balances as any).xlm){ 
           this.authService.userMetaStore.GRX = (balances as any).grx;
           this.authService.userMetaStore.XLM = (balances as any).xlm;
+        } else if (balances && !(balances as any).grx ){ // accout did not trust GRX
+          this.stellarService.trustAsset(this.stellarService.SecretBytesToString(this.authService.secretKey))
         }
-        
-        this.authService.isGetBalance = true
-       
-        
-      }) 
+        this.authService.isGetBalance = true        
+      }).catch(err => {
+        console.log(err)
+      })
     }  
     this.scheduleCheckTokenExpiry()
     this.logoutService.subsink.add(this.authService.subShouldReload().subscribe(data => {                

@@ -732,11 +732,29 @@ export class AuthService {
     }
     return bl
   }
+  getMaxWithdrawXLM(){
+    let bl 
+    if (this.userMetaStore.OpenOrders && this.userMetaStore.OpenOrdersXLM){
+      bl = +this.userMetaStore.XLM - 2.0001 - +this.userMetaStore.OpenOrders*0.5 - +this.userMetaStore.OpenOrdersXLM
+    } else {
+      bl = +this.userMetaStore.XLM - 2.0001                     
+    }
+    if (bl < 0 ){
+      bl = 0
+    } else {
+      bl = bl - 0.0000001
+    }
+    return bl
+  }
   getMaxAvailableGRX(){     
     return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX
   }
   getMaxWithdrawGRX(){     
-    return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX - 0.0000001
+    if (this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX > 0){
+      return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX - 0.0000001
+    } else {
+      return this.userMetaStore.GRX - this.userMetaStore.OpenOrdersGRX
+    }
   }
   /* Setting up user data when sign in with username/password, 
   sign up with username/password and sign in with social auth  

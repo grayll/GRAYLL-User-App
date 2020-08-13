@@ -838,8 +838,12 @@ export class StellarService {
                         } else if (b.asset_type === 'native'){
                             xlm = b.balance
                         }
-                    });                        
-                    resolve({xlm:xlm, grx:grx})
+                    });  
+                    if (res.balances.length == 1){
+                        resolve({xlm:xlm})
+                    }  else {                    
+                        resolve({xlm:xlm, grx:grx})
+                    }
                 },
                 err => {
                     reject(err)

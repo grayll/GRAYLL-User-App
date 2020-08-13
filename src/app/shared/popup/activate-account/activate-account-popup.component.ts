@@ -151,7 +151,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
           enSecretKey:enSecret.EnSecretKey, salt: enSecret.Salt}
               
         this.http.post(`api/v1/users/validateaccount`, data).subscribe(resp => {
-          console.log(resp)
+          //console.log(resp)
           if ((resp as any).errCode === environment.SUCCESS){                
             this.stellarService.trustAsset(res.keypair.secret()).then(
               txd => {
@@ -182,8 +182,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
                 this.loadingService.hide()
               }
             ).catch(e => {
-              console.log('trustAsset.create error: ', e)
-              this.loadingService.hide()
+              console.log('trustAsset.create error: ', e)             
               this.error = true;
               this.success = false;
               this.loadingService.hide()

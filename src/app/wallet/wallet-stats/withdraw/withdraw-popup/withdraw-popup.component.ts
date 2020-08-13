@@ -98,7 +98,7 @@ export class WithdrawPopupComponent implements OnInit {
   }
 
   populateMaxXLM() {    
-    this.withdrawValue = this.authService.getMaxAvailableXLM().toFixed(7)
+    this.withdrawValue = this.authService.getMaxWithdrawXLM().toFixed(7)
     this.usdValue = (+this.withdrawValue*this.authService.priceInfo.xlmusd).toFixed(5)
   }
   getMaxXLMForTrade(){

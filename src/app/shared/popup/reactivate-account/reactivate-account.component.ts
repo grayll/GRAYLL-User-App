@@ -58,15 +58,12 @@ export class ReActivateAccountComponent implements OnInit {
               this.authService.userData.EnSecretKey = secretKeyBundle.EnSecretKey 
               this.authService.secretKey =  secretKey            
               this.authService.SetLocalUserData()    
-              
-              //this.authService.userData.PublicKey = res.keypair.publicKey()                     
                 
-                
-                this.authService.userInfo.EnSecretKey =  secretKeyBundle.EnSecretKey 
-                this.authService.userInfo.SecretKeySalt = enSecret.Salt
-                //this.authService.userInfo.PublicKey = res.keypair.publicKey() 
-                this.loadingService.hide()
-                this.popupService.close()
+              this.authService.userInfo.EnSecretKey =  secretKeyBundle.EnSecretKey 
+              this.authService.userInfo.SecretKeySalt = enSecret.Salt
+              //this.authService.userInfo.PublicKey = res.keypair.publicKey() 
+              this.loadingService.hide()
+              this.popupService.close()
             })  
            
           } else {
