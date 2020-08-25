@@ -30,7 +30,8 @@ export class XlmReferralPopupComponent implements OnInit {
 
   submitted = false;  
   registerForm: FormGroup;
-  isEmailValid = false
+  isEmailValid = true
+  isFormValid = true
 
   constructor(
     public popupService: PopupService,    
@@ -47,22 +48,43 @@ export class XlmReferralPopupComponent implements OnInit {
     this.popupService.open(this.modal);
     this.buildForm()  
     this.registerForm.valueChanges.subscribe(change => {
-      this.submitted = true;      
+      this.submitted = true; 
       this.onValueChanged()
     })
+  }
+
+  CheckIsFormValid(){
+    if (!this.registerForm) { return false }
+    const form = this.registerForm;
+    for (const field in this.formErrors) {
+      // clear previous error message (if any)
+      this.formErrors[field] = '';
+      const control = form.get(field);      
+      if (control && control.invalid) {    
+        console.log('control:', field)
+        this.isFormValid = false
+        const messages = this.validationMessages[field];        
+        for (const key in control.errors) {
+          if (messages[key]) {
+            return false
+          }
+        }        
+      }
+    }
+    return true
   }
 
   buildForm(): void {    
     this.registerForm = this.formBuilder.group({
       'name': ['', [Validators.required, Validators.minLength(2),
         Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-Z0-9]/),]],   
+        Validators.pattern(/^[a-zA-Z0-9âçğıİîöşüûÂÇĞIİÎÖŞÜÛ]+$/),]],   
       'lname': ['', [Validators.required, Validators.minLength(2),
         Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-Z0-9]/)]],  
+        Validators.pattern(/^[a-zA-Z0-9âçğıİîöşüûÂÇĞIİÎÖŞÜÛ]+$/)]],  
       'businessName': ['', [Validators.minLength(2),
           Validators.maxLength(50),
-          Validators.pattern(/^[a-zA-Z0-9]/)]],       
+          Validators.pattern(/^[a-zA-Z0-9âçğıİîöşüûÂÇĞIİÎÖŞÜÛ]+$/)]],       
       'email': ['', [
           Validators.required,        
           Validators.pattern(/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/),
@@ -80,11 +102,14 @@ export class XlmReferralPopupComponent implements OnInit {
   onValueChanged(data?: any) {
     if (!this.registerForm) { return; }
     const form = this.registerForm;
+    this.isFormValid = true
     for (const field in this.formErrors) {
       // clear previous error message (if any)
       this.formErrors[field] = '';
       const control = form.get(field);      
-      if (control && control.invalid) {        
+      if (control && control.invalid) {    
+        //console.log('control:', field)
+        this.isFormValid = false
         const messages = this.validationMessages[field];        
         for (const key in control.errors) {
           this.formErrors[field] += messages[key] + ' ';
@@ -93,13 +118,15 @@ export class XlmReferralPopupComponent implements OnInit {
     }
 
     if (!this.formErrors.email){
+      
       (<any>window)._nb.api.getValidatePublic(this.registerForm.value['email'],
       res => {          
           console.log(res)
           if (res.response.result != 'valid'){
+            this.isEmailValid = false
             this.formErrors.email = 'The email is invalid.'            
           } else {
-            this.isEmailValid = true
+            
             this.formErrors = {
               'name':'',
               'lname':'',
@@ -110,9 +137,9 @@ export class XlmReferralPopupComponent implements OnInit {
           }
       },
       err => {          
-          console.log(err)
+          //console.log(err)
           this.formErrors.email = 'The email validation can not be processed right now.'
-          this.isEmailValid = false
+         // this.isEmailValid = false
       })
     }
   }
@@ -158,17 +185,14 @@ get f() { return this.registerForm.controls; }
 registerClicked() {
   
   this.submitted = true;
-  this.errorService.clearError();
-  //this.onValueChanged()
-  // stop here if form is invalid
- // console.log(this.isEmailValid)
-  if (this.registerForm.invalid || !this.isEmailValid) {
-      console.log('form invalid', this.formErrors)    
+ 
+  if (!this.CheckIsFormValid() || !this.isEmailValid ) {
+      //console.log('form invalid', this.formErrors)    
       //this.error = true 
       return;
   }  
-  
-  
+  this.errorService.clearError();
+    
 
   // Neverbounce verifies email
   let email = this.registerForm.value['email']
@@ -188,6 +212,7 @@ registerClicked() {
         //this.registerForm.reset() 
       } else if ((res as any).errCode == environment.INVALID_ADDRESS){
         let content = "The email is invalid."
+        
         this.errorService.handleError(null, content)
         //this.registerForm.reset() 
       } else {              

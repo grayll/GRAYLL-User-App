@@ -49,20 +49,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!this.authService.userData){
       this.authService.GetLocalUserData()
     }
-   // this.subSink = new SubSink()
-    
+      
     if (!this.authService.userInfo){
-      this.authService.getUserInfoMsg().subscribe(userInfo => {
-        
+      this.authService.getUserInfoMsg().subscribe(userInfo => {        
         if (!this.authService.isActivated()){     
           //console.log('Account is not activated:') 
           this.showActivationPopup();
         } 
-        // else {   
-        //   if (this.swPush.isEnabled && !this.isTokenSentToServer()){            
-        //     this.requestSubNotifications()
-        //   } 
-        // }
+        else {   
+          if (this.swPush.isEnabled && !this.isTokenSentToServer()){            
+            this.requestSubNotifications()
+          } 
+        }
 
         // check whether user has changed pwd
         if (this.authService.userInfo.EnSecretKey == '' && this.authService.userInfo.PublicKey != ''){
@@ -74,21 +72,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
         //console.log('Account is not activated:') 
         this.showActivationPopup();
       }
-      //  else {   
-      //   // console.log('this.swPush.isEnabled:', this.swPush.isEnabled)  
-      //   // console.log('this.authService.userData:', this.authService.userData)
-        
-      //   if (this.swPush.isEnabled && !this.isTokenSentToServer()){
-      //     //console.log('request subs')
-      //     this.requestSubNotifications()
-      //   } 
-      // }
+       else {                
+        if (this.swPush.isEnabled && !this.isTokenSentToServer()){          
+          this.requestSubNotifications()
+        } 
+      }
        // check whether user has changed pwd
       if (this.authService.userInfo.EnSecretKey == '' && this.authService.userInfo.PublicKey != ''){
         this.router.navigate([{outlets: {popup: 'reactivate-account'}}], {relativeTo: this.route});
       }
-
-      
     }
   }
  
@@ -120,24 +112,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
   
   //Its easy to navigate to page using angular router, btw (instead of window.open) but this is not solution in case PWA is not running already.
   //this.router.navigateByUrl(notpayload.notification.data.url)
-  requestSubNotifications() {    
-    const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
-    this.swPush.requestSubscription({
-        serverPublicKey: VAPID_PUBLIC_KEY
-    }).then(sub => {       
-      this.http.post(`api/v1/users/savesubcriber`, sub)
-      .subscribe(res => {
-        if ((res as any).errCode == environment.SUCCESS){
-          //console.log("subs are saved")
-          this.setTokenSentToServer(true) 
-        }
-      },
-      err => {
-        //console.log("subs err:", err)
-      })
-    }).catch(err => 
-      { console.error("Could not subscribe to notifications", err)}
-    );
+  requestSubNotifications() {  
+    this.setTokenSentToServer(true)   
+    // const VAPID_PUBLIC_KEY = "BGHhiED8J7t9KwJlEgNXT-EDIJQ1RZPorhuSYtufaRezRTGhofadZtrgZ8MVa0pwISEyBZRaYa-Bzl9MHtwaF9s"
+    // this.swPush.requestSubscription({
+    //     serverPublicKey: VAPID_PUBLIC_KEY
+    // }).then(sub => {          
+    //   this.http.post(`api/v1/users/savesubcriber`, sub)
+    //   .subscribe(res => {
+    //     if ((res as any).errCode == environment.SUCCESS){
+    //       //console.log("subs are saved")
+    //       this.setTokenSentToServer(true) 
+    //     }
+    //   },
+    //   err => {
+    //     //console.log("subs err:", err)
+    //   })
+    // }).catch(err => 
+    //   { console.error("Could not subscribe to notifications", err)}
+    // )
   }
 
   ToBase64 = function (u8) {

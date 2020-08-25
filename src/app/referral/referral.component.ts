@@ -35,35 +35,35 @@ export class ReferralComponent implements OnInit {
     this.referralService.subReferral()
 
     this.subsink.add(this.referralService._metric.subscribe(data => {
-      console.log('metric:', data)
+      //console.log('metric:', data)
       if (data){
         this.referralService.metric = data
       }
     }))
 
     this.subsink.add(this.referralService._referer.subscribe(data => {
-      console.log('referer:', data)
+      //console.log('referer:', data)
       if (data && data.length > 0){
         this.referralService.referer = data[0]
       }
     }))
 
     this.subsink.add(this.referralService._referralContacts.subscribe(data => {
-      console.log('referralContacts:', data)
+      //console.log('referralContacts:', data)
       if (data){
         this.referralService.referralContacts = data
       }
     }))
 
     this.subsink.add(this.referralService._referralTxs.subscribe(data => {
-      console.log('referralTxs:', data)
+      //console.log('referralTxs:', data)
       if (data){
         this.referralService.referralTxs = data
       }
     }))
 
     this.subsink.add(this.referralService._invites.subscribe(data => {
-      console.log('invite:', data)
+      //console.log('invite:', data)
       if (data){
         this.referralService.invites = data
       }
