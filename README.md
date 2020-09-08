@@ -40,6 +40,8 @@ ng build --prod --aot=false --build-optimizer=false
 ng build --prod --configuration production --aot --build-optimizer=false
 
 ng build --prod --configuration production --aot=false --build-optimizer=false
+
+
 http-server -p 8081 -c-1 dist/code
 
 ## Push notice

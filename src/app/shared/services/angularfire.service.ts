@@ -1,52 +1,3 @@
-/** Angular imports */
-// import { Injectable } from "@angular/core";
-
-// /** 3rd-party imports */
-// import { AngularFireDatabase, AngularFireList, AngularFireObject } from '@angular/fire/database'
-// import { _firebaseAppFactory } from "@angular/fire/firebase.app.module";
-// import { FirebaseAppConfig } from "angularfire2";
-// import { environment } from 'src/environments/environment';
-// import * as firebase from 'firebase/app';
-
-// @Injectable()
-// export class FirebaseService {
-//     private _db: AngularFireDatabase;
-
-//     constructor() { }
-
-//     /** Function to initialize firebase application and
-//      * get DB provider for the corresponding application.
-//      */
-//     public initFirebaseApp(config: FirebaseAppConfig, firebaseAppName: string) {
-//         this._db = firebase.initializeApp(environment.dbs[firebaseAppName], firebaseAppName).database();
-//     }
-
-//     /** Function to get firebase DB list */
-//     public getList(path: string): AngularFireList<{}> {
-//         return this._db.list(path);
-//     }
-
-//     /** Function to get firebase DB object */
-//     public getObject(path: string): AngularFireObject<{}> {
-//         return this._db.object(path);
-//     }
-// }
-
-// export class MyApp {
-//     constructor(private afW: AngularFireWrapper) {
-  
-//       this.afW.object('test')
-//         .valueChanges()
-//         .subscribe(console.log)
-//       // => output default db values
-  
-//       this.afW.db('otherDb').object('test')
-//         .valueChanges()
-//         .subscribe(console.log)
-//       // => output otherDb values
-//     }
-
-
 import { environment } from 'src/environments/environment';
 import { AngularFireDatabase, AngularFireObject, AngularFireList, QueryFn } from '@angular/fire/database';
 import { Injectable, Optional } from '@angular/core';
@@ -60,7 +11,7 @@ export class AngularFireWrapper {
 
   constructor(private afDb: AngularFireDatabase, @Optional() dbName: string) {
 
-    console.log('Hello AngularFireWrapper, db :', dbName || 'default');
+    //console.log('Hello AngularFireWrapper, db :', dbName || 'default');
 
     // 1st Method, same project, same auth
     // environment.dbUrls = {

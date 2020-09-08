@@ -87,3 +87,18 @@ gsutil mb gs://backup-grayllapptest/
 gsutil cp -r gs://backup-grayllapp/2020-07-02T03:33:47_48457/ gs://backup-grayllapptest/
 
 gcloud firestore import gs://backup-grayllapptest/2020-07-02T03:33:47_48457/
+
+# Import grayll-chart
+
+
+gcloud config set project grayll-chart
+
+gcloud projects add-iam-policy-binding grayll-chart \
+    --member serviceAccount:grayll-chart@appspot.gserviceaccount.com \
+    --role roles/datastore.importExportAdmin
+
+gsutil mb gs://backup-grayll-mvp/
+
+gsutil cp -r gs://grayll-mvp-backup/2020-09-08T02:54:04_93081/ gs://backup-grayll-mvp/ &
+
+gcloud firestore import gs://backup-grayll-mvp/2020-09-08T02/ &
