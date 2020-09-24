@@ -115,16 +115,14 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     }
   }
   
-  ngOnInit() {
+  ngOnInit() {   
     this.observeRevealSecretKey();    
   }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
-  executeBuy(){   
-       
-      //console.log('this.stellarService.allOffers:', this.stellarService.allOffers)      
+  executeBuy(){     
     this.loadingService.show()
     var dexAmount = +this.grxAmount
     var superAdminAmount = 0

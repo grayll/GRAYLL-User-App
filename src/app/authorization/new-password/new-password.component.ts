@@ -93,7 +93,7 @@ export class NewPasswordComponent {
         return;
     }
 
-    this.http.post(`${environment.api_url}/api/v1/accounts/mailresetpassword`, 
+    this.http.post(`${environment.api_url}api/v1/accounts/mailresetpassword`, 
       { email: this.newPasswordForm.value['email']})             
     .subscribe(res => {  
       if ((res as any).errCode == environment.INVALID_PARAMS)  {

@@ -397,23 +397,86 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   closeAll(){
-    console.log(this.algoName)
+    
     let index = this.algoName.indexOf("GR");
     let algoName = this.algoName.substring(index, this.algoName.length);
     
     if (this.adminService.showClose(algoName)){
       return
-    }    
+    } 
+    if (this.checkVolatile(null)){
+      return
+    }   
     this.router.navigate(['/system/overview', {outlets: {popup: 'cancel-algo-positions/'+algoName}}]);
+  }
+
+  checkVolatile(position){
+    // check whether closing is pause due to GRX volatile 
+    let index = this.algoName.indexOf("GR");
+    let algoName = this.algoName.substring(index, this.algoName.length);
+    let mins = Math.round((this.adminService.adminSetting.pauseUntil - moment().valueOf()/1000)/60)
+    let ret = false
+    if (this.adminService.adminSetting.pauseClosing){
+      this.snotifyService.warning(`Due to excessive GRX market volatility — closing algo positions has been temporarily paused. Please retry later.`, {
+				timeout: -1,
+				showProgressBar: false,
+				closeOnClick: false,
+				pauseOnHover: true
+      });      
+      ret = true
+    } else if (mins > 0){
+      this.snotifyService.warning(`Due to excessive GRX market volatility — closing algo positions has been temporarily paused. Please retry in ${mins} minutes.`, {
+				timeout: -1,
+				showProgressBar: false,
+				closeOnClick: false,
+				pauseOnHover: true
+      });
+      ret = true
+    }
+    
+    if (ret){
+      let data = {}      
+      if (position){
+        data = {
+          grayllTxId:position.grayll_transaction_id,
+          algorithm:position.algorithm_type,
+          grxUsd:this.authService.priceInfo.grxusd,
+          positionValue:position.current_position_value_$,
+          positionValueGRX:position.current_position_value_GRX,
+          userId:this.authService.userData.Uid,
+          name:this.authService.userData.Name,
+          lname:this.authService.userData.LName,
+          publicKey:this.authService.userInfo.PublicKey,
+        }        
+      } else {
+        data = {
+          grxUsd:this.authService.priceInfo.grxusd,
+          algorithm: this.algoName,          
+          userId:this.authService.userInfo.Uid,
+          name:this.authService.userData.Name,
+          lname:this.authService.userData.LName,
+          publicKey:this.authService.userInfo.PublicKey,
+        }
+      }
+      console.log(data)
+      this.http.post(environment.api_url + `api/v1/users/reportclosing/${algoName}`, data).subscribe(res => {
+        console.log(res)
+      })
+    }
+    return ret
   }
   
   closePosition(position){
     if (this.adminService.showClose(position.algorithm_type)){
       return
-    }    
+    }  
+    if (this.checkVolatile(position)){
+      return
+    }
+    
     this.loadingService.show()
     
-    let grxusd = this.authService.priceInfo.grxusd
+   // let grxusd = this.authService.priceInfo.grxusd
     this.algoService.closeGrayllId = position.grayll_transaction_id
     if (position.algorithm_type === 'GRZ'){
       
@@ -430,7 +493,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         this.loadingService.hide()
       })
     } else {
-      let gryusd = this.authService.priceInfo.gryusd
+      //let gryusd = this.authService.priceInfo.gryusd
       let url = ''
       switch(position.algorithm_type){
         case "GRY 1":

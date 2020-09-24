@@ -113,11 +113,9 @@ export class ChangePasswordComponent implements OnInit {
     this.http.post(`api/v1/users/ChangePassword`, 
         { password: this.currentPassword.value, newPassword:this.newPassword.value})             
       .subscribe(res => {  
-        if ((res as any).errCode == environment.SUCCESS)  {
-          // this.message = "Your password has been changed successfully."
-          // this.errorService.handleError(null, this.message)
-          // this.form.reset() 
+        if ((res as any).errCode == environment.SUCCESS)  {          
           this.authService.userInfo.EnSecretKey = ''
+          this.authService.hash = this.newPassword.value
           this.onSaveSuccess();
         } else if((res as any).errCode == environment.INVALID_UNAME_PASSWORD ){
           this.message = "The current password is invalid."

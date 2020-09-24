@@ -46,8 +46,9 @@ export class ReActivateAccountComponent implements OnInit {
     let secretKey = this.stellarService.StringToSecretBytes(this.secretKey)
     // Parse private key to compare with the public key
     let pwd = this.authService.hash
-    if (!this.authService.hash){
-      pwd = this.password
+    if (!this.authService.hash && !this.password){
+      this.loadingService.hide()
+      return
     }
    
     this.stellarService.encryptSecretKey(pwd, secretKey, '', enSecret => {

@@ -205,7 +205,7 @@ export class LoginComponent {
               } 
                  
               if (this.authService.userInfo && this.authService.userData.PublicKey && this.authService.userInfo.LocalKey){
-                if (this.authService.userInfo.EnSecretKey.length > 80){  
+                if (this.authService.userInfo.EnSecretKey.length > 80){
                   this.stellarService.decryptSecretKey(this.password.value, {Salt: this.authService.userInfo.SecretKeySalt, EnSecretKey:this.authService.userInfo.EnSecretKey}, 
                     secretKey => {
                     if (secretKey != ''){

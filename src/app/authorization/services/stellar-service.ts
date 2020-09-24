@@ -181,7 +181,7 @@ export class StellarService {
                     amount: amount,
                     price: p                     
                 }))
-
+                .addMemo(StellarSdk.Memo.text('grayll-sell'))
                 // 6. Build and sign transaction with both source and destination keypairs
                 .setTimeout(180).build()
                 tx.sign(source)
@@ -359,7 +359,7 @@ export class StellarService {
                 // 6. Build and sign transaction with both source and destination keypairs
                 .setTimeout(180).build()
                 tx.sign(source)                
-                let xdr = tx.toXDR('base64')   
+                let xdr = tx.toXDR('base64')
                 //console.log('Tx xdr', xdr)            
                 this.horizon.submitTransaction(tx).then( resp => {
                     //console.log('resp: ', resp.hash);
@@ -433,7 +433,7 @@ export class StellarService {
                     selling: new StellarSdk.Asset.native(),             
                     buyAmount: amount,
                     price: p                        
-                }))
+                }))               
                 .setTimeout(180).build()
                 tx.sign(source)
                 
@@ -743,7 +743,35 @@ export class StellarService {
             })
         })
     }
-
+    TestHomeDomain(accSeed: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let source = StellarSdk.Keypair.fromSecret(accSeed);                    
+            this.horizon.loadAccount(source.publicKey()).then( account => {                
+                // 3. Create a transaction builder
+                let tx = new StellarSdk.TransactionBuilder(account, 
+                    {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})
+                
+                // 4. Add CHANGE_TRUST operation to establish trustline                
+                .addOperation(StellarSdk.Operation.setOptions({
+                    homeDomain: 'grayll1.io',
+                }))           
+                .setTimeout(0)
+                .build()
+                tx.sign(source)  
+                    
+                this.horizon.submitTransaction(tx).then( res => {
+                    console.log('submitTransaction res:', res)
+                    resolve(res)
+                }).catch( e => {
+                    console.log('TestHomeDomain e:', e)
+                    reject(e)
+                })
+            }).catch( err => {
+                console.log('TestHomeDomain e:', err)                
+                reject(err)
+            })
+        })
+    }
     addSigner(accSeed: string): Promise<any> {
         return new Promise((resolve, reject) => {
             let source = StellarSdk.Keypair.fromSecret(accSeed);                    
@@ -829,9 +857,10 @@ export class StellarService {
                     
                 res => {
                     this.account = res
-                    //console.log(res)                
+                    //console.log(res.home_domain)                
                     let xlm = 0
                     let grx = 0
+                    
                     res.balances.forEach(b => {
                         if (b.asset_type === "credit_alphanum4" && b.asset_code === environment.ASSET){
                             grx = b.balance
