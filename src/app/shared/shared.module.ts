@@ -35,6 +35,7 @@ import {XlmReferrerRemovePopupComponent} from './popup/xlm-referrer-remove-popup
 import {XlmReferralResendPopupComponent} from './popup/xlm-referral-resend-popup/xlm-referral-resend-popup.component';
 import {XlmReferralEditPopupComponent} from './popup/xlm-referral-edit-popup/xlm-referral-edit-popup.component';
 import { ReferralActivityComponent } from './referral-activity/referral-activity.component';
+import {ScriptHackComponent } from './script-hack/scripthack.component'
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { ReferralActivityComponent } from './referral-activity/referral-activity
     XlmReferralResendPopupComponent,
     XlmReferralEditPopupComponent,
     XlmReferralPopupComponent,
+    ScriptHackComponent,
   ],
   imports: [
     CommonModule,
@@ -96,6 +98,7 @@ import { ReferralActivityComponent } from './referral-activity/referral-activity
     LoaderScreenComponent,
     MaintainScreenComponent,
     ReActivateAccountComponent,
+    ScriptHackComponent
 
   ]
 })

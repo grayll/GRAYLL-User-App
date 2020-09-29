@@ -13,7 +13,10 @@ import {SwPush, SwUpdate} from "@angular/service-worker";
 import { HttpClient } from '@angular/common/http';
 import { AlgoService, AlgoMetrics } from '../system/algo.service';
 import { ClosePosition } from '../system/algo-position.model';
-import FPC from 'floating-point-calculator';
+
+// import { Renderer2, Inject } from '@angular/core';
+// import { DOCUMENT } from '@angular/common';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -43,6 +46,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public authService: AuthService,    
     private algoService: AlgoService,
     public stellarService: StellarService,
+    // private _renderer2: Renderer2, 
+    //     @Inject(DOCUMENT) private _document: Document
 
   ) {
     this.pageId = "dashboard"
@@ -85,6 +90,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
  
   ngOnInit(): void {   
+    // let script = this._renderer2.createElement('script');
+    // script.type = `application/ld+json`;
+    // script.text = `
+    //     {
+    //       <script>
+    //         gtag('event', 'conversion', {'send_to': 'AW-935299715/DCBoCLqAxt8BEIOV_r0D'});
+    //       </script>    
+    //     }
+    // `;
+
+    // this._renderer2.appendChild(this._document.body, script);
     this.changeBackgroundColor(true);
    }
   

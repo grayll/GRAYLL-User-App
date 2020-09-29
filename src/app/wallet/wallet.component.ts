@@ -4,7 +4,8 @@ import {SharedService} from '../shared/shared.service';
 import { StellarService } from 'src/app/authorization/services/stellar-service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import {SnotifyService} from 'ng-snotify';
-//import { SwUpdate, SwPush } from '@angular/service-worker';
+// import { Renderer2, Inject } from '@angular/core';
+// import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-wallet',
@@ -21,7 +22,9 @@ export class WalletComponent implements OnInit, OnDestroy {
     public sharedService: SharedService,
     public stellarService: StellarService,
     public authService: AuthService,
-    private snotifyService: SnotifyService    
+    private snotifyService: SnotifyService,
+    // private _renderer2: Renderer2, 
+    //     @Inject(DOCUMENT) private _document: Document   
   ) {
     this.pageId = "wallet"  
     this.shouldReload = false     
@@ -32,8 +35,27 @@ export class WalletComponent implements OnInit, OnDestroy {
    }
 
   ngOnInit(): void {
+    // let script = this._renderer2.createElement('script');
+    // script.type = `application/ld+json`;
+    // script.text = `
+    //     {
+    //       <script>
+    //         gtag('event', 'conversion', {'send_to': 'AW-935299715/DCBoCLqAxt8BEIOV_r0D'});
+    //       </script>    
+    //     }
+    // `;
+
+    // this._renderer2.appendChild(this._document.body, script);
     window.scroll(0, 0);
     this.changeBackgroundColor(true);   
+
+    // check whether user export their wallet
+    // console.log(this.authService.userData.Federation)
+    // this.stellarService.getAccountFromFed(this.authService.userData.Federation).then(fed => {
+    //   console.log('Fed add:', fed)
+    // }).catch(e => {
+    //   console.log('Fed add e:', e)
+    // })
   }
   @HostListener('window:beforeunload')
   ngOnDestroy(): void {

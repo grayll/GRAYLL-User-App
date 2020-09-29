@@ -998,6 +998,20 @@ export class StellarService {
       })         
     }
 
+    getFedFromAccount(acc){
+        return new Promise((resolve, reject) => {
+          StellarSdk.FederationServer.resolveAccountId(acc)
+        .then(fed => {
+          console.log(fed)
+          resolve(fed)
+        })
+        .catch(err => {
+           console.error(err)
+            reject(err)
+          }); 
+        })         
+      }
+
     makeSeedAndRecoveryPhrase(userid, callback) {
         // Stellar seeds are 32 bytes long, but having a 24-word recovery phrase is not great. 
         // 16 bytes is enough with the scrypt step below
