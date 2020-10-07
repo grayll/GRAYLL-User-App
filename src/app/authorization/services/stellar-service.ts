@@ -743,7 +743,7 @@ export class StellarService {
             })
         })
     }
-    TestHomeDomain(accSeed: string): Promise<any> {
+    SetHomeDomain(accSeed: string): Promise<any> {
         return new Promise((resolve, reject) => {
             let source = StellarSdk.Keypair.fromSecret(accSeed);                    
             this.horizon.loadAccount(source.publicKey()).then( account => {                
@@ -753,12 +753,13 @@ export class StellarService {
                 
                 // 4. Add CHANGE_TRUST operation to establish trustline                
                 .addOperation(StellarSdk.Operation.setOptions({
-                    homeDomain: 'grayll1.io',
+                    homeDomain: 'grayll.io',
                 }))           
                 .setTimeout(0)
                 .build()
                 tx.sign(source)  
-                    
+                
+                console.log('xdr:', tx.toXDR('base64') )   
                 this.horizon.submitTransaction(tx).then( res => {
                     console.log('submitTransaction res:', res)
                     resolve(res)
@@ -869,9 +870,9 @@ export class StellarService {
                         }
                     });  
                     if (res.balances.length == 1){
-                        resolve({xlm:xlm})
+                        resolve({xlm:xlm, domain:res.home_domain})
                     }  else {                    
-                        resolve({xlm:xlm, grx:grx})
+                        resolve({xlm:xlm, grx:grx, domain:res.home_domain})
                     }
                 },
                 err => {
@@ -1017,6 +1018,8 @@ export class StellarService {
         // 16 bytes is enough with the scrypt step below
         const seed = nacl.randomBytes(16)        
         const recoveryPhrase = bip39.entropyToMnemonic(seed);
+        console.log('makeSeedAndRecoveryPhrase-seed', seed)
+        console.log('makeSeedAndRecoveryPhrase-phrase', recoveryPhrase)      
         scrypt(seed, userid, this.logN,
         this.blockSize, this.dkLen, this.interruptStep, (res) => {
             const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);            
@@ -1027,7 +1030,9 @@ export class StellarService {
 
     recoverKeypairFromPhrase(userid, recoveryPhrase, callback) {
         const hexString = bip39.mnemonicToEntropy(recoveryPhrase);
-        const seed = Uint8Array.from(Buffer.from(hexString, 'hex'));        
+        const seed = Uint8Array.from(Buffer.from(hexString, 'hex'));  
+        console.log('recoverKeypairFromPhrase-seed', seed)
+        console.log('recoverKeypairFromPhrase-phrase', recoveryPhrase)      
         scrypt(seed, userid, this.logN,
         this.blockSize, this.dkLen, this.interruptStep, (res) => {
             const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);

@@ -129,12 +129,7 @@ export class ActivateAccountPopupComponent implements OnInit, OnDestroy {
     },    
   };
   activate() {  
-    //console.log('clicked')
-    // if (this.isSubmitted){
-    //   console.log('already clicked')
-    //   return
-    // }
-    // this.isSubmitted = true  
+   
     this.errorService.clearError();
     this.onValueChanged()
     this.loadingService.show()  

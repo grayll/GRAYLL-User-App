@@ -22,6 +22,8 @@ export class RevealSecretKeyPopupComponent implements OnInit {
   code: string;
   secret: string;
   password: string;
+
+  msg:string
  
   constructor(
     public popupService: PopupService,
@@ -58,6 +60,11 @@ export class RevealSecretKeyPopupComponent implements OnInit {
 
   ngOnInit() {
     this.popupService.open(this.modal);
+    if (!this.authService.userInfo.Tfa){
+      this.msg = 'To reveal your Secret Key, please enter the security code sent to your email account.'
+    } else {
+      this.msg = 'To reveal your Secret Key, please enter the 2FA Code on Google Authenticator.'
+    }
   }
 
   continueReveal(){

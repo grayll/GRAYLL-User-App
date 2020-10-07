@@ -90,17 +90,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
  
   ngOnInit(): void {   
-    // let script = this._renderer2.createElement('script');
-    // script.type = `application/ld+json`;
-    // script.text = `
-    //     {
-    //       <script>
-    //         gtag('event', 'conversion', {'send_to': 'AW-935299715/DCBoCLqAxt8BEIOV_r0D'});
-    //       </script>    
-    //     }
-    // `;
-
-    // this._renderer2.appendChild(this._document.body, script);
+    
+    // this.stellarService.recoverKeypairFromPhrase('andsoft88@gmail.com', 
+    // 'long warm design glory draft quarter lunch drama enroll drum pretty odor', res => {
+    //   console.log('key:', this.stellarService.SecretBytesToString(res.rawSecretKey()))
+    //   console.log('pkey:', res.publicKey())
+    // })
     this.changeBackgroundColor(true);
    }
   

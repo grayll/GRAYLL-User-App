@@ -250,7 +250,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
                   return pos
                 }        
               })
-              console.log(this.algoService.closePositions)
+              //console.log(this.algoService.closePositions)
             } else if (this.selectedTab.id === 'allAlgoPositions'){
               
               //console.log('this.algoService.closePositions', this.algoService.closePositions)
@@ -275,7 +275,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
                 } 
                 return pos       
               })
-              console.log(this.algoService.allPositions)
+              //console.log(this.algoService.allPositions)
             }            
           }).catch(e => {
             console.log(e)

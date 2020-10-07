@@ -171,13 +171,34 @@ export class NavbarComponent implements OnDestroy, OnInit {
     if (this.ComId != 'notification' && this.authService.userData.PublicKey){      
       this.stellarService.getAccountBalance(this.authService.userData.PublicKey)      
       .then(balances => {        
-        if  (balances && (balances as any).grx && (balances as any).xlm){ 
-          this.authService.userMetaStore.GRX = (balances as any).grx;
-          this.authService.userMetaStore.XLM = (balances as any).xlm;
-        } else if (balances && !(balances as any).grx ){ // accout did not trust GRX
+        let bl = balances as any
+        console.log(bl)
+        if  (bl && bl.grx && bl.xlm){ 
+          this.authService.userMetaStore.GRX = bl.grx;
+          this.authService.userMetaStore.XLM = bl.xlm;
+        } else if (balances && !bl.grx ){ // accout did not trust GRX
           this.stellarService.trustAsset(this.stellarService.SecretBytesToString(this.authService.secretKey))
         }
-        this.authService.isGetBalance = true        
+        this.authService.isGetBalance = true
+
+        if (bl && bl.domain ){
+          if (!bl.domain.includes('grayll.io')){            
+            this.http.post(`api/v1/users/updateHomeDomain`, {}).subscribe(res => {
+              this.signOut()
+            },
+            e => console.log(e) )
+          } 
+          // else {
+          //   // need to set home domain
+          //   console.log('SetHomeDomain  lobstr to test')
+          // this.stellarService.SetHomeDomain(this.stellarService.SecretBytesToString(this.authService.secretKey)).then(
+          //   res => console.log('SetHomeDomain successfully')
+          // ).catch(e => console.log('SetHomeDomain err', e))
+          // }
+        } else if (!bl.domain){
+          // need to set home domain
+          this.stellarService.SetHomeDomain(this.stellarService.SecretBytesToString(this.authService.secretKey))
+        }
       }).catch(err => {
         console.log(err)
       })

@@ -302,24 +302,24 @@ export class SystemHeaderBoxesComponent implements OnInit {
       this.errorService.handleError(null, 'Please enter a valid USD Value.');
       return false;
     }
-    if (this.algoPosition.usdValue && +this.algoPosition.usdValue < 10) {
-      this.errorService.handleError(null, 'Minimum USD Value is $10.');
+    if (this.algoPosition.usdValue && +this.algoPosition.usdValue < 100) {
+      this.errorService.handleError(null, 'Minimum USD Value is $100.');
       return false;
     }
     if (this.algoPosition.grxAmount && !this.isValidNumber(this.algoPosition.grxAmount)) {
       this.errorService.handleError(null, 'Please enter a valid GRX Amount.');
       return false;
     }
-    if (this.algoPosition.grxAmount && +this.algoPosition.grxAmount < 10) {
-      this.errorService.handleError(null, 'Minimum GRX Amount is $10.');
+    if (this.algoPosition.grxAmount && +this.algoPosition.grxAmount < 100) {
+      this.errorService.handleError(null, 'Minimum GRX Amount is $100.');
       return false;
     }
     if (this.algoPosition.itemAmount && !this.isValidNumber(this.algoPosition.itemAmount)) {
       this.errorService.handleError(null, 'Please enter a valid amount.');
       return false;
     }
-    if (this.algoPosition.itemAmount && +this.algoPosition.itemAmount < 10) {
-      this.errorService.handleError(null, 'Minimum amount is $10.');
+    if (this.algoPosition.itemAmount && +this.algoPosition.itemAmount < 100) {
+      this.errorService.handleError(null, 'Minimum amount is $100.');
       return false;
     }
     if (this.algoPosition.grxAmount > this.authService.getMaxAvailableGRX()) {
