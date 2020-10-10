@@ -177,9 +177,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     }
 
     if (dexAmount > 0){
-      console.log('dexAmount.toString()', dexAmount.toString())
+      //console.log('dexAmount.toString()', dexAmount.toString())
       this.stellarService.buyOrder(this.authService.getSecretKey(), this.grxPrice, dexAmount.toFixed(7)).then( res => {
-        console.log(res)
+        //console.log(res)
         if (!this.stellarService.allOffers){
           this.stellarService.allOffers = []
         }
@@ -193,17 +193,20 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
           this.stellarService.allOffers.push(of)                 
           this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
           matchType += 1
-          //this.authService.SetLocalUserData()          
+                
         } 
         if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {
           //console.log('res.offerResults', res.offerResults)
-          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userMetaStore)          
+          this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userMetaStore)
           matchType += 2
         }
         if (matchType == 3){
-          msg = 'Buy order has been partially matched and executed!'
+          msg = 'Buy order has been partially matched and executed!'            
         } else if (matchType == 2){
-          msg = 'Buy order has been matched and executed!'
+          msg = 'Buy order has been matched and executed!'          
+        }
+        if (matchType > 0){
+          this.authService.updateUserMeta(true)
         }
         this.loadingService.hide()
         this.snotifyService.simple(msg); 
@@ -271,11 +274,13 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
   }
   executeSell(){    
     this.loadingService.show()     
-    //console.log('this.grxAmount:', this.grxAmount, this.grxPrice)
+    console.log('this.grxAmount:', this.grxAmount, this.grxPrice)
     this.stellarService.sellOrder(this.authService.getSecretKey(), (+this.grxPrice).toFixed(7), (+this.grxAmount).toFixed(7)).then( res => {    
       let matchType = 0
-      let msg = 'Sell order submitted successfully.'    
-      if (res.offerResults[0].currentOffer){     
+      let msg = 'Sell order submitted successfully.' 
+     // console.log('executeSell-res:', res)   
+      if (res.offerResults[0].currentOffer){   
+        //console.log('executeSell-res.offerResults[0].currentOffer:', res.offerResults[0].currentOffer)     
         if (!this.stellarService.allOffers){
           this.stellarService.allOffers = []
         }     
@@ -287,8 +292,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
         matchType += 1 
       } 
       if (res.offerResults[0].offersClaimed && res.offerResults[0].offersClaimed.length > 0) {
+        //console.log('executeSell-res.offerResults[0].offersClaimed:', res.offerResults[0].offersClaimed)   
         this.stellarService.parseClaimedOffer(res.offerResults[0].offersClaimed, this.grxPrice, this.xlmP, this.authService.userMetaStore)         
-        matchType += 2
+        matchType += 2        
       } 
 
       this.authService.reload = false
@@ -296,6 +302,9 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
         msg = 'Sell order has been partially matched and executed!'
       } else if (matchType == 2){
         msg = 'Sell order has been matched and executed!'
+      }
+      if (matchType > 0){
+        this.authService.updateUserMeta(true) 
       }
       this.loadingService.hide()
       this.snotifyService.simple(msg);  
@@ -470,29 +479,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
         break
     }
   }
-  // calGRXAmount(){   
-  //   if (this.isPopulateMaxGRX && this.grxPrice && this.grxAmount){            
-  //     this.grxAmount = this.authService.getMaxAvailableGRX().toString()      
-  //     return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
-  //   } else if(!this.isPopulateMaxGRX && this.grxPrice && this.grxAmount) {      
-  //     return ((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
-  //   } else {
-  //     return ""
-  //   }
-  // }
-  // calXLMAmount(){    
-  //   if (this.isPopulateMaxXLM && this.grxPrice && this.grxAmount ){      
-  //     this.XLMValueForm = +this.getMaxXLMForTrade()
-  //     this.grxAmount = (this.XLMValueForm/+this.grxPrice).toFixed(7)       
-  //     return this.XLMValueForm
-  //   } else if (!this.isPopulateMaxXLM && this.grxAmount && this.grxPrice) {      
-  //     this.XLMValueForm =  +((+this.grxAmount)*(+this.grxPrice)).toFixed(7)
-  //     //return (+this.grxAmount)*(+this.grxPrice)
-  //   } else {
-  //     //console.log('calXLMAmount 4')
-  //     return ""
-  //   }
-  // }
+  
   populateMaxXLM() {
     //this.isPopulateMaxGRX = false
     if (this.authService.getMaxAvailableXLM() - this.reservedTrade > 0){
@@ -539,45 +526,5 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.carouselWallet.prev();
   }
 
-  //async executeSell1(){
-    //   if (!this.validateSellAbility()){
-    //     return
-    //   } 
-    //   //this.authService.GetSecretKey(null).then(SecKey => {    
-    //     console.log('this.stellarService.allOffers:', this.stellarService.allOffers) 
-    //     let xdr = await this.stellarService.getSellOfferXdr(this.authService.userInfo.PublicKey, this.grxPrice, this.grxAmount)
-    //     this.authService.makeTransaction(xdr, "sell").subscribe(res => {
-    //       console.log(res)
-    //       if ((res as any).errCode == "tx_success"){
-    //         let txenv = this.stellarService.parseXdr((res as any).xdrResult)
-    //         if (!this.stellarService.allOffers){
-    //           this.stellarService.allOffers = []
-    //         }
-    //         let matchType = 0
-    //         let msg = 'Sell order submitted successfully.'          
-    //         if (txenv.result().value()[0].value().value().success().offer().value()){
-    //           console.log('res.offerResults[0].currentOffer', txenv.result().value()[0].value().value().success().offer().value())
-    //           let of = this.stellarService.parseXdrOffer(txenv.result().value()[0].value().value().success().offer().value(), 
-    //             this.grxP, this.xlmP, this.stellarService.allOffers.length, this.authService.userMetaStore, false)
-    //             //console.log('offerData:', of)
-    //           this.stellarService.allOffers.push(of)    
-    //           //console.log('this.stellarService.allOffers:', this.stellarService.allOffers)             
-    //           this.authService.userMetaStore.OpenOrders = this.authService.userMetaStore.OpenOrders + 1
-    //           matchType += 1
-    //         } 
-    //         if (txenv.result().value()[0].value().value().success().offersClaimed() && txenv.result().value()[0].value().value().success().offersClaimed().length > 0) {
-    //           console.log('res.offersClaimed', txenv.result().value()[0].value().value().success().offersClaimed())
-    //           //this.stellarService.parseClaimedOffer(txenv.offerResults[0].offersClaimed,this.grxPrice,this.xlmP, this.authService.userData)          
-    //           matchType += 2
-    //         }
-    //         this.authService.reload = false
-    //         if (matchType == 3){
-    //           msg = 'Sell order has been partially matched and executed!'
-    //         } else if (matchType == 2){
-    //           msg = 'Sell order has been matched and executed!'
-    //         }
-    //         this.snotifyService.simple(msg);          
-    //       }
-    //     }) 
-    // }
+  
 }

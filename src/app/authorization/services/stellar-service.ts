@@ -464,6 +464,7 @@ export class StellarService {
         var time = moment().subtract(1, 'seconds').local().format('DD/MM/YYYY HH:mm:ss')
         offersClaimed.forEach(item => {
             // buy GRX sold XLM
+            //console.log('parseClaimedOffer:item', item)
             if (+item.amountSold > 0 || +item.amountBought > 0){
                 let type = ''
                 let asset = 'GRX'
@@ -481,6 +482,7 @@ export class StellarService {
                     userMetaStore.GRX = Number(userMetaStore.GRX) - +item.amountBought
                     amount = item.amountBought
                     totalxlm = item.amountSold
+                    //console.log('parseClaimedOffer:buy', userMetaStore.XLM, userMetaStore.GRX , amount, totalxlm)
                 } else if(item.assetSold.assetCode && item.assetSold.assetCode === environment.ASSET) { // sell grx buy xlm
                     if (item.assetBought.type === 'native'){                    
                         type = 'SELL' 
@@ -491,6 +493,7 @@ export class StellarService {
                     userMetaStore.GRX = Number(userMetaStore.GRX) + +item.amountSold
                     amount = item.amountSold
                     totalxlm = item.amountBought
+                    //console.log('parseClaimedOffer:sell', userMetaStore.XLM, userMetaStore.GRX , amount, totalxlm)
                 }
                 let url = 'https://stellar.expert/explorer/public/'
                 if (environment.horizon_url.includes('testnet')){
@@ -575,6 +578,8 @@ export class StellarService {
     parseOffer(of, grxP:number, xlmP:number,index: number, userMetaStore:any){        
         let type = 'BUY'
         let asset
+
+        //console.log('parseOffer-of', of)
         
         if (of.buying.type == 'native' || of.buying.asset_type == 'native'){
             type = 'SELL'

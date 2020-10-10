@@ -18,4 +18,8 @@ export class LoadingService {
     this._loading = false;
   }
 
+  getLoading(): boolean {
+    return this._loading
+  }
+
 }

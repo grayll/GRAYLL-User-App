@@ -13,6 +13,7 @@ import { CountdownConfig } from 'ngx-countdown/src/countdown.config';
 import * as moment from 'moment';
 import {SubSink} from 'subsink'
 import { AlgoService } from 'src/app/system/algo.service';
+import { LoadingService } from './loading.service';
 
 
 export interface UserMeta {UrWallet: number; UrGRY1: number; UrGRY2: number; UrGRY3: number; UrGRZ: number; UrGeneral: number; OpenOrders: number; OpenOrdersGRX: number; 
@@ -90,6 +91,8 @@ export class AuthService {
   subsink:SubSink
   isSubUserMeta: boolean = false
   isSubPrice: boolean = false
+  isSubPosition: boolean = false
+
 
   timeOutShowConfirmPwd:any;
   timeOutLogout:any;
@@ -138,6 +141,9 @@ export class AuthService {
     this.subsink = null
     this.userMeta$ = null
     this.priceData$ = null
+    this.isSubPosition = false
+    this.isSubUserMeta = false
+    this.isSubPrice = false
   }
   
   constructor(    
@@ -145,7 +151,7 @@ export class AuthService {
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     public http: HttpClient,
     public stellarService: StellarService,  
-   // public algoService: AlgoService,
+    public loadingService: LoadingService,
     private afs: AngularFirestore,      
   ) { 
     this.percentXLM = 100   
@@ -179,20 +185,23 @@ export class AuthService {
      }
   }
   parseUserMeta(data){
-    this.isSubUserMeta = true  
+    
     this.userMetaStore.UrGRY1 = data.UrGRY1 >= 0? data.UrGRY1:0
     this.userMetaStore.UrGRY2 = data.UrGRY2 >= 0? data.UrGRY2:0 
     this.userMetaStore.UrGRY3 = data.UrGRY3 >= 0? data.UrGRY3:0
     this.userMetaStore.UrGRZ = data.UrGRZ >= 0? data.UrGRZ:0
     this.userMetaStore.UrWallet = data.UrWallet >= 0? data.UrWallet:0
     this.userMetaStore.UrGeneral = data.UrGeneral >= 0? data.UrGeneral:0
-    this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime       
-
-    this.userMetaStore.GRX = data.GRX >= 0? data.GRX:0
-    this.userMetaStore.XLM = data.XLM >= 0? data.XLM:0
-    this.userMetaStore.OpenOrders = data.OpenOrders > 0? data.OpenOrders:0
-    this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? data.OpenOrdersXLM:0
-    this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? data.OpenOrdersGRX:0
+    this.userMetaStore.TokenExpiredTime = data.TokenExpiredTime   
+    
+    // prevent update these data when execute buy/sell
+    if (!this.loadingService.getLoading()){
+      this.userMetaStore.GRX = data.GRX >= 0? data.GRX:0
+      this.userMetaStore.XLM = data.XLM >= 0? data.XLM:0
+      this.userMetaStore.OpenOrders = data.OpenOrders > 0? data.OpenOrders:0
+      this.userMetaStore.OpenOrdersXLM = data.OpenOrdersXLM > 0? data.OpenOrdersXLM:0
+      this.userMetaStore.OpenOrdersGRX = data.OpenOrdersGRX > 0? data.OpenOrdersGRX:0
+    }
 
     this.userMetaStore.total_grz_close_positions_ROI_$ = +(data.total_grz_close_positions_ROI_$ ? data.total_grz_close_positions_ROI_$ : 0).toFixed(5)
     this.userMetaStore.total_grz_current_position_ROI_$ = +(data.total_grz_current_position_ROI_$ ? data.total_grz_current_position_ROI_$: 0).toFixed(5)
@@ -226,7 +235,7 @@ export class AuthService {
   }
   
   parsePriceData(data){
-    this.isSubPrice = true
+  
     if (this.userData){
       this.userData.xlmPrice = data.xlmusd
       this.userData.grxPrice = data.xlmgrx
@@ -278,13 +287,25 @@ export class AuthService {
     }     
   }
   
-  updateUserMeta(){
+  updateUserMeta(orderOpt:boolean){
     if (this.userMetaStore && this.userData){
-      this.userMetaStore.GRX = Number(this.userMetaStore.GRX)
-      this.userMetaStore.XLM = Number(this.userMetaStore.XLM)
-      this.afs.doc('users_meta/'+this.userData.Uid).update(this.userMetaStore)
+      //console.log('updateUserMeta:', this.userMetaStore.GRX , this.userMetaStore.XLM)
+      if (orderOpt){
+        this.userMetaStore.GRX = Number(this.userMetaStore.GRX)
+        this.userMetaStore.XLM = Number(this.userMetaStore.XLM)
+        this.userMetaStore.OpenOrders = Number(this.userMetaStore.OpenOrders)
+        this.userMetaStore.OpenOrdersGRX = Number(this.userMetaStore.OpenOrdersGRX)
+        this.afs.doc('users_meta/'+this.userData.Uid).update({GRX:Number(this.userMetaStore.GRX), XLM:Number(this.userMetaStore.XLM), 
+          OpenOrders: this.userMetaStore.OpenOrders, OpenOrdersGRX:this.userMetaStore.OpenOrdersGRX,OpenOrdersXLM:this.userMetaStore.OpenOrdersXLM,
+        })
+      } else {
+        this.userMetaStore.GRX = Number(this.userMetaStore.GRX)
+        this.userMetaStore.XLM = Number(this.userMetaStore.XLM)
+        this.afs.doc('users_meta/'+this.userData.Uid).update({GRX:Number(this.userMetaStore.GRX), XLM:Number(this.userMetaStore.XLM)})
+      }
     }
   }
+ 
 
   subShouldReload(){
     if (!this.shouldReload){

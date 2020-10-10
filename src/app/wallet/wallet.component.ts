@@ -57,11 +57,12 @@ export class WalletComponent implements OnInit, OnDestroy {
     //   console.log('Fed add e:', e)
     // })
   }
-  @HostListener('window:beforeunload')
+ // @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     this.changeBackgroundColor(false);
     // save user data totalxlm,grx,openorders   
-    this.authService.updateUserMeta()
+    // console.log('Update META')
+    // this.authService.updateUserMeta()
   }
 
   private changeBackgroundColor(addClass: boolean) {

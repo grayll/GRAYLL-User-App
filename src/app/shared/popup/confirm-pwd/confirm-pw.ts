@@ -73,9 +73,9 @@ export class ConfirmPasswordComponent implements OnInit {
   }
   signOut(){  
     //console.log('confirmpwd-signout')     
-    if (this.authService.userMetaStore.OpenOrders > 0){
-      this.authService.updateUserMeta()
-    }
+    // if (this.authService.userMetaStore.OpenOrders > 0){
+    //   this.authService.updateUserMeta()
+    // }
     clearInterval(this.x); 
     this.algoService.resetServiceData()
     this.authService.resetServiceData()

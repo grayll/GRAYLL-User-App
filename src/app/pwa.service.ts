@@ -17,19 +17,19 @@ export class PwaService {
       logging: true,
       displayPace: 0,
       onShow: function () {
-        console.log("showing");
+        //console.log("showing");
       },
       onInit: function () {
-        console.log("initializing");
+        //console.log("initializing");
       },
       onAdd: function () {
-        console.log("adding");
+        //console.log("adding");
       },
       onInstall: function () {
-        console.log("Installing");
+        //console.log("Installing");
       },
       onCancel: function () {
-        console.log("Cancelling");
+        //console.log("Cancelling");
       },
       customCriteria: function () {
         return true;
@@ -41,7 +41,7 @@ export class PwaService {
   
 
   installApp() {
-    console.log("Application triggered.");
+    //console.log("Application triggered.");
     //this.ath.clearSession();
     //this.ath.trigger();
     let isApplicationInstalled=this.ath.checkApplicationInstalled();

@@ -108,125 +108,167 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   ) {
     this.subsink = new SubSink() 
 
-    this.algoService.subsAlgoPositions()
-    this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {    
-      if (!positions){
-        return
-      }       
-      let positionClosed = true
-      this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0}
-      this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
-      this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
-      this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
-      this.algoService.gryMetric = {Positions:0, CurrentProfit:0, TotalValue:0}      
+  //   this.algoService.subsAlgoPositions()
+  //   this.subsink.add(this.algoService.algoPositions$.subscribe(positions => {    
+  //     if (!positions){
+  //       return
+  //     }       
+  //     let positionClosed = true
+  //     this.algoService.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+  //     this.algoService.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+  //     this.algoService.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+  //     this.algoService.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+  //     this.algoService.gryMetric = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}      
       
-      this.algoService.openPositions = positions.filter(pos => {
-        if (pos.status == "OPEN"){               
-          pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          if (pos.open_stellar_transaction_id) {
-            pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id  
-          } else {
-            pos.url = ""
-          }   
-          if (this.algoService.closeGrayllId === pos.grayll_transaction_id){
-            positionClosed = false
-          }
+  //     this.algoService.openPositions = positions.filter(pos => {
+  //       if (pos.status == "OPEN"){               
+  //         pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
+  //         if (pos.open_stellar_transaction_id) {
+  //           pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id  
+  //         } else {
+  //           pos.url = ""
+  //         }   
+  //         if (this.algoService.closeGrayllId === pos.grayll_transaction_id){
+  //           positionClosed = false
+  //         }
 
-          switch (pos.algorithm_type){
-            case "GRZ":             
-              this.calculateMetrics(pos, this.algoService.grzMetric)
-              break
-            case "GRY 1":
-              this.calculateMetrics(pos, this.algoService.gry1Metric)     
-              // Calculate total gry metric
-              this.calculateMetrics(pos, this.algoService.gryMetric)
-              break
-            case "GRY 2":
-              this.calculateMetrics(pos, this.algoService.gry2Metric)
-              // Calculate total gry metric
-              this.calculateMetrics(pos, this.algoService.gryMetric)          
-              break
-            case "GRY 3":
-              this.calculateMetrics(pos, this.algoService.gry3Metric)
-              // Calculate total gry metric
-              this.calculateMetrics(pos, this.algoService.gryMetric)          
-              break
-          }          
-          return pos
-        }        
-      })
+  //         switch (pos.algorithm_type){
+  //           case "GRZ":             
+  //             this.calculateMetrics(pos, this.algoService.grzMetric)
+  //             break
+  //           case "GRY 1":
+  //             this.calculateMetrics(pos, this.algoService.gry1Metric)     
+  //             // Calculate total gry metric
+  //             this.calculateMetrics(pos, this.algoService.gryMetric)
+  //             break
+  //           case "GRY 2":
+  //             this.calculateMetrics(pos, this.algoService.gry2Metric)
+  //             // Calculate total gry metric
+  //             this.calculateMetrics(pos, this.algoService.gryMetric)          
+  //             break
+  //           case "GRY 3":
+  //             this.calculateMetrics(pos, this.algoService.gry3Metric)
+  //             // Calculate total gry metric
+  //             this.calculateMetrics(pos, this.algoService.gryMetric)          
+  //             break
+  //         }          
+  //         return pos
+  //       }        
+  //     })
 
-      if (this.algoService.closeGrayllId && positionClosed === true){
-        this.loadingService.hide()
-        this.algoService.closeGrayllId = ''
-      }
-
-      // if (this.algoService.closeAll && this.algoService.openPositions.length == 0){
-      //   this.loadingService.hide()
-      //   this.algoService.closeAll = false
-      //   this.authService.pushCloseAllEnd(true)
-      // }
-      switch (this.algoService.closingAllAlgo){
-        case "GRZ":             
-          if (this.algoService.grzMetric.Positions == 0) {
-            this.authService.pushCloseAllEnd(true)
-          }
-          break
-        case "GRY 1":
-          if (this.algoService.gry1Metric.Positions == 0) {
-            this.authService.pushCloseAllEnd(true)
-          }
-          break
-        case "GRY 2":
-          if (this.algoService.gry2Metric.Positions == 0) {
-            this.authService.pushCloseAllEnd(true)
-          }
-          break
-        case "GRY 3":
-          if (this.algoService.gry3Metric.Positions == 0) {
-            this.authService.pushCloseAllEnd(true)
-          }      
-          break
-      } 
-          
-      this.updateAverageMetric(this.algoService.grzMetric, "grz")
-      this.updateAverageMetric(this.algoService.gry1Metric, "gry1")      
-      this.updateAverageMetric(this.algoService.gry2Metric, "gry2")
-      this.updateAverageMetric(this.algoService.gry3Metric, "gry3")
+  //     if (this.algoService.closeGrayllId && positionClosed === true){
+  //       this.loadingService.hide()
+  //       this.algoService.closeGrayllId = ''
+  //     }
       
-      // console.log('this.algoService.openPositions', this.algoService.openPositions)
-      // console.log('this.algoService.grzMetric', this.algoService.grzMetric)
-
-      this.algoService.closePositions = positions.filter(pos => {
-        if (pos.status == "CLOSED"){          
-          pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-          pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString() 
-          return pos
-        }        
-      })
-      //console.log('this.algoService.closePositions', this.algoService.closePositions)
-      this.algoService.allPositions = positions.filter(pos => {
-        // if (pos.status == "OPEN"){
-        //   //pos.current_position_ROI_per = pos['current_position_ROI_%']        
-        //   pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
-        //   if (pos.open_stellar_transaction_id) {
-        //     pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id.toString()   
-        //   } else {
-        //     pos.url = ""
-        //   }          
-        // }   
-        
-        if (pos.status != "OPEN"){
-          //pos.close_position_ROI_per = pos['close_position_ROI_%']
-          pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')         
-          pos.url = "https://stellar.expert/explorer/public/search?term=" + (pos.close_stellar_transaction_id || 1).toString()  
-          return pos 
-        } 
+  //     switch (this.algoService.closingAllAlgo){
+  //       case "GRZ":             
+  //         if (this.algoService.grzMetric.Positions == 0) {
+  //           this.authService.pushCloseAllEnd(true)
+  //         }
+  //         break
+  //       case "GRY 1":
+  //         if (this.algoService.gry1Metric.Positions == 0) {
+  //           this.authService.pushCloseAllEnd(true)
+  //         }
+  //         break
+  //       case "GRY 2":
+  //         if (this.algoService.gry2Metric.Positions == 0) {
+  //           this.authService.pushCloseAllEnd(true)
+  //         }
+  //         break
+  //       case "GRY 3":
+  //         if (this.algoService.gry3Metric.Positions == 0) {
+  //           this.authService.pushCloseAllEnd(true)
+  //         }      
+  //         break
+  //     } 
           
-      })
-    }))
+  //     this.updateAverageMetric(this.algoService.grzMetric, "grz")
+  //     this.updateAverageMetric(this.algoService.gry1Metric, "gry1")      
+  //     this.updateAverageMetric(this.algoService.gry2Metric, "gry2")
+  //     this.updateAverageMetric(this.algoService.gry3Metric, "gry3")
+      
+  //     // console.log('this.algoService.openPositions', this.algoService.openPositions)
+  //     // console.log('this.algoService.grzMetric', this.algoService.grzMetric)
+
+  //     this.algoService.closePositions = positions.filter(pos => {
+  //       if (pos.status == "CLOSED"){          
+  //         pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
+  //         pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString() 
+
+  //         switch (pos.algorithm_type){
+  //           case "GRZ":             
+  //             this.calculateClosedProfitMetrics(pos, this.algoService.grzMetric)
+  //             break
+  //           case "GRY 1":
+  //             this.calculateClosedProfitMetrics(pos, this.algoService.gry1Metric)     
+  //             // Calculate total gry metric
+  //             this.calculateClosedProfitMetrics(pos, this.algoService.gryMetric)
+  //             break
+  //           case "GRY 2":
+  //             this.calculateClosedProfitMetrics(pos, this.algoService.gry2Metric)
+  //             // Calculate total gry metric
+  //             this.calculateClosedProfitMetrics(pos, this.algoService.gryMetric)          
+  //             break
+  //           case "GRY 3":
+  //             this.calculateClosedProfitMetrics(pos, this.algoService.gry3Metric)
+  //             // Calculate total gry metric
+  //             this.calculateClosedProfitMetrics(pos, this.algoService.gryMetric)          
+  //             break
+  //         }  
+  //         return pos
+  //       }        
+  //     })
+     
+  //     this.algoService.allPositions = positions.filter(pos => {     
+  //       if (pos.status != "OPEN"){
+  //         //pos.close_position_ROI_per = pos['close_position_ROI_%']
+  //         pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')         
+  //         pos.url = "https://stellar.expert/explorer/public/search?term=" + (pos.close_stellar_transaction_id || 1).toString()  
+  //         return pos 
+  //       }
+  //     })
+
+  //     console.log('closed profit:', this.algoService.gry1Metric.ClosedProfit, this.algoService.grzMetric.ClosedProfit, this.algoService.gryMetric.ClosedProfit)
+  //   }))
+  // }
+  // calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){  
+  //   //console.log('CALCULATE-pos.current_position_ROI_$:', pos.current_position_ROI_$) 
+  //   metric.CurrentProfit = FPC.add(metric.CurrentProfit, pos.current_position_ROI_$) 
+  //   metric.TotalValue = FPC.add(metric.TotalValue, pos.current_position_value_$)
+  //   metric.Positions +=1
+  // }
+
+  // calculateClosedProfitMetrics(pos: ClosePosition, metric : AlgoMetrics){
+  //   metric.ClosedProfit = FPC.add(metric.ClosedProfit, pos.current_position_ROI_$)
+  // }
+
+  // updateAverageMetric(metric : AlgoMetrics, type: string){
+    
+  //   switch(type){
+  //     case "grz":
+  //       this.authService.userMetaStore.total_grz_open_positions = this.algoService.grzMetric.Positions
+  //       this.authService.userMetaStore.total_grz_current_position_ROI_$ = this.algoService.grzMetric.CurrentProfit
+  //       this.authService.userMetaStore.total_grz_current_position_value_$ = this.algoService.grzMetric.TotalValue      
+  //       break
+  //     case "gry1":
+  //       this.authService.userMetaStore.total_gry1_open_positions = this.algoService.gry1Metric.Positions
+  //       this.authService.userMetaStore.total_gry1_current_position_ROI_$ = this.algoService.gry1Metric.CurrentProfit
+  //       this.authService.userMetaStore.total_gry1_current_position_value_$ = this.algoService.gry1Metric.TotalValue
+  //     case "gry2":
+  //       this.authService.userMetaStore.total_gry2_open_positions = this.algoService.gry2Metric.Positions
+  //       this.authService.userMetaStore.total_gry2_current_position_ROI_$ = this.algoService.gry2Metric.CurrentProfit
+  //       this.authService.userMetaStore.total_gry2_current_position_value_$ = this.algoService.gry2Metric.TotalValue
+  //       break
+  //     case "gry3":
+  //       this.authService.userMetaStore.total_gry3_open_positions = this.algoService.gry3Metric.Positions
+  //       this.authService.userMetaStore.total_gry3_current_position_ROI_$ = this.algoService.gry3Metric.CurrentProfit
+  //       this.authService.userMetaStore.total_gry3_current_position_value_$ = this.algoService.gry3Metric.TotalValue
+  //       break  
+  //   }
   }
- 
+
   ngOnInit() {
     this.setActiveTab();
     this.searchControl = new FormControl('');
@@ -255,9 +297,10 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
               
               //console.log('this.algoService.closePositions', this.algoService.closePositions)
               this.algoService.allPositions = this.searchResult.filter(pos => {
+                pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
                 if (pos.status == "OPEN"){
                   //pos.current_position_ROI_per = pos['current_position_ROI_%']        
-                  pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
+                  //pos.time = moment.utc(pos.open_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
                   if (pos.open_stellar_transaction_id) {
                     pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.open_stellar_transaction_id.toString()   
                   } else {
@@ -266,7 +309,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
                 }   
                 if (pos.status != "OPEN"){
                   //pos.close_position_ROI_per = pos['close_position_ROI_%']
-                  pos.time = moment.utc(pos.close_position_timestamp*1000).local().format('DD/MM/YYYY HH:mm')
+                  
                   if (pos.close_stellar_transaction_id) {
                     pos.url = "https://stellar.expert/explorer/public/search?term=" + pos.close_stellar_transaction_id.toString()   
                   } else {
@@ -343,58 +386,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     this.sharedService.saveAlgoPDF(columns, fields, data, fileName)
   }
 
-  calculateMetrics(pos: ClosePosition, metric : AlgoMetrics){  
-    //console.log('CALCULATE-pos.current_position_ROI_$:', pos.current_position_ROI_$) 
-    metric.CurrentProfit = FPC.add(metric.CurrentProfit, pos.current_position_ROI_$) 
-    metric.TotalValue = FPC.add(metric.TotalValue, pos.current_position_value_$)
-    metric.Positions +=1
-             
-    // if (pos.duration <= 1440*60){
-    //   metric.OneDayPercent = FPC.add(metric.OneDayPercent, pos.current_position_ROI_percent)
-    //   metric.OneDayCnt++
-    // }
-    // if (pos.duration <= 10080*60){
-    //   metric.SevenDayPercent = FPC.add(metric.SevenDayPercent, pos.current_position_ROI_percent)
-    //   metric.SevenDayCnt++
-    // }
-    // metric.ROIPercent = FPC.add(metric.ROIPercent, pos.current_position_ROI_percent)
-    
-  }
-
-  updateAverageMetric(metric : AlgoMetrics, type: string){
-    //console.log('CALCULATE-metric.CurrentProfit-positions:', metric.CurrentProfit, metric.Positions) 
-    // if (metric.OneDayCnt > 0){
-    //   metric.OneDayPercent = metric.OneDayPercent/metric.OneDayCnt
-    // }
-    // if (metric.SevenDayCnt > 0){
-    //   metric.SevenDayPercent = metric.SevenDayPercent/metric.SevenDayCnt
-    // }
-    // if (metric.Positions > 0){
-    //   metric.ROIPercent = metric.ROIPercent/metric.Positions
-    // }
-
-    switch(type){
-      case "grz":
-        this.authService.userMetaStore.total_grz_open_positions = this.algoService.grzMetric.Positions
-        this.authService.userMetaStore.total_grz_current_position_ROI_$ = this.algoService.grzMetric.CurrentProfit
-        this.authService.userMetaStore.total_grz_current_position_value_$ = this.algoService.grzMetric.TotalValue      
-        break
-      case "gry1":
-        this.authService.userMetaStore.total_gry1_open_positions = this.algoService.gry1Metric.Positions
-        this.authService.userMetaStore.total_gry1_current_position_ROI_$ = this.algoService.gry1Metric.CurrentProfit
-        this.authService.userMetaStore.total_gry1_current_position_value_$ = this.algoService.gry1Metric.TotalValue
-      case "gry2":
-        this.authService.userMetaStore.total_gry2_open_positions = this.algoService.gry2Metric.Positions
-        this.authService.userMetaStore.total_gry2_current_position_ROI_$ = this.algoService.gry2Metric.CurrentProfit
-        this.authService.userMetaStore.total_gry2_current_position_value_$ = this.algoService.gry2Metric.TotalValue
-        break
-      case "gry3":
-        this.authService.userMetaStore.total_gry3_open_positions = this.algoService.gry3Metric.Positions
-        this.authService.userMetaStore.total_gry3_current_position_ROI_$ = this.algoService.gry3Metric.CurrentProfit
-        this.authService.userMetaStore.total_gry3_current_position_value_$ = this.algoService.gry3Metric.TotalValue
-        break  
-    }
-  }
+  
 
   closeAll(){
     

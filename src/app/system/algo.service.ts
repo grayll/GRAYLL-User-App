@@ -24,7 +24,7 @@ export interface UserMeta {UrWallet: 0, UrGRY1: number; UrGRY2: number; UrGRY3: 
 export interface AlgoMetric {GRYs: number; GRZs: number; GRYBl: number; GRZBl: number; TotalAccountBl: number; 
   TotalAccountProfit: number; TotalOpenPosition: number; PercentGRX: number;PercentXLM: number;GRXInUsd: number;XLMInUsd: number}
 
-export interface AlgoMetrics {Positions: number; CurrentProfit: number; TotalValue: number;}
+export interface AlgoMetrics {Positions: number; CurrentProfit: number; TotalValue: number;ClosedProfit: number;}
 
 export interface AlgoMetricROI {OneDayPercent:number; SevenDayPercent:number; ROIPercent:number;}
 
@@ -37,11 +37,11 @@ export class AlgoService {
   algoMetric: AlgoMetric = {GRYs: 0, GRZs: 0, GRYBl: 0, GRZBl: 0, TotalAccountBl: 0, 
     TotalAccountProfit: 0, TotalOpenPosition: 0, PercentGRX: 0, PercentXLM: 0, GRXInUsd: 0, XLMInUsd: 0}
   
-  grzMetric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
-  gry1Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
-  gry2Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
-  gry3Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
-  gryMetric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0}
+  grzMetric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+  gry1Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+  gry2Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+  gry3Metric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+  gryMetric: AlgoMetrics = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
 
   gry1MetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
   gry2MetricROI: AlgoMetricROI = {OneDayPercent:0,  SevenDayPercent : 0,  ROIPercent : 0}
@@ -103,10 +103,10 @@ export class AlgoService {
   resetServiceData(){
     this.algoMetric = {GRYs: 0, GRZs: 0, GRYBl: 0, GRZBl: 0, TotalAccountBl: 0, 
       TotalAccountProfit: 0, TotalOpenPosition: 0, PercentGRX: 0, PercentXLM: 0, GRXInUsd: 0, XLMInUsd: 0}
-      this.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0}
-      this.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
-      this.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
-      this.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0}
+      this.grzMetric = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+      this.gry1Metric = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+      this.gry2Metric = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
+      this.gry3Metric = {Positions:0, CurrentProfit:0, TotalValue:0,ClosedProfit:0}
     this.allPositions  = []
     this.openPositions  = []
     this.closePositions = []
@@ -153,12 +153,14 @@ export class AlgoService {
   // }
 
   getTotalProfit(){
+    return this.gryMetric.ClosedProfit + this.gryMetric.CurrentProfit + this.grzMetric.ClosedProfit + this.grzMetric.CurrentProfit
+  }
+  getTotalProfit1(){
     return this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
     this.authService.userMetaStore.total_gry2_current_position_ROI_$ + this.authService.userMetaStore.total_gry2_close_positions_ROI_$+
     this.authService.userMetaStore.total_gry3_current_position_ROI_$ + this.authService.userMetaStore.total_gry3_close_positions_ROI_$+
     this.authService.userMetaStore.total_grz_current_position_ROI_$ + this.authService.userMetaStore.total_grz_close_positions_ROI_$
   }
-
   get algoPositions(){
     return this.algoPositions$;
   }
@@ -201,16 +203,19 @@ export class AlgoService {
   }
 
   getGRYBalance(){
-    if (this.authService.userMetaStore && this.authService.userMetaStore.total_gry1_current_position_value_$){
-      return this.authService.userMetaStore.total_gry1_current_position_value_$ + this.authService.userMetaStore.total_gry2_current_position_value_$ + 
-      this.authService.userMetaStore.total_gry3_current_position_value_$
-    }
-    // if (this.algoService.gry1Metric && this.algoService.gry2Metric && this.algoService.gry3Metric ){
-    //   return this.algoService.gry1Metric.TotalValue + this.algoService.gry2Metric.TotalValue + this.algoService.gry3Metric.TotalValue
+    // if (this.authService.userMetaStore && this.authService.userMetaStore.total_gry1_current_position_value_$){
+    //   return this.authService.userMetaStore.total_gry1_current_position_value_$ + this.authService.userMetaStore.total_gry2_current_position_value_$ + 
+    //   this.authService.userMetaStore.total_gry3_current_position_value_$
     // }
-    return 0
+    return this.gryMetric.TotalValue
   }
   getAlgoBalance(){
+    
+    return this.grzMetric.TotalValue + this.gryMetric.TotalValue
+    
+    
+  }
+  getAlgoBalance1(){
     if (this.authService.userMetaStore && this.authService.userMetaStore.total_grz_current_position_value_$){
       return this.getGRYBalance() + this.authService.userMetaStore.total_grz_current_position_value_$
     } 
@@ -218,11 +223,11 @@ export class AlgoService {
     
   }
   calPercentGRY(){
-    let totalgry = this.getGRYBalance()
-    if (this.authService.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+    let totalgry = this.gryMetric.TotalValue
+    if (this.grzMetric.TotalValue == 0 && totalgry == 0){
       return 0
     } else {
-      return Math.round(totalgry*100/(totalgry + this.authService.userMetaStore.total_grz_current_position_value_$))
+      return Math.round(totalgry*100/(totalgry + this.grzMetric.TotalValue))
     }
     // let totalgry = this.getGRYBalance()
     // if (this.algoService.grzMetric.TotalValue == 0 && totalgry == 0){
@@ -233,8 +238,8 @@ export class AlgoService {
 
   }
   calPercentGRZ(){
-    let totalgry = this.getGRYBalance()
-    if (this.authService.userMetaStore.total_grz_current_position_value_$ == 0 && totalgry == 0){
+    let totalgry = this.gryMetric.TotalValue
+    if (this.grzMetric.TotalValue == 0 && totalgry == 0){
       return 0
     } else {
       return 100 - this.calPercentGRY()
@@ -246,6 +251,16 @@ export class AlgoService {
     // }
   }
   getTotalOpenPosition(){
+    // if (this.authService.userMetaStore && this.authService.userMetaStore.total_gry1_open_positions 
+    //   && this.authService.userMetaStore.total_grz_open_positions){
+    //   return this.authService.userMetaStore.total_gry1_open_positions + this.authService.userMetaStore.total_gry2_open_positions + 
+    //     this.authService.userMetaStore.total_gry3_open_positions + this.authService.userMetaStore.total_grz_open_positions
+    // }
+
+    return this.grzMetric.Positions + this.gryMetric.Positions
+    //return 0
+  }
+  getTotalOpenPosition1(){
     if (this.authService.userMetaStore && this.authService.userMetaStore.total_gry1_open_positions 
       && this.authService.userMetaStore.total_grz_open_positions){
       return this.authService.userMetaStore.total_gry1_open_positions + this.authService.userMetaStore.total_gry2_open_positions + 
@@ -257,22 +272,24 @@ export class AlgoService {
   //   return this.xlmInUsd() + this.grxInUsd() + this.getAlgoBalance()
   // }
   getGRYProfit(){
-    let val = 0
-    if (this.authService.userMetaStore){
-      //console.log('getGRYProfit - usermetastore', this.authService.userMetaStore)
-      val = this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
-      this.authService.userMetaStore.total_gry2_current_position_ROI_$ + this.authService.userMetaStore.total_gry2_close_positions_ROI_$ +
-      this.authService.userMetaStore.total_gry3_current_position_ROI_$ + this.authService.userMetaStore.total_gry3_close_positions_ROI_$
-    }
+    // let val = 0
+    // if (this.authService.userMetaStore){
+    //   //console.log('getGRYProfit - usermetastore', this.authService.userMetaStore)
+    //   val = this.authService.userMetaStore.total_gry1_current_position_ROI_$ + this.authService.userMetaStore.total_gry1_close_positions_ROI_$ +
+    //   this.authService.userMetaStore.total_gry2_current_position_ROI_$ + this.authService.userMetaStore.total_gry2_close_positions_ROI_$ +
+    //   this.authService.userMetaStore.total_gry3_current_position_ROI_$ + this.authService.userMetaStore.total_gry3_close_positions_ROI_$
+    // }
     //console.log('getGRYProfit ret', val)
-    return val
+    return this.gryMetric.CurrentProfit + this.gryMetric.ClosedProfit
+   
         
   }
   getTotalAccountProfit(){
-    if (this.authService.userMetaStore){
-      return this.getGRYProfit() + this.authService.userMetaStore.total_grz_close_positions_ROI_$ + this.authService.userMetaStore.total_grz_current_position_ROI_$
-    }
-    return 0
+    // if (this.authService.userMetaStore){
+    //   return this.getGRYProfit() + this.authService.userMetaStore.total_grz_close_positions_ROI_$ + this.authService.userMetaStore.total_grz_current_position_ROI_$
+    // }
+    return this.grzMetric.ClosedProfit + this.grzMetric.CurrentProfit + this.gryMetric.CurrentProfit + this.gryMetric.ClosedProfit
+    //return 0
   }
 
 

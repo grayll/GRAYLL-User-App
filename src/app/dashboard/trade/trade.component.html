@@ -19,7 +19,7 @@
             <span class="font-16 text-white"> {{algoService.calPercentGRY()}}% GRY</span>
             <br>
             <p class="font-weight-bolder p-font text-white">
-              ${{algoService.getGRYBalance().toFixed(3)}}
+              ${{algoService.gryMetric.TotalValue.toFixed(3)}}
             </p>
           </div>
           <div class="col-6 mt-4 text-right">
@@ -29,7 +29,7 @@
             <span class="font-16 text-white">{{algoService.calPercentGRZ()}}% GRZ</span>
             <br>
             <p class="m-b-0 font-weight-bolder p-font text-white">
-              ${{authService.userMetaStore.total_grz_current_position_value_$.toFixed(3)}}
+              ${{algoService.grzMetric.TotalValue.toFixed(3)}}
             </p>
           </div>
         </div>

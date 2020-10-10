@@ -106,8 +106,8 @@
       </td> -->
       <td class="width-71px">{{position.duration_string}}</td>
       <td class="width-61px">{{position.algorithm_type}}</td>
-      <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
-      <td class="width-73px">{{(position.open_value_GRZ || position.open_value_GRY).toFixed(5)}}</td>
+      <td class="width-73px">{{(position.open_value_GRX || 0.1).toFixed(5)}}</td>
+      <td class="width-73px">{{((position.open_value_GRZ || position.open_value_GRY) || 0.1).toFixed(5)}}</td>
       <td class="width-91px">{{position.current_position_value_$.toFixed(5)}}</td>
       <td class="width-91px">{{position.current_position_ROI_$.toFixed(5)}}</td>
       <td class="width-51px">{{position.current_position_ROI_percent.toFixed(5)}}%</td>
@@ -200,8 +200,8 @@
       <td class="width-71px">{{position.duration_string}}</td>
       <td class="width-61px">{{position.algorithm_type}}</td>
 
-      <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
-      <td class="width-73px">{{(position.open_value_GRZ || position.open_value_GRY).toFixed(5)}}</td>
+      <td class="width-73px">{{(position.open_value_GRX || 0.1).toFixed(5)}}</td>
+      <td class="width-73px">{{((position.open_value_GRZ || position.open_value_GRY) || 0.1).toFixed(5)}}</td>
       <td class="width-91px">{{position.close_position_value_$}}</td>
       <td class="width-91px">{{position.close_position_ROI_$.toFixed(5)}}</td>
       <td class="width-51px">{{position.close_position_ROI_percent.toFixed(5)}}%</td>
@@ -290,20 +290,24 @@
       </td> -->
       <td class="width-71px">{{position.duration_string}}</td>
       <td class="width-61px">{{position.algorithm_type}}</td>
-      <td class="width-73px">{{position.open_value_GRX.toFixed(5)}}</td>
-      <td class="width-73px">{{(position.open_value_GRZ || position.open_value_GRY).toFixed(5)}}</td>
-      <td *ngIf="position.status === 'OPEN'" class="width-91px">{{position.current_position_value_$}}</td>
-      <td *ngIf="position.status === 'OPEN'" class="width-91px">{{position.current_position_ROI_$.toFixed(5)}}</td>
-      <td *ngIf="position.status === 'OPEN'" class="width-51px">{{position.current_position_ROI_percent.toFixed(5)}}%</td>
+      <td class="width-73px">{{(position.open_value_GRX || 0.1).toFixed(5)}}</td>
+      <td class="width-73px">{{((position.open_value_GRZ || position.open_value_GRY) || 0.1).toFixed(5)}}</td>
+      <td class="width-91px">{{position.current_position_value_$}}</td>
+      <td class="width-91px">{{position.current_position_ROI_$.toFixed(5)}}</td>
+      <td class="width-51px">{{position.current_position_ROI_percent.toFixed(5)}}%</td>
 
-      <td *ngIf="position.status != 'OPEN'" class="width-91px">{{position.close_position_value_$.toFixed(5)}}</td>
+      <!-- <td *ngIf="position.status === 'OPEN'" class="width-91px">{{position.current_position_value_$}}</td>
+      <td *ngIf="position.status === 'OPEN'" class="width-91px">{{position.current_position_ROI_$.toFixed(5)}}</td>
+      <td *ngIf="position.status === 'OPEN'" class="width-51px">{{position.current_position_ROI_percent.toFixed(5)}}%</td> -->
+
+      <!-- <td *ngIf="position.status != 'OPEN'" class="width-91px">{{position.close_position_value_$.toFixed(5)}}</td>
       <td *ngIf="position.status != 'OPEN'" class="width-91px">{{position.close_position_ROI_$.toFixed(5)}}</td>
-      <td *ngIf="position.status != 'OPEN'" class="width-51px">{{position.close_position_ROI_percent.toFixed(5)}}%</td>
+      <td *ngIf="position.status != 'OPEN'" class="width-51px">{{position.close_position_ROI_percent.toFixed(5)}}%</td> -->
 
       <td class="width-101px">{{position.grayll_transaction_id}}</td>
 
       <td *ngIf="position.status === 'OPEN'" class="width-101px">{{position.open_stellar_transaction_id}}</td>
-      <td *ngIf="position.status != 'OPEN'" class="width-101px">{{position.close_stellar_transaction_id.slice(-8)}}</td>
+      <td *ngIf="position.status === 'CLOSED'" class="width-101px">{{position.close_stellar_transaction_id.slice(-8)}}</td>
       
       <td class="text-center width-41px">
         <a href={{position.url}} target="_blank">

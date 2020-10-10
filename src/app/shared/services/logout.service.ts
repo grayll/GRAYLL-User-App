@@ -41,9 +41,9 @@ import { SnotifyService } from 'ng-snotify';
     this.authService.isSubPrice = false
     this.authService.isSubUserMeta = false
 
-    if (this.authService.userMetaStore.OpenOrders > 0){
-        this.authService.updateUserMeta()
-    }
+    // if (this.authService.userMetaStore.OpenOrders > 0){
+    //     this.authService.updateUserMeta()
+    // }
     clearTimeout(this.authService.timeOutShowConfirmPwd)
     clearTimeout(this.authService.timeOutLogout)
     
