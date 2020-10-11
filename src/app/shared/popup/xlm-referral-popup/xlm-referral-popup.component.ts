@@ -60,12 +60,11 @@ export class XlmReferralPopupComponent implements OnInit {
       // clear previous error message (if any)
       this.formErrors[field] = '';
       const control = form.get(field);      
-      if (control && control.invalid) {    
-        console.log('control:', field)
+      if (control && control.invalid) {        
         this.isFormValid = false
         const messages = this.validationMessages[field];        
         for (const key in control.errors) {
-          if (messages[key]) {
+          if (messages[key]) {            
             return false
           }
         }        
@@ -89,13 +88,12 @@ export class XlmReferralPopupComponent implements OnInit {
           Validators.required,        
           Validators.pattern(/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/),
         ]
-      ],
-      // 'sendWhatAppChk':[],
+      ],      
       'phone': ['', [        
-        Validators.pattern(/^[0-9]{6,15}$/),
+        Validators.pattern(/^[+]*[0-9]{6,15}$/),
       ]],   
       });
-      //this.onValueChanged();
+     
   }
 
   // Updates validation state on form changes.
@@ -107,8 +105,7 @@ export class XlmReferralPopupComponent implements OnInit {
       // clear previous error message (if any)
       this.formErrors[field] = '';
       const control = form.get(field);      
-      if (control && control.invalid) {    
-        //console.log('control:', field)
+      if (control && control.invalid) {         
         this.isFormValid = false
         const messages = this.validationMessages[field];        
         for (const key in control.errors) {
@@ -117,16 +114,26 @@ export class XlmReferralPopupComponent implements OnInit {
       }
     }
 
-    if (!this.formErrors.email){
+    if (!this.isFormValid) {      
+      return
+    }
+    this.isEmailValid = false
+    if (!this.formErrors.email){    
+      let mailCheck = (this.registerForm.value['email'].includes('gmail') && !this.registerForm.value['email'].includes('gmail.com')) ||
+        (this.registerForm.value['email'].includes('hotmail') && !this.registerForm.value['email'].includes('hotmail.com')) ||
+        (this.registerForm.value['email'].includes('yahoo') && (!this.registerForm.value['email'].includes('yahoo.com') && !this.registerForm.value['email'].includes('yahoo.co.'))) ||
+        (this.registerForm.value['email'].includes('outlook') && !this.registerForm.value['email'].includes('outlook.com'))
+
+      if (mailCheck) {
+        this.isEmailValid = false
+        this.formErrors.email = 'The email is invalid.' 
+        return  
+      }
       
       (<any>window)._nb.api.getValidatePublic(this.registerForm.value['email'],
       res => {          
-          console.log(res)
-          if (res.response.result != 'valid'){
-            this.isEmailValid = false
-            this.formErrors.email = 'The email is invalid.'            
-          } else {
-            
+          //console.log(res)
+          if (res.response.result == 'valid'){
             this.formErrors = {
               'name':'',
               'lname':'',
@@ -134,6 +141,10 @@ export class XlmReferralPopupComponent implements OnInit {
               'email': '',  
               'phone': '',      
             };
+            this.isEmailValid = true         
+          } else {            
+            this.isEmailValid = false
+            this.formErrors.email = 'The email is invalid.'            
           }
       },
       err => {          
@@ -184,15 +195,14 @@ get f() { return this.registerForm.controls; }
 
 registerClicked() {
   
-  this.submitted = true;
- 
-  if (!this.CheckIsFormValid() || !this.isEmailValid ) {
-      //console.log('form invalid', this.formErrors)    
-      //this.error = true 
+  this.submitted = true; 
+  if (!this.isFormValid){   
+      return;
+  }
+  if ( !this.isEmailValid ) {      
       return;
   }  
-  this.errorService.clearError();
-    
+  this.errorService.clearError();    
 
   // Neverbounce verifies email
   let email = this.registerForm.value['email']
@@ -221,7 +231,7 @@ registerClicked() {
     },
     error => {
       this.loadingService.hide()
-      console.log(error) 
+     // console.log(error) 
       //this.registerForm.reset()              
       this.errorService.handleError(null, `Currently, Invitation can't be processed. Please try again later!`)     
     })

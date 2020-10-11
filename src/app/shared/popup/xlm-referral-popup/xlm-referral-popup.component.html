@@ -15,7 +15,7 @@
           <label for="firstName" class="text-purple font-weight-bold">
             First Name
           </label>
-          <input id="firstName" formControlName="name"  type="text" class="form-control purple-input" placeholder="First Name">
+          <input formControlName="name" name="name" type="text" class="form-control purple-input" placeholder="First Name">
           <small class="text-purple" *ngIf="submitted && formErrors.name">
             {{ formErrors.name }}
           </small> 
@@ -29,7 +29,7 @@
           <label for="lastName" class="text-purple font-weight-bold">
             Last Name
           </label>
-          <input id="lastName" formControlName="lname" type="text" class="form-control purple-input" placeholder="Last Name">
+          <input  formControlName="lname" name="lname" type="text" class="form-control purple-input" placeholder="Last Name">
           <small class="text-purple" *ngIf="submitted && formErrors.lname">
             {{ formErrors.lname }}
           </small>  
@@ -42,7 +42,7 @@
           <label for="busName" class="text-purple font-weight-bold">
             Business Name
           </label>
-          <input id="busName" formControlName="businessName" type="text" class="form-control purple-input" placeholder="Business Name">
+          <input formControlName="businessName" name="busName" type="text" class="form-control purple-input" placeholder="Business Name">
           <small class="text-purple" *ngIf="submitted && formErrors.businessName">
             {{ formErrors.businessName }}
           </small> 
@@ -53,7 +53,7 @@
           <label for="emailAddress" class="text-purple font-weight-bold">
             Email Address
           </label>
-          <input id="emailAddress" formControlName="email" type="text" class="form-control purple-input" placeholder="Email Address">
+          <input formControlName="email" name="email" type="text" class="form-control purple-input" placeholder="Email Address">
           <small class="text-purple" *ngIf="submitted && formErrors.email" >
             {{ formErrors.email }}
           </small>
@@ -67,7 +67,7 @@
           <label for="phoneNumber" class="text-purple font-weight-bold">
             Mobile Number
           </label> 
-          <input id="phoneNumber" formControlName="phone" type="text" class="form-control purple-input" placeholder="Mobile Number">
+          <input  formControlName="phone" name="phoneNumber" type="text" class="form-control purple-input" placeholder="Mobile Number">
           <small class="text-purple" *ngIf="submitted && formErrors.phone" >
             {{ formErrors.phone }}
           </small>
