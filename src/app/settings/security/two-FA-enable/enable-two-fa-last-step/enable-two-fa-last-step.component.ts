@@ -134,7 +134,7 @@ export class EnableTwoFaLastStepComponent implements OnInit {
       return;
     }
 
-    // Verify one-time password
+    // Verify Two-factor authentication
     console.log('this.authService.userData.Tfa-data: ', this.authService.userData.Tfa)
     let tmpUserData = this.authService.userData.Tfa
     tmpUserData.OneTimePassword = this.enableTwoFAForm.value['oneTimePassword']
@@ -156,7 +156,7 @@ export class EnableTwoFaLastStepComponent implements OnInit {
         this.popupService.close()
         .then(() => {
           setTimeout(() => {
-            this.snotifyService.simple('Two-factor authentication enabled!');            
+            this.snotifyService.simple('Two-factor authentication (2FA) enabled!');            
           }, 50);
         })
         .catch((error) => console.log(error));
@@ -166,13 +166,13 @@ export class EnableTwoFaLastStepComponent implements OnInit {
             this.errorService.handleError(null, '2FA code is invalid! Please retry.')
             break;
           case environment.INTERNAL_ERROR:
-              this.errorService.handleError(null, 'Two-factor authentication could not be enabled! Please retry.')
+              this.errorService.handleError(null, 'Two-factor authentication (2FA) could not be enabled! Please retry.')
               break;
           case environment.INVALID_UNAME_PASSWORD:
               this.errorService.handleError(null, 'Invalid username or password!')
               break;
           default:
-              this.errorService.handleError(null, 'Two-factor authentication could not be enabled! Please retry.')
+              this.errorService.handleError(null, 'Two-factor authentication (2FA) could not be enabled! Please retry.')
               break;
 
         }

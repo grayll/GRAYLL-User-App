@@ -126,7 +126,7 @@ export class EnableMultisignatureComponent implements OnInit {
       } else {        
        switch ((res as any).errCode){
         case environment.TOKEN_INVALID:
-          this.errorService.handleError(null, 'Your one-time password is invalid. Please retry.')
+          this.errorService.handleError(null, 'Your Two-factor authentication (2FA) is invalid. Please retry.')
           break;
         case environment.INVALID_UNAME_PASSWORD:
           this.errorService.handleError(null, 'Your password is invalid. Please retry.')
@@ -138,7 +138,7 @@ export class EnableMultisignatureComponent implements OnInit {
       }     
     }),
     err => {
-      this.errorService.handleError(null, 'Your one-time password is invalid. Please retry!')
+      this.errorService.handleError(null, 'Your Two-factor authentication (2FA) is invalid. Please retry!')
     }
   }   
 

@@ -69,7 +69,7 @@ export class DisableTwoFaComponent implements OnInit {
         this.popupService.close()
         .then(() => {
           setTimeout(() => {
-            this.snotifyService.simple('Two-factor authentication has now been disabled.');
+            this.snotifyService.simple('Two-factor authentication (2FA) has now been disabled.');
             this.authService.userInfo.Tfa = false
             //this.userService.enable2FA(false);
             //this.settingsService.sendTwoFAEnabledToObserver(false);
@@ -86,7 +86,7 @@ export class DisableTwoFaComponent implements OnInit {
               this.errorService.handleError(null, 'The 2FA code is invalid! Please retry.');
               break;
           default:
-              this.errorService.handleError(null, 'Two-factor authentication could not be disabled! Please retry.');
+              this.errorService.handleError(null, 'Two-factor authentication (2FA) could not be disabled! Please retry.');
               break;
         }        
       }
