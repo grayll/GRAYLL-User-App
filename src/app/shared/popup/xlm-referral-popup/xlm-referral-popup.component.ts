@@ -76,21 +76,21 @@ export class XlmReferralPopupComponent implements OnInit {
   buildForm(): void {    
     this.registerForm = this.formBuilder.group({
       'name': ['', [Validators.required, Validators.minLength(2),
-        Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-Z0-9âçğıİîöşüûÂÇĞIİÎÖŞÜÛ]+$/),]],   
+        Validators.maxLength(25),
+        Validators.pattern(/^[a-zA-Z0-9âçğıİîöşüûÂÇĞIİÎÖŞÜÛäöüÄÖÜùûüÿàâæéèêëïîôœÙÛÜŸÀÂÆÉÈÊËÏÎÔŒáéíñóúü¡ÁÉÍÑÓÚÜ¡-]+$/),]],   
       'lname': ['', [Validators.required, Validators.minLength(2),
-        Validators.maxLength(50),
-        Validators.pattern(/^[a-zA-Z0-9âçğıİîöşüûÂÇĞIİÎÖŞÜÛ]+$/)]],  
+        Validators.maxLength(25),
+        Validators.pattern(/^[a-zA-Z0-9âçğıİîöşüûÂÇĞIİÎÖŞÜÛäöüÄÖÜùûüÿàâæéèêëïîôœÙÛÜŸÀÂÆÉÈÊËÏÎÔŒáéíñóúü¡ÁÉÍÑÓÚÜ¡-]+$/)]],  
       'businessName': ['', [Validators.minLength(2),
-          Validators.maxLength(50),
-          Validators.pattern(/^[a-zA-Z0-9âçğıİîöşüûÂÇĞIİÎÖŞÜÛ]+$/)]],       
+          Validators.maxLength(25),
+          Validators.pattern(/^[a-zA-Z0-9âçğıİîöşüûÂÇĞIİÎÖŞÜÛäöüÄÖÜùûüÿàâæéèêëïîôœÙÛÜŸÀÂÆÉÈÊËÏÎÔŒáéíñóúü¡ÁÉÍÑÓÚÜ¡-]+$/)]],       
       'email': ['', [
           Validators.required,        
           Validators.pattern(/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/),
         ]
       ],      
       'phone': ['', [        
-        Validators.pattern(/^[+]*[0-9]{6,15}$/),
+        Validators.pattern(/^[+]*[0-9]{6,18}$/),
       ]],   
       });
      
@@ -168,25 +168,25 @@ export class XlmReferralPopupComponent implements OnInit {
       'required':      'First Name is required.',
       'minlength':      'First Name must be at least 2 characters long.',
       'maxlength':      'First Name cannot be more than 25 characters long.',
-      'pattern':         'First Name must be characters or numbers'
+      'pattern':         'First Name must contain letters only and may include a hyphen "-".'
     },      
     'lname':{
       'required':      'Last Name is required.',
       'minlength':      'Last Name must be at least 2 characters long.',
       'maxlength':      'Last Name cannot be more than 25 characters long.',
-      'pattern':         'First Name must be characters or numbers.'
+      'pattern':         'Last Name must contain letters only and may include a hyphen "-".'
     },
     'businessName':{      
       'minlength':      'Business Name must be at least 2 characters long.',
       'maxlength':      'Business Name cannot be more than 25 characters long.',
-      'pattern':         'Business Name must be characters or numbers.'
+      'pattern':         'Business Name must contain letters only and may include a hyphen "-".'
     },
     'email': {
       'required':      'Email is required.',
-      'pattern':       'Email must be a valid email'
+      'pattern':       'Email must be a valid email.'
     },
     'phone': {      
-      'pattern':       'Phone number must be a valid number'
+      'pattern':       'Phone number is not required, the format is +6594334 or 006594334 and must contain at least six numbers.'
     },
       
   };
@@ -211,7 +211,7 @@ registerClicked() {
   let businessName = this.registerForm.value['businessName']
   let phone = this.registerForm.value['phone']
   this.loadingService.show()
-
+  
   let userData = {email:email, name:name, lname:lname, businessName:businessName, phone:phone}
   this.http.post(`api/v1/users/invite`, userData)             
     .subscribe(res => { 
