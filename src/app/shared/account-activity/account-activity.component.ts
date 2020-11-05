@@ -514,7 +514,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
               totalxlm: of.amount, priceusd: grxXlmP*this.xlmP, totalusd: of.amount*this.xlmP, 
               cachedOffer: cachedOffer, index:index, realAmount: +of.amount, assetType:'XLM'}
           }    
-          console.log('fillOrders- cachedOffer:', cachedOffer, of.id)  
+          //console.log('fillOrders- cachedOffer:', cachedOffer, of.id)  
           return offerData      
         })  
         if (countOpenOrder){
@@ -522,13 +522,13 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
           this.authService.userMetaStore.OpenOrdersXLM = totalOpenXLM 
         }
 
-        console.log('ACC-ACTIVITY-METASTORE:',this.authService.userMetaStore)
+        //console.log('ACC-ACTIVITY-METASTORE:',this.authService.userMetaStore)
         
         this.stellarService.allOffers = records
         if (pms.data._links.next.href){
           this.activityResult.openOrderNextURL = pms.data._links.next.href
         }
-        console.log('this.activityResult.paymentNextURL:', this.activityResult.paymentNextURL)
+        //console.log('this.activityResult.paymentNextURL:', this.activityResult.paymentNextURL)
         this.activityResult.openOrderEmptyResultTimes = 0 
         this.authService.userMetaStore.OpenOrders = this.stellarService.allOffers.length
         this.authService.SetLocalUserData() 

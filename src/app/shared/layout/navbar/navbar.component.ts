@@ -329,12 +329,13 @@ export class NavbarComponent implements OnDestroy, OnInit {
   ngOnInit(){
     
     // Add email for Intercom
-    (<any>window).Intercom('boot', {
-      app_id: "v9vzre42",    
-      user_hash: this.authService.userData.Hmac,
-      email: this.authService.userData.Email,
-      name: this.authService.userData.Name,
-    });
+    
+    // (<any>window).Intercom('boot', {
+    //   app_id: "v9vzre42",    
+    //   user_hash: this.authService.userData.Hmac,
+    //   email: this.authService.userData.Email,
+    //   name: this.authService.userData.Name,
+    // });
    
     if (this.authService.userMetaStore.XLM === 0){      
       this.authService.GetLocalUserMeta()      
@@ -446,6 +447,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
     clearTimeout(this.authService.timeOutLogout)
   }
   signOut(){
+    (<any>window).Intercom('shutdown')
     this.logoutService.signOut()
   }
 

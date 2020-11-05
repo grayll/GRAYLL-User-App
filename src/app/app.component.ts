@@ -60,15 +60,7 @@ export class AppComponent {
       this.checkForUpdates(true)
    
   }
-
-  // ngOnInit() {
-  //   // Get the instance of the Intercom and insert the logged in user info, we will insert the user email
-  //   // dynamically after we complete the user login or sign up flow.
-  //   (<any>window).Intercom('boot', {
-  //     email: 'xyz@gmail.com',
-  //     });
-  // }
-
+  
   checkForUpdates(isFirstCheck: boolean): void {
     //console.log('checkForUpdates()');
     this.updates.available.subscribe(event => 

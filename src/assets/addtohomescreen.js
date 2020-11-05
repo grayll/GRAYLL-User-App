@@ -3,7 +3,7 @@
 	"use strict";
 
 	// load session
-	var appID = "com.grayyl.addtohome",
+	var appID = "com.grayll.addtohome",
 		nativePrompt = false,
 		session = localStorage.getItem( appID );
 
@@ -464,7 +464,7 @@
 
 		evt.preventDefault();
 
-		console.log( "capturing the native A2HS prompt" );
+		//console.log( "capturing the native A2HS prompt" );
 
 		_beforeInstallPrompt = evt;
 
@@ -629,7 +629,7 @@
 
 		if ( _instance.options.autostart ) {
 
-			_instance.doLog( "Add to homescreen: autostart displaying callout" );
+			//_instance.doLog( "Add to homescreen: autostart displaying callout" );
 
 			_instance.show();
 
@@ -759,7 +759,7 @@
 			}
 
 			if ( session.added ) {
-				this.doLog( "Add to homescreen: not displaying callout because already added to the homescreen" );
+				//this.doLog( "Add to homescreen: not displaying callout because already added to the homescreen" );
 				return false;
 			}
 

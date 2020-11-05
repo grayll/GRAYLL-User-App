@@ -96,6 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     //   console.log('key:', this.stellarService.SecretBytesToString(res.rawSecretKey()))
     //   console.log('pkey:', res.publicKey())
     // })
+    
     this.changeBackgroundColor(true);
    }
   

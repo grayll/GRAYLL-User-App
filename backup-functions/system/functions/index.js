@@ -1,36 +1,167 @@
 const functions = require('firebase-functions');
-const firestore = require('@google-cloud/firestore');
-const client = new firestore.v1.FirestoreAdminClient();
+const Firestore = require('@google-cloud/firestore');
+const firebase_tools = require('firebase-tools')
+//const client = new firestore.v1.FirestoreAdminClient();
 
-// Replace BUCKET_NAME
-//const bucket = 'gs://grayll-app-backup';
-const bucket = 'gs://grayll-system-backup';
 
-//const bucket = functions.config().backup.bucket;
-exports.scheduledFirestoreExport = functions.pubsub
-                                            .schedule('every 24 hours')
-                                            .onRun((context) => {
+const token = '1//0ek4QbJ9OmCzqCgYIARAAGA4SNwF-L9IrP_C0jtDJKpEh9HdJ8TTe8uPtW0LEYyM4V7XG910OW7jL_Ro1oA6bjlOG38zs2yD88Hs'
 
-  const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
-  const databaseName = client.databasePath(projectId, '(default)');
+const admin = require('firebase-admin');
+admin.initializeApp();
 
-  return client.exportDocuments({
-    name: databaseName,
-    outputUriPrefix: bucket,
-    // Leave collectionIds empty to export all collections
-    // or set to a list of collection IDs to export,
-    // collectionIds: ['users', 'posts']
-    collectionIds: []
-    })
-  .then(responses => {
-    if (responses){
-    const response = responses[0];
-    console.log(`grayllapp-firestore - Operation Name: ${response['name']}`);
-    } 
-    return null
-  })
-  .catch(err => {
-    console.error(err);
-    throw new Error('Export grayllapp-firestore operation failed');
-  });
+// const db = new Firestore({
+//   projectId: 'grayll-system',
+//   keyFilename: './grayll-system-b2317e64062b.json'
+// });
+
+// const snapshot = db.collection('position_values_remove').limit(20).get();
+// snapshot.forEach((doc) => {
+  
+//   this.recursiveDelete('algo_position_values/graylltxs/'+doc.id)
+//   console.log('REMOVED ' , doc.id);
+// });
+
+
+
+// exports.recursiveDelete = function(path){
+//   firebase_tools.firestore
+//   .delete(path, {
+//     project: 'grayll-system',
+//     recursive: true,
+//     yes: true,
+//     token: token
+//   });
+// }
+
+exports.DeletePositionValueFrames = functions.pubsub
+                                            .schedule('every 60 minutes')
+                                            .onRun( async (context) => {
+
+  //const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT; 
+
+  const db = admin.firestore();
+ 
+  let docsNumber = process.env.DOC_NUMBER;
+  if (!docsNumber) {
+    docsNumber = 5;
+  }
+
+  const delRef = db.collection('position_values_remove');
+  const snapshot = await delRef.limit(docsNumber).get();
+  
+  
+  if (snapshot.empty) {
+    console.log('Position value to remove is empty');
+    //throw new Error("Profile doesn't exist");
+  } else {  
+    snapshot.forEach(doc => {       
+      console.log('START REMOVED' , doc.id);
+      await firebase_tools.firestore.delete('algo_position_values/graylltxs/'+doc.id, {
+        project: 'grayll-system',
+        recursive: true,
+        yes: true,
+        token: token
+      });
+
+      await doc.ref.delete();    
+      
+    });    
+  } 
 });
+
+
+// const functions = require('firebase-functions');
+// const Firestore = require('@google-cloud/firestore');
+// const firebase_tools = require('firebase-tools')
+// //const client = new firestore.v1.FirestoreAdminClient();
+
+
+// const token = '1//0ek4QbJ9OmCzqCgYIARAAGA4SNwF-L9IrP_C0jtDJKpEh9HdJ8TTe8uPtW0LEYyM4V7XG910OW7jL_Ro1oA6bjlOG38zs2yD88Hs'
+
+// const admin = require('firebase-admin');
+// admin.initializeApp();
+
+// // const db = new Firestore({
+// //   projectId: 'grayll-system',
+// //   keyFilename: './grayll-system-b2317e64062b.json'
+// // });
+
+// // const snapshot = db.collection('position_values_remove').limit(20).get();
+// // snapshot.forEach((doc) => {
+  
+// //   this.recursiveDelete('algo_position_values/graylltxs/'+doc.id)
+// //   console.log('REMOVED ' , doc.id);
+// // });
+
+
+
+// exports.recursiveDelete = function(path){
+//   firebase_tools.firestore
+//   .delete(path, {
+//     project: 'grayll-system',
+//     recursive: true,
+//     yes: true,
+//     token: token
+//   });
+// }
+
+// exports.DeletePositionValueFrames = functions.pubsub
+//                                             .schedule('every 60 minutes')
+//                                             .onRun((context) => {
+
+//   //const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
+  
+
+//   const db = admin.firestore();
+ 
+//   let docsNumber = process.env.DOC_NUMBER;
+//   if (!docsNumber) {
+//     docsNumber = 3;
+//   }
+
+//   console.log('Start Del position value frames', docsNumber);
+
+//   const delRef = db.collection('position_values_remove');
+
+//   delRef.limit(docsNumber).get().then(snapshot => {
+//     if (snapshot.empty) {
+//       console.log('Position value to remove is empty');
+//       throw new Error("Profile doesn't exist")
+//     } else {  
+//       snapshot.forEach(doc => {  
+//         // this.recursiveDelete('algo_position_values/graylltxs/'+doc.id).then(() => {
+//         //   console.log('REMOVED ' , doc.id);
+//         //   doc.ref.delete();      
+//         //   return ''   
+//         // }).catch(e => console.log(e)) ; 
+//         console.log('START REMOVED' , doc.id);
+//         firebase_tools.firestore
+//         .delete('algo_position_values/graylltxs/'+doc.id, {
+//           project: 'grayll-system',
+//           recursive: true,
+//           yes: true,
+//           token: token
+//         }).then(()=> {
+//             console.log('REMOVED ' , doc.id);
+//              doc.ref.delete();    
+//              return ''  
+
+            
+//         }).catch(e => console.log(e)) ;
+        
+        
+//       });
+//       return ''
+//     }
+
+//   }).catch(e => {
+//     console.log(e)
+//   });
+
+ 
+// });
+
+
+
+
+

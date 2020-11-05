@@ -19,6 +19,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
 
   password: string
   multiSigEnable: boolean
+  //twoFaEnable: boolean
   twoFaCode: string
   address: any
   //hashIsCached: any
@@ -45,6 +46,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     this.popupService.open(this.modal);
     this.withdrawModel = this.sharedService.getWithdrawModel();    
     this.multiSigEnable = this.authService.userInfo.Setting.MulSignature
+    //this.twoFaEnable = this.authService.userInfo.Tfa
   }
 
   
@@ -208,6 +210,7 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
     this.loadingService.show()   
     let SecKey =  this.authService.getSecretKey()
     if (this.multiSigEnable && this.twoFaCode){
+      
       this.authService.verifyTfaAuth(this.password, this.twoFaCode, 0)
       .subscribe(res => {           
         if ((res as any).valid === true ){                 
@@ -254,9 +257,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
       err => {
         //this.errorService.handleError(null, '2FA code is invalid! Please retry.')
       })
-    } else if (!this.multiSigEnable) {
-      // console.log('sendAsset:', SecKey,
-      //  this.withdrawModel.address, amount.toString(), asset)
+    } else {
+      //  console.log('sendAsset:', SecKey,
+      //   this.withdrawModel.address, amount.toString(), asset)
       this.loadingService.show()
       this.stellarService.sendAsset(SecKey, this.withdrawModel.address, amount.toString(), asset, memo)
       .then(ledger => {

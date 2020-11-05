@@ -44,7 +44,7 @@
                    placeholder="Password">
       </div>
     </div> -->
-    <div *ngIf="multiSigEnable" class="row">
+    <div *ngIf="multiSigEnable && authService.userInfo.Tfa" class="row">
       <div class="col-md-12">
         <input type="text"  [(ngModel)]="twoFaCode" class="fixed-input-height text-light form-control form-control-no-border bg-purple" style="height: 46px"
                    placeholder="Two-factor authentication (2FA)">

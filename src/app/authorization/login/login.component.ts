@@ -75,10 +75,10 @@ export class LoginComponent {
     this.stellarService.resetServiceData()
     this.noticeService.resetServiceData();
     this.refService.resetData();
-      // Add email for Intercom
-      (<any>window).Intercom('boot', {
-        app_id: "v9vzre42",       
-      });
+      // // Add email for Intercom
+      // (<any>window).Intercom('boot', {
+      //   app_id: "v9vzre42",       
+      // });
 
       this.logoutService.isSignout = false
   }
@@ -189,18 +189,37 @@ export class LoginComponent {
               this.authService.userMetaStore = data.userMeta
               //this.authService.userMetaStore.ShouldReload = true              
               this.authService.userMetaStore.TokenExpiredTime = data.tokenExpiredTime
+              
+             
+
               this.loadingService.hide() 
+
+              
               if (this.authService.userInfo.Tfa){                  
                   let curTime = new Date().getTime();
                   let tfaData = this.authService.GetLocalTfa(this.authService.userInfo.Uid)  
                               
                   if (tfaData && tfaData.Expire && this.authService.userInfo.Expire > 0 && curTime <= this.authService.userInfo.Expire &&                          
-                      tfaData.Expire === this.authService.userInfo.Expire){                    
+                      tfaData.Expire === this.authService.userInfo.Expire){ 
+                    // Add email for Intercom
+                    (<any>window).Intercom('boot', {
+                      app_id: "v9vzre42",    
+                      user_hash: this.authService.userData.Hmac,
+                      email: this.authService.userData.Email,
+                      name: this.authService.userData.Name,
+                    });                     
                     this.router.navigate(['/dashboard/overview'])
                   } else {                      
                     this.router.navigate(['/two-factor'])
                   }
-              } else {                           
+              } else {      
+                // Add email for Intercom
+                (<any>window).Intercom('boot', {
+                  app_id: "v9vzre42",    
+                  user_hash: this.authService.userData.Hmac,
+                  email: this.authService.userData.Email,
+                  name: this.authService.userData.Name,
+                });                       
                 this.router.navigate(['/dashboard/overview'])
               } 
                  
@@ -220,7 +239,8 @@ export class LoginComponent {
                     }
                   })
                 }                 
-              }                      
+              }  
+                               
             } else if ((res as any).errCode === environment.INVALID_UNAME_PASSWORD){
               this.showError('Invalid email or password!')                                 
             }  else if((res as any).errCode === environment.UNVERIFIED)  {    
@@ -281,8 +301,7 @@ export class LoginComponent {
       //console.log('ipad device show guide');
       this.safariguide = true;
     }
-    else {
-      //console.log('install app');
+    else {     
       this.Pwa.installApp();
     }
     /*else if (this.browserPlatform == "firefox")

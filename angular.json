@@ -41,7 +41,7 @@
               "node_modules/flag-icon-css/css/flag-icon.min.css"
             ],
             "scripts": [
-              "src/assets/addtohomescreen.js"
+              "src/assets/addtohomescreen.js"                    
             ],
             "es5BrowserSupport": true
           },

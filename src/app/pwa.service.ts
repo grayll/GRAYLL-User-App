@@ -38,21 +38,23 @@ export class PwaService {
 
   }
 
-  
+  isInstalled(){
+    return this.ath.checkApplicationInstalled()
+  }
 
   installApp() {
-    //console.log("Application triggered.");
-    //this.ath.clearSession();
-    //this.ath.trigger();
-    let isApplicationInstalled=this.ath.checkApplicationInstalled();
-    console.log(isApplicationInstalled);
-    if (isApplicationInstalled)
-    {
-      window.alert("Application already installed. Please check application page.");
-    }
-    else{
-      this.ath.tryInstall();
-    }
+    
+    this.ath.tryInstall();
+
+    // let isApplicationInstalled=this.ath.checkApplicationInstalled();
+    // //console.log(isApplicationInstalled);
+    // if (isApplicationInstalled)
+    // {
+    //   window.alert("Application already installed. Please check application page.");
+    // }
+    // else{
+    //   this.ath.tryInstall();
+    // }
     
   }
 

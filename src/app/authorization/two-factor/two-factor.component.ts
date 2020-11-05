@@ -94,6 +94,13 @@ export class TwoFactorComponent {
           
       if ((res as any).valid === true ){
         //this.router.navigate(['/settings/profile'])
+        // Add email for Intercom
+        (<any>window).Intercom('boot', {
+          app_id: "v9vzre42",    
+          user_hash: this.authService.userData.Hmac,
+          email: this.authService.userData.Email,
+          name: this.authService.userData.Name,
+        });  
         this.router.navigate(['/dashboard/overview'])
         if (this.dontAskForNext30Days){
                 
