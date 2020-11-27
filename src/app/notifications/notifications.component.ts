@@ -147,10 +147,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         urgrz:this.authService.userMetaStore.UrGRZ, urgry1:this.authService.userMetaStore.UrGRY1,
         urgry2:this.authService.userMetaStore.UrGRY2, urgry3:this.authService.userMetaStore.UrGRY3}).
       subscribe(res => {
-        console.log('updateReadNotices', res)
-        if ((res as any).errCode == environment.SUCCESS){         
-          console.log("Updated read notice ids")
-        }        
+              
       },
       e => {
         console.log(e)
@@ -219,7 +216,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   markAsRead(collPath: string, notice:any) {
     //console.log('notice-com:markAsRead')
     if (!notice.isRead) {
-      console.log('notice-com:markAsRead not isread')
+      
       notice.isRead = true;       
       if (collPath.includes('wallet')){
         if (this.authService.userMetaStore.UrWallet - 1 >= 0){

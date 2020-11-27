@@ -1023,8 +1023,7 @@ export class StellarService {
         // 16 bytes is enough with the scrypt step below
         const seed = nacl.randomBytes(16)        
         const recoveryPhrase = bip39.entropyToMnemonic(seed);
-        console.log('makeSeedAndRecoveryPhrase-seed', seed)
-        console.log('makeSeedAndRecoveryPhrase-phrase', recoveryPhrase)      
+          
         scrypt(seed, userid, this.logN,
         this.blockSize, this.dkLen, this.interruptStep, (res) => {
             const keypair = StellarSdk.Keypair.fromRawEd25519Seed(res);            

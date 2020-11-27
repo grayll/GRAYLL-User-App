@@ -459,7 +459,7 @@ export class SystemHeaderBoxesComponent implements OnInit {
               }        
               this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
             } else {
-              console.log('res:', res)
+              //console.log('res:', res)
               this.algoPosition.grayllTxId = (res as any).grayllTxId
               this.algoPosition.stellarTxId = (res as any).stellarTxId
               this.algoService.currentOpenPosition = null

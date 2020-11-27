@@ -63,6 +63,8 @@ export class AlgoService {
 
   openAlgos$:Observable<ClosePosition[]>;
 
+  closeAllPositions: any
+
   noticeId:string
 
   // use to manage the current position
