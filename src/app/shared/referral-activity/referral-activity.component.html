@@ -132,7 +132,10 @@
       <td class="width-91px">{{item.totalFeeGRX.toFixed(7)}}</td>
       <td class="width-91px">{{item.totalPayment}}</td>
       <td class="width-41px">
-        <a href="javascript:void(0)" class="colored-text" [routerLink]="[{outlets: {popup: 'xlm-referral-edit/'+item.uid}}]">
+        <!-- <a class="colored-text" [routerLink]="[{outlets: {popup: 'xlm-referral-edit'}}]" [queryParams]="item">
+          Edit
+        </a> -->
+        <a class="colored-text" [routerLink]="[{outlets: {popup: 'xlm-referral-edit'}}]" (click)="editReferral(item)">
           Edit
         </a>
       </td>

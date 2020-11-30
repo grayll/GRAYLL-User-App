@@ -23,6 +23,7 @@ import * as moment from 'moment';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { ErrorService } from '../error/error.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-referral-activity',
@@ -104,9 +105,10 @@ export class ReferralActivityComponent implements OnInit, OnChanges {
     public authService: AuthService,
     private http: HttpClient,
     private errorService: ErrorService,
+    private router: Router,
 
   ) {
-    this.populateOpenAlgoPositionsArray();
+    //this.populateOpenAlgoPositionsArray();
   }
 
   ngOnInit() {
@@ -130,11 +132,19 @@ export class ReferralActivityComponent implements OnInit, OnChanges {
       });
   }
 
+  editReferral(item){ 
+    
+    //this.router.navigate(['/referral/overview', {outlets: {popup: 'xlm-referral-edit/'+item.uid}}]);
+    this.authService.editRefItem = item
+    this.router.navigate(['/referral/overview', {outlets: {popup: 'xlm-referral-edit'}}]);
+    //this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-success'}}]);
+  }
+
   sendRemind(id){
     this.http.post(`api/v1/users/reinvite/`+id, {})             
     .subscribe(res => { 
       //this.loadingService.hide() 
-      console.log(res)
+      //console.log(res)
       if ((res as any).errCode == environment.EMAIL_IN_USED)  {
         let content = "The email entered is already registered."
         this.snotifyService.simple(content)
@@ -162,7 +172,7 @@ export class ReferralActivityComponent implements OnInit, OnChanges {
     this.http.post(`api/v1/users/delinvite/`+id, {})             
     .subscribe(res => { 
       //this.loadingService.hide() 
-      console.log(res)
+      //console.log(res)
       if ((res as any).errCode == environment.EMAIL_IN_USED)  {
         let content = "The email entered is already registered."
         //this.errorService.handleError(null, content)
@@ -251,7 +261,7 @@ export class ReferralActivityComponent implements OnInit, OnChanges {
 
   // Infinite Scroll
   onScroll() {
-    this.populateOpenAlgoPositionsArray();
+    //this.populateOpenAlgoPositionsArray();
   }
 
   getCountdownConfigFor(duration: number): CountdownConfig {
@@ -263,32 +273,32 @@ export class ReferralActivityComponent implements OnInit, OnChanges {
     };
   }
 
-  private populateOpenAlgoPositionsArray() {
-    const mockup = new AllTransactionsModel(
-      1,
-      '18/08/2019 04:14',
-      'Aaaabbbbccccddddeeee',
-      'Aaaabbbbccccddddeeee',
-      'Aaaabbbbccccddddeeee',
-      'Aaaabbbccccddddeeee@Aaaabbbccc.com',
-      '+ 888 888 888 8888',
-      '999,999,999.9999',
-      '999,999,999.9999',
-      8888,
-      '18/08/2019 04:14',
-      '0108181408618385411',
-    );
-    this.openAlgoPositions.push(mockup);
-    this.openAlgoPositions.push(mockup);
-    this.openAlgoPositions.push(mockup);
-    this.openAlgoPositions.push(mockup);
-    this.openAlgoPositions.push(mockup);
-    this.openAlgoPositions.push(mockup);
-    this.openAlgoPositions.push(mockup);
-    this.openAlgoPositions.push(mockup);
-    this.openAlgoPositions.push(mockup);
-    this.openAlgoPositions.push(mockup);
-  }
+  // private populateOpenAlgoPositionsArray() {
+  //   const mockup = new AllTransactionsModel(
+  //     1,
+  //     '18/08/2019 04:14',
+  //     'Aaaabbbbccccddddeeee',
+  //     'Aaaabbbbccccddddeeee',
+  //     'Aaaabbbbccccddddeeee',
+  //     'Aaaabbbccccddddeeee@Aaaabbbccc.com',
+  //     '+ 888 888 888 8888',
+  //     '999,999,999.9999',
+  //     '999,999,999.9999',
+  //     8888,
+  //     '18/08/2019 04:14',
+  //     '0108181408618385411',
+  //   );
+  //   this.openAlgoPositions.push(mockup);
+  //   this.openAlgoPositions.push(mockup);
+  //   this.openAlgoPositions.push(mockup);
+  //   this.openAlgoPositions.push(mockup);
+  //   this.openAlgoPositions.push(mockup);
+  //   this.openAlgoPositions.push(mockup);
+  //   this.openAlgoPositions.push(mockup);
+  //   this.openAlgoPositions.push(mockup);
+  //   this.openAlgoPositions.push(mockup);
+  //   this.openAlgoPositions.push(mockup);
+  // }
 
   DownloadPdf() {
     let data = [...this.getCurrentTabData()];

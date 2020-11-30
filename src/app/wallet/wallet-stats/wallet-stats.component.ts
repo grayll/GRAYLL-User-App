@@ -273,8 +273,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     return true  
   }
   executeSell(){    
-    this.loadingService.show()     
-    console.log('this.grxAmount:', this.grxAmount, this.grxPrice)
+    this.loadingService.show()
     this.stellarService.sellOrder(this.authService.getSecretKey(), (+this.grxPrice).toFixed(7), (+this.grxAmount).toFixed(7)).then( res => {    
       let matchType = 0
       let msg = 'Sell order submitted successfully.' 

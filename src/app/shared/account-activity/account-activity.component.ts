@@ -145,7 +145,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges() {    
-    console.log('change:', this.shouldReload);
+    
     this.searchResult = []
     this.stellarService.allOffers = null
     if (this.authService.reload){
@@ -266,7 +266,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
   cancelCurrentOffer(item){
     //this.authService.GetSecretKey(null).then(SecKey => {     
       this.loadingService.show() 
-      this.stellarService.cancelOffer(this.authService.getSecretKey(), item.cachedOffer, this.authService.userMetaStore, item.realAmount, item.assetType).then(res=>
+      this.stellarService.cancelOffer(this.authService.getSecretKey(), item.cachedOffer, 
+      this.authService.userMetaStore, item.realAmount, item.assetType).then(res=>
         {    
           //console.log('cancelCurrentOffer a', this.authService.userMetaStore, item.assetType, item.realAmount)                 
           this.stellarService.allOffers.splice(item.index, 1)
@@ -283,6 +284,8 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
           } else {
             this.authService.userMetaStore.OpenOrdersGRX = +this.authService.userMetaStore.OpenOrdersGRX - +item.realAmount
           }
+          // Update user meta
+          this.authService.updateUserMeta(true)
           
           this.loadingService.hide()
           // if (this.authService.userMetaStore.OpenOrders){

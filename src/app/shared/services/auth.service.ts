@@ -96,6 +96,7 @@ export class AuthService {
 
   timeOutShowConfirmPwd:any;
   timeOutLogout:any;
+  editRefItem: any
   resetServiceData(){
     this.userData = null
     this.userInfo = null

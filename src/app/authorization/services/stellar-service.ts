@@ -140,11 +140,11 @@ export class StellarService {
                     // } else {
                     //     userData.OpenOrdersGRX -= realAmount
                     // }   
-                    // console.log('cancel userData 1:', userData)       
+                    console.log('cancel successes',res)       
                     resolve(res)
                 }).catch( err => {
                     reject(err)
-                    //console.log('cancellOffer error: ', err)
+                    console.log('cancellOffer error: ', err)
                 })
             //})
         })
@@ -155,15 +155,35 @@ export class StellarService {
             let tx = new StellarSdk.TransactionBuilder(this.account, 
                 {fee: StellarSdk.BASE_FEE, networkPassphrase:this.getNetworkPassPhrase()})
                 .addOperation(offer)
-                .setTimeout(180).build()                
+                .setTimeout(180).build()  
+                              
             tx.sign(source)
             let xdr = tx.toXDR('base64')   
-            //console.log('cancelOffer xdr', xdr)     
+               // console.log('cancelOffer xdr', xdr)     
             this.horizon.submitTransaction(tx).then( res => { 
                 resolve(res)
             }).catch( err => {
                 reject(err)
-                //console.log('cancellOffer error: ', err)
+                console.log('cancellOffer error: ', err)
+            })
+        })
+    }
+    cancelOfferForAllTest(accSeed: string, offers:any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let source = StellarSdk.Keypair.fromSecret(accSeed); 
+            let tx = new StellarSdk.TransactionBuilder(this.account, {fee: StellarSdk.BASE_FEE, networkPassphrase:this.getNetworkPassPhrase()})
+            
+            offers.forEach(offer => {
+               tx.addOperation(offer.cachedOffer)              
+            });
+            tx.setTimeout(180).build().sign(source)
+            let xdr = tx.toXDR('base64')   
+               // console.log('cancelOffer xdr', xdr)     
+            this.horizon.submitTransaction(tx).then( res => { 
+                resolve(res)
+            }).catch( err => {
+                reject(err)
+                console.log('cancellOffer error: ', err)
             })
         })
     }

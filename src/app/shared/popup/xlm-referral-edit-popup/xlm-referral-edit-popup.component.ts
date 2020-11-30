@@ -50,9 +50,10 @@ export class XlmReferralEditPopupComponent implements OnInit {
       this.submitted = true;      
       this.onValueChanged()
     })
-    this.route.params.subscribe((param) => {      
-      this.referralId = param.id;      
-    })
+    // this.route.params.subscribe((param) => {   
+    //   console.log(param)   
+    //   this.referralId = param.id;      
+    // })
   }
 
   buildForm(): void {    
@@ -165,9 +166,10 @@ editReferral() {
   let lname = this.registerForm.value['lname']
   let businessName = this.registerForm.value['businessName']
   let phone = this.registerForm.value['phone']
+  
   this.loadingService.show()
 
-  let userData = {email:email, name:name, lname:lname, businessName:businessName, phone:phone, refererUid:this.referralId}
+  let userData = {email:email, name:name, lname:lname, businessName:businessName, phone:phone, refererUid:this.authService.editRefItem.uid}
   this.http.post(`api/v1/users/editreferral`, userData)             
     .subscribe(res => { 
       this.loadingService.hide() 
@@ -185,12 +187,13 @@ editReferral() {
         //this.registerForm.reset() 
       } else {              
         this.success = true
+        this.authService.editRefItem = null
       }
     },
     error => {
       this.loadingService.hide()
       console.log(error) 
-      //this.registerForm.reset()              
+      this.authService.editRefItem = null             
       this.errorService.handleError(null, `Currently, Update can't be processed. Please try again later!`)     
     })
 }

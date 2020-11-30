@@ -24,18 +24,18 @@ const popupRoutes: Routes = [
     component: XlmReferralRemovePopupComponent,
     outlet: 'popup'
   },
-  {
-    path: 'xlm-referrer-remove/:id',
-    component: XlmReferrerRemovePopupComponent,
-    outlet: 'popup'
-  },
+  // {
+  //   path: 'xlm-referrer-remove/:id',
+  //   component: XlmReferrerRemovePopupComponent,
+  //   outlet: 'popup'
+  // },
   {
     path: 'xlm-referral-resend',
     component: XlmReferralResendPopupComponent,
     outlet: 'popup'
   },
   {
-    path: 'xlm-referral-edit/:id',
+    path: 'xlm-referral-edit',
     component: XlmReferralEditPopupComponent,
     outlet: 'popup'
   }
