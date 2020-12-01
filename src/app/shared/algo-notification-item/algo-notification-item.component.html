@@ -1,4 +1,4 @@
-<div class="row px-3 py-3 mb-1" [style.background-color]="!notification.isRead ? '#40278c' : 'transparent'">
+<div class="row px-3 py-3 mb-1" [style.background-color]="!notification.isRead ? '#40278c' : 'transparent'" data-intercom-target="Notification">
   <div class="col-1">
     <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
   </div>
@@ -19,7 +19,7 @@
             {{notification.title}}
           </div>
           <div class="col text-right hover" (click)="expandNotification()">
-            <fa-icon [attr.aria-expanded]="!isContentCollapsed" aria-controls="collapsedContent" [icon]="faExpand"></fa-icon>
+            <fa-icon [attr.aria-expanded]="!isContentCollapsed" aria-controls="collapsedContent" [icon]="faExpand" data-intercom-target="Plus"></fa-icon>
           </div>
         </div>
         <div id="collapsedContent" class="font-12" [ngbCollapse]="isContentCollapsed">

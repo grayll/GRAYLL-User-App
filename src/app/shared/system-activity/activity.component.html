@@ -13,7 +13,7 @@
     </div>
     <div class="col text-center">
       <hr class="mt-0 d-sm-none">
-      <a class="purple-link" (click)="downloadHistory()">
+      <a class="purple-link" (click)="downloadHistory()" data-intercom-target="Download Activity History">
         <fa-icon [icon]="faDownload" [fixedWidth]="true"></fa-icon>
         Download Activity History
       </a>
@@ -25,14 +25,14 @@
 
 <div class="bg-gradient text-light" *ngIf="selectedTab && (selectedTab.id === 'openAlgoPositions' || selectedTab.id === 'allAlgoPositions')">
     <div class="row justify-content-center align-items-center mb-1 p-2">
-        <div class="col-md-3 col-sm-3 col-lg-3 col-xs-12">
+        <div class="col-md-3 col-sm-3 col-lg-3 col-xs-12" data-intercom-target="Open Algo Positions">
             <span class="align-middle font-weight-bolder font-14">Open Algo Positions ({{algoService.openPositions.length}})</span>
         </div>
         <!-- <div class="col" [routerLink]="['/system/overview', {outlets: {popup: 'cancel-algo-positions'}}]" style="outline: none;">
             <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
             <span class="ml-1 cancel text-danger">Close All Algo Positions</span>
         </div> -->
-        <div id="algoDropdown" class="col-md-4 col-sm-4 col-lg-4 col-xs-12">
+        <div id="algoDropdown" class="col-md-4 col-sm-4 col-lg-4 col-xs-12" data-intercom-target="Close All Algo Positions Select">
             <div class="row">
                 <div class="" style="width: 75%;padding-left: 10px;padding-right: 5px;">
                     <ng-select [items]="dropdownItems" [searchable]="false" [clearable]="false" [(ngModel)]="algoName">
@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 col-sm-4 col-lg-4 col-xs-12">
+        <div class="col-md-4 col-sm-4 col-lg-4 col-xs-12" data-intercom-target="Search Input">
             <div class="row ">
                 <div class="col search ">
                     <div class="input-group ">
@@ -64,33 +64,34 @@
 
 <div class="table-responsive bg-gradient text-light pull-top" *ngIf="selectedTab && (selectedTab.id === 'openAlgoPositions' || selectedTab.id === 'allAlgoPositions')">
   <table class="table mb-0">
-    <thead>
+    <thead data-intercom-target="Table head">
     <tr class="font-weight-bolder font-10 text-light">
-      <th class="width-91px">Open Date</th>
-      <th class="width-51px">Status</th>
-      <th class="width-71px">Duration</th>
-      <th class="width-61px">Algorithm</th>
-      <th class="width-73px">Price (GRX)</th>
-      <th class="width-73px">Price (USD)</th>
-      <th (click)="sortByPositionValue()" class="cancel width-91px">
+      <th class="width-91px " data-intercom-target="Open date">Open Date</th>
+     <th class="width-51px " data-intercom-target="Status">Status</th>
+      <th class="width-71px " data-intercom-target="Duration">Duration</th>
+      <th class="width-61px " data-intercom-target="Algorithm">Algorithm</th>
+      <th class="width-73px " data-intercom-target="Price(GRX)">Price (GRX)</th>
+      <th class="width-73px " data-intercom-target="Price(USD)">Price (USD)</th>
+      <th (click)="sortByPositionValue() " class="cancel width-91px " data-intercom-target="Position Value">
+     
         Position Value
         <br>
         (USD)<fa-icon [icon]="faSortByPositionValue" style="color: #40278C;"></fa-icon>
       </th>
-      <th (click)="sortByPositionProfit()" class="cancel width-91px">
+      <th (click)="sortByPositionProfit()" class="cancel width-91px" data-intercom-target="Position Profit">
         Position Profit
         <br>
         (USD)
         <fa-icon [icon]="faSortByPositionProfit" style="color: #40278C;"></fa-icon>
       </th>
-      <th (click)="sortByROI()" class="cancel width-51px">
+      <th (click)="sortByROI()" class="cancel width-51px" data-intercom-target="ROI">
         ROI
         <fa-icon [icon]="faSortByROI" style="color: #40278C;"></fa-icon>
-      </th>
-      <th class="width-101px">GRAYLL <br> Transaction ID</th>
-      <th class="width-101px">Stellar <br> Transaction ID</th>
-      <th class="width-41px">Info</th>
-      <th class="width-61px">Actions</th>
+      </th>     
+      <th class="width-101px " data-intercom-target="Grayll Transaction ID">GRAYLL <br> Transaction ID</th>
+      <th class="width-101px " data-intercom-target="Stellar Transaction ID">Stellar <br> Transaction ID</th>
+      <th class="width-41px " data-intercom-target="Info">Info</th>
+      <th class="width-61px " data-intercom-target="Actions">Actions</th>
     </tr>
     </thead>
 

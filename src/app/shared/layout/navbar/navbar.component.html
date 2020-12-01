@@ -3,7 +3,7 @@
     <a class="navbar-brand ml-2" routerLink="/dashboard/overview" alt="DASHBOARD">
       <img src="assets/images/logo.png" width="40" height="40" class="d-inline-block align-top" alt="Logo">
     </a>
-    <button class="btn btn-purple nav-center-button" [routerLink]="[{outlets: {popup: 'xml-referral'}}]">Invite Contacts</button>
+    <button class="btn btn-purple nav-center-button" [routerLink]="[{outlets: {popup: 'xml-referral'}}]" data-intercom-target="Invite Contacts Btn">Invite Contacts</button>
     <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed"
             data-target="#navbarsDefault" aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -49,7 +49,7 @@
             <span class="badge bg-yellow text-light badge-number"> 0 </span>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" (click)="isNavbarCollapsed = !isNavbarCollapsed">
+        <li class="nav-item" data-toggle="tooltip" (click)="isNavbarCollapsed = !isNavbarCollapsed" data-intercom-target="Notifications">
           <a href="javascript:void(0)" alt="NOTIFICATIONS" class="nav-link" routerLink="/notifications/overview">
             <span class="d-inline d-md-none mr-2">Notifications</span>
             <fa-icon [icon]="faBell" size="lg"></fa-icon>
@@ -61,7 +61,7 @@
             </span>
           </a>
         </li>
-        <li class="nav-item" data-toggle="tooltip" (click)="isNavbarCollapsed = !isNavbarCollapsed">
+        <li class="nav-item" data-toggle="tooltip" (click)="isNavbarCollapsed = !isNavbarCollapsed" data-intercom-target="Settings">
           <a href="javascript:void(0)" class="nav-link" alt="SETTINGS" routerLink="/settings/profile">
             <span class="d-inline d-md-none mr-2">Settings</span>
             <fa-icon [icon]="faUser" size="lg"></fa-icon>

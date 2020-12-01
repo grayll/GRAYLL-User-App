@@ -12,7 +12,7 @@
           <div class="col-12">
             <app-error></app-error>
           </div>
-          <div class="col-12">
+          <div class="col-12" data-intercom-target="GRY">
             <ngb-tabset type="pills" (tabChange)="didChangeTab($event.nextId)">
               <ng-container *ngFor="let item of algoItems">
                 <ngb-tab [id]="item.id">
@@ -26,7 +26,7 @@
           </div>
           <div class="col-md-12" id="open-form">
             <div class="form-group mb-0 mt-3">
-              <div class="input-group input-group-lg fixed-input-height">
+              <div class="input-group input-group-lg fixed-input-height" data-intercom-target="USD Value">
                 <div class="input-group-prepend">
                   <span class="text-light input-group-text bg-purple dollar-padding">$</span>
                 </div>
@@ -35,7 +35,7 @@
               </div>
             </div>
             <div class="form-group mt-3 mb-0">
-              <div class="input-group input-group-lg fixed-input-height">
+              <div class="input-group input-group-lg fixed-input-height" data-intercom-target="Balthazar Amount">
                 <div class="input-group-prepend">
                           <span class="input-group-text bg-purple">
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
@@ -47,7 +47,7 @@
             </div>
           </div>
           <div class="col-md-12 text-center mt-3">
-            <div class="border-navy" *ngIf="this.selectedTab.id != 'GRZ'">              
+            <div class="border-navy" *ngIf="this.selectedTab.id != 'GRZ'" data-intercom-target="Current Value GRY/USD">              
               <p class="font-weight-bolder">
                 Current Value GRY/USD | {{authService.priceInfo.gryusd.toFixed(5)}}
               </p>
@@ -106,7 +106,7 @@
           </div>
           <div class="col-md-12" id="amount-form">
             <div class="form-group mt-3">
-              <div class="input-group input-group-lg fixed-input-height">
+              <div class="input-group input-group-lg fixed-input-height" data-intercom-target="GRX Amount">
                 <div class="input-group-prepend">
                           <span class="input-group-text bg-purple">
                             <img class="small-grayll-icon" src="assets/images/logo.png" alt="GRAYLL Logo">
@@ -121,7 +121,7 @@
           <div class="col-md-12">
             <div class="form-group row mb-0">
               <div class="col">
-                <button type="button" class="text-light btn bg-purple" (click)="openAlgoPosition()">
+                <button type="button" class="text-light btn bg-purple" (click)="openAlgoPosition()" data-intercom-target="Open GRY Btn">
                   Open {{selectedTab.name}}
                 </button>
               </div>
@@ -140,9 +140,9 @@
     <div class="row">
       <div class="col-md-12 col-lg-6">
         <div class="card border-0" style="height: 271px!important;">
-          <div class="card-body gradient-box">
+          <div class="card-body gradient-box" data-intercom-target="Card GRY">
             <div class="row px-1 mb-3">
-              <div class="col">
+              <div class="col" data-intercom-target="GRY1|Balthazar">
                 <h6 class="text-white font-weight-bolder">
                   GRY | 1 Balthazar
                   <a href="http://support.grayll.io/en/articles/3840363-what-is-the-gry-1-balthazar-algorithm" class="navy-link mt-1" target="_blank">
@@ -151,7 +151,7 @@
                 </h6>
                 <h6 class="text-white font-weight-bolder m-b-0">GRY | {{authService.priceInfo.gryusd.toFixed(5)}}</h6>
               </div>
-              <div class="col text-right" style="margin-top: -4px;">
+              <div class="col text-right" style="margin-top: -4px;" data-intercom-target="Unread Notifications">
                 <div class="border-navy-hover" style="outline:0!important"
                      (click)="openModal('unread-gry1-notifications')">
                   <span class="font-weight-bolder">Unread Notifications</span>
@@ -167,29 +167,29 @@
             </div>
 
             <div class="d-flex align-items-center px-1">
-              <div>
+              <div data-intercom-target="% 24h">
                 <h6 class="font-weight-bolder text-white">% 24h</h6>
                 <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1MetricROI.OneDayPercent.toFixed(5)}}</h6>
               </div>
-              <div class="ml-auto  text-right">
+              <div class="ml-auto  text-right" data-intercom-target="% 7d">
                 <h6 class="font-weight-bolder text-white">% 7d</h6>
                 <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1MetricROI.SevenDayPercent.toFixed(5)}}</h6>
               </div>
-              <div class="ml-auto  text-right">
+              <div class="ml-auto  text-right" data-intercom-target="% ROI">
                 <h6 class="font-weight-bolder text-white">% ROI</h6>
                 <h6 class="text-white font-weight-lighter m-0">{{algoService.gry1MetricROI.ROIPercent.toFixed(5)}}</h6>
               </div>
             </div>
             <div class="row mt-3 px-1">
               <div class="col">
-                <div class="border-navy-hover" (click)="scrollToSystemActivity()">
+                <div class="border-navy-hover" (click)="scrollToSystemActivity()" data-intercom-target="GRY Positions">
                   <h6 class="text-white font-weight-bolder">
                     GRY 1 | Positions
                   </h6>
                   <h6 class="text-white mb-0">{{algoService.gry1Metric.Positions}}</h6>
                 </div>
               </div>
-              <div class="col text-right">
+              <div class="col text-right" data-intercom-target="Current GRY1 | Profits">
                 <h6 class="text-white font-weight-bolder">Current GRY 1 | Profits</h6>
                 <h6 class="text-white mb-0">${{algoService.gry1Metric.CurrentProfit.toFixed(5)}}</h6>
               </div>
@@ -197,10 +197,10 @@
 
             <div class="row mt-3 px-1">
               <div class="col">
-                <button class="btn btn-purple" (click)="scrollToSystemActivity()">Close GRY | 1</button>
+                <button class="btn btn-purple" (click)="scrollToSystemActivity()"  data-intercom-target="Close GRY Btn">Close GRY | 1</button>
               </div>
               <div class="col text-right">
-                <h6 class="text-white font-weight-bolder">Current Total Value</h6>
+                <h6 class="text-white font-weight-bolder" data-intercom-target="Current Total Value">Current Total Value</h6>
                 <h6 class="text-white mb-0 font-weight-bolder">${{algoService.gry1Metric.TotalValue.toFixed(3)}}</h6>
               </div>
             </div>

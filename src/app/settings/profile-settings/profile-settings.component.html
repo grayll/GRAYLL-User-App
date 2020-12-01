@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-md-6 col-xs-12">
     <div class="card border-0">
-      <div class="card-body bg-gradient text-light">
+      <div class="card-body bg-gradient text-light" data-intercom-target="General GRAYLL Profile">
         <div class="row">
           <div class="col">
             <p class="lead">General GRAYLL Profile</p>
@@ -33,7 +33,7 @@
     </div>
 
     <div class="card border-0 public-key-card">
-      <div class="card-body bg-gradient text-light">
+      <div class="card-body bg-gradient text-light" data-intercom-target="Stellar Address">
         <div class="row">
           <div class="col">
             <p class="lead mb-0"><strong>Stellar Address</strong> (Public Key)</p>
@@ -68,7 +68,7 @@
                 <label for="last_name">Last Name</label>
                 <input type="text" class="form-control form-control-no-border bg-transparent text-light" formControlName="last_name" ngModel="{{userData.LName}}">
               </div>
-              <div class="form-group">
+              <div class="form-group" data-intercom-target="Account Email">
                 <label for="email">Account Email</label>
                 <a [routerLink]="[{outlets: {popup: 'change-email-address'}}]"
                   href="javascript:void(0)" class="float-right text-purple">Change Email</a>

@@ -13,7 +13,7 @@
       </div>
       <div class="col text-center">
         <hr class="mt-0 d-sm-none">
-        <a class="purple-link" (click)="downloadHistory()">
+        <a class="purple-link" (click)="downloadHistory()" data-intercom-target="Download Activity History">
           <fa-icon [icon]="faDownload" [fixedWidth]="true"></fa-icon>
           Download Activity History
         </a>
@@ -24,10 +24,10 @@
   
     <div class="row justify-content-center align-items-center my-1 p-2" *ngIf="selectedTab.id === 'allOrders'">
       <div class="col-md-2 col-xs">
-        <span *ngIf="this.stellarService.allOffers" class="align-middle font-weight-bolder font-14">Open Orders ({{this.stellarService.allOffers.length}})</span>
-        <span *ngIf="!this.stellarService.allOffers" class="align-middle font-weight-bolder font-14">Open Orders (0)</span>
+        <span *ngIf="this.stellarService.allOffers" class="align-middle font-weight-bolder font-14" data-intercom-target="Open Orders">Open Orders ({{this.stellarService.allOffers.length}})</span>
+        <span *ngIf="!this.stellarService.allOffers" class="align-middle font-weight-bolder font-14" data-intercom-target="Open Orders">Open Orders (0)</span>
       </div>
-      <div class="col" [routerLink]="['/wallet/overview', {outlets: {popup: 'cancel-active-orders'}}]" style="outline: none;">
+      <div class="col" [routerLink]="['/wallet/overview', {outlets: {popup: 'cancel-active-orders'}}]" style="outline: none;"  data-intercom-target="Cancel All Active Orders">
         <fa-icon [icon]="faClose" class="text-danger cancel"></fa-icon>
         <span class="ml-1 cancel text-danger">Cancel All Active Orders</span>
 	</div>
@@ -131,7 +131,7 @@
 		<th class="width-73px">Total Price (XLM)</th>  
         <th class="width-73px">Price (USD)</th>
 		<th class="width-73px">Total Price (USD)</th>
-		<th class="width-61px">Actions</th>
+		<th class="width-61px" data-intercom-target="Actions">Actions</th>
 	  </tr>
       </thead>     
       <tbody *ngIf="this.stellarService.allOffers"  class="font-8 text-light" infiniteScroll [infiniteScrollDistance]=".1" [infiniteScrollThrottle]="50" (scrolled)="onScrollOpenOrders()" [scrollWindow]="false">
@@ -232,7 +232,7 @@
 <div class="row m-0 justify-content-center align-items-center p-2 pt-4 bg-gradient text-light"
      *ngIf="selectedTab.id === 'allOrders'" id="completedOrdersContainer">
   <hr class="m-0 py-2 w-100 mx-0 px-0" style="border-color: #fff;">
-    <div class="col-md-2 col-xs pl-0">
+    <div class="col-md-2 col-xs pl-0" data-intercom-target="Completed Orders">
       <span *ngIf="tradess | async" class="align-middle font-14 font-weight-bolder">Completed Orders ({{(tradess | async).length}})</span>
       <span *ngIf="!(tradess | async)" class="align-middle font-14 font-weight-bolder">Completed Orders (0)</span><br>
       <span class="text-light font-10 font-weight-bolder">Most Recent Completed Orders</span>
@@ -257,7 +257,7 @@
 		  
            <th class="width-73px">Price (USD)</th>
           <th class="width-73px">Total Price (USD)</th>
-          <th class="width-61px">Actions</th>
+          <th class="width-61px" data-intercom-target="Actions">Actions</th>
         </tr>
       </thead>
 

@@ -4,7 +4,7 @@
     <div class="col">
       <span class="lead align-middle">Activity</span>
     </div>
-    <div class="col-xs-12 col-md-6 justify-content-center align-items-center" *ngIf="selectedTab">
+    <div class="col-xs-12 col-md-6 justify-content-center align-items-center" *ngIf="selectedTab" data-intercom-target="Tabs">
       <ngb-tabset type="pills" class="custom-pills" (tabChange)="onTabChange($event.nextId)" [activeId]="selectedTab.id">
         <ng-container *ngFor="let tab of activityTabs">
           <ngb-tab [id]="tab.id" [title]="tab.name"></ngb-tab>
@@ -13,7 +13,7 @@
     </div>
     <div class="col text-center">
       <hr class="mt-0 d-sm-none">
-      <a class="purple-link" (click)="DownloadPdf()">
+      <a class="purple-link" (click)="DownloadPdf()" data-intercom-target="Download Activity History">
         <fa-icon [icon]="faDownload" [fixedWidth]="true"></fa-icon>
         Download Activity History
       </a>
@@ -96,24 +96,24 @@
   <table class="table mb-0">
     <thead>
     <tr class="font-weight-bolder font-10 text-light">
-      <th class="width-91px" (click)="sortByPositionValue()">Date<br><i>(Invite Confirmed)</i></th>
-      <th class="width-101px">First Name</th>
-      <th class="width-101px">Last Name</th>
-      <th class="width-101px">Business Name</th>
-      <th class="width-175px">Email</th>
-      <th class="width-101px">Phone</th>
-      <th (click)="sortByTotalFeesUSD()" class="width-91px">
+      <th class="width-91px" (click)="sortByPositionValue()" data-intercom-target="Date">Date<br><i>(Invite Confirmed)</i></th>
+      <th class="width-101px" data-intercom-target="First Name">First Name</th>
+      <th class="width-101px" data-intercom-target="Last Name">Last Name</th>
+      <th class="width-101px" data-intercom-target="Business Name">Business Name</th>
+      <th class="width-175px" data-intercom-target="Email">Email</th>
+      <th class="width-101px" data-intercom-target="Phone">Phone</th>
+      <th (click)="sortByTotalFeesUSD()" class="width-91px" data-intercom-target="Total Fees(USD)">
         Total Fees (USD)<br><i class="mr-1">(Received)</i>
         <fa-icon [icon]="faSortByTotalFeesUSD" style="color: #40278C;"></fa-icon></th>
-      <th (click)="sortByTotalFeesGRX()" class="width-91px">
+      <th (click)="sortByTotalFeesGRX()" class="width-91px" data-intercom-target="Total Fees(GRX)">
         Total Fees (GRX)<br><i class="mr-1">(Received)</i>
         <fa-icon [icon]="faSortByTotalFeesGRX" style="color: #40278C;"></fa-icon>
       </th>
-      <th (click)="sortByTotalPayments()" class="width-91px">
+      <th (click)="sortByTotalPayments()" class="width-91px" data-intercom-target="Total Payments">
         Total Payments<br><i class="mr-1">(Received)</i>
         <fa-icon [icon]="faSortByTotalPayments" style="color: #40278C;"></fa-icon></th>
-      <th class="width-41px">Edit</th>
-      <th class="width-64px">Actions</th>
+      <th class="width-41px" data-intercom-target="Edit">Edit</th>
+      <th class="width-64px" data-intercom-target="Actions">Actions</th>
     </tr>
     </thead>
 
@@ -155,20 +155,20 @@
   <table class="table mb-0">
     <thead>
     <tr class="font-weight-bolder font-10 text-light">
-      <th class="width-91px" (click)="sortByPositionValue()">Date<br><i>(Invite Sent)</i></th>
-      <th class="width-101px">First Name</th>
-      <th class="width-101px">Last Name</th>
+      <th class="width-91px" (click)="sortByPositionValue()" data-intercom-target="Date">Date<br><i>(Invite Sent)</i></th>
+      <th class="width-101px" data-intercom-target="First Name">First Name</th>
+      <th class="width-101px" data-intercom-target="Last Name">Last Name</th>
       <th class="width-101px">Business Name</th>
-      <th class="width-175px">Email</th>
-      <th class="width-101px">Phone</th>
+      <th class="width-175px" data-intercom-target="Email">Email</th>
+      <th class="width-101px" data-intercom-target="Phone">Phone</th>
       <th class="width-91px"># Reminders Sent</th>
-      <th (click)="sortByLastReminder()" class="width-91px">
+      <th (click)="sortByLastReminder()" class="width-91px" data-intercom-target="Last Reminder">
         Last Reminder<br /><i class="mr-1">(Date Sent)</i>
         <fa-icon [icon]="faSortByLastReminder" style="color: #40278C;"></fa-icon>
       </th>
-      <th class="width-91px">Send Reminder</th>
+      <th class="width-91px" data-intercom-target="Send Reminder">Send Reminder</th>
       <!-- <th class="width-41px">Info</th> -->
-      <th class="width-64px">Actions</th>
+      <th class="width-64px" data-intercom-target="Actions">Actions</th>
     </tr>
     </thead>
 
