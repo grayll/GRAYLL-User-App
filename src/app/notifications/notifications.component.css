@@ -164,6 +164,12 @@
   height: 24px;
 }
 
+#confirm-content,
+#confirm-caption {
+    padding: 0;
+    margin-bottom: 0;
+}
+
 @media (min-width: 760px) {
   .page-wrapper {
     margin: 14px auto 0 auto;
@@ -184,11 +190,15 @@
 }
 
 @media (max-width: 420px) {
-  .main-wrapper {
-    padding-top: 0;
-  }
-  h4 {
-    position: fixed;
-    top: 48px;
-  }
+    .main-wrapper {
+        padding-top: 0;
+    }
+    /* h4 {
+        position: fixed;
+        top: 48px;
+    } */
+}
+
+@media (max-width: 420px) {
+    #modal-basic-title {}
 }

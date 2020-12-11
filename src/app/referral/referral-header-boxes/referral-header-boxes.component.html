@@ -2,7 +2,7 @@
 <div class="row d-lg-flex">
   <div class="col-sm-12 col-lg-4">
     <div class="card border-0">
-      <div class="card-body first-box d-flex">
+      <div class="card-body first-box d-flex" data-intercom-target="Total Referral">
         <div class="border-navy">
           <div class="d-inline-block align-middle icon-box text-purple">
             <fa-icon [icon]="faAt" size="3x"></fa-icon>
@@ -28,7 +28,7 @@
   </div>
   <div class="col-sm-12 col-lg-4">
     <div class="card border-0">
-      <div class="card-body second-box">
+      <div class="card-body second-box" data-intercom-target="Second Box">
         <p class="colored-text-second">
           The <i>GRAYLL Referral System</i> allows you to invite family, friends and
           business contacts to use the <i>GRAYLL App &amp; Intelligence.</i> Your invites
@@ -45,7 +45,7 @@
   </div>
   <div class="col-sm-12 col-lg-4">
     <div class="card border-0" style="outline: none !important;">
-      <div class="card-body third-box">
+      <div class="card-body third-box" data-intercom-target="Total Referral Contacts">
         <h5 class=" mb-1 font-weight-bolder colored-text-second">
           Total Referral Contacts<i class="italic-content"> (Invited)</i>
         </h5>
@@ -60,7 +60,7 @@
           </div>
         </div>
         <div class="bottom-border-navy-animated">
-          <button class="btn btn-purple full-width" [routerLink]="[{outlets: {popup: 'xml-referral'}}]">Invite New Referral Contact</button>
+          <button class="btn btn-purple full-width" [routerLink]="[{outlets: {popup: 'xml-referral'}}]" data-intercom-target="Invite New Referral Contact">Invite New Referral Contact</button>
         </div>
       </div>
     </div>

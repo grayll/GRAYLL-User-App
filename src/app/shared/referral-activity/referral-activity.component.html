@@ -53,16 +53,16 @@
   <table class="table mb-0">
     <thead>
     <tr class="font-weight-bolder font-10 text-light">
-      <th class="width-91px" (click)="sortByPositionValue()">Date</th>
-      <th class="width-101px">First Name</th>
-      <th class="width-101px">Last Name</th>
+      <th class="width-91px" (click)="sortByPositionValue()" data-intercom-target="Date">Date</th>
+      <th class="width-101px" data-intercom-target="First Name">First Name</th>
+      <th class="width-101px" data-intercom-target="Last Name">Last Name</th>
       <!-- <th class="width-101px">Business Name</th> -->
-      <th class="width-175px">Email</th>
+      <th class="width-175px" data-intercom-target="Email">Email</th>
       <!-- <th class="width-101px">Mobile<br><i>(WhatsApp)</i></th> -->
-      <th class="width-91px">Fees (USD)<br><i>(Received)</i></th>
-      <th (click)="sortByPositionProfit()" class="width-91px"> Fees (GRX)<br><i>(Received)</i> </th>
-      <th class="width-111px">Stellar<br>Transaction ID</th>
-      <th class="width-44px text-center">Info</th>
+      <th class="width-91px" data-intercom-target="Fees(USD)">Fees (USD)<br><i>(Received)</i></th>
+      <th (click)="sortByPositionProfit()" class="width-91px" data-intercom-target="Fees(GRX)"> Fees (GRX)<br><i>(Received)</i> </th>
+      <th class="width-111px" data-intercom-target="Stellar">Stellar<br>Transaction ID</th>
+      <th class="width-44px text-center" data-intercom-target="Info">Info</th>
       <!-- <th class="width-61px">Actions</th> -->
     </tr>
     </thead>
@@ -96,24 +96,24 @@
   <table class="table mb-0">
     <thead>
     <tr class="font-weight-bolder font-10 text-light">
-      <th class="width-91px" (click)="sortByPositionValue()" data-intercom-target="Date">Date<br><i>(Invite Confirmed)</i></th>
-      <th class="width-101px" data-intercom-target="First Name">First Name</th>
-      <th class="width-101px" data-intercom-target="Last Name">Last Name</th>
-      <th class="width-101px" data-intercom-target="Business Name">Business Name</th>
-      <th class="width-175px" data-intercom-target="Email">Email</th>
-      <th class="width-101px" data-intercom-target="Phone">Phone</th>
-      <th (click)="sortByTotalFeesUSD()" class="width-91px" data-intercom-target="Total Fees(USD)">
+      <th class="width-91px" (click)="sortByPositionValue()"  data-intercom-target="Date">Date<br><i>(Invite Confirmed)</i></th>
+      <th class="width-101px"  data-intercom-target="First Name">First Name</th>
+      <th class="width-101px"  data-intercom-target="Last Name">Last Name</th>
+      <th class="width-101px"  data-intercom-target="Business Name">Business Name</th>
+      <th class="width-175px"  data-intercom-target="Email">Email</th>
+      <th class="width-101px"  data-intercom-target="Phone">Phone</th>
+      <th (click)="sortByTotalFeesUSD()" class="width-91px"  data-intercom-target="Total Fees(USD)">
         Total Fees (USD)<br><i class="mr-1">(Received)</i>
         <fa-icon [icon]="faSortByTotalFeesUSD" style="color: #40278C;"></fa-icon></th>
-      <th (click)="sortByTotalFeesGRX()" class="width-91px" data-intercom-target="Total Fees(GRX)">
+      <th (click)="sortByTotalFeesGRX()" class="width-91px"  data-intercom-target="Total Fees(GRX)">
         Total Fees (GRX)<br><i class="mr-1">(Received)</i>
         <fa-icon [icon]="faSortByTotalFeesGRX" style="color: #40278C;"></fa-icon>
       </th>
-      <th (click)="sortByTotalPayments()" class="width-91px" data-intercom-target="Total Payments">
+      <th (click)="sortByTotalPayments()" class="width-91px"  data-intercom-target="Total Payments">
         Total Payments<br><i class="mr-1">(Received)</i>
         <fa-icon [icon]="faSortByTotalPayments" style="color: #40278C;"></fa-icon></th>
-      <th class="width-41px" data-intercom-target="Edit">Edit</th>
-      <th class="width-64px" data-intercom-target="Actions">Actions</th>
+      <th class="width-41px"  data-intercom-target="Edit">Edit</th>
+      <th class="width-64px"  data-intercom-target="Actions">Actions</th>
     </tr>
     </thead>
 
@@ -161,7 +161,7 @@
       <th class="width-101px">Business Name</th>
       <th class="width-175px" data-intercom-target="Email">Email</th>
       <th class="width-101px" data-intercom-target="Phone">Phone</th>
-      <th class="width-91px"># Reminders Sent</th>
+      <th class="width-91px" data-intercom-target="Reminders Sent"># Reminders Sent</th>
       <th (click)="sortByLastReminder()" class="width-91px" data-intercom-target="Last Reminder">
         Last Reminder<br /><i class="mr-1">(Date Sent)</i>
         <fa-icon [icon]="faSortByLastReminder" style="color: #40278C;"></fa-icon>

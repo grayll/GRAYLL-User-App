@@ -61,30 +61,40 @@
         </div>
       </div>
     </div>
-    <button id="setup_button" (click)="installApp()" class="col-12 text-center btn-install">
-      <span class="desktop">
-        <ng-container
-          *ngIf="!(this.browserPlatform=='samsung' || this.browserPlatform=='iphone' || this.browserPlatform=='ipad')">
-          Install GRAYLL App on my Desktop</ng-container>
-        <ng-container
-          *ngIf="this.browserPlatform=='samsung' || this.browserPlatform=='iphone' || this.browserPlatform=='ipad'">Add
-          GRAYLL App to Home Screen</ng-container>
-      </span>
-      <span class="phone">Add GRAYLL App to Home Screen</span>      
-    </button>
-    <div class="col-sm-12" style="height: 1px;"></div>
-    
-    <div class="justify-content-center text-white">
-      <a class="blue-link" href="https://grayll.io/privacy/" target="_blank">Privacy</a>&nbsp;|&nbsp;<a class="blue-link" href="https://grayll.io/terms-of-service/" target="_blank">Terms</a>
-      
-    </div> 
-  </div>  
-  
+   <div class="col-12 text-center">
+      <button id="setup_button" (click)="installApp()" class="col-12 text-center btn-install">
+        <span class="desktop">
+          <ng-container
+            *ngIf="!(this.browserPlatform=='samsung' || this.browserPlatform=='iphone' || this.browserPlatform=='ipad')">
+            Install GRAYLL App on my Desktop</ng-container>
+          <ng-container
+            *ngIf="this.browserPlatform=='samsung' || this.browserPlatform=='iphone' || this.browserPlatform=='ipad'">Add
+            GRAYLL App to Home Screen</ng-container>
+        </span>
+        <span class="phone">Add GRAYLL App to Home Screen</span>      
+      </button>
+    </div>
+    <div class="col-12 text-center">
+            <div class="col-12 d-flex justify-content-center">
+                <a class="blue-link" href="https://grayll.io/privacy" target="_blank"><p class="mb-0">Privacy</p></a>&nbsp;
+                <p class="text-light mb-0">|</p>&nbsp;
+                <a class="blue-link" href="https://grayll.io/terms-of-service" target="_blank"><p class="mb-0">Terms</p></a>
+            </div>
+        </div>
+    </div>
 </div>
 <!--IOS Popup-->
-<!-- <div [ngClass]="{'ath-container banner-bottom-center d-none': !this.iosguide,'ath-container banner-bottom-center': this.iosguide}">
+<!-- <div
+  [ngClass]="{'ath-container banner-bottom-center d-none': !iosguide,'ath-container banner-bottom-center': iosguide}">
   <div class="ath-banner ath-guidance"><img src="assets/images/addtohomescreen/iosguide.gif" class="d-flex"></div>
 </div> -->
+<!-- <div *ngIf="iosguide">
+    <div class="ath-banner ath-guidance">
+        <img src="assets/images/addtohomescreen/iosguide.gif" class="d-flex">
+    </div>
+
+</div> -->
+
 <!--IOS Popup-->
 <!--Safari & iPad Popup-->
 <!-- <div class="ath-container banner-bottom-center" [ngClass]="{'d-none': !this.safariguide}">
@@ -92,11 +102,20 @@
       class="d-flex"></div>
 
 </div> -->
+
+<!-- <div *ngIf="safariguide">
+    <div class="ath-banner ath-guidance">
+        <img src="assets/images/addtohomescreen/safari-ipad-share-a2hs.png" class="d-flex">
+    </div>
+
+</div> -->
+
 <!--Safari & iPad Popup-->
 <!--Firefox Popup-->
-<!-- <div class="ath-container banner-bottom-center" [ngClass]="{'d-none': !this.firefoxguide}">
-  <div class="ath-banner ath-guidance"><img src="assets/images/addtohomescreen/firefox.png" class="d-flex"
-      style="width: 460px"></div>
+<!-- <div class="ath-container banner-bottom-center" [ngClass]="{'d-none': !firefoxguide}">
+    <div class="ath-banner ath-guidance">
+        <img src="assets/images/addtohomescreen/firefox.png" class="d-flex" style="width: 460px">
+    </div>
 
 </div> -->
 <!--Firefox Popup-->

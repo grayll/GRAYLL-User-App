@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-sm-12">
     <div class="card main-chart border-0">
-      <div class="card-body">
+      <div class="card-body" data-intercom-target="Main Chart">
         <div class="d-md-flex align-items-center mb-3">
           <div class="col-lg-4 col-md-12">
             <h6 class="card-title">GRX | GRY | GRZ</h6>
@@ -11,7 +11,7 @@
             <h6 class="mt-2">{{today | date:'h:mm | d/M/yyyy'}}</h6>
           </div>
           <div class="col-lg-2 col-md-12 align-self-center">
-            <button class="btn btn-purple btn-sm" (click)="scrollToOpenAlgoPositionForm()">Open Algo Position</button>
+            <button class="btn btn-purple btn-sm" (click)="scrollToOpenAlgoPositionForm()" data-intercom-target="Open Algo Position">Open Algo Position</button>
           </div>
           <br class="d-md-none">
           <div class="col-lg-2 col-md-12 align-self-center">
@@ -20,7 +20,8 @@
                        [clearable]="false"
                        bindLabel="name"
                        [(ngModel)]="selectedTimespan"
-                       (change)="onChange($event)">
+                       (change)="onChange($event)"
+                       data-intercom-target="Select time">
             </ng-select>
           </div>
         </div>

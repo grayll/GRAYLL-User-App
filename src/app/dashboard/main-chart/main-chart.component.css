@@ -10,6 +10,7 @@
   position: relative;
 }
 
+
 ::ng-deep .c3-axis-y text {
   fill: white;
   font-size:12px;
@@ -17,6 +18,7 @@
 
 ::ng-deep .c3 path {
   stroke: #6c757d;
+  stroke-width: 2px;
 }
 
 ::ng-deep .c3 line {
