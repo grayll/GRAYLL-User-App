@@ -36,7 +36,7 @@ input:focus {
 .login_btn:hover {
   cursor: pointer;
   color: #40278C;
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 a.blue-link {
