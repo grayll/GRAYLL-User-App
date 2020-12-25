@@ -50,7 +50,7 @@ export class XlmReferrerRemovePopupComponent implements OnInit {
     this.loadingService.show()
     this.http.post(`api/v1/users/removeReferer/`+this.refererId, {})             
     .subscribe(res => { 
-      console.log(res)
+      //console.log(res)
       this.loadingService.hide() 
       if ((res as any).errCode != environment.SUCCESS)  {
        this.error = true        

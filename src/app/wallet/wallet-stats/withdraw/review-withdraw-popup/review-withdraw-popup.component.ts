@@ -116,9 +116,9 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
                 this.errorService.handleError(null, '2FA code is invalid! Please retry.')
                 return
               }
-                console.log(xdr)
+               
               this.authService.makeTransaction(xdr, "withdraw").subscribe(res => {
-                console.log(res)
+               
                 if ((res as any).errCode == "tx_success"){
                   this.popupService.close()
                   .then(() => {
@@ -160,13 +160,13 @@ export class ReviewWithdrawPopupComponent implements OnInit, OnDestroy {
       } else if (!this.multiSigEnable) {
         // console.log('sendAsset:', SecKey,
         //  this.withdrawModel.address, amount.toString(), asset)
-        console.log("multiSigEnable")
+       
         try {
           let xdr = await this.stellarService.getWithdrawXdr(this.authService.userInfo.PublicKey, this.withdrawModel.address, 
             amount.toString(), asset, memo)
-            console.log(xdr)
+          
           this.authService.makeTransaction(xdr, "withdraw").subscribe(res => {
-            console.log(res)
+            
             if ((res as any).errCode == "tx_success"){
               this.popupService.close()
               .then(() => {

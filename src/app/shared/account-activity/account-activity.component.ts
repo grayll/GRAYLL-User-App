@@ -121,9 +121,9 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
       .pipe(debounceTime(this.debounce), distinctUntilChanged())
       .subscribe(query => {
         if (query) {  
-          console.log('query:',query)        
+          //console.log('query:',query)        
           this.accountService.searchData(this.activeTabId, this.authService.userInfo.Uid, query).then(data => {
-            console.log(data.hits)
+            //console.log(data.hits)
             if(this.activeTabId === 'networkHistory'){
               
             } else if(this.activeTabId === 'transfers'){
@@ -156,7 +156,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
     
   }
   downloadHistory(){
-    console.log('this.selectedTab.id:', this.selectedTab.id)
+    //console.log('this.selectedTab.id:', this.selectedTab.id)
     
     switch(this.selectedTab.id){
       case 'allOrders':
@@ -204,7 +204,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
           data = this.operations          
         break
       default:
-        console.log('invalid table name')
+        //console.log('invalid table name')
         return 
     }
     this.sharedService.savePDF(columns, fields, data, fileName)
@@ -322,7 +322,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
       this.selectedTab = this.activityTabs.find((t) => t.id === this.activeTabId);
       if (this.scrollToCompletedOrders) {
         setTimeout(() => {
-          console.log('scrollToCompletedOrders')
+          //console.log('scrollToCompletedOrders')
           const el = document.getElementById('completedOrdersContainer');
           el.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
         }, 500);
@@ -333,19 +333,19 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
  
   onScrollOpenOrders() {
     if (this.activityResult.openOrderNextURL && this.activityResult.openOrderEmptyResultTimes < 3){
-      console.log('onScrollTransfers called get')
+      //console.log('onScrollTransfers called get')
       this.getAccountOrders(this.activityResult.openOrderNextURL, true)
     } else {
-      console.log('onScrollTransfers !!! called get:', this.activityResult.openOrderEmptyResultTimes)
+      //console.log('onScrollTransfers !!! called get:', this.activityResult.openOrderEmptyResultTimes)
     }
   }
   
   onScrollCompletedOrders() {
     if (this.activityResult.completedOrderNextURL && this.activityResult.completedOrderEmptyResultTimes < 3){
-      console.log('onScrollTransfers called get')
+      //console.log('onScrollTransfers called get')
       this.getAccountTrades(this.activityResult.completedOrderNextURL)
     } else {
-      console.log('onScrollTransfers !!! called get:', this.activityResult.completedOrderEmptyResultTimes)
+      //console.log('onScrollTransfers !!! called get:', this.activityResult.completedOrderEmptyResultTimes)
     }
   }
   
@@ -355,10 +355,10 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
   
   onScrollTransfers() {    
     if (this.activityResult.paymentNextURL && this.activityResult.paymentEmptyResultTimes < 3){
-      console.log('onScrollTransfers called get')
+      //console.log('onScrollTransfers called get')
       this.getAccountPayments(this.activityResult.paymentNextURL)
     } else {
-      console.log('onScrollTransfers !!! called get:', this.activityResult.paymentEmptyResultTimes)
+      //console.log('onScrollTransfers !!! called get:', this.activityResult.paymentEmptyResultTimes)
     }
   }
 
@@ -408,17 +408,17 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
           }
         })  
         if (this.payments)  {
-          console.log('payments.push', this.payments.length)
+          //console.log('payments.push', this.payments.length)
           this.payments = this.payments.concat(records)
-          console.log('payments.push1', this.payments.length)
+          //console.log('payments.push1', this.payments.length)
         } else {
           this.payments = records
-          console.log('payments.push2', this.payments.length)
+          //console.log('payments.push2', this.payments.length)
         }
         if (pms.data._links.next.href){
           this.activityResult.paymentNextURL = pms.data._links.next.href
         }
-        console.log('this.activityResult.paymentNextURL:', this.activityResult.paymentNextURL)
+        //console.log('this.activityResult.paymentNextURL:', this.activityResult.paymentNextURL)
         this.activityResult.paymentEmptyResultTimes = 0              
       } else {
         this.activityResult.paymentEmptyResultTimes += 1
@@ -547,7 +547,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   getAccountTrades(nextURL) {  
-    console.log('start getAccountTrades:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
+    //console.log('start getAccountTrades:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))
     this.stellarService.getTrade(this.authService.userData.PublicKey, 20, nextURL).then(pms => {          
       if (pms && pms.data._embedded.records.length > 0){  
        
@@ -590,7 +590,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
       } else {
         this.activityResult.completedOrderEmptyResultTimes += 1
       }    
-      console.log('end getAccountTrades:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))    
+      //console.log('end getAccountTrades:', moment(new Date()).format('DD.MM.YYYY HH:mm:ss.SSS'))    
     }) 
          
   }  

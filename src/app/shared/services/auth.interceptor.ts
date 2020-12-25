@@ -34,7 +34,7 @@ export class AuthInterceptor implements HttpInterceptor {
     // Check token is expired
     if ((!req.url.includes('login') && !req.url.includes('register') && !req.url.includes('VerifyRecapchaToken')) 
       && this.authService.isTokenExpired()){
-      console.log('Your login session has expired! Please login again.')
+      //console.log('Your login session has expired! Please login again.')
       this.snotifyService.simple('Your login session has expired! Please login again.');
       if (this.popupService.isOpen){
         this.popupService.closeAndRedirectTo('/login')

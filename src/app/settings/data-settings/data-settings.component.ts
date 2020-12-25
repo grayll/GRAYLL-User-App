@@ -106,7 +106,7 @@ export class DataSettingsComponent implements OnInit, OnDestroy {
     }  
     this.getUtcHour()
     this.reportTime = {hour: this.report.TimeHour, minute: this.report.TimeMinute, second: 0};
-    console.log('ngOnInit:', this.report)
+    //console.log('ngOnInit:', this.report)
     
   }
  
@@ -117,7 +117,7 @@ export class DataSettingsComponent implements OnInit, OnDestroy {
     this.isChanged = true
   }
   public timeZoneChanged(timeZone: string): void {
-    console.log(timeZone);
+    //console.log(timeZone);
     this.report.TimeZone = timeZone;
     //this.timeZoneOffet = moment.tz(this.report.TimeZone).utcOffset()/60 + ":" + "00"
     this.getUtcHour()
@@ -145,9 +145,9 @@ export class DataSettingsComponent implements OnInit, OnDestroy {
       //this.report.TimeZone = this.selectedTz
       this.report.TimeHour = this.reportTime.hour
       this.report.TimeMinute = this.reportTime.minute
-      console.log(this.report)
+      //console.log(this.report)
       this.http.post(`api/v1/users/saveReportSetting`, this.report).subscribe(res => { 
-        console.log(res)       
+        //console.log(res)       
         if ((res as any).errCode === environment.SUCCESS ) {
           this.authService.userData.ReportSetting = this.report
         } else {

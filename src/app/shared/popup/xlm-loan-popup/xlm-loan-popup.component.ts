@@ -116,7 +116,7 @@ export class XlmLoanPopupComponent implements OnInit {
     this.loadingService.show()    
       let loanPaidId = this.authService.GetLoadPaidLedgerId()
       if (loanPaidId && +loanPaidId > 0) {        
-        console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
+       // console.log('this.authService.GetLoadPaidLedgerId():', this.authService.GetLoadPaidLedgerId())
         this.isSubmitted = false          
         this.verifyTx(+loanPaidId)
       } else {        
@@ -134,9 +134,9 @@ export class XlmLoanPopupComponent implements OnInit {
             this.success = true;
             return
           }
-          console.log(xdr)
+         // console.log(xdr)
           this.authService.makeTransaction(xdr, "loanpaid").subscribe(res => {
-            console.log(res)
+           // console.log(res)
             if ((res as any).errCode == "tx_success"){
               this.error = false;
               this.success = true;
@@ -183,7 +183,7 @@ export class XlmLoanPopupComponent implements OnInit {
     this.http.post(`api/v1/users/txverify`, {txHash: txHash, action:'payoff'})    
     .subscribe(
       resp => {
-        console.log(resp)
+        //console.log(resp)
         this.error = false;
         this.success = true;
         this.authService.userInfo.LoanPaidStatus = 2
@@ -192,7 +192,7 @@ export class XlmLoanPopupComponent implements OnInit {
         this.loadingService.hide()
       },
       err => {
-        console.log('verify ledger exp: ', err)
+        //console.log('verify ledger exp: ', err)
         this.error = true;
         this.success = false;
         this.loadingService.hide()

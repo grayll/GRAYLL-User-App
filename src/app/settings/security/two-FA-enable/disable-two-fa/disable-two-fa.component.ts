@@ -60,7 +60,7 @@ export class DisableTwoFaComponent implements OnInit {
 
    // let userData = this.authService.GetLocalUserData()
     this.authService.verifyTfaAuth(this.code.value, this.password.value, -1).subscribe(res => {
-      console.log('verifyTfaAuth-data: ', res)     
+      //console.log('verifyTfaAuth-data: ', res)     
       if ((res as any).valid === true ){       
         //userData.Tfa = {}
         this.authService.userData.Tfa = {}

@@ -257,7 +257,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   markAllAsRead(confirmModal:any) {
     this.loadingService.show()
     this.http.post('api/v1/users/updateAllAsRead/'+this.notifiType, {}).subscribe(res => {
-      console.log(res)
+      //console.log(res)
       this.loadingService.hide()
       this.modalService.dismissAll()
       if ((res as any).errCode != environment.SUCCESS){               

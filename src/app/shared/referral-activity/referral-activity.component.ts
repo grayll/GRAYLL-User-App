@@ -303,7 +303,7 @@ export class ReferralActivityComponent implements OnInit, OnChanges {
   DownloadPdf() {
     let data = [...this.getCurrentTabData()];
     this.pdfService.savePDF(this.columnNamesForPDF, Object.keys(data[0]), data, 'pdf_print_' + Date.now());
-    console.log('ok');
+   
   }
 
   getCurrentTabData() {

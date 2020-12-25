@@ -97,10 +97,10 @@ export class RevealSecretKeyPopupComponent implements OnInit {
     this.errorService.clearError();
     if (this.clientValidation()) {
       if (this.authService.userInfo.Tfa){
-        console.log(this.code, this.secret)
+       // console.log(this.code, this.secret)
         this.authService.verifyTfaAuth(this.code, this.password, 0).subscribe(         
           res => {  
-            console.log(res)         
+           // console.log(res)         
             if ((res as any).errCode === environment.SUCCESS ){  
               this.popupService.close().then(() => {
                 this.settingsService.sendConfirmAuthorityToObserver(this.authService.getSecretKey());

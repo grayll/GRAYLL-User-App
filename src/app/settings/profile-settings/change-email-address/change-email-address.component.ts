@@ -85,7 +85,7 @@ export class ChangeEmailAddressComponent implements OnInit {
       this.http.post(`api/v1/users/changeemail`, 
         {email:this.currentEmail.value, newemail: this.newEmail.value, password: this.password.value})                
       .subscribe(res => {      
-        console.log(res)          
+        //console.log(res)          
         if ((res as any).errCode === environment.SUCCESS) {
           this.form.reset()   
           this.errorService.handleError(null, `An email was sent to ${this.currentMail} to confirm your change email address request.`);

@@ -417,11 +417,11 @@ export class AuthService {
         this.stellarService.decryptSecretKey(password, {Salt: this.userInfo.SecretKeySalt, EnSecretKey:this.userInfo.EnSecretKey}, 
           SecKey => {
             if (SecKey != ''){
-              console.log('GetSecretKey6')
+              
               //this.secretKey = this.stellarService.SecretBytesToString(SecKey)
               resolve(this.secretKey)
             } else {
-              console.log('GetSecretKey7')
+              
               reject('')
             }
           })
@@ -535,7 +535,7 @@ export class AuthService {
 
   verifyTx(txHash, action, data): Promise<any> {
     return new Promise((resolve, reject) => {
-      console.log('verifyTx-data:', data)
+     
     this.http.post(`api/v1/users/txverify`, {txHash: txHash, action: action, data: data})    
     .subscribe(
       resp => {
@@ -543,14 +543,14 @@ export class AuthService {
       },
       err => {
         reject(err)
-        console.log('verify ledger exp: ', err)        
+              
       } 
     )    
     })
   }
   saveUserMetaStore() {
     if (this.userMetaStore && !this.isTokenExpired){  
-      console.log('saveUserMetaStore')   
+      
       this.http.post(`api/v1/users/saveUserMetaData`, {     
         total_grz_current_position_ROI_$: this.userMetaStore.total_grz_current_position_ROI_$,
         total_grz_current_position_value_$:  this.userMetaStore.total_grz_current_position_value_$,    
@@ -573,7 +573,7 @@ export class AuthService {
           
         },
         err => {        
-          console.log('saveUserMetaData err: ', err)        
+                
         } 
       )   
     } 
@@ -597,7 +597,7 @@ export class AuthService {
   }
 
   isTfaEnable(){
-    console.log(this.userData)
+    
     if (this.userData.Tfa && this.userData.Tfa.Enable 
       && this.userData.Tfa.Enable === true){
       return true

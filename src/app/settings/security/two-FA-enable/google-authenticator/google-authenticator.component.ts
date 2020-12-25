@@ -35,7 +35,7 @@ export class GoogleAuthenticatorComponent implements OnInit {
       
       this.authService.userData.Tfa = this.Tfa;
       this.authService.SetLocalUserData();  
-      console.log('google: setupTfa: userData', this.authService.userData)
+      //console.log('google: setupTfa: userData', this.authService.userData)
     }),
     err => {
       console.log(err)

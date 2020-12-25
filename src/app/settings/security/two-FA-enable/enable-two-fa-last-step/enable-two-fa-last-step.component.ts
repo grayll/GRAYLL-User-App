@@ -119,37 +119,37 @@ export class EnableTwoFaLastStepComponent implements OnInit {
     this.submitted = true;
     this.onValueChanged()
     if (this.enableTwoFAForm.invalid) {
-      console.log('form invalid')
+      //console.log('form invalid')
       return;
     }
 
     let userData = this.authService.GetLocalUserData();
-    console.log('userData:', userData)
-    console.log('bk key:', this.enableTwoFAForm.value['backupKey'])
+    //console.log('userData:', userData)
+    //console.log('bk key:', this.enableTwoFAForm.value['backupKey'])
     
     let bkKey: string = this.enableTwoFAForm.value['backupKey']
     if (userData.Tfa.BackupCode != bkKey) {
       this.errorService.handleError(null, 'Backup TwoFA key not match')
-      console.log('backup Key not match')
+     // console.log('backup Key not match')
       return;
     }
 
     // Verify Two-factor authentication
-    console.log('this.authService.userData.Tfa-data: ', this.authService.userData.Tfa)
+    //console.log('this.authService.userData.Tfa-data: ', this.authService.userData.Tfa)
     let tmpUserData = this.authService.userData.Tfa
     tmpUserData.OneTimePassword = this.enableTwoFAForm.value['oneTimePassword']
-    console.log('tmpUserData: ', tmpUserData)
+    //console.log('tmpUserData: ', tmpUserData)
     this.authService.updateTfaData(tmpUserData)
     .subscribe(res => {
-      console.log('EnableTFA-data: ', res)     
+      //console.log('EnableTFA-data: ', res)     
       if ((res as any).errCode === environment.SUCCESS){
-        console.log('Verification successful!') 
+        //console.log('Verification successful!') 
         this.authService.userData = userData
         this.authService.SetLocalUserData()
         this.authService.setTfa(true)
         //this.authService.userData.Tfa.Enable = true
         
-        console.log('userData: verifyTfaAuth: ', this.authService.userData)
+        //console.log('userData: verifyTfaAuth: ', this.authService.userData)
         this.authService.userInfo.Tfa = true
         // this.settingsService.sendTwoFAEnabledToObserver(true);
         // this.userService.enable2FA(true);

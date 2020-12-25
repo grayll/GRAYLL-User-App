@@ -55,7 +55,7 @@ export class SecurityComponent implements OnDestroy, OnInit {
     private router: Router,
   ) {
 
-    console.log('this.authService.userInfo.Tfa:', this.authService.userInfo)
+    //console.log('this.authService.userInfo.Tfa:', this.authService.userInfo)
     // this.observe2FAEnable();
     // this.observeMultisignatureEnable();
     //  this.loadAttributes();

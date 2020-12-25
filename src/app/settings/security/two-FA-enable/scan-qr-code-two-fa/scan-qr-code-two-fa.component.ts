@@ -27,7 +27,7 @@ export class ScanQrCodeTwoFaComponent implements OnInit {
 
     // Call QRcode service
     this.dataUrl = this.authService.userData.Tfa.DataURL
-    console.log(this.dataUrl);
+    //console.log(this.dataUrl);
   }
 
   back() {

@@ -13,7 +13,7 @@ export class ReferralHeaderBoxesComponent implements OnInit {
   constructor(
     public referralService: ReferralService,
     public authService: AuthService) {
-      console.log(referralService.metric)
+      //console.log(referralService.metric)
     }
 
   ngOnInit() {

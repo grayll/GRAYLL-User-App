@@ -227,7 +227,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     this.http.post(`api/v1/users/txverify`, {ledger: ledger, action:'buying'})    
     .subscribe(
       resp => {
-        console.log(resp)        
+        //console.log(resp)        
       },
       err => {
         console.log('verify ledger exp: ', err)       
@@ -335,7 +335,7 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     }
 
     if (+this.grxAmount > maxAvailabeGRX){
-      console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
+      //console.log('sellGrx:', +this.grxAmount , maxAvailabeGRX)
       this.snotifyService.simple('Insufficient funds to submit this sell order! Please add more funds to your account.')  
         
       return false

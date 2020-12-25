@@ -118,11 +118,11 @@ export class ProfileSettingsComponent implements OnDestroy {
       // clear previous error message (if any)
       this.formErrors[field] = '';
       const control = form.get(field);    
-      console.log('control:', control)  
+      //console.log('control:', control)  
       if (control && control.touched && control.invalid) {
         
         const messages = this.validationMessages[field];
-        console.log('control invalid:', control, messages)  
+       // console.log('control invalid:', control, messages)  
         
         for (const key in control.errors) {
           this.errorService.handleError(null, messages[key])
@@ -183,18 +183,18 @@ export class ProfileSettingsComponent implements OnDestroy {
     let tmp: any = {}
     if (this.profileForm.value['first_name'] && this.profileForm.value['first_name'] != '' 
     && this.profileForm.value['first_name'] != this.userData.Name){      
-      console.log('change fname')
+      //console.log('change fname')
       hasChange = true
     }
     if (this.profileForm.value['last_name'] && this.profileForm.value['last_name'] != '' 
     && this.profileForm.value['last_name'] != this.userData.LName){      
       hasChange = true
-      console.log('change lname')
+      //console.log('change lname')
     }
   
     tmp.name = this.profileForm.value['first_name']
     tmp.lname = this.profileForm.value['last_name']
-    console.log('tmp: ', tmp)
+    //console.log('tmp: ', tmp)
     //tmp.phone = this.profileForm.value['phone']
     if (!hasChange){
       return
@@ -210,7 +210,7 @@ export class ProfileSettingsComponent implements OnDestroy {
           }
           
           this.userData = this.authService.userData  
-          console.log('tmp1: ', this.userData)       
+          //console.log('tmp1: ', this.userData)       
           this.authService.SetLocalUserData()     
           
           //this.profileForm.reset()   
