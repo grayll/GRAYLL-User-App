@@ -133,14 +133,7 @@ export class StellarService {
                 tx.sign(source)
                 // let xdr = tx.toXDR('base64')   
                 // console.log('cancelOffer xdr', xdr)     
-                this.horizon.submitTransaction(tx).then( res => {                   
-                    // console.log('cancel userData:', userData)
-                    // if (assetType === 'XLM'){                    
-                    //     userData.OpenOrdersXLM -= realAmount
-                    // } else {
-                    //     userData.OpenOrdersGRX -= realAmount
-                    // }   
-                    console.log('cancel successes',res)       
+                this.horizon.submitTransaction(tx).then( res => {                         
                     resolve(res)
                 }).catch( err => {
                     reject(err)

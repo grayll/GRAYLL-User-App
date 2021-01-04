@@ -269,7 +269,7 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
       this.stellarService.cancelOffer(this.authService.getSecretKey(), item.cachedOffer, 
       this.authService.userMetaStore, item.realAmount, item.assetType).then(res=>
         {    
-          //console.log('cancelCurrentOffer a', this.authService.userMetaStore, item.assetType, item.realAmount)                 
+                         
           this.stellarService.allOffers.splice(item.index, 1)
           if (this.authService.userMetaStore.OpenOrders){
             this.authService.userMetaStore.OpenOrders -=1
@@ -285,18 +285,9 @@ export class AccountActivityComponent implements OnInit, OnDestroy, OnChanges {
             this.authService.userMetaStore.OpenOrdersGRX = +this.authService.userMetaStore.OpenOrdersGRX - +item.realAmount
           }
           // Update user meta
-          this.authService.updateUserMeta(true)
-          
+          this.authService.updateUserMeta(true)          
           this.loadingService.hide()
-          // if (this.authService.userMetaStore.OpenOrders){
-          //   this.authService.userMetaStore.OpenOrders -=1
-          // } else {
-          //   this.authService.userMetaStore.OpenOrders = 0
-          // }
-          // if (this.authService.userMetaStore.OpenOrders < 0){
-          //   this.authService.userMetaStore.OpenOrders = 0
-          // }
-          //this.authService.SetLocalUserData()    
+          
         }
       ).catch(e => {
         this.loadingService.hide()

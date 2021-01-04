@@ -73,14 +73,16 @@ export class CancelActiveOrdersPopupComponent implements OnInit {
 
     Promise.all(promises).then(()=> {
       this.popupService.close();
-      this.authService.userMetaStore.OpenOrders = 0            
-      this.stellarService.allOffers.forEach(item => {            
-        if (item.assetType === 'XLM'){              
-          this.authService.userMetaStore.OpenOrdersXLM = +this.authService.userMetaStore.OpenOrdersXLM - item.realAmount
-        } else {             
-          this.authService.userMetaStore.OpenOrdersGRX = +this.authService.userMetaStore.OpenOrdersGRX - item.realAmount
-        }             
-      })
+      this.authService.userMetaStore.OpenOrders = 0      
+      this.authService.userMetaStore.OpenOrdersGRX = 0   
+      this.authService.userMetaStore.OpenOrdersXLM = 0   
+      // this.stellarService.allOffers.forEach(item => {            
+      //   if (item.assetType === 'XLM'){              
+      //     this.authService.userMetaStore.OpenOrdersXLM = +this.authService.userMetaStore.OpenOrdersXLM - item.realAmount
+      //   } else {             
+      //     this.authService.userMetaStore.OpenOrdersGRX = +this.authService.userMetaStore.OpenOrdersGRX - item.realAmount
+      //   }             
+      // })
       this.authService.updateUserMeta(true)
       this.loadingService.hide()
       this.stellarService.allOffers = []
