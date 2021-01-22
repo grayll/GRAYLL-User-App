@@ -354,6 +354,11 @@ export class SystemHeaderBoxesComponent implements OnInit {
     this.sharedService.openAlgoPosition(this.algoPosition);
     this.stellarService.sendAsset(this.authService.getSecretKey(), environment.HOT_WALLET_ONE, 
       this.algoPosition.grxAmount.toString(), this.stellarService.grxAsset, this.selectedTab.id).then( txHash => {
+        if (txHash == ''){
+          this.loadingService.hide()
+          this.router.navigate(['/system/overview', {outlets: {popup: 'open-algo-position-error'}}]);
+          return
+        }
         this.algoPosition.stellarTxId = txHash
         this.algoPosition.positionValue = this.algoPosition.usdValue - this.algoPosition.usdValue*+this.selectedTab.fee       
        

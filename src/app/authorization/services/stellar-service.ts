@@ -9,6 +9,7 @@ import { Observable, Subject } from 'rxjs';
 var StellarSdk = require('stellar-sdk');
 import * as moment from 'moment';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 var naclutil = require('tweetnacl-util');
 const bip39 = require('bip39')
 const nacl = require('tweetnacl')
@@ -36,7 +37,7 @@ export class StellarService {
     trades: any[] = [];
     account: any
 
-    public constructor() {        
+    public constructor(private http: HttpClient ) {        
         this.horizon = new StellarSdk.Server(environment.horizon_url)  
         this.grxAsset = new StellarSdk.Asset(environment.ASSET, environment.ASSET_ISSUER)
         this.nativeAsset = StellarSdk.Asset.native()
@@ -214,7 +215,7 @@ export class StellarService {
             // })
         })        
     }
-    parseXdr(xdr){
+    parseTxXdr(xdr){
         return StellarSdk.xdr.TransactionResult.fromXDR(xdr, 'base64')
     }
     async getCancelOfferXdr(publicKey: string, offer:any) {        
@@ -355,10 +356,61 @@ export class StellarService {
         .setTimeout(0).build()                    
         return tx.toXDR('base64')                      
     }
+    async sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string) {
+        
+        //let txxdr = ''
+        let tx
+        try {               
+            let source = StellarSdk.Keypair.fromSecret(accSeed);
+            tx = new StellarSdk.TransactionBuilder(this.account, 
+                {fee: StellarSdk.BASE_FEE, networkPassphrase: this.getNetworkPassPhrase()})               
+            .addOperation(StellarSdk.Operation.payment({ 
+                destination: dest,
+                asset: asset,
+                amount: amount,
+            }))
+            .addMemo(StellarSdk.Memo.text(memo))           
+            .setTimeout(StellarSdk.TimeoutInfinite).build()
+            tx.sign(source)                
+            //txxdr = tx.toXDR('base64')
+            
+            //throw new Error("Throw errors")         
+            let resp = await this.horizon.submitTransaction(tx)
+            return resp.hash
+        } catch (e) {  
+                  
+            try {                    
+                await new Promise(resolve => setTimeout(resolve, 30000));                    
+                //let tx = StellarSdk.TransactionBuilder.fromXDR(txxdr, StellarSdk.Networks.PUBLIC);
+                let resp = await this.horizon.submitTransaction(tx)
+                return resp.hash                     
+                
+                
+            } catch (e) {
+                
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 30000));                       
+                    let resp = await this.horizon.submitTransaction(tx)
+                    return resp.hash
+                } catch (e) {
+                    try {
+                        await new Promise(resolve => setTimeout(resolve, 30000));                            
+                        let resp = await this.horizon.submitTransaction(tx)
+                        return resp.hash
+                    } catch (e) {
+                        return ''
+                    }
+                }
+            }
+            
+        }
+        return ''            
+    }
 
-    sendAsset(accSeed: string, dest: string, amount: string, asset: any, memo: string): Promise<any> {
+    sendAsset1(accSeed: string, dest: string, amount: string, asset: any, memo: string): Promise<any> {
         return new Promise((resolve, reject) => {
-           let source = StellarSdk.Keypair.fromSecret(accSeed);   
+            let txxdr = ''
+            let source = StellarSdk.Keypair.fromSecret(accSeed);   
            
                                                       
                 let tx = new StellarSdk.TransactionBuilder(this.account, 
@@ -372,22 +424,20 @@ export class StellarService {
                 // 6. Build and sign transaction with both source and destination keypairs
                 .setTimeout(180).build()
                 tx.sign(source)                
-                let xdr = tx.toXDR('base64')
+                txxdr = tx.toXDR('base64')
                 //console.log('Tx xdr', xdr)            
-                this.horizon.submitTransaction(tx).then( resp => {
-                    //console.log('resp: ', resp.hash);
-                    // this.horizon.operations()          
-                    // .forTransaction(resp.hash)
-                    // .call()
-                    // .then(function (opResult) {
-                    //     console.log('opResult:', opResult);              
-                    // })
-                    // .catch(function (err) {
-                    //     console.error(err);
-                    // });
+                this.horizon.submitTransaction(tx).then( resp => {                    
                     resolve(resp.hash)
                 }).catch(err => {
-                    console.log('err: ', err);                    
+                    console.log('err: ', err); 
+                    let tx = this.parseTxXdr(txxdr)
+                    this.horizon.submitTransaction(tx).then( resp => {                    
+                        resolve(resp.hash)
+                    }).catch(err => {
+                        console.log('err: ', err); 
+                        let tx = this.parseTxXdr(txxdr)
+                        reject(err)
+                    }) 
                     reject(err)
                 })                
             // })

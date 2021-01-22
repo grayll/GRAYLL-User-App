@@ -32,7 +32,8 @@ By replace `node: false` with `node: { crypto: true, stream: true, http:true, ht
 in `node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/webpack-configs/browser.js`
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
+Error: Missing binding /home/bc/1grayll/grayll.io-user-app/node_modules/node-sass/vendor/linux-x64-64/binding.node
+npm rebuild node-sass
 ## Build option to fix error
 When build with command `ng build --prod`, there is an unspecific error.
 ng build --prod --aot=false --build-optimizer=false

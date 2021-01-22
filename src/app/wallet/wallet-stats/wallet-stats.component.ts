@@ -136,15 +136,22 @@ export class WalletStatsComponent implements OnInit, OnDestroy {
     //console.log('grxPrice:', this.authService.userInfo.SellingWallet , this.authService.userInfo.SellingPercent, dexAmount, superAdminAmount)
     if (+this.grxPrice > this.authService.priceInfo.xlmgrx_ask && +this.grxPrice >= this.authService.userInfo.SellingPrice){
       if (superAdminAmount > 0 && this.authService.userInfo.SellingWallet && this.authService.userInfo.SellingWallet != ''){        
-        console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet,this.authService.getSecretKey())
+        //console.log('Direct purchase from super admin', this.authService.userInfo.SellingWallet,this.authService.getSecretKey())
         // purchase directly from grayll super admin        
         if (superAdminAmount > 0){
           // buy all from grayll super admin
           let xlmAmount = superAdminAmount*+this.grxPrice
           //console.log('xlmAmount:', xlmAmount)
           this.stellarService.sendAsset(this.authService.getSecretKey(), this.authService.userInfo.SellingWallet, 
-            xlmAmount.toFixed(7), this.stellarService.nativeAsset, '')
+            xlmAmount.toFixed(7), this.stellarService.nativeAsset, 'buy grx at grxxlm='+this.grxPrice)
           .then( txHash => {
+            if (txHash == ''){
+              console.log('txhash is empty')
+              let msg = 'Buy order could not be submitted. Please retry!'   
+              this.snotifyService.simple(msg);        
+              this.loadingService.hide()
+              return
+            }
             this.authService.verifyTx(txHash, 'buying', {grxPrice:+this.grxPrice, grxAmount: superAdminAmount, xlmAmount:+xlmAmount.toFixed(7), 
               grxUsd:+this.grxPrice*this.authService.priceInfo.xlmusd, totalUsd:+xlmAmount.toFixed(7)*this.authService.priceInfo.xlmusd}).then(resp => {
               // update fund

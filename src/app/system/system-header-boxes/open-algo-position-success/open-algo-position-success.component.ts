@@ -23,7 +23,7 @@ export class OpenAlgoPositionSuccessComponent implements OnInit {
   ngOnInit() {
     this.popupService.open(this.modal);
     this.algoPosition = this.sharedService.getOpenedAlgoPosition();
-    console.log(this.algoPosition)
+    
     if (!this.algoPosition){
       this.popupService.close()
     }
