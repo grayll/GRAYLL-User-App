@@ -175,6 +175,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     this.algoService.openPositions.forEach( position => {
       if (position.algorithm_type == algoName){
         let data = {
+          duration:position.duration_string,
           grayllTxId:position.grayll_transaction_id,
           algorithm:position.algorithm_type,
           grxUsd:this.authService.priceInfo.grxusd,
@@ -248,13 +249,14 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     } 
     let positions = [] 
     let data = {
+      duration:position.duration_string,
       grayllTxId:position.grayll_transaction_id,
       algorithm:position.algorithm_type,
       grxUsd:this.authService.priceInfo.grxusd,
       positionValue:position.current_position_value_$,
       positionValueGRX:position.current_position_value_GRX,      
     }   
-   
+    
     positions.push(data)
 
     let closeData = {

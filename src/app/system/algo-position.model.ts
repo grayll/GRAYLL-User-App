@@ -56,7 +56,9 @@ export interface OpenPosition {
   open_value_GRY?: number
 
   duration?: number
+  duration_string?: string
   status: string
+
 
   current_value_GRX?: number
   current_value_GRZ?: number
